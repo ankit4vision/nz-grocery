@@ -60,6 +60,10 @@ nz-grocery/
 │   │   │   │   ├── PriceSection.jsx
 │   │   │   │   ├── PriceSection.css
 │   │   │   │   ├── HalfPriceSpecial.jsx
+│   │   │   │   ├── ProductCard.jsx
+│   │   │   │   ├── ProductCard.css
+│   │   │   │   ├── FeaturedProducts.jsx
+│   │   │   │   ├── FeaturedProducts.css
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -268,6 +272,8 @@ npm update           # Update dependencies
 - `ValueSection` - Value categories display section
 - `PriceSection` - Half price specials section
 - `HalfPriceSpecial` - Half price special component
+- `ProductCard` - Individual product display card
+- `FeaturedProducts` - Featured products grid section
 
 ## 📊 Data Structure & Mock Data
 
@@ -281,6 +287,7 @@ npm update           # Update dependencies
 - **Stats Data** (`statsData`) - Statistics and metrics
 - **Value Categories Data** (`valueCategoriesData`) - Value section categories with discounts
 - **Price Section Data** (`priceSectionData`) - Half price special products
+- **Featured Products Data** (`featuredProductsData`) - Featured products with ratings, discounts, and favorites
 
 ### **Asset Structure:**
 - `src/assets/images/main-slider/` - Hero slider images (4 images)
