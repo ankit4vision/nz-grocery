@@ -8,12 +8,4 @@
 
 .layout-wrapper__main {
   flex: 1;
-  padding: var(--spacing-xl) 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .layout-wrapper__main {
-    padding: var(--spacing-lg) 0;
-  }
 }

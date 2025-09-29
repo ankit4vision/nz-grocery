@@ -1,13 +1,23 @@
 /* Home Page Styles */
 
-.home-hero {
-  text-align: center;
-  background: var(--white);
-  color: var(--text-primary);
-  padding: var(--spacing-4xl) 0;
+.home-page {
+  position: relative;
+}
+
+/* Hero Section Styles */
+.home-hero-section {
   margin-bottom: var(--spacing-3xl);
+  padding: var(--spacing-md) 0;
+}
+
+.home-hero-slider {
   border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* Content Styles */
+.home-content {
+  padding: var(--spacing-3xl) var(--spacing-lg);
 }
 
 .home-hero-title {
@@ -87,6 +97,10 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .home-hero-section {
+    padding: var(--spacing-sm) 0;
+  }
+  
   .home-hero {
     padding: var(--spacing-2xl) 0;
   }
@@ -105,5 +119,11 @@
   
   .home-stat-number {
     font-size: var(--font-size-2xl);
+  }
+}
+
+@media (max-width: 576px) {
+  .home-hero-section {
+    padding: var(--spacing-xs) 0;
   }
 }
