@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { CustomButton, InfoCard, StatCard, HeroSlider } from '../components';
-import { heroSlidesData, featuresData, statsData } from '../data/mockData';
+import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner } from '../components';
+import { heroSlidesData, featuresData, statsData, adsBannerData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
@@ -20,6 +20,17 @@ const Home = () => {
             className="home-hero-slider"
           />
         </Container>
+      </section>
+
+      {/* Ads Banner Section */}
+      <section className="home-ads-section">
+        <AdsBanner 
+          ads={adsBannerData}
+          autoPlay={true}
+          interval={3000}
+          cardsPerSlide={3}
+          className="home-ads-banner"
+        />
       </section>
 
       {/* Main Content */}

@@ -6,12 +6,21 @@
 
 /* Hero Section Styles */
 .home-hero-section {
-  margin-bottom: var(--spacing-3xl);
   padding: var(--spacing-md) 0;
 }
 
 .home-hero-slider {
   border-radius: var(--border-radius-xl);
+  overflow: hidden;
+}
+
+/* Ads Section Styles */
+.home-ads-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.home-ads-banner {
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
 }
 

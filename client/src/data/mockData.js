@@ -1,6 +1,64 @@
 // Mock Data for NZ Grocery Application
 // This file contains sample data structures that will be replaced with API calls in the future
 
+// Ads Banner Data Mock
+export const adsBannerData = [
+  {
+    id: 1,
+    title: "Cash On Delivery",
+    description: "Pay when you receive your order",
+    image: "🛍️💰",
+    buttonText: "Save Now",
+    buttonVariant: "success",
+    backgroundColor: "linear-gradient(135deg, #28a745 0%, #20c997 100%)"
+  },
+  {
+    id: 2,
+    title: "Express Delivery",
+    description: "Get your groceries in 30 minutes",
+    image: "🚀📦",
+    buttonText: "Save Now",
+    buttonVariant: "info",
+    backgroundColor: "linear-gradient(135deg, #17a2b8 0%, #20c997 100%)"
+  },
+  {
+    id: 3,
+    title: "Coupon Savings",
+    description: "Use digital coupons for extra savings",
+    image: "✂️🎫",
+    buttonText: "Free Coupon",
+    buttonVariant: "warning",
+    backgroundColor: "linear-gradient(135deg, #ffc107 0%, #ffd43b 100%)"
+  },
+  {
+    id: 4,
+    title: "Gift Voucher",
+    description: "Perfect gifts for your loved ones",
+    image: "🎁💝",
+    buttonText: "Buy Now",
+    buttonVariant: "primary",
+    backgroundColor: "linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)"
+  },
+  {
+    id: 5,
+    title: "Free Shipping",
+    description: "No delivery charges on orders above $50",
+    image: "🚚🆓",
+    buttonText: "Shop Now",
+    buttonVariant: "success",
+    backgroundColor: "linear-gradient(135deg, #28a745 0%, #20c997 100%)"
+  },
+  {
+    id: 6,
+    title: "Fresh Daily",
+    description: "Fresh produce delivered every day",
+    image: "🥬🌱",
+    buttonText: "Order Fresh",
+    buttonVariant: "info",
+    backgroundColor: "linear-gradient(135deg, #17a2b8 0%, #20c997 100%)"
+  }
+];
+
 // Hero Slider Data
 export const heroSlidesData = [
   {
