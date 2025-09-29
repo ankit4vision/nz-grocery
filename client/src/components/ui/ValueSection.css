@@ -49,20 +49,6 @@
   justify-content: center;
 }
 
-/* Badge variants for value section */
-.product-card__badge--discount {
-  background-color: var(--danger-color);
-}
-
-.product-card__badge--special {
-  background-color: var(--warning-color);
-  color: var(--gray-800);
-}
-
-.product-card__badge--half-price {
-  background-color: var(--primary-color);
-}
-
 /* Responsive Design */
 @media (max-width: 992px) {
   .value-section__card-image {

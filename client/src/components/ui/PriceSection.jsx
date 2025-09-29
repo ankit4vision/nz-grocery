@@ -76,7 +76,13 @@ const PriceSection = ({
                     src={product.image} 
                     alt={product.name}
                   />
-                  <div className="product-card__badge">
+                  <div 
+                    className="product-card__badge"
+                    style={{ 
+                      backgroundColor: 'var(--danger-color)',
+                      color: 'var(--white)'
+                    }}
+                  >
                     1/2 Price
                   </div>
                 </div>

@@ -247,12 +247,12 @@
   padding-bottom: 4rem !important;
 }
 
-/* Custom text utilities */
-.text-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Regular products badge - Orange color, right side */
+.featured-products .product-card__badge {
+  background-color: var(--warning-color) !important;
+  color: var(--gray-800) !important;
+  left: auto !important;
+  right: var(--spacing-sm) !important;
 }
 
 /* Responsive adjustments */

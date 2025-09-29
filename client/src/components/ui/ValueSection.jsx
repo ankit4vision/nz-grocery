@@ -43,7 +43,13 @@ const ValueSection = ({
                     src={category.image}
                     alt={category.title}
                   />
-                  <div className={`product-card__badge product-card__badge--${category.badgeType}`}>
+                  <div 
+                    className="product-card__badge"
+                    style={{ 
+                      backgroundColor: 'var(--danger-color)',
+                      color: 'var(--white)'
+                    }}
+                  >
                     {category.badge}
                   </div>
                 </div>
