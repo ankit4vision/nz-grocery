@@ -7,16 +7,24 @@ nz-grocery/
 ├── client/                          # Main React application
 │   ├── public/                      # Static assets
 │   │   ├── vite.svg
+│   │   ├── approval-requirnment/    # Approval requirement images
+│   │   │   ├── browseprodcuts.png
+│   │   │   ├── home.png
+│   │   │   └── listing.png
 │   │   └── index.html
 │   ├── src/                         # Source code
 │   │   ├── components/              # Reusable components
 │   │   │   ├── common/              # Common/shared components
 │   │   │   │   ├── CustomButton.jsx
 │   │   │   │   ├── CustomButton.css
-│   │   │   │   ├── InfoCard.jsx
-│   │   │   │   ├── InfoCard.css
-│   │   │   │   ├── StatCard.jsx
-│   │   │   │   ├── StatCard.css
+│   │   │   │   ├── CustomInput.jsx
+│   │   │   │   ├── CustomInput.css
+│   │   │   │   ├── CustomSelect.jsx
+│   │   │   │   ├── CustomSelect.css
+│   │   │   │   ├── Loader.jsx
+│   │   │   │   ├── Loader.css
+│   │   │   │   ├── AlertMessage.jsx
+│   │   │   │   ├── AlertMessage.css
 │   │   │   │   └── index.js
 │   │   │   ├── layout/              # Layout components
 │   │   │   │   ├── AppNavbar.jsx
@@ -24,16 +32,29 @@ nz-grocery/
 │   │   │   │   ├── AppFooter.jsx
 │   │   │   │   ├── AppFooter.css
 │   │   │   │   ├── LayoutWrapper.jsx
+│   │   │   │   ├── LayoutWrapper.css
 │   │   │   │   ├── BrowseSidebar.jsx
 │   │   │   │   ├── BrowseSidebar.css
+│   │   │   │   ├── Layout.jsx
+│   │   │   │   ├── Layout.css
 │   │   │   │   └── index.js
 │   │   │   ├── ui/                  # UI components
-│   │   │   │   ├── DataTable.jsx
-│   │   │   │   ├── DataTable.css
+│   │   │   │   ├── InfoCard.jsx
+│   │   │   │   ├── InfoCard.css
+│   │   │   │   ├── StatCard.jsx
+│   │   │   │   ├── StatCard.css
 │   │   │   │   ├── ModalDialog.jsx
 │   │   │   │   ├── ModalDialog.css
 │   │   │   │   ├── ConfirmDialog.jsx
 │   │   │   │   ├── ConfirmDialog.css
+│   │   │   │   ├── DataTable.jsx
+│   │   │   │   ├── DataTable.css
+│   │   │   │   ├── FormWrapper.jsx
+│   │   │   │   ├── FormWrapper.css
+│   │   │   │   ├── HeroSlider.jsx
+│   │   │   │   ├── HeroSlider.css
+│   │   │   │   ├── AdsBanner.jsx
+│   │   │   │   ├── AdsBanner.css
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -43,6 +64,16 @@ nz-grocery/
 │   │   │   ├── Products.css
 │   │   │   ├── About.jsx
 │   │   │   └── About.css
+│   │   ├── data/                    # Mock data files
+│   │   │   └── mockData.js
+│   │   ├── assets/                  # Static assets
+│   │   │   ├── images/              # Image assets
+│   │   │   │   └── main-slider/     # Hero slider images
+│   │   │   │       ├── 6994918.jpg
+│   │   │   │       ├── 8486222.jpg
+│   │   │   │       ├── 8449377.jpg
+│   │   │   │       └── 8449371.jpg
+│   │   │   └── react.svg
 │   │   ├── styles/                  # Global styles
 │   │   │   ├── theme.css            # CSS variables & theme
 │   │   │   └── custom.css           # Bootstrap overrides
@@ -58,7 +89,9 @@ nz-grocery/
 │   ├── package.json                 # Dependencies & scripts
 │   ├── package-lock.json            # Dependency lock file
 │   ├── vite.config.js               # Vite configuration
-│   └── node_modules/                # Dependencies
+│   ├── eslint.config.js             # ESLint configuration
+│   ├── .gitignore                   # Git ignore rules
+│   └── node_modules/                 # Dependencies
 ├── PROJECT_STRUCTURE.md             # This file
 └── README.md                        # Project documentation
 ```
@@ -197,19 +230,42 @@ npm update           # Update dependencies
 
 ### **Common Components:**
 - `CustomButton` - Reusable button component
-- `InfoCard` - Information display card
-- `StatCard` - Statistics display card
+- `CustomInput` - Reusable input component
+- `CustomSelect` - Reusable select dropdown component
+- `Loader` - Loading spinner component
+- `AlertMessage` - Alert/notification component
 
 ### **Layout Components:**
 - `AppNavbar` - Main navigation bar
 - `AppFooter` - Footer component
 - `LayoutWrapper` - Main layout wrapper
 - `BrowseSidebar` - Product browsing sidebar
+- `Layout` - Base layout component
 
 ### **UI Components:**
+- `InfoCard` - Information display card
+- `StatCard` - Statistics display card
 - `DataTable` - Data table with sorting/filtering
 - `ModalDialog` - Modal dialog component
 - `ConfirmDialog` - Confirmation dialog
+- `FormWrapper` - Form wrapper component
+- `HeroSlider` - Hero section image slider
+- `AdsBanner` - Promotional ads carousel banner
+
+## 📊 Data Structure & Mock Data
+
+### **Mock Data Files:**
+- `src/data/mockData.js` - Contains all mock data for the application
+
+### **Data Categories:**
+- **Hero Slider Data** (`heroSlidesData`) - Image-only slides for hero section
+- **Ads Banner Data** (`adsBannerData`) - Promotional offers and deals
+- **Features Data** (`featuresData`) - Application features and benefits
+- **Stats Data** (`statsData`) - Statistics and metrics
+
+### **Asset Structure:**
+- `src/assets/images/main-slider/` - Hero slider images
+- `public/approval-requirnment/` - Project requirement reference images
 
 ## 🚀 Creating New Functionality & Pages
 
