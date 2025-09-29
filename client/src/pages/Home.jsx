@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner, ValueSection, PriceSection } from '../components';
-import { heroSlidesData, featuresData, statsData, adsBannerData, valueCategoriesData, priceSectionData } from '../data/mockData';
+import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner, ValueSection, PriceSection, FeaturedProducts } from '../components';
+import { heroSlidesData, featuresData, statsData, adsBannerData, valueCategoriesData, priceSectionData, featuredProductsData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
@@ -48,6 +48,16 @@ const Home = () => {
             className="home-price-section"
             onViewAllClick={() => console.log('View all half price specials clicked')}
           />
+
+      {/* Featured Products Section */}
+      <FeaturedProducts
+        title="Featured Products - Best Deals & Fresh Picks"
+        products={featuredProductsData}
+        productsPerRow={4}
+        className="home-featured-products"
+        onAddToCart={(productId) => console.log('Add to cart:', productId)}
+        onToggleFavorite={(productId, isFavorite) => console.log('Toggle favorite:', productId, isFavorite)}
+      />
 
       {/* Main Content */}
       <Container className="home-content">

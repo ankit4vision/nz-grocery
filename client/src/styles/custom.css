@@ -247,12 +247,12 @@
   padding-bottom: 4rem !important;
 }
 
-/* Regular products badge - Orange color, right side */
+/* Regular products badge - Orange color, left side */
 .featured-products .product-card__badge {
   background-color: var(--warning-color) !important;
   color: var(--gray-800) !important;
-  left: auto !important;
-  right: var(--spacing-sm) !important;
+  left: var(--spacing-sm) !important;
+  right: auto !important;
 }
 
 /* Responsive adjustments */

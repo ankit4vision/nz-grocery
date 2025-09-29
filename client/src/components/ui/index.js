@@ -9,3 +9,5 @@ export { default as HeroSlider } from './HeroSlider';
 export { default as AdsBanner } from './AdsBanner';
 export { default as ValueSection } from './ValueSection';
 export { default as PriceSection } from './PriceSection';
+export { default as ProductCard } from './ProductCard';
+export { default as FeaturedProducts } from './FeaturedProducts';

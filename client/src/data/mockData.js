@@ -422,3 +422,151 @@ export const priceSectionData = [
     link: "/almonds"
   }
 ];
+
+// Featured Products Data
+export const featuredProductsData = [
+  {
+    id: 1,
+    name: "Fresh Organic Apples",
+    unit: "1kg",
+    currentPrice: "4.99",
+    originalPrice: "6.99",
+    image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300&h=300&fit=crop&crop=center",
+    rating: 4.8,
+    reviews: 124,
+    discount: 29,
+    isFavorite: false
+  },
+  {
+    id: 2,
+    name: "Premium Ground Coffee",
+    unit: "250g",
+    currentPrice: "12.99",
+    originalPrice: "16.99",
+    image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=300&h=300&fit=crop&crop=center",
+    rating: 4.9,
+    reviews: 89,
+    discount: 24,
+    isFavorite: true
+  },
+  {
+    id: 3,
+    name: "Fresh Strawberries",
+    unit: "500g",
+    currentPrice: "5.99",
+    originalPrice: "7.99",
+    image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=300&h=300&fit=crop&crop=center",
+    rating: 4.7,
+    reviews: 156,
+    discount: 25,
+    isFavorite: false
+  },
+  {
+    id: 4,
+    name: "Greek Yogurt",
+    unit: "1kg",
+    currentPrice: "6.99",
+    originalPrice: "8.99",
+    image: "https://images.unsplash.com/photo-1571212056062-08f0d6dac43a?w=300&h=300&fit=crop&crop=center",
+    rating: 4.6,
+    reviews: 203,
+    discount: 22,
+    isFavorite: false
+  },
+  {
+    id: 5,
+    name: "Fresh Avocados",
+    unit: "4 pack",
+    currentPrice: "7.99",
+    originalPrice: "9.99",
+    image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300&h=300&fit=crop&crop=center",
+    rating: 4.5,
+    reviews: 78,
+    discount: 20,
+    isFavorite: true
+  },
+  {
+    id: 6,
+    name: "Organic Honey",
+    unit: "500g",
+    currentPrice: "9.99",
+    originalPrice: "12.99",
+    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&h=300&fit=crop&crop=center",
+    rating: 4.8,
+    reviews: 145,
+    discount: 23,
+    isFavorite: false
+  },
+  {
+    id: 7,
+    name: "Fresh Spinach",
+    unit: "200g",
+    currentPrice: "3.99",
+    originalPrice: "4.99",
+    image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&h=300&fit=crop&crop=center",
+    rating: 4.4,
+    reviews: 92,
+    discount: 20,
+    isFavorite: false
+  },
+  {
+    id: 8,
+    name: "Premium Salmon Fillet",
+    unit: "500g",
+    currentPrice: "18.99",
+    originalPrice: "24.99",
+    image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=300&h=300&fit=crop&crop=center",
+    rating: 4.9,
+    reviews: 67,
+    discount: 24,
+    isFavorite: true
+  },
+  {
+    id: 9,
+    name: "Fresh Cherry Tomatoes",
+    unit: "250g",
+    currentPrice: "4.99",
+    originalPrice: "6.49",
+    image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300&h=300&fit=crop&crop=center",
+    rating: 4.6,
+    reviews: 118,
+    discount: 23,
+    isFavorite: false
+  },
+  {
+    id: 10,
+    name: "Organic Quinoa",
+    unit: "1kg",
+    currentPrice: "11.99",
+    originalPrice: "14.99",
+    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop&crop=center",
+    rating: 4.7,
+    reviews: 84,
+    discount: 20,
+    isFavorite: false
+  },
+  {
+    id: 11,
+    name: "Fresh Blueberries",
+    unit: "300g",
+    currentPrice: "6.99",
+    originalPrice: "8.99",
+    image: "https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=300&h=300&fit=crop&crop=center",
+    rating: 4.8,
+    reviews: 156,
+    discount: 22,
+    isFavorite: true
+  },
+  {
+    id: 12,
+    name: "Premium Almonds",
+    unit: "500g",
+    currentPrice: "14.99",
+    originalPrice: "18.99",
+    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop&crop=center",
+    rating: 4.9,
+    reviews: 203,
+    discount: 21,
+    isFavorite: false
+  }
+];
