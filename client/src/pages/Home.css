@@ -29,6 +29,11 @@
   margin-bottom: var(--spacing-2xl);
 }
 
+/* Price Section Styles */
+.home-price-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
 /* Content Styles */
 .home-content {
   padding: var(--spacing-3xl) var(--spacing-lg);

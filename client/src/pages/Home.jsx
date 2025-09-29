@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner, ValueSection } from '../components';
-import { heroSlidesData, featuresData, statsData, adsBannerData, valueCategoriesData } from '../data/mockData';
+import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner, ValueSection, PriceSection } from '../components';
+import { heroSlidesData, featuresData, statsData, adsBannerData, valueCategoriesData, priceSectionData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
@@ -40,6 +40,14 @@ const Home = () => {
         className="home-value-section"
         onViewAllClick={() => console.log('View all categories clicked')}
       />
+
+          {/* Price Section */}
+          <PriceSection
+            title="Half Price Special"
+            products={priceSectionData}
+            className="home-price-section"
+            onViewAllClick={() => console.log('View all half price specials clicked')}
+          />
 
       {/* Main Content */}
       <Container className="home-content">

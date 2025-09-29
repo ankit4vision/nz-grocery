@@ -298,3 +298,127 @@ export const valueCategoriesData = [
     link: "/frozen"
   }
 ];
+
+// Price Section Products Data
+export const priceSectionData = [
+  {
+    id: 1,
+    name: "Fresh Organic Bananas, 1kg",
+    currentPrice: "2.50",
+    originalPrice: "5.00",
+    image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop&crop=center",
+    link: "/bananas"
+  },
+  {
+    id: 2,
+    name: "Premium Ground Coffee, 250g",
+    currentPrice: "4.50",
+    originalPrice: "9.00",
+    image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=300&h=300&fit=crop&crop=center",
+    link: "/ground-coffee"
+  },
+  {
+    id: 3,
+    name: "Fresh Whole Milk, 2L",
+    currentPrice: "3.00",
+    originalPrice: "6.00",
+    image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300&h=300&fit=crop&crop=center",
+    link: "/whole-milk"
+  },
+  {
+    id: 4,
+    name: "Artisan Sourdough Bread",
+    currentPrice: "3.50",
+    originalPrice: "7.00",
+    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=300&fit=crop&crop=center",
+    link: "/sourdough-bread"
+  },
+  {
+    id: 5,
+    name: "Fresh Strawberries, 500g",
+    currentPrice: "3.00",
+    originalPrice: "6.00",
+    image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=300&h=300&fit=crop&crop=center",
+    link: "/strawberries"
+  },
+  {
+    id: 6,
+    name: "Greek Yogurt, 1kg",
+    currentPrice: "4.50",
+    originalPrice: "9.00",
+    image: "https://images.unsplash.com/photo-1571212056062-08f0d6dac43a?w=300&h=300&fit=crop&crop=center",
+    link: "/greek-yogurt"
+  },
+  {
+    id: 7,
+    name: "Premium Olive Oil, 500ml",
+    currentPrice: "6.50",
+    originalPrice: "13.00",
+    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&h=300&fit=crop&crop=center",
+    link: "/olive-oil"
+  },
+  {
+    id: 8,
+    name: "Fresh Avocados, 4 pack",
+    currentPrice: "4.00",
+    originalPrice: "8.00",
+    image: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=300&h=300&fit=crop&crop=center",
+    link: "/avocados"
+  },
+  {
+    id: 9,
+    name: "Organic Honey, 500g",
+    currentPrice: "7.50",
+    originalPrice: "15.00",
+    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&h=300&fit=crop&crop=center",
+    link: "/organic-honey"
+  },
+  {
+    id: 10,
+    name: "Fresh Spinach, 200g",
+    currentPrice: "2.00",
+    originalPrice: "4.00",
+    image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&h=300&fit=crop&crop=center",
+    link: "/spinach"
+  },
+  {
+    id: 11,
+    name: "Premium Salmon Fillet, 500g",
+    currentPrice: "12.00",
+    originalPrice: "24.00",
+    image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=300&h=300&fit=crop&crop=center",
+    link: "/salmon"
+  },
+  {
+    id: 12,
+    name: "Fresh Cherry Tomatoes, 250g",
+    currentPrice: "2.50",
+    originalPrice: "5.00",
+    image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300&h=300&fit=crop&crop=center",
+    link: "/cherry-tomatoes"
+  },
+  {
+    id: 13,
+    name: "Organic Quinoa, 1kg",
+    currentPrice: "8.00",
+    originalPrice: "16.00",
+    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop&crop=center",
+    link: "/quinoa"
+  },
+  {
+    id: 14,
+    name: "Fresh Blueberries, 300g",
+    currentPrice: "4.00",
+    originalPrice: "8.00",
+    image: "https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=300&h=300&fit=crop&crop=center",
+    link: "/blueberries"
+  },
+  {
+    id: 15,
+    name: "Premium Almonds, 500g",
+    currentPrice: "9.50",
+    originalPrice: "19.00",
+    image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop&crop=center",
+    link: "/almonds"
+  }
+];
