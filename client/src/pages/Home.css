@@ -16,7 +16,7 @@
 
 /* Ads Section Styles */
 .home-ads-section {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-3xl);
 }
 
 .home-ads-banner {
@@ -26,12 +26,23 @@
 
 /* Value Section Styles */
 .home-value-section {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: 0;
 }
 
 /* Price Section Styles */
 .home-price-section {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: 0;
+}
+
+/* Section Divider */
+.home-section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
+}
+
+/* Featured Products Section Styles */
+.home-featured-products {
+  margin-bottom: 0;
 }
 
 /* Content Styles */

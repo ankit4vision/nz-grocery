@@ -49,6 +49,9 @@ const Home = () => {
             onViewAllClick={() => console.log('View all half price specials clicked')}
           />
 
+      {/* Section Divider */}
+      <div className="home-section-divider"></div>
+
       {/* Featured Products Section */}
       <FeaturedProducts
         title="Featured Products - Best Deals & Fresh Picks"
