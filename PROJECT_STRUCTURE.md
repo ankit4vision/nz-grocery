@@ -55,6 +55,11 @@ nz-grocery/
 │   │   │   │   ├── HeroSlider.css
 │   │   │   │   ├── AdsBanner.jsx
 │   │   │   │   ├── AdsBanner.css
+│   │   │   │   ├── ValueSection.jsx
+│   │   │   │   ├── ValueSection.css
+│   │   │   │   ├── PriceSection.jsx
+│   │   │   │   ├── PriceSection.css
+│   │   │   │   ├── HalfPriceSpecial.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -68,11 +73,18 @@ nz-grocery/
 │   │   │   └── mockData.js
 │   │   ├── assets/                  # Static assets
 │   │   │   ├── images/              # Image assets
+│   │   │   │   ├── ads-banner/      # Ads banner images
+│   │   │   │   │   ├── banner1.jpg
+│   │   │   │   │   ├── banner2.jpg
+│   │   │   │   │   ├── banner3.jpg
+│   │   │   │   │   ├── banner4.jpg
+│   │   │   │   │   ├── banner5.jpg
+│   │   │   │   │   └── banner6.jpg
 │   │   │   │   └── main-slider/     # Hero slider images
 │   │   │   │       ├── 6994918.jpg
-│   │   │   │       ├── 8486222.jpg
+│   │   │   │       ├── 8449371.jpg
 │   │   │   │       ├── 8449377.jpg
-│   │   │   │       └── 8449371.jpg
+│   │   │   │       └── 8486222.jpg
 │   │   │   └── react.svg
 │   │   ├── styles/                  # Global styles
 │   │   │   ├── theme.css            # CSS variables & theme
@@ -80,6 +92,8 @@ nz-grocery/
 │   │   ├── utils/                   # Utility functions
 │   │   ├── hooks/                   # Custom React hooks
 │   │   ├── context/                 # React Context providers
+│   │   ├── config/                  # Configuration files
+│   │   │   └── fontawesome.js       # FontAwesome configuration
 │   │   ├── App.jsx                  # Main App component
 │   │   ├── main.jsx                 # Entry point
 │   │   └── index.css                # Global CSS
@@ -251,6 +265,9 @@ npm update           # Update dependencies
 - `FormWrapper` - Form wrapper component
 - `HeroSlider` - Hero section image slider
 - `AdsBanner` - Promotional ads carousel banner
+- `ValueSection` - Value categories display section
+- `PriceSection` - Half price specials section
+- `HalfPriceSpecial` - Half price special component
 
 ## 📊 Data Structure & Mock Data
 
@@ -262,9 +279,12 @@ npm update           # Update dependencies
 - **Ads Banner Data** (`adsBannerData`) - Promotional offers and deals
 - **Features Data** (`featuresData`) - Application features and benefits
 - **Stats Data** (`statsData`) - Statistics and metrics
+- **Value Categories Data** (`valueCategoriesData`) - Value section categories with discounts
+- **Price Section Data** (`priceSectionData`) - Half price special products
 
 ### **Asset Structure:**
-- `src/assets/images/main-slider/` - Hero slider images
+- `src/assets/images/main-slider/` - Hero slider images (4 images)
+- `src/assets/images/ads-banner/` - Ads banner images (6 images)
 - `public/approval-requirnment/` - Project requirement reference images
 
 ## 🚀 Creating New Functionality & Pages
