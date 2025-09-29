@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner } from '../components';
-import { heroSlidesData, featuresData, statsData, adsBannerData } from '../data/mockData';
+import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner, ValueSection } from '../components';
+import { heroSlidesData, featuresData, statsData, adsBannerData, valueCategoriesData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
@@ -32,6 +32,14 @@ const Home = () => {
           className="home-ads-banner"
         />
       </section>
+
+      {/* Value Section */}
+      <ValueSection 
+        title="Helping you find great value"
+        categories={valueCategoriesData}
+        className="home-value-section"
+        onViewAllClick={() => console.log('View all categories clicked')}
+      />
 
       {/* Main Content */}
       <Container className="home-content">

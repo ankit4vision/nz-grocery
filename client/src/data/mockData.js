@@ -222,3 +222,79 @@ export const specialsData = [
     link: "/organic"
   }
 ];
+
+// Value Section Categories Data
+export const valueCategoriesData = [
+  {
+    id: 1,
+    title: "Fruit & Veg",
+    description: "Save at least 20%* with The Fruit & Veg T&Cs apply",
+    image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=300&fit=crop&crop=center",
+    badge: "-20%",
+    badgeType: "discount",
+    link: "/fruit-veg"
+  },
+  {
+    id: 2,
+    title: "Poultry, Meat & Seafood",
+    description: "Check out this week's deals",
+    image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop&crop=center",
+    badge: "Special",
+    badgeType: "special",
+    link: "/meat-seafood"
+  },
+  {
+    id: 3,
+    title: "Home Essential",
+    description: "Check out this week's deals",
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center",
+    badge: "-50% Off",
+    badgeType: "discount",
+    link: "/home-essential"
+  },
+  {
+    id: 4,
+    title: "Health & Wellness",
+    description: "Feel your best from inside out",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop&crop=center",
+    badge: "1/2 Price",
+    badgeType: "half-price",
+    link: "/health-wellness"
+  },
+  {
+    id: 5,
+    title: "Dairy & Eggs",
+    description: "Fresh dairy products at unbeatable prices",
+    image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=300&fit=crop&crop=center",
+    badge: "-30%",
+    badgeType: "discount",
+    link: "/dairy-eggs"
+  },
+  {
+    id: 6,
+    title: "Bakery & Bread",
+    description: "Artisan breads and fresh pastries daily",
+    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop&crop=center",
+    badge: "Fresh",
+    badgeType: "special",
+    link: "/bakery"
+  },
+  {
+    id: 7,
+    title: "Pantry Staples",
+    description: "Essential pantry items for your kitchen",
+    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop&crop=center",
+    badge: "-25%",
+    badgeType: "discount",
+    link: "/pantry"
+  },
+  {
+    id: 8,
+    title: "Frozen Foods",
+    description: "Quality frozen meals and ingredients",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&crop=center",
+    badge: "Deal",
+    badgeType: "special",
+    link: "/frozen"
+  }
+];
