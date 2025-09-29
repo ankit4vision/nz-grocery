@@ -1,0 +1,47 @@
+/* Layout Component Styles */
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.layout-navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.layout-main {
+  flex-grow: 1;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.layout-footer {
+  background-color: #212529;
+  color: white;
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-top: auto;
+}
+
+.layout-footer p {
+  margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .layout-navbar .navbar-brand {
+    font-size: 1.2rem;
+  }
+  
+  .layout-main {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}

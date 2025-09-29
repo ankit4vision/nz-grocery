@@ -1,0 +1,266 @@
+/* AppNavbar Styles - Farm Fridge Design */
+
+.app-navbar-container {
+  background-color: var(--white);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+/* Top Row: Logo, Search, Actions */
+.app-navbar__top-row {
+  background-color: var(--white);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.app-navbar__top-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+.app-navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xl);
+  color: var(--primary-color);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-md);
+}
+
+.app-navbar__logo:hover {
+  color: var(--primary-dark);
+  transform: scale(1.02);
+  text-decoration: none;
+}
+
+.app-navbar__logo-icon {
+  font-size: var(--font-size-3xl);
+}
+
+.app-navbar__logo-text {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Search Section */
+.app-navbar__search-section {
+  flex: 1;
+  max-width: 500px;
+  margin: 0 var(--spacing-lg);
+}
+
+.app-navbar__search-form {
+  width: 100%;
+}
+
+.app-navbar__search-input {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.app-navbar__search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.1);
+}
+
+.app-navbar__search-icon {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  border: 1px solid var(--primary-color);
+  border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+/* Actions Section */
+.app-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.app-navbar__cart,
+.app-navbar__profile {
+  color: var(--text-primary) !important;
+  font-size: var(--font-size-lg);
+  padding: var(--spacing-sm) !important;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+}
+
+.app-navbar__cart:hover,
+.app-navbar__profile:hover {
+  background-color: var(--gray-100);
+  color: var(--primary-color) !important;
+}
+
+.app-navbar__join {
+  background-color: var(--primary-color);
+  color: var(--text-white) !important;
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-sm) var(--spacing-lg) !important;
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-normal);
+  font-size: var(--font-size-sm);
+}
+
+.app-navbar__join:hover {
+  background-color: var(--primary-dark);
+  color: var(--text-white) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Bottom Row: Navigation */
+.app-navbar {
+  background-color: var(--white);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.app-navbar__toggle {
+  border: none;
+  padding: var(--spacing-sm);
+  background: none;
+  color: var(--primary-color);
+}
+
+.app-navbar__toggle:focus {
+  box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.25);
+}
+
+.app-navbar__nav {
+  gap: var(--spacing-lg);
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.app-navbar__link {
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.app-navbar__link:hover {
+  background-color: var(--gray-100);
+  color: var(--primary-color) !important;
+}
+
+.app-navbar__link.active {
+  background-color: var(--primary-color);
+  color: var(--text-white) !important;
+}
+
+.app-navbar__dropdown {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Dropdown Styling */
+.app-navbar__dropdown .dropdown-toggle {
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.app-navbar__dropdown .dropdown-toggle:hover {
+  background-color: var(--gray-100);
+  color: var(--primary-color) !important;
+}
+
+.app-navbar__dropdown .dropdown-toggle:focus {
+  background-color: var(--gray-100);
+  color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.1);
+}
+
+.app-navbar__dropdown .dropdown-menu {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.app-navbar__dropdown .dropdown-item {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+}
+
+.app-navbar__dropdown .dropdown-item:hover {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+}
+
+.app-navbar__dropdown .dropdown-item:focus {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  box-shadow: none;
+}
+
+.app-navbar__dropdown .dropdown-divider {
+  border-color: var(--gray-200);
+  margin: var(--spacing-sm) 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-navbar__top-content {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .app-navbar__logo {
+    font-size: var(--font-size-xl);
+  }
+  
+  .app-navbar__search-section {
+    margin: 0;
+    max-width: 100%;
+    order: 2;
+  }
+  
+  .app-navbar__actions {
+    order: 3;
+    justify-content: center;
+  }
+  
+  .app-navbar__nav {
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .app-navbar__link {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+  }
+}

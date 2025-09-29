@@ -1,0 +1,109 @@
+/* Home Page Styles */
+
+.home-hero {
+  text-align: center;
+  background: var(--white);
+  color: var(--text-primary);
+  padding: var(--spacing-4xl) 0;
+  margin-bottom: var(--spacing-3xl);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.home-hero-title {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-lg);
+}
+
+.home-hero-subtitle {
+  font-size: var(--font-size-xl);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-features {
+  margin-bottom: var(--spacing-3xl);
+}
+
+.home-feature-card {
+  height: 100%;
+  text-align: center;
+  border: none;
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+  background-color: var(--white);
+}
+
+.home-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+.home-feature-icon {
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.home-feature-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.home-feature-text {
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+  font-size: var(--font-size-base);
+}
+
+.home-stats {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+}
+
+.home-stat-item {
+  padding: var(--spacing-lg);
+}
+
+.home-stat-number {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+}
+
+.home-stat-label {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  margin-top: var(--spacing-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .home-hero {
+    padding: var(--spacing-2xl) 0;
+  }
+  
+  .home-hero-title {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .home-hero-subtitle {
+    font-size: var(--font-size-lg);
+  }
+  
+  .home-feature-card {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .home-stat-number {
+    font-size: var(--font-size-2xl);
+  }
+}

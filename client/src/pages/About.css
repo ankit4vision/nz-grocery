@@ -1,0 +1,228 @@
+/* About Page Styles */
+
+.about-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.about-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.about-subtitle {
+  font-size: 1.25rem;
+  color: #6c757d;
+}
+
+.about-story {
+  margin-bottom: 3rem;
+}
+
+.about-story-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  padding: 3rem;
+}
+
+.about-story-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.about-story-intro {
+  font-size: 1.25rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #495057;
+}
+
+.about-story-text {
+  line-height: 1.7;
+  color: #495057;
+  margin-bottom: 1.5rem;
+}
+
+.about-values {
+  margin-bottom: 3rem;
+}
+
+.about-value-card {
+  height: 100%;
+  text-align: center;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.about-value-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.about-value-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.about-value-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.about-value-text {
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.about-team {
+  margin-bottom: 3rem;
+}
+
+.about-team-title {
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2rem;
+}
+
+.about-team-card {
+  text-align: center;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.about-team-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.about-team-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.about-team-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.about-team-role {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.about-team-description {
+  font-size: 0.85rem;
+  color: #495057;
+  line-height: 1.5;
+}
+
+.about-contact {
+  margin-bottom: 2rem;
+}
+
+.about-contact-card {
+  height: 100%;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.about-contact-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 15px 15px 0 0;
+  margin: 0;
+}
+
+.about-contact-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.about-contact-item {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.about-contact-item:last-child {
+  border-bottom: none;
+}
+
+.about-contact-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.about-contact-text {
+  margin-bottom: 0;
+  color: #495057;
+}
+
+.about-contact-description {
+  margin-bottom: 2rem;
+  color: #495057;
+  line-height: 1.6;
+}
+
+.about-contact-buttons {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 2rem;
+  }
+  
+  .about-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .about-story-card {
+    padding: 2rem;
+  }
+  
+  .about-story-title {
+    font-size: 1.5rem;
+  }
+  
+  .about-story-intro {
+    font-size: 1.1rem;
+  }
+  
+  .about-value-card,
+  .about-team-card {
+    margin-bottom: 1rem;
+  }
+  
+  .about-team-title {
+    font-size: 1.5rem;
+  }
+  
+  .about-contact-card {
+    margin-bottom: 1rem;
+  }
+}

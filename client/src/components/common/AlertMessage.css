@@ -1,0 +1,104 @@
+/* AlertMessage Styles */
+
+.custom-alert {
+  border: none;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid;
+}
+
+.custom-alert__content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.custom-alert__icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.custom-alert__body {
+  flex: 1;
+}
+
+.custom-alert__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+  line-height: var(--line-height-tight);
+}
+
+.custom-alert__message {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: inherit;
+}
+
+/* Variants */
+.custom-alert--success {
+  background-color: var(--success-light);
+  color: #155724;
+  border-left-color: var(--success-color);
+}
+
+.custom-alert--danger {
+  background-color: var(--danger-light);
+  color: #721c24;
+  border-left-color: var(--danger-color);
+}
+
+.custom-alert--warning {
+  background-color: var(--warning-light);
+  color: #856404;
+  border-left-color: var(--warning-color);
+}
+
+.custom-alert--info {
+  background-color: var(--info-light);
+  color: #0c5460;
+  border-left-color: var(--info-color);
+}
+
+/* Dismissible */
+.custom-alert .btn-close {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.custom-alert .btn-close:hover {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .custom-alert {
+    padding: var(--spacing-md);
+  }
+  
+  .custom-alert__content {
+    gap: var(--spacing-sm);
+  }
+  
+  .custom-alert__icon {
+    font-size: var(--font-size-base);
+  }
+  
+  .custom-alert__title {
+    font-size: var(--font-size-base);
+  }
+  
+  .custom-alert__message {
+    font-size: var(--font-size-sm);
+  }
+}

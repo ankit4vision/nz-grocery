@@ -1,0 +1,200 @@
+/* CustomInput Styles */
+
+.custom-input-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.custom-input__label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.custom-input__required {
+  color: var(--danger-color);
+  margin-left: var(--spacing-xs);
+}
+
+.custom-input {
+  font-family: var(--font-family-primary);
+  border-radius: var(--border-radius-lg);
+  border: 2px solid var(--gray-200);
+  transition: all var(--transition-normal);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.custom-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);
+  outline: none;
+}
+
+.custom-input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Variants */
+.custom-input--default {
+  border-color: var(--gray-200);
+}
+
+.custom-input--default:focus {
+  border-color: var(--primary-color);
+}
+
+.custom-input--success {
+  border-color: var(--success-color);
+}
+
+.custom-input--success:focus {
+  border-color: var(--success-color);
+  box-shadow: 0 0 0 3px rgba(var(--success-color), 0.1);
+}
+
+.custom-input--warning {
+  border-color: var(--warning-color);
+}
+
+.custom-input--warning:focus {
+  border-color: var(--warning-color);
+  box-shadow: 0 0 0 3px rgba(var(--warning-color), 0.1);
+}
+
+.custom-input--error {
+  border-color: var(--danger-color);
+}
+
+.custom-input--error:focus {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 3px rgba(var(--danger-color), 0.1);
+}
+
+/* Sizes */
+.custom-input--sm {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  min-height: 32px;
+}
+
+.custom-input--md {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  min-height: 40px;
+}
+
+.custom-input--lg {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  min-height: 48px;
+}
+
+/* Full Width */
+.custom-input--full-width {
+  width: 100%;
+}
+
+/* Disabled State */
+.custom-input--disabled {
+  background-color: var(--gray-100);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.custom-input--disabled:focus {
+  border-color: var(--gray-200);
+  box-shadow: none;
+}
+
+/* Icon Wrapper */
+.custom-input__wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.custom-input__wrapper .custom-input {
+  flex: 1;
+}
+
+.custom-input__icon {
+  position: absolute;
+  z-index: 2;
+  color: var(--text-muted);
+  font-size: 1.1em;
+  pointer-events: none;
+}
+
+.custom-input__wrapper .custom-input__icon:first-child {
+  left: var(--spacing-md);
+}
+
+.custom-input__wrapper .custom-input__icon:last-child {
+  right: var(--spacing-md);
+}
+
+.custom-input__wrapper .custom-input--sm {
+  padding-left: var(--spacing-xl);
+}
+
+.custom-input__wrapper .custom-input--md {
+  padding-left: var(--spacing-xl);
+}
+
+.custom-input__wrapper .custom-input--lg {
+  padding-left: var(--spacing-xl);
+}
+
+.custom-input__wrapper .custom-input__icon:last-child + .custom-input {
+  padding-right: var(--spacing-xl);
+}
+
+/* Helper Text */
+.custom-input__helper {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.custom-input__error {
+  font-size: var(--font-size-xs);
+  color: var(--danger-color);
+  margin-top: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .custom-input--sm {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    min-height: 28px;
+  }
+  
+  .custom-input--md {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    min-height: 36px;
+  }
+  
+  .custom-input--lg {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    min-height: 44px;
+  }
+  
+  .custom-input__wrapper .custom-input--sm {
+    padding-left: var(--spacing-lg);
+  }
+  
+  .custom-input__wrapper .custom-input--md {
+    padding-left: var(--spacing-lg);
+  }
+  
+  .custom-input__wrapper .custom-input--lg {
+    padding-left: var(--spacing-lg);
+  }
+}
