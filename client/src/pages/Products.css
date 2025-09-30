@@ -14,7 +14,6 @@
 
 .products-categories-section {
   background-color: var(--bg-primary);
-  padding: var(--spacing-3xl) 0;
 }
 
 .products-category-name-section {
@@ -72,7 +71,7 @@
   }
   
   .products-categories-section {
-    padding: var(--spacing-2xl) 0;
+    /* No padding */
   }
   
   .products-category-name-section {
@@ -98,7 +97,7 @@
   }
   
   .products-categories-section {
-    padding: var(--spacing-xl) 0;
+    /* No padding */
   }
   
   .products-category-name-section {
