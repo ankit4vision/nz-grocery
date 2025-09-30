@@ -11,7 +11,7 @@
 }
 
 .hero-slider__slide {
-  min-height: 50vh;
+  height: 500px; /* Fixed height for desktop */
   display: flex;
   align-items: center;
   position: relative;
@@ -100,7 +100,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-slider__slide {
-    min-height: 40vh;
+    height: 400px; /* Fixed height for tablet */
   }
   
   .hero-slider .carousel-control-prev,
@@ -118,7 +118,7 @@
 
 @media (max-width: 576px) {
   .hero-slider__slide {
-    min-height: 35vh;
+    height: 300px; /* Fixed height for mobile */
   }
 }
 
