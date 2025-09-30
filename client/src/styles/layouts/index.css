@@ -141,7 +141,6 @@
 
 .layout-wrapper__main {
   flex: 1;
-  padding-top: 76px; /* Account for fixed navbar */
 }
 
 .layout-wrapper__content {
@@ -224,9 +223,6 @@
     font-size: 1.2rem;
   }
   
-  .layout-wrapper__main {
-    padding-top: 70px;
-  }
   
   .layout-wrapper__content {
     padding: 1rem 0;

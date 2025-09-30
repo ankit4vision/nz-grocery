@@ -51,9 +51,37 @@
 }
 
 /* Card width constraints for price section */
-.product-card {
-  min-width: 280px;
-  max-width: 320px;
+.price-section .product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.price-section .product-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+}
+
+.price-section .product-card__title {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.4;
+  min-height: 2.8em; /* Ensure consistent height for 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.price-section .product-card__pricing {
+  margin-bottom: var(--spacing-md);
+}
+
+.price-section .product-card__button {
+  margin-top: auto;
+  width: 100%;
 }
 
 /* Enhanced cart button styling for price section */
@@ -67,6 +95,8 @@
   overflow: hidden;
   border-radius: var(--border-radius-lg);
   box-shadow: none !important;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
 }
 
 .price-section .product-card__button:hover {
@@ -94,9 +124,8 @@
 
 /* Responsive Design */
 @media (max-width: 992px) {
-  .product-card {
-    min-width: 250px;
-    max-width: 280px;
+  .price-section .product-card {
+    height: 100%;
   }
 }
 
@@ -119,21 +148,42 @@
     font-size: var(--font-size-2xl);
   }
   
-  .product-card {
-    min-width: 220px;
-    max-width: 250px;
+  .price-section .product-card {
+    height: 100%;
+  }
+  
+  .price-section .product-card__body {
+    padding: var(--spacing-md);
+  }
+  
+  .price-section .product-card__title {
+    min-height: 2.4em;
+    font-size: var(--font-size-sm);
   }
   
   .price-section .product-card__button {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     padding: var(--spacing-xs) var(--spacing-sm);
   }
 }
 
 @media (max-width: 576px) {
-  .product-card {
-    min-width: 200px;
-    max-width: 220px;
+  .price-section .product-card {
+    height: 100%;
+  }
+  
+  .price-section .product-card__body {
+    padding: var(--spacing-sm);
+  }
+  
+  .price-section .product-card__title {
+    min-height: 2.2em;
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .price-section .product-card__pricing {
+    margin-bottom: var(--spacing-sm);
   }
   
   .price-section .product-card__button {
