@@ -17,9 +17,12 @@ const ProductCard = ({
   discount: discountPercentage,
   isFavorite: initialIsFavorite,
   onAddToCart,
-  onToggleFavorite
+  onToggleFavorite,
+  variant = 'default', // New prop for different variants
+  showQuantitySelector = false // New prop for quantity selector
 }) => {
   const [favorite, setFavorite] = useState(initialIsFavorite);
+  const [quantity, setQuantity] = useState(1);
 
   const handleToggleFavorite = () => {
     setFavorite(!favorite);
@@ -27,11 +30,71 @@ const ProductCard = ({
   };
 
   const handleAddToCart = () => {
-    onAddToCart?.(id);
+    onAddToCart?.({ id, quantity });
+  };
+
+  const handleQuantityChange = (change) => {
+    const newQuantity = Math.max(1, quantity + change);
+    setQuantity(newQuantity);
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<FontAwesomeIcon key={i} icon={faStar} className="text-warning" />);
+    }
+
+    if (hasHalfStar) {
+      stars.push(<FontAwesomeIcon key="half" icon={faStar} className="text-warning" style={{ clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)' }} />);
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<FontAwesomeIcon key={`empty-${i}`} icon={faStar} className="text-muted" />);
+    }
+
+    return stars;
+  };
+
+  const renderAddToCartButton = () => {
+    if (showQuantitySelector) {
+      return (
+        <div className="product-card__quantity-selector">
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleQuantityChange(-1)}
+            className="product-card__quantity-btn"
+            disabled={quantity <= 1}
+          >
+            -
+          </Button>
+          <span className="product-card__quantity">{quantity}</span>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleQuantityChange(1)}
+            className="product-card__quantity-btn"
+          >
+            +
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <Button variant="success" className="product-card__button" onClick={handleAddToCart}>
+        <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
+        Cart
+      </Button>
+    );
   };
 
   return (
-    <Card className="product-card">
+    <Card className={`product-card product-card--${variant}`}>
       <div className="product-card__image">
         <ImageWithFallback 
           src={image} 
@@ -56,22 +119,27 @@ const ProductCard = ({
 
       <Card.Body className="product-card__body">
         <Card.Title className="product-card__title">
-          {name} {unit && <span className="product-card__unit">({unit})</span>}
+          {name}
         </Card.Title>
+        <p className="product-card__unit">{unit}</p>
+        
         <div className="product-card__rating">
-          {[...Array(5)].map((_, i) => (
-            <FontAwesomeIcon key={i} icon={faStar} className={i < rating ? 'text-warning' : 'text-muted'} />
-          ))}
-          <span className="product-card__reviews">({reviews} reviews)</span>
+          <div className="product-card__stars">
+            {renderStars(rating)}
+          </div>
+          <span className="product-card__reviews">({reviews})</span>
         </div>
+        
         <div className="product-card__pricing">
+          {originalPrice && (
+            <span className="product-card__original-price">${originalPrice}</span>
+          )}
           <span className="product-card__current-price">${currentPrice}</span>
-          {originalPrice && <span className="product-card__original-price">${originalPrice}</span>}
         </div>
-        <Button variant="success" className="product-card__button" onClick={handleAddToCart}>
-          <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
-          Cart
-        </Button>
+        
+        <div className="product-card__actions">
+          {renderAddToCartButton()}
+        </div>
       </Card.Body>
     </Card>
   );

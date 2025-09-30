@@ -429,6 +429,416 @@ export const priceSectionData = [
   }
 ];
 
+// Product Categories Data for Products Page
+export const productCategoriesData = [
+  {
+    id: 'all-vegetable',
+    name: 'All Vegetable',
+    image: '🥬',
+    count: 45,
+    subcategories: ['Leafy Greens', 'Root Vegetables', 'Cruciferous', 'Nightshades']
+  },
+  {
+    id: 'grapes',
+    name: 'Grapes',
+    image: '🍇',
+    count: 8,
+    subcategories: ['Red Grapes', 'Green Grapes', 'Black Grapes']
+  },
+  {
+    id: 'onion-potato',
+    name: 'Onion & Potato',
+    image: '🧅',
+    count: 12,
+    subcategories: ['Onions', 'Potatoes', 'Garlic', 'Shallots']
+  },
+  {
+    id: 'watermelons',
+    name: 'Watermelons',
+    image: '🍉',
+    count: 5,
+    subcategories: ['Seedless', 'Mini', 'Traditional']
+  },
+  {
+    id: 'asian-exotic',
+    name: 'Asian & Exotic Fruit',
+    image: '🥥',
+    count: 15,
+    subcategories: ['Dragon Fruit', 'Mango', 'Lychee', 'Rambutan']
+  },
+  {
+    id: 'avocados',
+    name: 'Avocados',
+    image: '🥑',
+    count: 6,
+    subcategories: ['Hass', 'Fuerte', 'Reed']
+  },
+  {
+    id: 'citrus-fruit',
+    name: 'Citrus Fruit',
+    image: '🍊',
+    count: 10,
+    subcategories: ['Oranges', 'Lemons', 'Limes', 'Grapefruit']
+  },
+  {
+    id: 'berries',
+    name: 'Berries',
+    image: '🫐',
+    count: 8,
+    subcategories: ['Strawberries', 'Blueberries', 'Raspberries', 'Blackberries']
+  },
+  {
+    id: 'stone-fruit',
+    name: 'Stone Fruit',
+    image: '🍑',
+    count: 7,
+    subcategories: ['Peaches', 'Plums', 'Apricots', 'Cherries']
+  },
+  {
+    id: 'tropical',
+    name: 'Tropical Fruit',
+    image: '🍍',
+    count: 9,
+    subcategories: ['Pineapple', 'Bananas', 'Coconut', 'Papaya']
+  }
+];
+
+// Comprehensive Products Data for Products Page
+export const productsListingData = [
+  {
+    id: 1,
+    name: 'Fresh Organic Apples',
+    unit: 'kg',
+    currentPrice: '2.49',
+    originalPrice: '3.40',
+    image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300&h=300&fit=crop&crop=center',
+    rating: 4.8,
+    reviews: 124,
+    discount: 27,
+    isFavorite: false,
+    category: 'citrus-fruit',
+    subcategory: 'Apples',
+    brand: 'Organic Valley',
+    inStock: true,
+    stockCount: 45,
+    allergens: ['None'],
+    dietary: ['Organic', 'Vegan'],
+    healthRating: 5,
+    soldBy: 'Farm Fresh',
+    description: 'Crisp and sweet organic apples, perfect for snacking or baking.'
+  },
+  {
+    id: 2,
+    name: 'Strawberries',
+    unit: 'pack',
+    currentPrice: '3.49',
+    originalPrice: '4.00',
+    image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=300&h=300&fit=crop&crop=center',
+    rating: 4.6,
+    reviews: 89,
+    discount: 13,
+    isFavorite: true,
+    category: 'berries',
+    subcategory: 'Strawberries',
+    brand: 'Berry Fresh',
+    inStock: true,
+    stockCount: 32,
+    allergens: ['None'],
+    dietary: ['Vegan'],
+    healthRating: 5,
+    soldBy: 'Local Farms',
+    description: 'Sweet and juicy strawberries, perfect for desserts and smoothies.'
+  },
+  {
+    id: 3,
+    name: 'Grapes',
+    unit: 'kg',
+    currentPrice: '4.49',
+    originalPrice: '5.50',
+    image: 'https://images.unsplash.com/photo-1537640538966-79f369143b8f?w=300&h=300&fit=crop&crop=center',
+    rating: 4.7,
+    reviews: 156,
+    discount: 19,
+    isFavorite: false,
+    category: 'grapes',
+    subcategory: 'Red Grapes',
+    brand: 'Vineyard Select',
+    inStock: true,
+    stockCount: 28,
+    allergens: ['None'],
+    dietary: ['Vegan'],
+    healthRating: 4,
+    soldBy: 'Premium Grapes Co',
+    description: 'Sweet and seedless red grapes, great for snacking.'
+  },
+  {
+    id: 4,
+    name: 'Organic Tomatoes',
+    unit: 'kg',
+    currentPrice: '1.79',
+    originalPrice: '2.20',
+    image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300&h=300&fit=crop&crop=center',
+    rating: 4.5,
+    reviews: 203,
+    discount: 19,
+    isFavorite: false,
+    category: 'all-vegetable',
+    subcategory: 'Nightshades',
+    brand: 'Garden Fresh',
+    inStock: true,
+    stockCount: 67,
+    allergens: ['None'],
+    dietary: ['Organic', 'Vegan'],
+    healthRating: 5,
+    soldBy: 'Organic Farms',
+    description: 'Fresh organic tomatoes, perfect for salads and cooking.'
+  },
+  {
+    id: 5,
+    name: 'Free Range Eggs',
+    unit: 'dozen',
+    currentPrice: '5.49',
+    originalPrice: '6.80',
+    image: 'https://images.unsplash.com/photo-1518569656558-1f25e69d93d5?w=300&h=300&fit=crop&crop=center',
+    rating: 4.9,
+    reviews: 312,
+    discount: 19,
+    isFavorite: true,
+    category: 'dairy',
+    subcategory: 'Eggs',
+    brand: 'Farm Fresh Eggs',
+    inStock: true,
+    stockCount: 24,
+    allergens: ['Eggs'],
+    dietary: ['Free Range'],
+    healthRating: 4,
+    soldBy: 'Local Farms',
+    description: 'Fresh free-range eggs from happy hens.'
+  },
+  {
+    id: 6,
+    name: 'Fresh Bananas',
+    unit: 'kg',
+    currentPrice: '1.29',
+    originalPrice: '1.60',
+    image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop&crop=center',
+    rating: 4.4,
+    reviews: 178,
+    discount: 19,
+    isFavorite: false,
+    category: 'tropical',
+    subcategory: 'Bananas',
+    brand: 'Tropical Fresh',
+    inStock: true,
+    stockCount: 89,
+    allergens: ['None'],
+    dietary: ['Vegan'],
+    healthRating: 4,
+    soldBy: 'Banana Co',
+    description: 'Sweet and ripe bananas, perfect for breakfast.'
+  },
+  {
+    id: 7,
+    name: 'Greek Yogurt',
+    unit: 'pack',
+    currentPrice: '3.99',
+    originalPrice: '4.90',
+    image: 'https://images.unsplash.com/photo-1571212056062-08f0d6dac43a?w=300&h=300&fit=crop&crop=center',
+    rating: 4.6,
+    reviews: 145,
+    discount: 19,
+    isFavorite: false,
+    category: 'dairy',
+    subcategory: 'Yogurt',
+    brand: 'Greek Gods',
+    inStock: true,
+    stockCount: 36,
+    allergens: ['Milk'],
+    dietary: ['High Protein'],
+    healthRating: 4,
+    soldBy: 'Dairy Fresh',
+    description: 'Creamy Greek yogurt with live cultures.'
+  },
+  {
+    id: 8,
+    name: 'Organic Carrots',
+    unit: 'kg',
+    currentPrice: '1.99',
+    originalPrice: '2.20',
+    image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=300&h=300&fit=crop&crop=center',
+    rating: 4.7,
+    reviews: 198,
+    discount: 19,
+    isFavorite: true,
+    category: 'all-vegetable',
+    subcategory: 'Root Vegetables',
+    brand: 'Garden Fresh',
+    inStock: true,
+    stockCount: 54,
+    allergens: ['None'],
+    dietary: ['Organic', 'Vegan'],
+    healthRating: 5,
+    soldBy: 'Organic Farms',
+    description: 'Fresh organic carrots, great for snacking and cooking.'
+  },
+  {
+    id: 9,
+    name: 'Fresh Cheese',
+    unit: 'kg',
+    currentPrice: '6.49',
+    originalPrice: '8.00',
+    image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=300&h=300&fit=crop&crop=center',
+    rating: 4.8,
+    reviews: 87,
+    discount: 19,
+    isFavorite: false,
+    category: 'dairy',
+    subcategory: 'Cheese',
+    brand: 'Artisan Cheese Co',
+    inStock: true,
+    stockCount: 19,
+    allergens: ['Milk'],
+    dietary: ['Artisan'],
+    healthRating: 3,
+    soldBy: 'Cheese Masters',
+    description: 'Aged artisan cheese with rich flavor.'
+  },
+  {
+    id: 10,
+    name: 'Organic Spinach',
+    unit: 'pack',
+    currentPrice: '2.99',
+    originalPrice: '3.70',
+    image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&h=300&fit=crop&crop=center',
+    rating: 4.5,
+    reviews: 134,
+    discount: 19,
+    isFavorite: false,
+    category: 'all-vegetable',
+    subcategory: 'Leafy Greens',
+    brand: 'Garden Fresh',
+    inStock: true,
+    stockCount: 41,
+    allergens: ['None'],
+    dietary: ['Organic', 'Vegan'],
+    healthRating: 5,
+    soldBy: 'Organic Farms',
+    description: 'Fresh organic spinach, perfect for salads and smoothies.'
+  },
+  {
+    id: 11,
+    name: 'Fresh Butter',
+    unit: 'pack',
+    currentPrice: '4.49',
+    originalPrice: '5.50',
+    image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=300&h=300&fit=crop&crop=center',
+    rating: 4.7,
+    reviews: 92,
+    discount: 19,
+    isFavorite: false,
+    category: 'dairy',
+    subcategory: 'Butter',
+    brand: 'Farm Fresh',
+    inStock: true,
+    stockCount: 27,
+    allergens: ['Milk'],
+    dietary: ['Natural'],
+    healthRating: 3,
+    soldBy: 'Dairy Fresh',
+    description: 'Rich and creamy farm-fresh butter.'
+  },
+  {
+    id: 12,
+    name: 'Organic Onions',
+    unit: 'kg',
+    currentPrice: '1.49',
+    originalPrice: '1.70',
+    image: 'https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?w=300&h=300&fit=crop&crop=center',
+    rating: 4.6,
+    reviews: 167,
+    discount: 19,
+    isFavorite: false,
+    category: 'onion-potato',
+    subcategory: 'Onions',
+    brand: 'Garden Fresh',
+    inStock: true,
+    stockCount: 73,
+    allergens: ['None'],
+    dietary: ['Organic', 'Vegan'],
+    healthRating: 4,
+    soldBy: 'Organic Farms',
+    description: 'Fresh organic onions, essential for cooking.'
+  }
+];
+
+// Filter Options Data
+export const filterOptionsData = {
+  sortBy: [
+    { value: 'relevance', label: 'Sort by Relevance' },
+    { value: 'price-low', label: 'Price: Low to High' },
+    { value: 'price-high', label: 'Price: High to Low' },
+    { value: 'rating', label: 'Customer Rating' },
+    { value: 'newest', label: 'Newest First' },
+    { value: 'name', label: 'Name A-Z' }
+  ],
+  soldBy: [
+    { value: 'all', label: 'All Sellers' },
+    { value: 'farm-fresh', label: 'Farm Fresh' },
+    { value: 'organic-farms', label: 'Organic Farms' },
+    { value: 'local-farms', label: 'Local Farms' },
+    { value: 'premium-grapes-co', label: 'Premium Grapes Co' },
+    { value: 'dairy-fresh', label: 'Dairy Fresh' }
+  ],
+  brand: [
+    { value: 'all', label: 'All Brands' },
+    { value: 'organic-valley', label: 'Organic Valley' },
+    { value: 'berry-fresh', label: 'Berry Fresh' },
+    { value: 'vineyard-select', label: 'Vineyard Select' },
+    { value: 'garden-fresh', label: 'Garden Fresh' },
+    { value: 'farm-fresh-eggs', label: 'Farm Fresh Eggs' }
+  ],
+  allergens: [
+    { value: 'none', label: 'No Allergens' },
+    { value: 'eggs', label: 'Eggs' },
+    { value: 'milk', label: 'Milk' },
+    { value: 'nuts', label: 'Nuts' },
+    { value: 'soy', label: 'Soy' },
+    { value: 'gluten', label: 'Gluten' }
+  ],
+  dietary: [
+    { value: 'organic', label: 'Organic' },
+    { value: 'vegan', label: 'Vegan' },
+    { value: 'vegetarian', label: 'Vegetarian' },
+    { value: 'gluten-free', label: 'Gluten Free' },
+    { value: 'dairy-free', label: 'Dairy Free' },
+    { value: 'high-protein', label: 'High Protein' }
+  ],
+  healthRating: [
+    { value: 'all', label: 'All Ratings' },
+    { value: '5', label: '5 Stars' },
+    { value: '4', label: '4+ Stars' },
+    { value: '3', label: '3+ Stars' }
+  ]
+};
+
+// Breadcrumb Data
+export const breadcrumbData = {
+  'fruit-veg': [
+    { label: 'Home', path: '/' },
+    { label: 'Fruit & Veg', path: '/products/fruit-veg' }
+  ],
+  'fruit': [
+    { label: 'Home', path: '/' },
+    { label: 'Fruit & Veg', path: '/products/fruit-veg' },
+    { label: 'Fruit', path: '/products/fruit-veg/fruit' }
+  ],
+  'vegetables': [
+    { label: 'Home', path: '/' },
+    { label: 'Fruit & Veg', path: '/products/fruit-veg' },
+    { label: 'Vegetables', path: '/products/fruit-veg/vegetables' }
+  ]
+};
+
 // Featured Products Data
 export const featuredProductsData = [
   {

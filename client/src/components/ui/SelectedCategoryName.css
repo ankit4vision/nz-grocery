@@ -1,0 +1,55 @@
+/* Selected Category Name Component Styles */
+
+.selected-category-name {
+  background-color: var(--bg-secondary);
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.selected-category-content {
+  text-align: center;
+}
+
+.selected-category-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  line-height: var(--line-height-tight);
+}
+
+.selected-category-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  font-weight: var(--font-weight-normal);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .selected-category-name {
+    padding: var(--spacing-md) 0;
+  }
+  
+  .selected-category-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .selected-category-subtitle {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 576px) {
+  .selected-category-name {
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .selected-category-title {
+    font-size: var(--font-size-xl);
+  }
+  
+  .selected-category-subtitle {
+    font-size: var(--font-size-sm);
+  }
+}
