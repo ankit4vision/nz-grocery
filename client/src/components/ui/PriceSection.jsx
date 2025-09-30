@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import { CustomButton } from '../common';
+import { CustomButton, NavigationButtons } from '../common';
 import './PriceSection.css';
 
 const PriceSection = ({ 
@@ -46,24 +46,12 @@ const PriceSection = ({
             >
               View all
             </button>
-            <div className="price-section__navigation">
-              <button 
-                className={`price-section__nav-btn price-section__nav-btn--prev ${currentIndex === 0 ? 'price-section__nav-btn--disabled' : ''}`}
-                onClick={handlePrevClick}
-                disabled={currentIndex === 0}
-                aria-label="Previous"
-              >
-                <span>‹</span>
-              </button>
-              <button 
-                className={`price-section__nav-btn price-section__nav-btn--next ${currentIndex >= maxIndex ? 'price-section__nav-btn--disabled' : ''}`}
-                onClick={handleNextClick}
-                disabled={currentIndex >= maxIndex}
-                aria-label="Next"
-              >
-                <span>›</span>
-              </button>
-            </div>
+            <NavigationButtons
+              onPrev={handlePrevClick}
+              onNext={handleNextClick}
+              isPrevDisabled={currentIndex === 0}
+              isNextDisabled={currentIndex >= maxIndex}
+            />
           </div>
         </div>
         

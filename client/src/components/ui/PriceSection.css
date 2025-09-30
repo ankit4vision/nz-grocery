@@ -46,51 +46,6 @@
   text-decoration: underline;
 }
 
-.price-section__navigation {
-  display: flex;
-  gap: var(--spacing-xs);
-}
-
-.price-section__nav-btn {
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--gray-300);
-  background-color: var(--white);
-  border-radius: var(--border-radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--text-secondary);
-}
-
-.price-section__nav-btn:hover {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: var(--white);
-}
-
-.price-section__nav-btn--disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background-color: var(--gray-200);
-  border-color: var(--gray-300);
-  color: var(--gray-400);
-}
-
-.price-section__nav-btn--disabled:hover {
-  background-color: var(--gray-200);
-  border-color: var(--gray-300);
-  color: var(--gray-400);
-}
-
-.price-section__nav-btn span {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-}
-
 .price-section__content {
   justify-content: flex-start;
 }

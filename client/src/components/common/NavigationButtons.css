@@ -1,0 +1,58 @@
+/* Navigation Buttons - Global Component */
+
+.navigation-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.navigation-buttons__btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #dee2e6;
+  background-color: var(--white);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: #6c757d;
+  padding: 0;
+}
+
+.navigation-buttons__btn:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+  color: #495057;
+}
+
+.navigation-buttons__btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+  color: #adb5bd;
+}
+
+.navigation-buttons__btn--disabled:hover {
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+  color: #adb5bd;
+}
+
+.navigation-buttons__icon {
+  font-size: 12px;
+  color: inherit;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navigation-buttons__btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .navigation-buttons__icon {
+    font-size: 10px;
+  }
+}

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
+import logoImage from '../../assets/logo/logo-transprant.png';
 import './AppNavbar.css';
 
 const AppNavbar = ({ 
@@ -24,23 +26,30 @@ const AppNavbar = ({
             {/* Logo */}
             <LinkContainer to="/">
               <div className="app-navbar__logo">
-                <span className="app-navbar__logo-icon">🛒</span>
-                <span className="app-navbar__logo-text">{brand}</span>
+                <img 
+                  src={logoImage} 
+                  alt="Farm Fridge Logo" 
+                  className="app-navbar__logo-image"
+                />
               </div>
             </LinkContainer>
             
             {/* Search */}
             <div className="app-navbar__search-section">
               <Form className="app-navbar__search-form">
-                <InputGroup>
+                <InputGroup className="app-navbar__search-group">
                   <Form.Control 
                     type="text" 
-                    placeholder="Search for products..." 
+                    placeholder="Search products..." 
                     className="app-navbar__search-input"
                   />
-                  <InputGroup.Text className="app-navbar__search-icon">
-                    🔍
-                  </InputGroup.Text>
+                  <Button 
+                    variant="outline-secondary" 
+                    className="app-navbar__search-btn"
+                    type="submit"
+                  >
+                    <FaSearch className="app-navbar__search-icon" />
+                  </Button>
                 </InputGroup>
               </Form>
             </div>
@@ -48,10 +57,10 @@ const AppNavbar = ({
             {/* Actions */}
             <div className="app-navbar__actions">
               <Nav.Link className="app-navbar__cart">
-                <span className="app-navbar__cart-icon">🛍️</span>
+                <FaShoppingCart className="app-navbar__cart-icon" />
               </Nav.Link>
               <Nav.Link className="app-navbar__profile">
-                <span className="app-navbar__profile-icon">👤</span>
+                <FaUser className="app-navbar__profile-icon" />
               </Nav.Link>
               <Nav.Link className="app-navbar__join">
                 Join

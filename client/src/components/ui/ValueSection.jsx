@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { CustomButton } from '../common';
+import { CustomButton, NavigationButtons } from '../common';
 import './ValueSection.css';
 
 const ValueSection = ({ 
@@ -9,13 +9,25 @@ const ValueSection = ({
   className = '',
   onViewAllClick
 }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
   const sectionClasses = [
     'value-section',
     className
   ].filter(Boolean).join(' ');
 
-  // Show only first 4 categories
-  const displayCategories = categories.slice(0, 4);
+  const categoriesPerView = 4;
+  const maxIndex = Math.max(0, categories.length - categoriesPerView);
+
+  const handlePrevClick = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNextClick = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
+  const visibleCategories = categories.slice(currentIndex, currentIndex + categoriesPerView);
 
   return (
     <section className={sectionClasses}>
@@ -31,11 +43,17 @@ const ValueSection = ({
             >
               View all
             </button>
+            <NavigationButtons
+              onPrev={handlePrevClick}
+              onNext={handleNextClick}
+              isPrevDisabled={currentIndex === 0}
+              isNextDisabled={currentIndex >= maxIndex}
+            />
           </div>
         </div>
         
         <Row className="value-section__content">
-          {displayCategories.map((category) => (
+          {visibleCategories.map((category) => (
             <Col lg={3} md={6} key={category.id} className="mb-4">
               <Card className="product-card">
                 <div className="product-card__image">

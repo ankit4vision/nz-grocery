@@ -19,6 +19,7 @@
 .value-section__header-right {
   display: flex;
   align-items: center;
+  gap: var(--spacing-md);
 }
 
 .value-section__title {

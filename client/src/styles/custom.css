@@ -259,7 +259,7 @@
 .section-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
-  margin: var(--spacing-3xl) 0;
+  margin: var(--spacing-md) 0;
 }
 
 /* Responsive adjustments */
