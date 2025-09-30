@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container } from 'react-bootstrap';
-import { 
-  Breadcrumb, 
+import { Container, Row, Col } from 'react-bootstrap';
+import {
+  Breadcrumb,
   AllCategories,
-  SelectedCategoryName,
-  ProductFilters, 
-  ProductGrid, 
-  Pagination 
+  ProductFilters,
+  ProductGrid,
+  Pagination
 } from '../components';
 import { 
   productCategoriesData, 
@@ -218,14 +217,21 @@ const Products = () => {
         />
       </section>
 
-      {/* 3rd Row: Selected Category Name */}
-      <section className="products-category-name-section">
-        <SelectedCategoryName
-          categoryName={selectedCategoryData.name}
-          productCount={selectedCategoryData.count}
-          className="products-selected-category"
-        />
-      </section>
+      {/* Divider */}
+      <div className="section-divider"></div>
+
+           {/* 3rd Row: Selected Category Name */}
+           <section className="products-category-name-section">
+             <Container>
+               <Row>
+                 <Col>
+                   <div className="selected-category-content">
+                     <h2 className="selected-category-title">{selectedCategoryData.name}</h2>
+                   </div>
+                 </Col>
+               </Row>
+             </Container>
+           </section>
 
       {/* 4th Row: Filters */}
       <section className="products-filters-section">
