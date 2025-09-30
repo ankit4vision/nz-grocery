@@ -32,12 +32,6 @@
   line-height: var(--line-height-tight);
 }
 
-.products-filters-section {
-  background-color: var(--bg-primary);
-  padding: var(--spacing-lg) 0;
-  border-bottom: 1px solid var(--gray-200);
-}
-
 .products-grid-section {
   background-color: var(--bg-primary);
   padding: var(--spacing-3xl) 0;
@@ -60,10 +54,6 @@
 
 .products-selected-category {
   /* Inherits from SelectedCategoryName component */
-}
-
-.products-filters {
-  /* Inherits from ProductFilters component */
 }
 
 .products-grid {
@@ -92,10 +82,6 @@
     font-size: var(--font-size-lg);
   }
   
-  .products-filters-section {
-    padding: var(--spacing-md) 0;
-  }
-  
   .products-grid-section {
     padding: var(--spacing-2xl) 0;
   }
@@ -120,10 +106,6 @@
   
   .selected-category-title {
     font-size: var(--font-size-base);
-  }
-  
-  .products-filters-section {
-    padding: var(--spacing-sm) 0;
   }
   
   .products-grid-section {

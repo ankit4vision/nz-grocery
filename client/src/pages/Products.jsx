@@ -1,39 +1,37 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import { useSearchParams } from 'react-router-dom';
 import {
   Breadcrumb,
   AllCategories,
-  ProductFilters,
   ProductGrid,
   Pagination
 } from '../components';
-import { 
-  productCategoriesData, 
-  productsListingData, 
-  filterOptionsData, 
-  breadcrumbData 
+import {
+  categoriesData,
+  productsListingData
 } from '../data/mockData';
 import './Products.css';
 
 const Products = () => {
+  const [searchParams] = useSearchParams();
   // State management
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({
-    sortBy: 'relevance',
-    bestUnitPrice: false,
-    inStock: false,
-    specials: false,
-    soldBy: 'all',
-    brand: 'all',
-    allergens: 'none',
-    dietary: 'all',
-    healthRating: 'all'
-  });
   const [favorites, setFavorites] = useState(new Set());
 
   // Products per page
   const productsPerPage = 20;
+
+  // Initialize selected category from URL parameter
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl && categoriesData.find(cat => cat.id === categoryFromUrl)) {
+      setSelectedCategory(categoryFromUrl);
+    } else {
+      setSelectedCategory('all');
+    }
+  }, [searchParams]);
 
   // Get selected category name and product count
   const selectedCategoryData = useMemo(() => {
@@ -44,7 +42,7 @@ const Products = () => {
       };
     }
     
-    const category = productCategoriesData.find(cat => cat.id === selectedCategory);
+    const category = categoriesData.find(cat => cat.id === selectedCategory);
     if (category) {
       const categoryProducts = productsListingData.filter(product => product.category === selectedCategory);
       return {
@@ -66,65 +64,11 @@ const Products = () => {
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
       }
-
-      // Stock filter
-      if (filters.inStock && !product.inStock) {
-        return false;
-      }
-
-      // Specials filter
-      if (filters.specials && product.discount <= 0) {
-        return false;
-      }
-
-      // Sold by filter
-      if (filters.soldBy !== 'all' && product.soldBy !== filters.soldBy) {
-        return false;
-      }
-
-      // Brand filter
-      if (filters.brand !== 'all' && product.brand !== filters.brand) {
-        return false;
-      }
-
-      // Allergens filter
-      if (filters.allergens !== 'none' && !product.allergens.includes(filters.allergens)) {
-        return false;
-      }
-
-      // Dietary filter
-      if (filters.dietary !== 'all' && !product.dietary.includes(filters.dietary)) {
-        return false;
-      }
-
-      // Health rating filter
-      if (filters.healthRating !== 'all' && product.healthRating < parseInt(filters.healthRating)) {
-        return false;
-      }
-
       return true;
     });
 
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (filters.sortBy) {
-        case 'price-low':
-          return parseFloat(a.currentPrice) - parseFloat(b.currentPrice);
-        case 'price-high':
-          return parseFloat(b.currentPrice) - parseFloat(a.currentPrice);
-        case 'rating':
-          return b.rating - a.rating;
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'newest':
-          return b.id - a.id;
-        default: // relevance
-          return 0;
-      }
-    });
-
     return filtered;
-  }, [selectedCategory, filters]);
+  }, [selectedCategory]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
@@ -141,29 +85,25 @@ const Products = () => {
       ];
     }
     
-    return breadcrumbData[selectedCategory] || [
+    const category = categoriesData.find(cat => cat.id === selectedCategory);
+    if (category) {
+      return [
+        { label: 'Home', path: '/' },
+        { label: 'Products', path: '/products' },
+        { label: category.name, path: `/products/${selectedCategory}` }
+      ];
+    }
+    
+    return [
       { label: 'Home', path: '/' },
-      { label: 'Products', path: '/products' },
-      { label: selectedCategoryData.name, path: `/products/${selectedCategory}` }
+      { label: 'Products', path: '/products' }
     ];
-  }, [selectedCategory, selectedCategoryData.name]);
+  }, [selectedCategory]);
 
   // Handle category selection
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
     setCurrentPage(1); // Reset to first page when category changes
-  };
-
-  // Handle filter changes
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-    setCurrentPage(1); // Reset to first page when filters change
-  };
-
-  // Handle sort changes
-  const handleSortChange = (sortValue) => {
-    setFilters(prev => ({ ...prev, sortBy: sortValue }));
-    setCurrentPage(1); // Reset to first page when sort changes
   };
 
   // Handle page changes
@@ -202,7 +142,7 @@ const Products = () => {
     <div className="products-page">
       {/* 1st Row: Breadcrumb */}
       <section className="products-breadcrumb-section">
-        <Container>
+    <Container>
           <Breadcrumb items={breadcrumbItems} className="products-breadcrumb" />
         </Container>
       </section>
@@ -210,7 +150,7 @@ const Products = () => {
       {/* 2nd Row: All Categories */}
       <section className="products-categories-section">
         <AllCategories
-          categories={productCategoriesData}
+          categories={categoriesData}
           selectedCategory={selectedCategory}
           onCategorySelect={handleCategorySelect}
           className="products-all-categories"
@@ -223,28 +163,17 @@ const Products = () => {
            {/* 3rd Row: Selected Category Name */}
            <section className="products-category-name-section">
              <Container>
-               <Row>
+            <Row>
                  <Col>
                    <div className="selected-category-content">
                      <h2 className="selected-category-title">{selectedCategoryData.name}</h2>
-                   </div>
-                 </Col>
-               </Row>
+                </div>
+              </Col>
+            </Row>
              </Container>
            </section>
 
-      {/* 4th Row: Filters */}
-      <section className="products-filters-section">
-        <ProductFilters
-          filterOptions={filterOptionsData}
-          currentFilters={filters}
-          onFilterChange={handleFilterChange}
-          onSortChange={handleSortChange}
-          className="products-filters"
-        />
-      </section>
-
-      {/* 5th Row: Product Grid */}
+      {/* 4th Row: Product Grid */}
       <section className="products-grid-section">
         <ProductGrid
           products={productsWithFavorites}
@@ -254,7 +183,7 @@ const Products = () => {
         />
       </section>
 
-      {/* 6th Row: Pagination */}
+      {/* 5th Row: Pagination */}
       <section className="products-pagination-section">
         <Pagination
           currentPage={currentPage}

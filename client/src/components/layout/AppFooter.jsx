@@ -6,8 +6,9 @@ import './AppFooter.css';
 const AppFooter = ({ 
   companyName = 'Farm 2 Fridge',
   year = new Date().getFullYear(),
-  className = '',
-  ...props 
+  links = [],
+  socialLinks = [],
+  className = ''
 }) => {
   const [email, setEmail] = useState('');
   
@@ -23,7 +24,7 @@ const AppFooter = ({
   };
 
   return (
-    <footer className={footerClasses} {...props}>
+    <footer className={footerClasses}>
       <Container>
         <Row className="app-footer__content">
           {/* Logo and Social Media Section */}
@@ -40,12 +41,15 @@ const AppFooter = ({
             </div>
             
             <div className="app-footer__social-links">
-              <a href="#" className="app-footer__social-link">
-                🐦
-              </a>
-              <a href="#" className="app-footer__social-link">
-                📌
-              </a>
+              {socialLinks.map((link, index) => (
+                <a 
+                  key={index}
+                  href={link.href} 
+                  className="app-footer__social-link"
+                >
+                  {link.icon}
+                </a>
+              ))}
             </div>
           </Col>
 
@@ -53,10 +57,16 @@ const AppFooter = ({
           <Col lg={2} md={6} className="app-footer__section">
             <h6 className="app-footer__section-title">Quick Links</h6>
             <ul className="app-footer__link-list">
-              <li><a href="/" className="app-footer__link">Home</a></li>
-              <li><a href="/products" className="app-footer__link">Products</a></li>
-              <li><a href="/offers" className="app-footer__link">Offers</a></li>
-              <li><a href="/contact" className="app-footer__link">Contact</a></li>
+              {links.map((linkGroup, groupIndex) => (
+                linkGroup.title === 'Quick Links' && 
+                linkGroup.items.map((item, itemIndex) => (
+                  <li key={`${groupIndex}-${itemIndex}`}>
+                    <a href={item.href} className="app-footer__link">
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              ))}
             </ul>
           </Col>
 
@@ -64,10 +74,16 @@ const AppFooter = ({
           <Col lg={2} md={6} className="app-footer__section">
             <h6 className="app-footer__section-title">Customer Service</h6>
             <ul className="app-footer__link-list">
-              <li><a href="/help" className="app-footer__link">Help Center</a></li>
-              <li><a href="/terms" className="app-footer__link">Terms & Conditions</a></li>
-              <li><a href="/privacy" className="app-footer__link">Privacy Policy</a></li>
-              <li><a href="/refund" className="app-footer__link">Refund Policy</a></li>
+              {links.map((linkGroup, groupIndex) => (
+                linkGroup.title === 'Support' && 
+                linkGroup.items.map((item, itemIndex) => (
+                  <li key={`${groupIndex}-${itemIndex}`}>
+                    <a href={item.href} className="app-footer__link">
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              ))}
             </ul>
           </Col>
 

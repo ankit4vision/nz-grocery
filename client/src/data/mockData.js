@@ -112,32 +112,92 @@ export const productsData = [
 // Categories Data Mock
 export const categoriesData = [
   {
-    id: "fruits",
-    name: "Fresh Fruits",
-    icon: "🍎",
-    description: "Seasonal fruits from local farms",
-    image: "🥭🍓🍊"
+    id: 'fruit-veg',
+    name: 'Fruit & Veg',
+    icon: '🥬',
+    description: 'Fresh fruits and vegetables',
+    image: '🥬🍎🥕',
+    count: 45
   },
   {
-    id: "vegetables",
-    name: "Fresh Vegetables",
-    icon: "🥕",
-    description: "Organic vegetables daily delivered",
-    image: "🥬🥒🍅"
+    id: 'poultry-meat',
+    name: 'Poultry, Meat & Seafood',
+    icon: '🥩',
+    description: 'Fresh meat and seafood',
+    image: '🐟🍖🦐',
+    count: 28
   },
   {
-    id: "dairy",
-    name: "Dairy Products",
-    icon: "🥛",
-    description: "Farm-fresh dairy products",
-    image: "🧀🥚🍦"
+    id: 'religious',
+    name: 'Religious Items',
+    icon: '🕉️',
+    description: 'Prayer and religious items',
+    image: '🕉️📿🕯️',
+    count: 15
   },
   {
-    id: "bakery",
-    name: "Bakery",
-    icon: "🍞",
-    description: "Artisan breads and pastries",
-    image: "🥐🧁🍰"
+    id: 'indian-sweets',
+    name: 'Indian Sweets',
+    icon: '🍯',
+    description: 'Traditional Indian sweets',
+    image: '🍯🍪🍰',
+    count: 22
+  },
+  {
+    id: 'dairy',
+    name: 'Dairy, Eggs & Fridge',
+    icon: '🥛',
+    description: 'Dairy products and eggs',
+    image: '🧀🥚🍦',
+    count: 35
+  },
+  {
+    id: 'philippine',
+    name: 'Philippine Groceries',
+    icon: '🍜',
+    description: 'Filipino food products',
+    image: '🍜🌶️🥫',
+    count: 18
+  },
+  {
+    id: 'south-indian',
+    name: 'South Indian Groceries',
+    icon: '🍚',
+    description: 'South Indian food items',
+    image: '🍚🌶️🥥',
+    count: 25
+  },
+  {
+    id: 'sri-lankan',
+    name: 'Sri Lankan Groceries',
+    icon: '🍵',
+    description: 'Sri Lankan food products',
+    image: '🍵🌶️🥥',
+    count: 20
+  },
+  {
+    id: 'snacks',
+    name: 'Snacks & Beverages',
+    icon: '🥤',
+    description: 'Chips, drinks and snacks',
+    image: '🥜🍪🍫',
+    count: 32
+  },
+  {
+    id: 'pantry',
+    name: 'Pantry & Staples',
+    icon: '🫒',
+    description: 'Rice, grains and cooking essentials',
+    image: '🍚🫒🌾',
+    count: 40
+  },
+  {
+    id: 'dietary',
+    name: 'Dietary Preferences',
+    icon: '🥗',
+    description: 'Special dietary products',
+    image: '🥗🌱🥜',
+    count: 16
   }
 ];
 
@@ -429,79 +489,6 @@ export const priceSectionData = [
   }
 ];
 
-// Product Categories Data for Products Page
-export const productCategoriesData = [
-  {
-    id: 'all-vegetable',
-    name: 'All Vegetable',
-    image: '🥬',
-    count: 45,
-    subcategories: ['Leafy Greens', 'Root Vegetables', 'Cruciferous', 'Nightshades']
-  },
-  {
-    id: 'grapes',
-    name: 'Grapes',
-    image: '🍇',
-    count: 8,
-    subcategories: ['Red Grapes', 'Green Grapes', 'Black Grapes']
-  },
-  {
-    id: 'onion-potato',
-    name: 'Onion & Potato',
-    image: '🧅',
-    count: 12,
-    subcategories: ['Onions', 'Potatoes', 'Garlic', 'Shallots']
-  },
-  {
-    id: 'watermelons',
-    name: 'Watermelons',
-    image: '🍉',
-    count: 5,
-    subcategories: ['Seedless', 'Mini', 'Traditional']
-  },
-  {
-    id: 'asian-exotic',
-    name: 'Asian & Exotic Fruit',
-    image: '🥥',
-    count: 15,
-    subcategories: ['Dragon Fruit', 'Mango', 'Lychee', 'Rambutan']
-  },
-  {
-    id: 'avocados',
-    name: 'Avocados',
-    image: '🥑',
-    count: 6,
-    subcategories: ['Hass', 'Fuerte', 'Reed']
-  },
-  {
-    id: 'citrus-fruit',
-    name: 'Citrus Fruit',
-    image: '🍊',
-    count: 10,
-    subcategories: ['Oranges', 'Lemons', 'Limes', 'Grapefruit']
-  },
-  {
-    id: 'berries',
-    name: 'Berries',
-    image: '🫐',
-    count: 8,
-    subcategories: ['Strawberries', 'Blueberries', 'Raspberries', 'Blackberries']
-  },
-  {
-    id: 'stone-fruit',
-    name: 'Stone Fruit',
-    image: '🍑',
-    count: 7,
-    subcategories: ['Peaches', 'Plums', 'Apricots', 'Cherries']
-  },
-  {
-    id: 'tropical',
-    name: 'Tropical Fruit',
-    image: '🍍',
-    count: 9,
-    subcategories: ['Pineapple', 'Bananas', 'Coconut', 'Papaya']
-  }
-];
 
 // Comprehensive Products Data for Products Page
 export const productsListingData = [
@@ -821,23 +808,6 @@ export const filterOptionsData = {
   ]
 };
 
-// Breadcrumb Data
-export const breadcrumbData = {
-  'fruit-veg': [
-    { label: 'Home', path: '/' },
-    { label: 'Fruit & Veg', path: '/products/fruit-veg' }
-  ],
-  'fruit': [
-    { label: 'Home', path: '/' },
-    { label: 'Fruit & Veg', path: '/products/fruit-veg' },
-    { label: 'Fruit', path: '/products/fruit-veg/fruit' }
-  ],
-  'vegetables': [
-    { label: 'Home', path: '/' },
-    { label: 'Fruit & Veg', path: '/products/fruit-veg' },
-    { label: 'Vegetables', path: '/products/fruit-veg/vegetables' }
-  ]
-};
 
 // Featured Products Data
 export const featuredProductsData = [
@@ -985,4 +955,69 @@ export const featuredProductsData = [
     discount: 21,
     isFavorite: false
   }
+];
+
+// BrowseSidebar Popular Cards Data
+export const popularCardsData = [
+  {
+    title: 'Try this',
+    subtitle: 'Whole body deodorants',
+    color: 'success',
+    icon: '🧴'
+  },
+  {
+    title: 'Lower Shelf Price',
+    subtitle: 'Family essentials',
+    color: 'danger',
+    icon: '💰'
+  },
+  {
+    title: '1/2 Price',
+    subtitle: 'Snacking & treats',
+    color: 'warning',
+    icon: '🍪'
+  },
+  {
+    title: 'Winter Wine',
+    subtitle: 'Under $15',
+    color: 'info',
+    icon: '🍷'
+  }
+];
+
+// Navigation Data
+export const navItemsData = [
+  { path: '/products', label: 'Browse products' },
+  { path: '/specials', label: 'Specials & catalogue' },
+  { path: '/recipes', label: 'Recipes & Ideas' },
+  { path: '/value', label: 'Get more value' },
+  { path: '/shop', label: 'Ways to Shop' },
+  { path: '/help', label: 'Help' }
+];
+
+// Footer Links Data
+export const footerLinksData = [
+  {
+    title: 'Quick Links',
+    items: [
+      { href: '/', label: 'Home' },
+      { href: '/products', label: 'Products' },
+      { href: '/about', label: 'About' }
+    ]
+  },
+  {
+    title: 'Support',
+    items: [
+      { href: '/contact', label: 'Contact Us' },
+      { href: '/help', label: 'Help Center' },
+      { href: '/faq', label: 'FAQ' }
+    ]
+  }
+];
+
+// Social Links Data
+export const socialLinksData = [
+  { href: '#', icon: '📘' },
+  { href: '#', icon: '📷' },
+  { href: '#', icon: '🐦' }
 ];

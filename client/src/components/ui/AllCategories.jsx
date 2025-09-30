@@ -86,7 +86,7 @@ const AllCategories = ({
                       }}
                     >
                       <div className="category-card-icon">
-                        <span className="category-card-emoji">{category.image}</span>
+                        <span className="category-card-emoji">{category.icon}</span>
                       </div>
                       <div className="category-card-content">
                         <h6 className="category-card-name">{category.name}</h6>

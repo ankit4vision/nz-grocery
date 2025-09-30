@@ -3,31 +3,27 @@
 .product-filters {
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--gray-200);
-  padding: var(--spacing-md) 0;
+  padding: var(--spacing-sm) 0;
 }
 
 .product-filters-bar {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-xs);
   flex-wrap: wrap;
 }
 
-.product-filters-item {
-  display: flex;
-  align-items: center;
-}
-
 .product-filters-select {
-  min-width: 150px;
+  min-width: 100px;
 }
 
 .product-filters-select .form-select {
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs);
   border-radius: var(--border-radius-md);
   border: 1px solid var(--gray-300);
   background-color: var(--white);
+  height: 28px;
 }
 
 .product-filters-select .form-select:focus {
@@ -36,12 +32,16 @@
 }
 
 .product-filters-button {
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs);
   border-radius: var(--border-radius-md);
   font-weight: var(--font-weight-medium);
   transition: var(--transition-fast);
   white-space: nowrap;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-filters-button:hover {
@@ -55,24 +55,24 @@
 
 .product-filters-count {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -6px;
+  right: -6px;
   background-color: var(--danger-color);
   color: var(--white);
   font-size: 10px;
   font-weight: var(--font-weight-bold);
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: var(--border-radius-full);
-  min-width: 18px;
+  min-width: 16px;
   text-align: center;
   line-height: 1;
 }
 
 .product-filters-expanded {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  background-color: var(--gray-100);
-  border-radius: var(--border-radius-lg);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--gray-50);
+  border-radius: var(--border-radius-md);
   border: 1px solid var(--gray-200);
 }
 
@@ -80,47 +80,24 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
-}
-
-.product-filters-checkbox {
   margin-bottom: var(--spacing-xs);
-}
-
-.product-filters-checkbox .form-check-input {
-  margin-right: var(--spacing-xs);
-}
-
-.product-filters-checkbox .form-check-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.product-filters-checkbox .form-check-input:checked {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
 }
 
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .product-filters-bar {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
   }
   
   .product-filters-select {
-    min-width: 120px;
+    min-width: 80px;
   }
 }
 
 @media (max-width: 992px) {
   .product-filters-bar {
     flex-wrap: wrap;
-    gap: var(--spacing-sm);
-  }
-  
-  .product-filters-item {
-    flex: 1;
-    min-width: 120px;
+    gap: var(--spacing-xs);
   }
   
   .product-filters-select {
@@ -130,32 +107,34 @@
 
 @media (max-width: 768px) {
   .product-filters {
-    padding: var(--spacing-sm) 0;
+    padding: var(--spacing-xs) 0;
   }
   
   .product-filters-bar {
     gap: var(--spacing-xs);
   }
   
-  .product-filters-item {
-    min-width: 100px;
-  }
-  
   .product-filters-button {
     font-size: var(--font-size-xs);
     padding: var(--spacing-xs);
+    height: 26px;
+  }
+  
+  .product-filters-select .form-select {
+    height: 26px;
+    font-size: var(--font-size-xs);
   }
   
   .product-filters-expanded {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
   }
   
   .product-filters-expanded .row {
     margin: 0;
   }
   
-  .product-filters-expanded .col-md-3 {
-    margin-bottom: var(--spacing-md);
+  .product-filters-expanded .col-md-4 {
+    margin-bottom: var(--spacing-sm);
   }
 }
 
@@ -163,11 +142,7 @@
   .product-filters-bar {
     flex-direction: column;
     align-items: stretch;
-  }
-  
-  .product-filters-item {
-    width: 100%;
-    margin-bottom: var(--spacing-xs);
+    gap: var(--spacing-xs);
   }
   
   .product-filters-select,
@@ -176,6 +151,6 @@
   }
   
   .product-filters-expanded {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs);
   }
 }
