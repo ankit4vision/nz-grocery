@@ -5,6 +5,7 @@ import {
   ListGroup, 
   Button
 } from 'react-bootstrap';
+import { ImageWithFallback } from '../common';
 import './BrowseSidebar.css';
 
 const BrowseSidebar = ({ show, onHide }) => {
@@ -26,9 +27,45 @@ const BrowseSidebar = ({ show, onHide }) => {
     setShowSubcategoryPanel(true);
   };
 
-  const handleSubcategoryClick = (subcategory) => {
-    console.log(`Selected subcategory: ${subcategory}`);
+  const handleProductClick = (product) => {
+    console.log(`Selected product: ${product.name}`);
     // Here you can add navigation logic or API calls
+  };
+
+  // Product data for each category
+  const getCategoryProducts = (categoryId) => {
+    const productsData = {
+      'fruit-veg': [
+        { id: 1, name: 'Fresh Apples', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=100&h=100&fit=crop' },
+        { id: 2, name: 'Organic Bananas', image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=100&h=100&fit=crop' },
+        { id: 3, name: 'Fresh Carrots', image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=100&h=100&fit=crop' },
+        { id: 4, name: 'Organic Spinach', image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=100&h=100&fit=crop' }
+      ],
+      'poultry-meat': [
+        { id: 5, name: 'Fresh Chicken Breast', image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=100&h=100&fit=crop' },
+        { id: 6, name: 'Premium Beef', image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=100&h=100&fit=crop' },
+        { id: 7, name: 'Fresh Salmon', image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a8b67?w=100&h=100&fit=crop' }
+      ],
+      'dairy': [
+        { id: 8, name: 'Fresh Milk', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=100&h=100&fit=crop' },
+        { id: 9, name: 'Cheddar Cheese', image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=100&h=100&fit=crop' },
+        { id: 10, name: 'Free Range Eggs', image: 'https://images.unsplash.com/photo-1518569656558-1f25e69d93d8?w=100&h=100&fit=crop' }
+      ],
+      'snacks': [
+        { id: 11, name: 'Potato Chips', image: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=100&h=100&fit=crop' },
+        { id: 12, name: 'Soft Drink', image: 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=100&h=100&fit=crop' }
+      ],
+      'religious': [
+        { id: 13, name: 'Prayer Beads', image: 'https://images.unsplash.com/photo-1544376664-80b17f09d399?w=100&h=100&fit=crop' },
+        { id: 14, name: 'Religious Books', image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=100&h=100&fit=crop' }
+      ],
+      'indian-sweets': [
+        { id: 15, name: 'Traditional Sweets', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop' },
+        { id: 16, name: 'Dry Fruits', image: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=100&h=100&fit=crop' }
+      ]
+    };
+    
+    return productsData[categoryId] || [];
   };
 
   const handleBackToCategories = () => {
@@ -201,90 +238,37 @@ const BrowseSidebar = ({ show, onHide }) => {
           <h6 className="subcategory-title">
             {selectedSubcategory.icon} {selectedSubcategory.name}
           </h6>
+          <Button 
+            variant="success" 
+            size="sm" 
+            className="subcategory-view-all"
+            onClick={() => console.log(`View all ${selectedSubcategory.name} products`)}
+          >
+            View All
+          </Button>
         </div>
         
         <div className="subcategory-content">
           <ListGroup variant="flush" className="subcategory-list">
-            {selectedSubcategory.subcategories.map((subcategory, index) => {
-              // Get appropriate icon for each subcategory
-              const getSubcategoryIcon = (subcategory) => {
-                const iconMap = {
-                  // Fruit & Veg
-                  'Fresh Fruits': '🍎',
-                  'Fresh Vegetables': '🥕',
-                  'Organic Produce': '🌱',
-                  'Frozen Fruits & Veg': '🧊',
-                  
-                  // Poultry, Meat & Seafood
-                  'Fresh Chicken': '🐔',
-                  'Beef & Lamb': '🥩',
-                  'Fresh Fish': '🐟',
-                  'Frozen Seafood': '🦐',
-                  
-                  // Religious Items
-                  'Prayer Items': '📿',
-                  'Religious Books': '📖',
-                  'Temple Items': '🕯️',
-                  
-                  // Indian Sweets
-                  'Traditional Sweets': '🍯',
-                  'Festival Sweets': '🎂',
-                  'Dry Fruits': '🥜',
-                  
-                  // Dairy, Eggs & Fridge
-                  'Milk & Cream': '🥛',
-                  'Cheese': '🧀',
-                  'Eggs': '🥚',
-                  'Yogurt': '🍶',
-                  
-                  // Philippine Groceries
-                  'Filipino Foods': '🍜',
-                  'Spices': '🌶️',
-                  'Canned Goods': '🥫',
-                  
-                  // South Indian Groceries
-                  'Rice & Grains': '🍚',
-                  'Spices': '🌶️',
-                  'Coconut Products': '🥥',
-                  
-                  // Sri Lankan Groceries
-                  'Ceylon Tea': '🍵',
-                  'Spices': '🌶️',
-                  'Traditional Foods': '🍛',
-                  
-                  // Snacks & Beverages
-                  'Chips & Crackers': '🍿',
-                  'Soft Drinks': '🥤',
-                  'Energy Drinks': '⚡',
-                  
-                  // Pantry & Staples
-                  'Rice & Grains': '🍚',
-                  'Cooking Oils': '🫒',
-                  'Spices': '🌶️',
-                  
-                  // Dietary Preferences
-                  'Gluten Free': '🌾',
-                  'Organic': '🌿',
-                  'Vegan': '🥗',
-                  'Keto': '🥑'
-                };
-                return iconMap[subcategory] || '📦';
-              };
-
-              return (
-                <ListGroup.Item 
-                  key={index}
-                  className="subcategory-item"
-                  action
-                  onClick={() => handleSubcategoryClick(subcategory)}
-                >
-                  <div className="subcategory-item-content">
-                    <span className="subcategory-item-icon">{getSubcategoryIcon(subcategory)}</span>
-                    <span className="subcategory-item-name">{subcategory}</span>
+            {getCategoryProducts(selectedSubcategory?.id).map((product) => (
+              <ListGroup.Item 
+                key={product.id}
+                className="subcategory-item"
+                action
+                onClick={() => handleProductClick(product)}
+              >
+                <div className="subcategory-item-content">
+                  <div className="subcategory-item-image">
+                    <ImageWithFallback
+                      src={product.image}
+                      alt={product.name}
+                      className="subcategory-item-image-element"
+                    />
                   </div>
-                </ListGroup.Item>
-              );
-            })}
+                  <span className="subcategory-item-name">{product.name}</span>
+                </div>
+              </ListGroup.Item>
+            ))}
           </ListGroup>
         </div>
       </div>
