@@ -1,7 +1,7 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import { CustomButton, InfoCard, StatCard, HeroSlider, AdsBanner, ValueSection, PriceSection, FeaturedProducts } from '../components';
-import { heroSlidesData, featuresData, statsData, adsBannerData, valueCategoriesData, priceSectionData, featuredProductsData } from '../data/mockData';
+import { Container } from 'react-bootstrap';
+import { HeroSlider, AdsBanner, ValueSection, PriceSection, FeaturedProducts } from '../components';
+import { heroSlidesData, adsBannerData, valueCategoriesData, priceSectionData, featuredProductsData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
@@ -50,7 +50,7 @@ const Home = () => {
           />
 
       {/* Section Divider */}
-      <div className="home-section-divider"></div>
+      <div className="section-divider"></div>
 
       {/* Featured Products Section */}
       <FeaturedProducts
@@ -62,44 +62,6 @@ const Home = () => {
         onToggleFavorite={(productId, isFavorite) => console.log('Toggle favorite:', productId, isFavorite)}
       />
 
-      {/* Main Content */}
-      <Container className="home-content">
-
-        {/* Features Section */}
-        <Row className="home-features">
-          {featuresData.map((feature) => (
-            <Col md={4} key={feature.id} className="mb-4">
-              <InfoCard
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-                variant={feature.variant}
-                onClick={() => {
-                  if (feature.link) {
-                    console.log('Navigate to:', feature.link);
-                  }
-                }}
-              />
-            </Col>
-          ))}
-        </Row>
-
-        {/* Stats Section */}
-        <Row className="home-stats">
-          {statsData.map((stat) => (
-            <Col md={3} key={stat.id} className="mb-3">
-              <StatCard
-                title={stat.title}
-                value={stat.value}
-                change={stat.change}
-                changeType={stat.changeType}
-                icon={stat.icon}
-                variant={stat.variant}
-              />
-            </Col>
-          ))}
-        </Row>
-      </Container>
     </div>
   );
 };

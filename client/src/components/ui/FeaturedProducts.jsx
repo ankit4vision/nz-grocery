@@ -12,18 +12,23 @@ const FeaturedProducts = ({
   onToggleFavorite
 }) => {
   const [sortBy, setSortBy] = useState('featured');
+  const [visibleProducts, setVisibleProducts] = useState(8); // Show 8 products initially
   
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
+  };
+
+  const handleLoadMore = () => {
+    setVisibleProducts(prev => prev + 4); // Load 4 more products
   };
 
   const getSortedProducts = () => {
     const sorted = [...products];
     switch (sortBy) {
       case 'price-low':
-        return sorted.sort((a, b) => a.currentPrice - b.currentPrice);
+        return sorted.sort((a, b) => parseFloat(a.currentPrice) - parseFloat(b.currentPrice));
       case 'price-high':
-        return sorted.sort((a, b) => b.currentPrice - a.currentPrice);
+        return sorted.sort((a, b) => parseFloat(b.currentPrice) - parseFloat(a.currentPrice));
       case 'rating':
         return sorted.sort((a, b) => b.rating - a.rating);
       case 'discount':
@@ -34,6 +39,8 @@ const FeaturedProducts = ({
   };
 
   const sortedProducts = getSortedProducts();
+  const displayedProducts = sortedProducts.slice(0, visibleProducts);
+  const hasMoreProducts = visibleProducts < sortedProducts.length;
 
   return (
     <section className={`featured-products ${className}`}>
@@ -61,7 +68,7 @@ const FeaturedProducts = ({
 
         {/* Products Grid */}
         <Row className="featured-products__grid">
-          {sortedProducts.map((product) => (
+          {displayedProducts.map((product) => (
             <Col 
               key={product.id} 
               xs={12} 
@@ -78,6 +85,20 @@ const FeaturedProducts = ({
             </Col>
           ))}
         </Row>
+
+        {/* Load More Button */}
+        {hasMoreProducts && (
+          <div className="featured-products__load-more">
+            <Button 
+              variant="outline-primary" 
+              size="lg"
+              onClick={handleLoadMore}
+              className="featured-products__load-more-btn"
+            >
+              Load More Products
+            </Button>
+          </div>
+        )}
       </Container>
     </section>
   );

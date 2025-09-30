@@ -34,11 +34,6 @@
   margin-bottom: 0;
 }
 
-/* Section Divider */
-.home-section-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
-}
 
 /* Featured Products Section Styles */
 .home-featured-products {

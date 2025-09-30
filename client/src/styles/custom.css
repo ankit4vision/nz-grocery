@@ -255,6 +255,13 @@
   right: auto !important;
 }
 
+/* Global Section Divider */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
+  margin: var(--spacing-3xl) 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .navbar-custom .navbar-brand {
