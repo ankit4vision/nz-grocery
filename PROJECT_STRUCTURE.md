@@ -23,10 +23,14 @@ nz-grocery/
 │   │   │   │   ├── CustomSelect.css
 │   │   │   │   ├── Loader.jsx
 │   │   │   │   ├── Loader.css
+│   │   │   │   ├── AlertMessage.jsx
+│   │   │   │   ├── AlertMessage.css
 │   │   │   │   ├── NavigationButtons.jsx
 │   │   │   │   ├── NavigationButtons.css
 │   │   │   │   ├── ImageWithFallback.jsx
 │   │   │   │   ├── ImageWithFallback.css
+│   │   │   │   ├── Breadcrumb.jsx
+│   │   │   │   ├── Breadcrumb.css
 │   │   │   │   └── index.js
 │   │   │   ├── layout/              # Layout components
 │   │   │   │   ├── AppNavbar.jsx
@@ -66,6 +70,16 @@ nz-grocery/
 │   │   │   │   ├── ProductCard.css
 │   │   │   │   ├── FeaturedProducts.jsx
 │   │   │   │   ├── FeaturedProducts.css
+│   │   │   │   ├── CategoryOverview.jsx
+│   │   │   │   ├── CategoryOverview.css
+│   │   │   │   ├── ProductFilters.jsx
+│   │   │   │   ├── ProductFilters.css
+│   │   │   │   ├── ProductGrid.jsx
+│   │   │   │   ├── ProductGrid.css
+│   │   │   │   ├── Pagination.jsx
+│   │   │   │   ├── Pagination.css
+│   │   │   │   ├── AllCategories.jsx
+│   │   │   │   ├── AllCategories.css
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -122,7 +136,7 @@ nz-grocery/
 ## 🛠️ Technology Stack
 
 ### **Frontend Framework:**
-- **React 18** - UI library
+- **React 19** - UI library
 - **Vite** - Build tool & dev server
 - **React Router DOM** - Client-side routing
 
@@ -242,16 +256,16 @@ npm update           # Update dependencies
 
 ```json
 {
-  "react": "^18.2.0",
-  "react-dom": "^18.2.0",
-  "react-bootstrap": "^2.8.0",
-  "bootstrap": "^5.3.0",
-  "react-router-dom": "^6.15.0",
-  "react-icons": "^4.11.0",
-  "@fortawesome/fontawesome-svg-core": "^6.4.0",
-  "@fortawesome/free-solid-svg-icons": "^6.4.0",
+  "react": "^19.1.1",
+  "react-dom": "^19.1.1",
+  "react-bootstrap": "^2.10.10",
+  "bootstrap": "^5.3.8",
+  "react-router-dom": "^7.9.3",
+  "react-icons": "^5.5.0",
+  "@fortawesome/fontawesome-svg-core": "^7.0.1",
+  "@fortawesome/free-solid-svg-icons": "^7.0.1",
   "@fortawesome/react-fontawesome": "^0.2.0",
-  "vite": "^4.4.5"
+  "vite": "^6.0.1"
 }
 ```
 
@@ -265,6 +279,7 @@ npm update           # Update dependencies
 - `AlertMessage` - Alert/notification component
 - `NavigationButtons` - Reusable navigation arrow buttons
 - `ImageWithFallback` - Image component with fallback placeholder
+- `Breadcrumb` - Breadcrumb navigation component
 
 ### **Layout Components:**
 - `AppNavbar` - Main navigation bar
@@ -287,6 +302,11 @@ npm update           # Update dependencies
 - `HalfPriceSpecial` - Half price special component
 - `ProductCard` - Individual product display card
 - `FeaturedProducts` - Featured products grid section
+- `CategoryOverview` - Category overview component
+- `ProductFilters` - Product filtering and sorting component
+- `ProductGrid` - Product grid display component
+- `Pagination` - Pagination controls component
+- `AllCategories` - All categories horizontal slider component
 
 ## 📊 Data Structure & Mock Data
 
@@ -294,13 +314,22 @@ npm update           # Update dependencies
 - `src/data/mockData.js` - Contains all mock data for the application
 
 ### **Data Categories:**
-- **Hero Slider Data** (`heroSlidesData`) - Image-only slides for hero section
 - **Ads Banner Data** (`adsBannerData`) - Promotional offers and deals
+- **Hero Slider Data** (`heroSlidesData`) - Image-only slides for hero section
+- **Products Data** (`productsData`) - Sample products for home page
+- **Categories Data** (`categoriesData`) - Product categories with icons and descriptions
 - **Features Data** (`featuresData`) - Application features and benefits
 - **Stats Data** (`statsData`) - Statistics and metrics
+- **Specials Data** (`specialsData`) - Special offers and promotions
 - **Value Categories Data** (`valueCategoriesData`) - Value section categories with discounts
 - **Price Section Data** (`priceSectionData`) - Half price special products
+- **Products Listing Data** (`productsListingData`) - Comprehensive product data for Products page
+- **Filter Options Data** (`filterOptionsData`) - Sorting and filtering options
 - **Featured Products Data** (`featuredProductsData`) - Featured products with ratings, discounts, and favorites
+- **Popular Cards Data** (`popularCardsData`) - BrowseSidebar popular suggestions and offers
+- **Navigation Data** (`navItemsData`) - Main navigation menu items
+- **Footer Links Data** (`footerLinksData`) - Footer navigation links
+- **Social Links Data** (`socialLinksData`) - Social media links
 
 ### **Asset Structure:**
 - `src/assets/images/main-slider/` - Hero slider images (4 images)
@@ -308,6 +337,11 @@ npm update           # Update dependencies
 - `src/assets/images/logo/` - Logo images (logo-transprant.png)
 - `src/assets/images/placeholder.svg` - Default placeholder image for broken images
 - `public/approval-requirnment/` - Project requirement reference images
+
+### **Page Structure:**
+- **Home Page** (`Home.jsx`) - Main landing page with hero slider, ads banner, value section, price section, and featured products
+- **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
+- **About Page** (`About.jsx`) - About page component
 
 ## 🚀 Creating New Functionality & Pages
 
