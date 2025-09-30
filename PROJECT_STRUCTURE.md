@@ -23,8 +23,10 @@ nz-grocery/
 │   │   │   │   ├── CustomSelect.css
 │   │   │   │   ├── Loader.jsx
 │   │   │   │   ├── Loader.css
-│   │   │   │   ├── AlertMessage.jsx
-│   │   │   │   ├── AlertMessage.css
+│   │   │   │   ├── NavigationButtons.jsx
+│   │   │   │   ├── NavigationButtons.css
+│   │   │   │   ├── ImageWithFallback.jsx
+│   │   │   │   ├── ImageWithFallback.css
 │   │   │   │   └── index.js
 │   │   │   ├── layout/              # Layout components
 │   │   │   │   ├── AppNavbar.jsx
@@ -89,6 +91,9 @@ nz-grocery/
 │   │   │   │       ├── 8449371.jpg
 │   │   │   │       ├── 8449377.jpg
 │   │   │   │       └── 8486222.jpg
+│   │   │   │   ├── logo/            # Logo images
+│   │   │   │   │   └── logo-transprant.png
+│   │   │   │   └── placeholder.svg  # Default placeholder image
 │   │   │   └── react.svg
 │   │   ├── styles/                  # Global styles
 │   │   │   ├── theme.css            # CSS variables & theme
@@ -124,6 +129,8 @@ nz-grocery/
 ### **UI Library:**
 - **React Bootstrap** - Component library
 - **Bootstrap 5** - CSS framework
+- **React Icons** - Icon library (FaSearch, FaShoppingCart, FaUser, FaChevronLeft, FaChevronRight)
+- **FontAwesome** - Icon library for existing components
 - **Custom CSS** - Theme & overrides
 
 ### **Development Tools:**
@@ -240,6 +247,10 @@ npm update           # Update dependencies
   "react-bootstrap": "^2.8.0",
   "bootstrap": "^5.3.0",
   "react-router-dom": "^6.15.0",
+  "react-icons": "^4.11.0",
+  "@fortawesome/fontawesome-svg-core": "^6.4.0",
+  "@fortawesome/free-solid-svg-icons": "^6.4.0",
+  "@fortawesome/react-fontawesome": "^0.2.0",
   "vite": "^4.4.5"
 }
 ```
@@ -252,6 +263,8 @@ npm update           # Update dependencies
 - `CustomSelect` - Reusable select dropdown component
 - `Loader` - Loading spinner component
 - `AlertMessage` - Alert/notification component
+- `NavigationButtons` - Reusable navigation arrow buttons
+- `ImageWithFallback` - Image component with fallback placeholder
 
 ### **Layout Components:**
 - `AppNavbar` - Main navigation bar
@@ -292,6 +305,8 @@ npm update           # Update dependencies
 ### **Asset Structure:**
 - `src/assets/images/main-slider/` - Hero slider images (4 images)
 - `src/assets/images/ads-banner/` - Ads banner images (6 images)
+- `src/assets/images/logo/` - Logo images (logo-transprant.png)
+- `src/assets/images/placeholder.svg` - Default placeholder image for broken images
 - `public/approval-requirnment/` - Project requirement reference images
 
 ## 🚀 Creating New Functionality & Pages
