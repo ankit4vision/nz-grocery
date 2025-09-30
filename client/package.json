@@ -6,8 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build:dev": "vite build --mode development",
+    "build:staging": "vite build --mode staging",
+    "build:prod": "vite build --mode production",
+    "preview": "vite preview",
+    "preview:dev": "vite preview --mode development",
+    "preview:staging": "vite preview --mode staging",
+    "preview:prod": "vite preview --mode production",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.1",

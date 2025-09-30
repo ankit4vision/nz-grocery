@@ -1,6 +1,12 @@
 // Mock Data for NZ Grocery Application
 // This file contains sample data structures that will be replaced with API calls in the future
 
+// Import images for proper bundling
+import slider1 from '../assets/images/main-slider/6994918.jpg';
+import slider2 from '../assets/images/main-slider/8486222.jpg';
+import slider3 from '../assets/images/main-slider/8449377.jpg';
+import slider4 from '../assets/images/main-slider/8449371.jpg';
+
 // Ads Banner Data Mock
 export const adsBannerData = [
   {
@@ -63,19 +69,19 @@ export const adsBannerData = [
 export const heroSlidesData = [
   {
     id: 1,
-    image: "/src/assets/images/main-slider/6994918.jpg"
+    image: slider1
   },
   {
     id: 2,
-    image: "/src/assets/images/main-slider/8486222.jpg"
+    image: slider2
   },
   {
     id: 3,
-    image: "/src/assets/images/main-slider/8449377.jpg"
+    image: slider3
   },
   {
     id: 4,
-    image: "/src/assets/images/main-slider/8449371.jpg"
+    image: slider4
   }
 ];
 
