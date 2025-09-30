@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import { CustomButton, NavigationButtons } from '../common';
+import { CustomButton, NavigationButtons, ImageWithFallback } from '../common';
 import './ValueSection.css';
 
 const ValueSection = ({ 
@@ -57,9 +57,10 @@ const ValueSection = ({
             <Col lg={3} md={6} key={category.id} className="mb-4">
               <Card className="product-card">
                 <div className="product-card__image">
-                  <img
+                  <ImageWithFallback
                     src={category.image}
                     alt={category.title}
+                    className="product-card__image-element"
                   />
                   <div 
                     className="product-card__badge"

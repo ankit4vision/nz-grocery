@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faShoppingCart, faStar } from '@fortawesome/free-solid-svg-icons';
+import { ImageWithFallback } from '../common';
 import './ProductCard.css';
 
 const ProductCard = ({
@@ -32,7 +33,11 @@ const ProductCard = ({
   return (
     <Card className="product-card">
       <div className="product-card__image">
-        <img src={image} alt={name} />
+        <ImageWithFallback 
+          src={image} 
+          alt={name}
+          className="product-card__image-element"
+        />
         <button
           className={`product-card__favorite ${favorite ? 'favorited' : ''}`}
           onClick={handleToggleFavorite}

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import { CustomButton, NavigationButtons } from '../common';
+import { CustomButton, NavigationButtons, ImageWithFallback } from '../common';
 import './PriceSection.css';
 
 const PriceSection = ({ 
@@ -60,13 +60,14 @@ const PriceSection = ({
             <Col lg={3} md={6} sm={6} key={product.id} className="mb-4">
               <Card className="product-card">
                 <div className="product-card__image">
-                  <img 
-                    src={product.image} 
+                  <ImageWithFallback
+                    src={product.image}
                     alt={product.name}
+                    className="product-card__image-element"
                   />
-                  <div 
+                  <div
                     className="product-card__badge"
-                    style={{ 
+                    style={{
                       backgroundColor: 'var(--danger-color)',
                       color: 'var(--white)'
                     }}

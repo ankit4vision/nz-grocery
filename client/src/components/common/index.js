@@ -5,3 +5,4 @@ export { default as CustomSelect } from './CustomSelect';
 export { default as Loader } from './Loader';
 export { default as AlertMessage } from './AlertMessage';
 export { default as NavigationButtons } from './NavigationButtons';
+export { default as ImageWithFallback } from './ImageWithFallback';
