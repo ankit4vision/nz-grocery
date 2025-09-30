@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import './Pagination.css';
+import '../../styles/components/ui-components/pagination.css';
 
 /**
  * Pagination - Pagination component for product navigation

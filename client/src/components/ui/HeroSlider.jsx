@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Carousel, Container, Row, Col, Badge } from 'react-bootstrap';
 import { CustomButton } from '../common';
-import './HeroSlider.css';
+import '../../styles/components/ui-elements/hero-slider.css';
 
 const HeroSlider = ({ 
   slides = [],

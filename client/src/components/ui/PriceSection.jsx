@@ -3,7 +3,7 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CustomButton, NavigationButtons, ImageWithFallback } from '../common';
-import './PriceSection.css';
+import '../../styles/components/ui-components/price-section.css';
 
 const PriceSection = ({ 
   title = "Half Price Special",

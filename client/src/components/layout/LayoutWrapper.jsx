@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AppNavbar from './AppNavbar';
 import AppFooter from './AppFooter';
 import BrowseSidebar from './BrowseSidebar';
-import './LayoutWrapper.css';
+import '../../styles/components/layout-elements/layout-wrapper.css';
 
 const LayoutWrapper = ({ 
   children,

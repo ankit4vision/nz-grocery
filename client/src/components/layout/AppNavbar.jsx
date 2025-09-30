@@ -3,7 +3,7 @@ import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button } from 'r
 import { LinkContainer } from 'react-router-bootstrap';
 import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
 import logoImage from '../../assets/logo/logo-transprant.png';
-import './AppNavbar.css';
+import '../../styles/components/navigation/app-navbar.css';
 
 const AppNavbar = ({ 
   brand = 'Farm Fridge',

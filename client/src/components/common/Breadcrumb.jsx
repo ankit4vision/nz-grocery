@@ -1,7 +1,7 @@
 import React from 'react';
 import { Breadcrumb as BootstrapBreadcrumb } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import './Breadcrumb.css';
+import '../../styles/components/navigation/breadcrumb.css';
 
 /**
  * Breadcrumb - Navigation breadcrumb component

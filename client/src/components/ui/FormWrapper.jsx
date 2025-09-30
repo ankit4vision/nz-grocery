@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Form } from 'react-bootstrap';
-import './FormWrapper.css';
+import '../../styles/components/ui-components/form-wrapper.css';
 
 const FormWrapper = ({ 
   title,

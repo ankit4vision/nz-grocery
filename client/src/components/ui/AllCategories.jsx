@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import './AllCategories.css';
+import '../../styles/components/ui-components/all-categories.css';
 
 /**
  * AllCategories - Display all available product categories in a compact horizontal slider

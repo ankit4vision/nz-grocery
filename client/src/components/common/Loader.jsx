@@ -1,6 +1,6 @@
 import React from 'react';
 import { Spinner } from 'react-bootstrap';
-import './Loader.css';
+import '../../styles/components/ui-elements/loader.css';
 
 const Loader = ({ 
   size = 'md',

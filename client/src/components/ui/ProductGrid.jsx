@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import ProductCard from './ProductCard';
-import './ProductGrid.css';
+import '../../styles/components/ui-components/product-grid.css';
 
 /**
  * ProductGrid - Grid layout for displaying products using ProductCard component

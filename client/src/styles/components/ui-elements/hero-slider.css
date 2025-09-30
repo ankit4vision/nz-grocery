@@ -1,5 +1,6 @@
-/* Hero Slider Component Styles */
+/* UI Elements Components Styles */
 
+/* Hero Slider Component Styles */
 .hero-slider {
   position: relative;
   overflow: hidden;
@@ -93,7 +94,7 @@
   }
   to {
     opacity: 1;
-    transform: escala(1);
+    transform: scale(1);
   }
 }
 

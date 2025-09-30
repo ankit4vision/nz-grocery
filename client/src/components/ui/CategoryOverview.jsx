@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import './CategoryOverview.css';
+import '../../styles/components/ui-components/category-overview.css';
 
 /**
  * CategoryOverview - Category selection section with circular icons

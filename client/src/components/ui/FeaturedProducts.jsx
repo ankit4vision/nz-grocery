@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import ProductCard from './ProductCard';
-import './FeaturedProducts.css';
+import '../../styles/components/ui-components/featured-products.css';
 
 const FeaturedProducts = ({
   title = "Featured Products",

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { CustomButton, NavigationButtons, ImageWithFallback } from '../common';
-import './ValueSection.css';
+import '../../styles/components/ui-components/value-section.css';
 
 const ValueSection = ({ 
   title = "Helping you find great value",

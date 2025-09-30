@@ -3,7 +3,7 @@ import { Container, Row, Col, Button, Dropdown, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faSort, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { CustomButton, CustomSelect } from '../common';
-import './ProductFilters.css';
+import '../../styles/components/ui-components/product-filters.css';
 
 /**
  * ProductFilters - Compact filtering and sorting bar for products

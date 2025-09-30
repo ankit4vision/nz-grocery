@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Form } from 'react-bootstrap';
-import './CustomInput.css';
+import '../../styles/components/forms/custom-input.css';
 
 const CustomInput = forwardRef(({ 
   label,

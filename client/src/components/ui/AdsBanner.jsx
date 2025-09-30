@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Carousel } from 'react-bootstrap';
 import { CustomButton } from '../common';
-import './AdsBanner.css';
+import '../../styles/components/ui-components/ads-banner.css';
 
 const AdsBanner = ({ 
   ads = [],

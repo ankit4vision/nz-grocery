@@ -16,70 +16,40 @@ nz-grocery/
 │   │   ├── components/              # Reusable components
 │   │   │   ├── common/              # Common/shared components
 │   │   │   │   ├── CustomButton.jsx
-│   │   │   │   ├── CustomButton.css
 │   │   │   │   ├── CustomInput.jsx
-│   │   │   │   ├── CustomInput.css
 │   │   │   │   ├── CustomSelect.jsx
-│   │   │   │   ├── CustomSelect.css
 │   │   │   │   ├── Loader.jsx
-│   │   │   │   ├── Loader.css
 │   │   │   │   ├── AlertMessage.jsx
-│   │   │   │   ├── AlertMessage.css
 │   │   │   │   ├── NavigationButtons.jsx
-│   │   │   │   ├── NavigationButtons.css
 │   │   │   │   ├── ImageWithFallback.jsx
-│   │   │   │   ├── ImageWithFallback.css
 │   │   │   │   ├── Breadcrumb.jsx
-│   │   │   │   ├── Breadcrumb.css
 │   │   │   │   └── index.js
 │   │   │   ├── layout/              # Layout components
 │   │   │   │   ├── AppNavbar.jsx
-│   │   │   │   ├── AppNavbar.css
 │   │   │   │   ├── AppFooter.jsx
-│   │   │   │   ├── AppFooter.css
 │   │   │   │   ├── LayoutWrapper.jsx
-│   │   │   │   ├── LayoutWrapper.css
 │   │   │   │   ├── BrowseSidebar.jsx
-│   │   │   │   ├── BrowseSidebar.css
 │   │   │   │   ├── Layout.jsx
-│   │   │   │   ├── Layout.css
 │   │   │   │   └── index.js
 │   │   │   ├── ui/                  # UI components
 │   │   │   │   ├── InfoCard.jsx
-│   │   │   │   ├── InfoCard.css
 │   │   │   │   ├── StatCard.jsx
-│   │   │   │   ├── StatCard.css
 │   │   │   │   ├── ModalDialog.jsx
-│   │   │   │   ├── ModalDialog.css
 │   │   │   │   ├── ConfirmDialog.jsx
-│   │   │   │   ├── ConfirmDialog.css
 │   │   │   │   ├── DataTable.jsx
-│   │   │   │   ├── DataTable.css
 │   │   │   │   ├── FormWrapper.jsx
-│   │   │   │   ├── FormWrapper.css
 │   │   │   │   ├── HeroSlider.jsx
-│   │   │   │   ├── HeroSlider.css
 │   │   │   │   ├── AdsBanner.jsx
-│   │   │   │   ├── AdsBanner.css
 │   │   │   │   ├── ValueSection.jsx
-│   │   │   │   ├── ValueSection.css
 │   │   │   │   ├── PriceSection.jsx
-│   │   │   │   ├── PriceSection.css
 │   │   │   │   ├── HalfPriceSpecial.jsx
 │   │   │   │   ├── ProductCard.jsx
-│   │   │   │   ├── ProductCard.css
 │   │   │   │   ├── FeaturedProducts.jsx
-│   │   │   │   ├── FeaturedProducts.css
 │   │   │   │   ├── CategoryOverview.jsx
-│   │   │   │   ├── CategoryOverview.css
 │   │   │   │   ├── ProductFilters.jsx
-│   │   │   │   ├── ProductFilters.css
 │   │   │   │   ├── ProductGrid.jsx
-│   │   │   │   ├── ProductGrid.css
 │   │   │   │   ├── Pagination.jsx
-│   │   │   │   ├── Pagination.css
 │   │   │   │   ├── AllCategories.jsx
-│   │   │   │   ├── AllCategories.css
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -111,21 +81,101 @@ nz-grocery/
 │   │   │   └── react.svg
 │   │   ├── styles/                  # Global styles
 │   │   │   ├── theme.css            # CSS variables & theme
-│   │   │   └── custom.css           # Bootstrap overrides
+│   │   │   ├── custom.css           # Bootstrap overrides
+│   │   │   ├── components/          # Component-specific styles
+│   │   │   │   ├── buttons/         # Button component styles
+│   │   │   │   │   └── custom-button.css
+│   │   │   │   ├── forms/           # Form component styles
+│   │   │   │   │   ├── custom-input.css
+│   │   │   │   │   └── custom-select.css
+│   │   │   │   ├── cards/           # Card component styles
+│   │   │   │   │   └── product-card.css
+│   │   │   │   ├── modals/          # Modal component styles
+│   │   │   │   │   └── modal-dialog.css
+│   │   │   │   ├── tables/          # Table component styles
+│   │   │   │   │   └── data-table.css
+│   │   │   │   ├── navigation/      # Navigation component styles
+│   │   │   │   │   ├── app-navbar.css
+│   │   │   │   │   ├── breadcrumb.css
+│   │   │   │   │   └── navigation-buttons.css
+│   │   │   │   ├── layout-elements/ # Layout component styles
+│   │   │   │   │   ├── app-footer.css
+│   │   │   │   │   ├── browse-sidebar.css
+│   │   │   │   │   ├── layout.css
+│   │   │   │   │   └── layout-wrapper.css
+│   │   │   │   ├── ui-elements/     # UI element styles
+│   │   │   │   │   ├── hero-slider.css
+│   │   │   │   │   ├── alert-message.css
+│   │   │   │   │   ├── loader.css
+│   │   │   │   │   └── image-with-fallback.css
+│   │   │   │   ├── ui-components/   # UI component styles
+│   │   │   │   │   ├── all-categories.css
+│   │   │   │   │   ├── product-filters.css
+│   │   │   │   │   ├── product-grid.css
+│   │   │   │   │   ├── pagination.css
+│   │   │   │   │   ├── category-overview.css
+│   │   │   │   │   ├── featured-products.css
+│   │   │   │   │   ├── price-section.css
+│   │   │   │   │   ├── value-section.css
+│   │   │   │   │   ├── ads-banner.css
+│   │   │   │   │   ├── form-wrapper.css
+│   │   │   │   │   ├── confirm-dialog.css
+│   │   │   │   │   ├── stat-card.css
+│   │   │   │   │   └── info-card.css
+│   │   │   │   └── index.css        # Central import file
+│   │   │   ├── layouts/             # Layout-specific styles
+│   │   │   │   └── index.css
+│   │   │   └── utilities/           # Utility classes
+│   │   │       └── index.css
 │   │   ├── utils/                   # Utility functions
+│   │   │   ├── api.js               # API utilities
+│   │   │   ├── formatters.js        # Data formatting
+│   │   │   ├── validators.js        # Form validation
+│   │   │   ├── constants.js         # App constants
+│   │   │   ├── helpers.js           # General helpers
+│   │   │   └── index.js             # Export file
 │   │   ├── hooks/                   # Custom React hooks
+│   │   │   ├── useLocalStorage.js   # Local storage hook
+│   │   │   ├── useDebounce.js       # Debounce hook
+│   │   │   ├── useApi.js            # API hook
+│   │   │   ├── useCart.js           # Cart management hook
+│   │   │   ├── useFavorites.js      # Favorites hook
+│   │   │   └── index.js             # Export file
+│   │   ├── services/                # API services
+│   │   │   ├── api/                 # API service modules
+│   │   │   │   ├── products.js      # Products API
+│   │   │   │   ├── categories.js    # Categories API
+│   │   │   │   ├── users.js         # Users API
+│   │   │   │   ├── cart.js          # Cart API
+│   │   │   │   ├── orders.js        # Orders API
+│   │   │   │   └── auth.js          # Authentication API
+│   │   │   └── index.js             # Export file
 │   │   ├── context/                 # React Context providers
+│   │   │   ├── CartContext.jsx      # Cart state management
+│   │   │   ├── UserContext.jsx      # User state management
+│   │   │   ├── ThemeContext.jsx     # Theme state management
+│   │   │   ├── AppContext.jsx       # App-wide state
+│   │   │   └── index.js             # Export file
+│   │   ├── __tests__/               # Test files
+│   │   │   └── sample.test.js       # Sample test
+│   │   ├── __mocks__/               # Mock files
+│   │   │   └── index.js             # Mock utilities
+│   │   ├── test-utils/              # Test utilities
+│   │   │   ├── render.js            # Custom render function
+│   │   │   └── testData.js          # Test data
 │   │   ├── config/                  # Configuration files
 │   │   │   └── fontawesome.js       # FontAwesome configuration
 │   │   ├── App.jsx                  # Main App component
 │   │   ├── main.jsx                 # Entry point
 │   │   └── index.css                # Global CSS
-│   ├── .env                         # Environment variables (local)
+│   ├── .env.local                   # Environment variables (local)
 │   ├── .env.staging                 # Environment variables (staging)
 │   ├── .env.production              # Environment variables (production)
+│   ├── .env.example                 # Environment variables template
 │   ├── package.json                 # Dependencies & scripts
 │   ├── package-lock.json            # Dependency lock file
 │   ├── vite.config.js               # Vite configuration
+│   ├── vitest.config.js             # Vitest configuration
 │   ├── eslint.config.js             # ESLint configuration
 │   ├── .gitignore                   # Git ignore rules
 │   └── node_modules/                 # Dependencies
@@ -150,6 +200,8 @@ nz-grocery/
 ### **Development Tools:**
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
+- **Vitest** - Unit testing framework
+- **React Testing Library** - Component testing
 - **Git** - Version control
 
 ## 📋 Development Rules & Guidelines
@@ -162,9 +214,10 @@ nz-grocery/
 
 ### **2. Component Structure**
 - ✅ **One component per file**
-- ✅ **Separate CSS file** for each component
+- ✅ **Centralized CSS** in `styles/components/` directory
 - ✅ **Export from index.js** for clean imports
 - ✅ **Use functional components** with hooks
+- ✅ **Import CSS from centralized location**
 
 ### **3. CSS & Styling Rules**
 - ❌ **NO inline CSS** - Always use separate CSS files
@@ -172,6 +225,8 @@ nz-grocery/
 - ✅ **Bootstrap classes** for layout & utilities
 - ✅ **Custom CSS** for component-specific styles
 - ✅ **Mobile-first** responsive design
+- ✅ **Centralized CSS** in `styles/components/` directory
+- ✅ **Categorized styles** by component type
 
 ### **4. Import Organization**
 ```jsx
@@ -186,7 +241,7 @@ import { CustomButton } from '../common';
 import { AppNavbar } from '../layout';
 
 // 4. Styles
-import './ComponentName.css';
+import '../../styles/components/category/component-name.css';
 ```
 
 ### **5. Component Props & State**
@@ -244,8 +299,21 @@ import './ComponentName.css';
 # Development
 npm run dev          # Start dev server
 npm run build        # Build for production
+npm run build:dev    # Build for development
+npm run build:staging # Build for staging
+npm run build:prod   # Build for production
 npm run preview      # Preview production build
+npm run preview:dev  # Preview development build
+npm run preview:staging # Preview staging build
+npm run preview:prod # Preview production build
 npm run lint         # Run ESLint
+
+# Testing
+npm run test         # Run tests
+npm run test:ui      # Run tests with UI
+npm run test:run     # Run tests once
+npm run test:coverage # Run tests with coverage
+npm run test:watch   # Run tests in watch mode
 
 # Dependencies
 npm install          # Install dependencies
@@ -264,8 +332,12 @@ npm update           # Update dependencies
   "react-icons": "^5.5.0",
   "@fortawesome/fontawesome-svg-core": "^7.0.1",
   "@fortawesome/free-solid-svg-icons": "^7.0.1",
-  "@fortawesome/react-fontawesome": "^0.2.0",
-  "vite": "^6.0.1"
+  "@fortawesome/react-fontawesome": "^3.0.2",
+  "vite": "npm:rolldown-vite@7.1.12",
+  "vitest": "^3.2.4",
+  "@testing-library/react": "^16.3.0",
+  "@testing-library/jest-dom": "^6.8.0",
+  "@testing-library/user-event": "^14.6.1"
 }
 ```
 
@@ -360,7 +432,7 @@ touch src/pages/NewPage.css
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { CustomButton } from '../components/common';
-import './NewPage.css';
+import '../../styles/pages/new-page.css';
 
 const NewPage = () => {
   return (
@@ -405,15 +477,15 @@ import NewPage from './pages/NewPage';
 ```bash
 # For common component
 touch src/components/common/NewComponent.jsx
-touch src/components/common/NewComponent.css
+touch src/styles/components/category/new-component.css
 
 # For layout component
 touch src/components/layout/NewComponent.jsx
-touch src/components/layout/NewComponent.css
+touch src/styles/components/layout-elements/new-component.css
 
 # For UI component
 touch src/components/ui/NewComponent.jsx
-touch src/components/ui/NewComponent.css
+touch src/styles/components/ui-components/new-component.css
 ```
 
 #### **Step 3: Component Template**
@@ -421,7 +493,7 @@ touch src/components/ui/NewComponent.css
 // src/components/category/NewComponent.jsx
 import React, { useState, useEffect } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import './NewComponent.css';
+import '../../styles/components/category/new-component.css';
 
 const NewComponent = ({ 
   title, 
@@ -519,7 +591,7 @@ touch src/context/NewFeatureContext.jsx
 
 #### **CSS File Structure:**
 ```css
-/* src/components/category/NewComponent.css */
+/* src/styles/components/category/new-component.css */
 
 /* Component root */
 .new-component {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import './ConfirmDialog.css';
+import '../../styles/components/ui-components/confirm-dialog.css';
 
 const ConfirmDialog = ({ 
   show,

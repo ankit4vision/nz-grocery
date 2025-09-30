@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import placeholderImage from '../../assets/images/placeholder.svg';
-import './ImageWithFallback.css';
+import '../../styles/components/ui-elements/image-with-fallback.css';
 
 const ImageWithFallback = ({
   src,

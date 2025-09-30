@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { CustomButton } from '../common';
-import './PriceSection.css';
+import '../../styles/components/ui-components/price-section.css';
 
 const PriceSection = ({ 
   title = "Half Price Special",

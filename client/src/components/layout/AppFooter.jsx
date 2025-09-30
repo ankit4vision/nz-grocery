@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import logoImage from '../../assets/logo/logo-transprant.png';
-import './AppFooter.css';
+import '../../styles/components/layout-elements/app-footer.css';
 
 const AppFooter = ({ 
   companyName = 'Farm 2 Fridge',

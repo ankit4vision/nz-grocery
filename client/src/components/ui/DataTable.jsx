@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Card } from 'react-bootstrap';
-import './DataTable.css';
+import '../../styles/components/tables/data-table.css';
 
 const DataTable = ({ 
   columns = [],

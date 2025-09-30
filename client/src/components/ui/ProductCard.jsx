@@ -3,7 +3,7 @@ import { Card, Button, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faShoppingCart, faStar } from '@fortawesome/free-solid-svg-icons';
 import { ImageWithFallback } from '../common';
-import './ProductCard.css';
+import '../../styles/components/cards/product-card.css';
 
 const ProductCard = ({
   id,

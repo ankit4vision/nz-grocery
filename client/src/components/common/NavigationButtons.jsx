@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import './NavigationButtons.css';
+import '../../styles/components/navigation/navigation-buttons.css';
 
 const NavigationButtons = ({
   onPrev,

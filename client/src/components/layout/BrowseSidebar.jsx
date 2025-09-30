@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { categoriesData, popularCardsData } from '../../data/mockData';
-import './BrowseSidebar.css';
+import '../../styles/components/layout-elements/browse-sidebar.css';
 
 const BrowseSidebar = ({ show, onHide }) => {
   const navigate = useNavigate();
