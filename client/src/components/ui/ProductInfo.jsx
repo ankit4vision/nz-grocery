@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Badge, Row, Col } from 'react-bootstrap';
 import { FaHeart, FaStar, FaShoppingCart } from 'react-icons/fa';
 import { CustomButton } from '../common';
+import { useCartContext } from '../../context';
 import '../../styles/components/ui-components/product-info.css';
 
 /**
@@ -28,6 +29,7 @@ const ProductInfo = ({
 }) => {
   const [isFavorite, setIsFavorite] = useState(product?.isFavorite || false);
   const [quantity, setQuantity] = useState(1);
+  const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
 
   const handleToggleFavorite = () => {
     const newFavoriteState = !isFavorite;
@@ -38,13 +40,23 @@ const ProductInfo = ({
   };
 
   const handleAddToCart = () => {
+    addItem(product, quantity);
     if (onAddToCart) {
       onAddToCart(product.id, quantity);
     }
   };
 
-  const handleQuantityChange = (newQuantity) => {
-    if (newQuantity >= 1 && newQuantity <= (product?.stockCount || 99)) {
+  const handleQuantityChange = (change) => {
+    const currentQuantity = isInCart(product.id) ? getItemQuantity(product.id) : quantity;
+    const newQuantity = Math.max(1, currentQuantity + change);
+    
+    if (isInCart(product.id)) {
+      if (newQuantity === 0) {
+        removeItem(product.id);
+      } else {
+        updateItemQuantity(product.id, newQuantity);
+      }
+    } else {
       setQuantity(newQuantity);
     }
   };
@@ -137,40 +149,53 @@ const ProductInfo = ({
       {/* Add to Cart Section */}
       <div className="add-to-cart-section">
         <div className="quantity-section">
-          <span className="quantity-label">Quantity:</span>
-          <div className="quantity-selector">
-            <Button 
-              variant="outline-secondary" 
-              size="sm"
-              onClick={() => handleQuantityChange(quantity - 1)}
-              disabled={quantity <= 1}
-              className="quantity-btn"
-            >
-              −
-            </Button>
-            <span className="quantity-display">{quantity}</span>
-            <Button 
-              variant="outline-secondary" 
-              size="sm"
-              onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={quantity >= (product.stockCount || 99)}
-              className="quantity-btn"
-            >
-              +
-            </Button>
+          <div className="quantity-controls">
+            <div className="product-card__quantity-selector">
+              <Button 
+                variant="outline-secondary" 
+                size="sm"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={isInCart(product.id) ? getItemQuantity(product.id) <= 1 : quantity <= 1}
+                className="product-card__quantity-btn"
+              >
+                −
+              </Button>
+              <span className="product-card__quantity">
+                {isInCart(product.id) ? getItemQuantity(product.id) : quantity}
+              </span>
+              <Button 
+                variant="outline-secondary" 
+                size="sm"
+                onClick={() => handleQuantityChange(1)}
+                disabled={isInCart(product.id) ? false : quantity >= (product.stockCount || 99)}
+                className="product-card__quantity-btn"
+              >
+                +
+              </Button>
+            </div>
           </div>
         </div>
         
-        <CustomButton
-          variant="success"
-          size="lg"
-          onClick={handleAddToCart}
-          disabled={!product.inStock}
-          className="add-to-cart-btn"
-        >
-          <FaShoppingCart className="me-2" />
-          Add to Cart
-        </CustomButton>
+        <div className="action-section">
+          {!isInCart(product.id) ? (
+            <CustomButton
+              variant="success"
+              size="md"
+              onClick={handleAddToCart}
+              disabled={!product.inStock}
+              className="add-to-cart-btn"
+            >
+              <FaShoppingCart className="me-2" />
+              Add to Cart
+            </CustomButton>
+          ) : (
+            <div className="in-cart-indicator">
+              <Badge bg="success" className="in-cart-badge">
+                ✓ Added to Cart
+              </Badge>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Product Details */}

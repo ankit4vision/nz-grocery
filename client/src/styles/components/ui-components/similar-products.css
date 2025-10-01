@@ -191,13 +191,7 @@
   color: var(--text-secondary);
 }
 
-.similar-products .add-to-cart-btn {
-  margin-top: auto;
-  width: 100%;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-}
+/* Using global product-card styles for buttons and quantity selectors */
 
 .similar-products .pagination-indicators {
   display: flex;

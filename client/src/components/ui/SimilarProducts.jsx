@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Button, Badge } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight, FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { ImageWithFallback } from '../common';
+import { useCartContext } from '../../context';
 import '../../styles/components/ui-components/similar-products.css';
 
 /**
@@ -33,6 +34,7 @@ const SimilarProducts = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [favorites, setFavorites] = useState({});
+  const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
   const productsPerView = 4; // Number of products to show at once
   const maxIndex = Math.max(0, products.length - productsPerView);
 
@@ -54,10 +56,27 @@ const SimilarProducts = ({
     }
   };
 
-  const handleAddToCart = (productId) => {
+  const handleAddToCart = (product) => {
+    addItem(product, 1);
     if (onAddToCart) {
-      onAddToCart(productId);
+      onAddToCart(product.id);
     }
+  };
+
+  const handleQuantityChange = (product, change) => {
+    const currentQuantity = getItemQuantity(product.id);
+    const newQuantity = Math.max(1, currentQuantity + change);
+    
+    if (newQuantity === 0) {
+      removeItem(product.id);
+    } else {
+      updateItemQuantity(product.id, newQuantity);
+    }
+  };
+
+  const handleQuantityButtonClick = (e, product, change) => {
+    e.stopPropagation();
+    handleQuantityChange(product, change);
   };
 
   const handleProductClick = (productId) => {
@@ -173,19 +192,41 @@ const SimilarProducts = ({
                     <span className="reviews-count">({product.reviews})</span>
                   </div>
 
-                  {/* Add to Cart Button */}
-                  <Button 
-                    variant="outline-success" 
-                    size="sm"
-                    className="add-to-cart-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(product.id);
-                    }}
-                  >
-                    <FaShoppingCart className="me-1" />
-                    Cart
-                  </Button>
+                  {/* Dynamic Button/Quantity Selector */}
+                  {isInCart(product.id) ? (
+                    <div className="product-card__quantity-selector">
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={(e) => handleQuantityButtonClick(e, product, -1)}
+                        className="product-card__quantity-btn"
+                        disabled={getItemQuantity(product.id) <= 1}
+                      >
+                        -
+                      </Button>
+                      <span className="product-card__quantity">{getItemQuantity(product.id)}</span>
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={(e) => handleQuantityButtonClick(e, product, 1)}
+                        className="product-card__quantity-btn"
+                      >
+                        +
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant="success"
+                      className="product-card__button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product);
+                      }}
+                    >
+                      <FaShoppingCart className="me-2" />
+                      Add to Cart
+                    </Button>
+                  )}
                 </div>
               </article>
             </Col>
