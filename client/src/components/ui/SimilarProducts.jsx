@@ -88,13 +88,13 @@ const SimilarProducts = ({
   const visibleProducts = products.slice(currentIndex, currentIndex + productsPerView);
 
   return (
-    <div className={`similar-products ${className}`}>
+    <section className={`similar-products ${className}`}>
       <Container>
         {/* Section Header */}
-        <div className="section-header">
+        <header className="section-header">
           <h2 className="section-title">{title}</h2>
           {products.length > productsPerView && (
-            <div className="navigation-controls">
+            <nav className="navigation-controls">
               <Button 
                 variant="outline-secondary" 
                 size="sm"
@@ -115,15 +115,15 @@ const SimilarProducts = ({
               >
                 <FaChevronRight />
               </Button>
-            </div>
+            </nav>
           )}
-        </div>
+        </header>
 
         {/* Products Grid */}
         <Row className="products-grid">
           {visibleProducts.map((product) => (
             <Col key={product.id} xs={6} md={3} className="product-col">
-              <div className="product-card" onClick={() => handleProductClick(product.id)}>
+              <article className="product-card" onClick={() => handleProductClick(product.id)}>
                 {/* Product Image */}
                 <div className="product-image-container">
                   <ImageWithFallback 
@@ -187,14 +187,14 @@ const SimilarProducts = ({
                     Cart
                   </Button>
                 </div>
-              </div>
+              </article>
             </Col>
           ))}
         </Row>
 
         {/* Pagination Indicators */}
         {products.length > productsPerView && (
-          <div className="pagination-indicators">
+          <nav className="pagination-indicators">
             {Array.from({ length: maxIndex + 1 }, (_, index) => (
               <button
                 key={index}
@@ -203,10 +203,10 @@ const SimilarProducts = ({
                 aria-label={`Go to page ${index + 1}`}
               />
             ))}
-          </div>
+          </nav>
         )}
       </Container>
-    </div>
+    </section>
   );
 };
 

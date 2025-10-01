@@ -1,7 +1,6 @@
 /* Similar Products Styles */
 .similar-products {
   padding: 3rem 0;
-  background: var(--bg-secondary);
 }
 
 .similar-products .section-header {
@@ -18,6 +17,7 @@
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+  text-transform: none;
 }
 
 .similar-products .navigation-controls {
