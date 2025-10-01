@@ -31,6 +31,7 @@ nz-grocery/
 │   │   │   │   ├── LayoutWrapper.jsx
 │   │   │   │   ├── BrowseSidebar.jsx
 │   │   │   │   ├── Layout.jsx
+│   │   │   │   ├── UserProfileDropdown.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── ui/                  # UI components
 │   │   │   │   ├── InfoCard.jsx
@@ -63,6 +64,11 @@ nz-grocery/
 │   │   │   │   ├── OrderSummaryBreakdown.jsx
 │   │   │   │   ├── OrderItems.jsx
 │   │   │   │   ├── PurchaseNote.jsx
+│   │   │   │   ├── ProfileInformation.jsx
+│   │   │   │   ├── ChangePassword.jsx
+│   │   │   │   ├── MyOrders.jsx
+│   │   │   │   ├── Wishlist.jsx
+│   │   │   │   ├── HelpCenter.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -74,6 +80,10 @@ nz-grocery/
 │   │   │   ├── ProductDetail.css
 │   │   │   ├── Checkout.jsx
 │   │   │   ├── Checkout.css
+│   │   │   ├── OrderDetails.jsx
+│   │   │   ├── OrderDetails.css
+│   │   │   ├── UserDashboard.jsx
+│   │   │   ├── UserDashboard.css
 │   │   │   ├── About.jsx
 │   │   │   └── About.css
 │   │   ├── data/                    # Mock data files
@@ -99,6 +109,7 @@ nz-grocery/
 │   │   ├── styles/                  # Global styles
 │   │   │   ├── theme.css            # CSS variables & theme
 │   │   │   ├── custom.css           # Bootstrap overrides
+│   │   │   ├── global-forms.css     # Global form controls styling
 │   │   │   ├── components/          # Component-specific styles
 │   │   │   │   ├── buttons/         # Button component styles
 │   │   │   │   │   └── custom-button.css
@@ -113,7 +124,8 @@ nz-grocery/
 │   │   │   │   ├── navigation/      # Navigation component styles
 │   │   │   │   │   ├── app-navbar.css
 │   │   │   │   │   ├── breadcrumb.css
-│   │   │   │   │   └── navigation-buttons.css
+│   │   │   │   │   ├── navigation-buttons.css
+│   │   │   │   │   └── user-profile-dropdown.css
 │   │   │   │   ├── layout-elements/ # Layout component styles
 │   │   │   │   │   ├── app-footer.css
 │   │   │   │   │   ├── browse-sidebar.css
@@ -149,7 +161,12 @@ nz-grocery/
 │   │   │   │   │   ├── order-status.css
 │   │   │   │   │   ├── order-summary-breakdown.css
 │   │   │   │   │   ├── order-items.css
-│   │   │   │   │   └── purchase-note.css
+│   │   │   │   │   ├── purchase-note.css
+│   │   │   │   │   ├── profile-information.css
+│   │   │   │   │   ├── change-password.css
+│   │   │   │   │   ├── my-orders.css
+│   │   │   │   │   ├── wishlist.css
+│   │   │   │   │   └── help-center.css
 │   │   │   │   └── index.css        # Central import file
 │   │   │   ├── layouts/             # Layout-specific styles
 │   │   │   │   └── index.css
@@ -389,6 +406,7 @@ npm update           # Update dependencies
 - `LayoutWrapper` - Main layout wrapper
 - `BrowseSidebar` - Product browsing sidebar
 - `Layout` - Base layout component
+- `UserProfileDropdown` - User profile dropdown menu with navigation links
 
 ### **UI Components:**
 - `InfoCard` - Information display card
@@ -421,6 +439,11 @@ npm update           # Update dependencies
 - `OrderSummaryBreakdown` - Order amount breakdown component showing subtotal, shipping, tax, discount, and total
 - `OrderItems` - Itemized product list component displaying order items with images, quantities, and prices
 - `PurchaseNote` - Delivery instructions and special notes component
+- `ProfileInformation` - User profile information form with photo upload, personal details, and address management
+- `ChangePassword` - Password change form with current/new password fields and validation
+- `MyOrders` - User order history display with order status and details
+- `Wishlist` - User wishlist management with product cards and summary
+- `HelpCenter` - FAQ and help center with categorized questions and contact options
 
 ## 🛒 Cart System & State Management
 
@@ -489,6 +512,7 @@ npm update           # Update dependencies
 - **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
 - **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary
 - **Order Details Page** (`OrderDetails.jsx`) - Order tracking and details page with progress status, order summary, items list, and delivery notes
+- **User Dashboard Page** (`UserDashboard.jsx`) - User account dashboard with tabbed navigation for profile, password, orders, wishlist, and help
 - **About Page** (`About.jsx`) - About page component
 
 ## 🚀 Creating New Functionality & Pages
