@@ -2087,6 +2087,7 @@ export const productDetailData = {
   unit: "kg",
   currentPrice: "2.49",
   originalPrice: "2.00",
+  image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&h=600&fit=crop&crop=center",
   images: [
     "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&h=600&fit=crop&crop=center",
     "https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=600&h=600&fit=crop&crop=center",

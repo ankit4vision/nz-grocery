@@ -14,7 +14,7 @@ const PriceSection = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef(null);
-  const { addItem } = useCartContext();
+  const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
   
   const sectionClasses = [
     'price-section',
@@ -37,6 +37,22 @@ const PriceSection = ({
   const handleAddToCart = (product) => {
     addItem(product, 1);
     console.log(`Added ${product.name} to cart`);
+  };
+
+  const handleQuantityChange = (product, change) => {
+    const currentQuantity = getItemQuantity(product.id);
+    const newQuantity = Math.max(1, currentQuantity + change);
+    
+    if (newQuantity === 0) {
+      removeItem(product.id);
+    } else {
+      updateItemQuantity(product.id, newQuantity);
+    }
+  };
+
+  const handleQuantityButtonClick = (e, product, change) => {
+    e.stopPropagation(); // Prevent any parent click events
+    handleQuantityChange(product, change);
   };
 
   return (
@@ -63,47 +79,77 @@ const PriceSection = ({
         </div>
         
         <Row className="price-section__content" ref={scrollContainerRef}>
-          {visibleProducts.map((product) => (
-            <Col lg={3} md={6} sm={6} key={product.id} className="mb-4">
-              <Card className="product-card">
-                <div className="product-card__image">
-                  <ImageWithFallback
-                    src={product.image}
-                    alt={product.name}
-                    className="product-card__image-element"
-                  />
-                  <div
-                    className="product-card__badge"
-                    style={{
-                      backgroundColor: 'var(--danger-color)',
-                      color: 'var(--white)'
-                    }}
-                  >
-                    1/2 Price
+          {visibleProducts.map((product) => {
+            const productInCart = isInCart(product.id);
+            const cartQuantity = getItemQuantity(product.id);
+            
+            return (
+              <Col lg={3} md={6} sm={6} key={product.id} className="mb-4">
+                <Card className="product-card">
+                  <div className="product-card__image">
+                    <ImageWithFallback
+                      src={product.image}
+                      alt={product.name}
+                      className="product-card__image-element"
+                    />
+                    <div
+                      className="product-card__badge"
+                      style={{
+                        backgroundColor: 'var(--danger-color)',
+                        color: 'var(--white)'
+                      }}
+                    >
+                      1/2 Price
+                    </div>
                   </div>
-                </div>
-                
-                <Card.Body className="product-card__body">
-                  <div className="product-card__pricing">
-                    <span className="product-card__current-price">${product.currentPrice}</span>
-                    <span className="product-card__original-price">${product.originalPrice}</span>
-                  </div>
-                  <p className="product-card__title">
-                    {product.name}
-                  </p>
-                  <CustomButton
-                    variant="outline-success"
-                    size="sm"
-                    className="product-card__button"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
-                    Add to Cart
-                  </CustomButton>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+                  
+                  <Card.Body className="product-card__body">
+                    <div className="product-card__pricing">
+                      <span className="product-card__current-price">${product.currentPrice}</span>
+                      <span className="product-card__original-price">${product.originalPrice}</span>
+                    </div>
+                    <p className="product-card__title">
+                      {product.name}
+                    </p>
+                    
+                    {/* Dynamic Button/Quantity Selector */}
+                    {productInCart ? (
+                      <div className="product-card__quantity-selector">
+                        <CustomButton
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={(e) => handleQuantityButtonClick(e, product, -1)}
+                          className="product-card__quantity-btn"
+                          disabled={cartQuantity <= 1}
+                        >
+                          -
+                        </CustomButton>
+                        <span className="product-card__quantity">{cartQuantity}</span>
+                        <CustomButton
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={(e) => handleQuantityButtonClick(e, product, 1)}
+                          className="product-card__quantity-btn"
+                        >
+                          +
+                        </CustomButton>
+                      </div>
+                    ) : (
+                      <CustomButton
+                        variant="outline-success"
+                        size="sm"
+                        className="product-card__button"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
+                        Add to Cart
+                      </CustomButton>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
       </Container>
     </section>

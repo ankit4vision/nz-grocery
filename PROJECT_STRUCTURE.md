@@ -56,6 +56,7 @@ nz-grocery/
 │   │   │   │   ├── ProductInfo.jsx
 │   │   │   │   ├── SimilarProducts.jsx
 │   │   │   │   ├── CustomerReviews.jsx
+│   │   │   │   ├── CartSidebar.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -133,7 +134,8 @@ nz-grocery/
 │   │   │   │   │   ├── product-image-gallery.css
 │   │   │   │   │   ├── product-info.css
 │   │   │   │   │   ├── similar-products.css
-│   │   │   │   │   └── customer-reviews.css
+│   │   │   │   │   ├── customer-reviews.css
+│   │   │   │   │   └── cart-sidebar.css
 │   │   │   │   └── index.css        # Central import file
 │   │   │   ├── layouts/             # Layout-specific styles
 │   │   │   │   └── index.css
@@ -205,9 +207,10 @@ nz-grocery/
 ### **UI Library:**
 - **React Bootstrap** - Component library
 - **Bootstrap 5** - CSS framework
-- **React Icons** - Icon library (FaSearch, FaShoppingCart, FaUser, FaChevronLeft, FaChevronRight)
+- **React Icons** - Icon library (FaSearch, FaShoppingCart, FaUser, FaChevronLeft, FaChevronRight, FaTimes, FaTrash, FaMinus, FaPlus)
 - **FontAwesome** - Icon library for existing components
 - **Custom CSS** - Theme & overrides
+- **Offcanvas** - React Bootstrap offcanvas for cart sidebar
 
 ### **Development Tools:**
 - **ESLint** - Code linting
@@ -384,9 +387,9 @@ npm update           # Update dependencies
 - `HeroSlider` - Hero section image slider
 - `AdsBanner` - Promotional ads carousel banner
 - `ValueSection` - Value categories display section
-- `PriceSection` - Half price specials section
+- `PriceSection` - Half price specials section with cart integration
 - `HalfPriceSpecial` - Half price special component
-- `ProductCard` - Individual product display card
+- `ProductCard` - Individual product display card with dynamic cart functionality
 - `FeaturedProducts` - Featured products grid section
 - `CategoryOverview` - Category overview component
 - `ProductFilters` - Product filtering and sorting component
@@ -397,6 +400,32 @@ npm update           # Update dependencies
 - `ProductInfo` - Product details, pricing, and add-to-cart functionality
 - `SimilarProducts` - Similar products carousel section
 - `CustomerReviews` - Customer reviews display and write review functionality
+- `CartSidebar` - Shopping cart sidebar with full cart management functionality
+
+## 🛒 Cart System & State Management
+
+### **Cart Context (`CartContext.jsx`):**
+- **Global State Management** - Centralized cart state using React Context
+- **Cart Actions** - Add, remove, update quantity, clear cart
+- **Real-time Updates** - Instant cart count and price calculations
+- **Local Storage** - Persistent cart data across sessions
+- **Error Handling** - Comprehensive error states and loading management
+
+### **Cart Functionality:**
+- **Add to Cart** - Works across all pages (Home, Products, Product Detail)
+- **Dynamic UI** - Shows "Add to Cart" or quantity selector based on cart state
+- **Quantity Management** - Increase/decrease quantities with visual feedback
+- **Cart Sidebar** - Professional offcanvas cart panel
+- **Real-time Badge** - Cart item count in navigation
+- **Price Calculations** - Automatic subtotal and savings calculations
+- **Empty State** - Engaging empty cart with call-to-action
+
+### **Cart Integration Points:**
+- **Home Page** - Featured products and Half Price Special sections
+- **Products Page** - Product grid with cart functionality
+- **Product Detail** - Main product and similar products
+- **Navigation** - Cart icon with item count badge
+- **Layout Wrapper** - Cart sidebar integration
 
 ## 📊 Data Structure & Mock Data
 

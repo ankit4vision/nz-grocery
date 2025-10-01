@@ -93,19 +93,19 @@ const CartSidebar = ({
       <Offcanvas.Header className="cart-sidebar__header">
         <Offcanvas.Title className="cart-sidebar__title">
           <div className="d-flex align-items-center justify-content-between w-100">
-            <div>
-              <h4 className="mb-0">Cart</h4>
-              <Badge bg="secondary" className="cart-sidebar__item-count">
+            <div className="cart-sidebar__title-section">
+              <h4 className="cart-sidebar__title-text mb-0">Shopping Cart</h4>
+              <Badge bg="primary" className="cart-sidebar__item-count">
                 {totalItems} {totalItems === 1 ? 'item' : 'items'}
               </Badge>
             </div>
             <Button
               variant="link"
               onClick={onHide}
-              className="cart-sidebar__close-btn p-0"
+              className="cart-sidebar__close-btn"
               aria-label="Close cart"
             >
-              <FaTimes size={20} />
+              <FaTimes size={18} />
             </Button>
           </div>
         </Offcanvas.Title>
@@ -130,15 +130,27 @@ const CartSidebar = ({
             </Button>
           </div>
         ) : items.length === 0 ? (
-          <div className="cart-sidebar__empty text-center py-5">
-            <div className="text-muted mb-3">
-              <FaTimes size={48} />
+          <div className="cart-sidebar__empty text-center">
+            <div className="cart-sidebar__empty-icon mb-4">
+              <div className="cart-sidebar__empty-cart-icon">
+                🛒
+              </div>
             </div>
-            <h5 className="text-muted">Your cart is empty</h5>
-            <p className="text-muted">Add some items to get started</p>
-            <Button variant="primary" onClick={onHide}>
-              Continue Shopping
-            </Button>
+            <h5 className="cart-sidebar__empty-title mb-3">Your cart is empty</h5>
+            <p className="cart-sidebar__empty-message mb-4">
+              Looks like you haven't added any items to your cart yet. 
+              Start shopping to fill it up with amazing products!
+            </p>
+            <div className="cart-sidebar__empty-actions">
+              <Button 
+                variant="primary" 
+                size="lg"
+                onClick={onHide}
+                className="cart-sidebar__continue-shopping-btn"
+              >
+                Continue Shopping
+              </Button>
+            </div>
           </div>
         ) : (
           <>

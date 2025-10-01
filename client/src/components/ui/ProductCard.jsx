@@ -27,7 +27,11 @@ const ProductCard = ({
   const [favorite, setFavorite] = useState(initialIsFavorite);
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
-  const { addItem, toggleCart, isInCart } = useCartContext();
+  const { addItem, toggleCart, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
+
+  // Check if product is already in cart
+  const productInCart = isInCart(id);
+  const cartQuantity = getItemQuantity(id);
 
   const handleToggleFavorite = (e) => {
     e.stopPropagation();
@@ -67,8 +71,34 @@ const ProductCard = ({
   };
 
   const handleQuantityChange = (change) => {
-    const newQuantity = Math.max(1, quantity + change);
-    setQuantity(newQuantity);
+    const newQuantity = Math.max(1, cartQuantity + change);
+    
+    // Create product object for cart
+    const product = {
+      id,
+      name,
+      unit,
+      currentPrice,
+      originalPrice,
+      image,
+      rating,
+      reviews,
+      discount: discountPercentage,
+      category
+    };
+    
+    if (newQuantity === 0) {
+      // Remove from cart if quantity becomes 0
+      removeItem(id);
+    } else {
+      // Update quantity in cart
+      updateItemQuantity(id, newQuantity);
+    }
+  };
+
+  const handleQuantityButtonClick = (e, change) => {
+    e.stopPropagation(); // Prevent card click
+    handleQuantityChange(change);
   };
 
   const renderStars = (rating) => {
@@ -93,13 +123,40 @@ const ProductCard = ({
   };
 
   const renderAddToCartButton = () => {
+    // If product is already in cart, show quantity selector
+    if (productInCart) {
+      return (
+        <div className="product-card__quantity-selector">
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={(e) => handleQuantityButtonClick(e, -1)}
+            className="product-card__quantity-btn"
+            disabled={cartQuantity <= 1}
+          >
+            -
+          </Button>
+          <span className="product-card__quantity">{cartQuantity}</span>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={(e) => handleQuantityButtonClick(e, 1)}
+            className="product-card__quantity-btn"
+          >
+            +
+          </Button>
+        </div>
+      );
+    }
+
+    // If showQuantitySelector prop is true (for special cases)
     if (showQuantitySelector) {
       return (
         <div className="product-card__quantity-selector">
           <Button
             variant="outline-secondary"
             size="sm"
-            onClick={() => handleQuantityChange(-1)}
+            onClick={(e) => handleQuantityButtonClick(e, -1)}
             className="product-card__quantity-btn"
             disabled={quantity <= 1}
           >
@@ -109,7 +166,7 @@ const ProductCard = ({
           <Button
             variant="outline-secondary"
             size="sm"
-            onClick={() => handleQuantityChange(1)}
+            onClick={(e) => handleQuantityButtonClick(e, 1)}
             className="product-card__quantity-btn"
           >
             +
@@ -118,6 +175,7 @@ const ProductCard = ({
       );
     }
 
+    // Default Add to Cart button
     return (
       <Button variant="success" className="product-card__button" onClick={handleAddToCart}>
         <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
