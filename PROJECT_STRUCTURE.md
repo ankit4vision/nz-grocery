@@ -60,6 +60,10 @@ nz-grocery/
 │   │   │   │   ├── DeliveryInfo.jsx
 │   │   │   │   ├── PaymentMethod.jsx
 │   │   │   │   ├── OrderSummary.jsx
+│   │   │   │   ├── OrderStatus.jsx
+│   │   │   │   ├── OrderSummaryBreakdown.jsx
+│   │   │   │   ├── OrderItems.jsx
+│   │   │   │   ├── PurchaseNote.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -143,7 +147,11 @@ nz-grocery/
 │   │   │   │   │   ├── cart-sidebar.css
 │   │   │   │   │   ├── delivery-info.css
 │   │   │   │   │   ├── payment-method.css
-│   │   │   │   │   └── order-summary.css
+│   │   │   │   │   ├── order-summary.css
+│   │   │   │   │   ├── order-status.css
+│   │   │   │   │   ├── order-summary-breakdown.css
+│   │   │   │   │   ├── order-items.css
+│   │   │   │   │   └── purchase-note.css
 │   │   │   │   └── index.css        # Central import file
 │   │   │   ├── layouts/             # Layout-specific styles
 │   │   │   │   └── index.css
@@ -412,6 +420,10 @@ npm update           # Update dependencies
 - `DeliveryInfo` - Delivery information form with day/time selection and contact details
 - `PaymentMethod` - Payment method selection with card details and payment options
 - `OrderSummary` - Order summary with items, pricing breakdown, promo codes, and checkout button
+- `OrderStatus` - Order status display with payment status badge, order summary cards, and progress tracker
+- `OrderSummaryBreakdown` - Order amount breakdown component showing subtotal, shipping, tax, discount, and total
+- `OrderItems` - Itemized product list component displaying order items with images, quantities, and prices
+- `PurchaseNote` - Delivery instructions and special notes component
 
 ## 🛒 Cart System & State Management
 
@@ -436,6 +448,7 @@ npm update           # Update dependencies
 - **Products Page** - Product grid with cart functionality
 - **Product Detail** - Main product and similar products
 - **Checkout Page** - Complete checkout flow with cart integration
+- **Order Details Page** - Order confirmation and tracking after checkout
 - **Navigation** - Cart icon with item count badge
 - **Layout Wrapper** - Cart sidebar integration
 
@@ -464,6 +477,7 @@ npm update           # Update dependencies
 - **Product Detail Data** (`productDetailData`) - Detailed product information for product detail page
 - **Similar Products Data** (`similarProductsData`) - Similar products for product detail page
 - **Customer Reviews Data** (`customerReviewsData`) - Customer reviews and ratings for products
+- **Order Details Data** (`orderDetailsData`) - Sample order data with status, progress steps, items, and customer information
 
 ### **Asset Structure:**
 - `src/assets/images/main-slider/` - Hero slider images (4 images)
@@ -477,6 +491,7 @@ npm update           # Update dependencies
 - **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
 - **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
 - **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary
+- **Order Details Page** (`OrderDetails.jsx`) - Order tracking and details page with progress status, order summary, items list, and delivery notes
 - **About Page** (`About.jsx`) - About page component
 
 ## 🚀 Creating New Functionality & Pages
@@ -521,6 +536,9 @@ import NewPage from './pages/NewPage';
 
 // Add to Routes
 <Route path="/new-page" element={<NewPage />} />
+
+// Example: Order Details route
+<Route path="/order/:orderId" element={<OrderDetails />} />
 ```
 
 #### **Step 4: Update Navigation**
