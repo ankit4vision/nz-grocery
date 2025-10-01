@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import ProductCard from './ProductCard';
+import { categoriesData } from '../../data/mockData';
 import '../../styles/components/ui-components/product-grid.css';
 
 /**
@@ -30,6 +31,12 @@ const ProductGrid = ({
 
   const handleToggleFavorite = (productId, isFavorite) => {
     onToggleFavorite(productId);
+  };
+
+  // Helper function to get category display name
+  const getCategoryName = (categoryId) => {
+    const category = categoriesData.find(cat => cat.id === categoryId);
+    return category ? category.name : categoryId;
   };
 
   // Determine if product should show quantity selector
@@ -73,6 +80,7 @@ const ProductGrid = ({
                 reviews={product.reviews}
                 discount={product.discount}
                 isFavorite={product.isFavorite}
+                category={getCategoryName(product.category)}
                 onAddToCart={handleAddToCart}
                 onToggleFavorite={handleToggleFavorite}
                 variant="listing"

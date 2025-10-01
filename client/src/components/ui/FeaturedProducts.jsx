@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form } from 'react-bootstrap';
 import ProductCard from './ProductCard';
+import { LoadMore } from '../common';
 import '../../styles/components/ui-components/featured-products.css';
 
 const FeaturedProducts = ({
@@ -87,18 +88,13 @@ const FeaturedProducts = ({
         </Row>
 
         {/* Load More Button */}
-        {hasMoreProducts && (
-          <div className="featured-products__load-more">
-            <Button 
-              variant="outline-primary" 
-              size="lg"
-              onClick={handleLoadMore}
-              className="featured-products__load-more-btn"
-            >
-              Load More Products
-            </Button>
-          </div>
-        )}
+        <LoadMore
+          onLoadMore={handleLoadMore}
+          hasMore={hasMoreProducts}
+          text="Load More Products"
+          size="lg"
+          className="featured-products__load-more"
+        />
       </Container>
     </section>
   );

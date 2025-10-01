@@ -37,11 +37,11 @@
 }
 
 .all-categories-arrow--left {
-  left: -20px;
+  left: -40px;
 }
 
 .all-categories-arrow--right {
-  right: -20px;
+  right: -40px;
 }
 
 .all-categories-container {
@@ -144,11 +144,11 @@
   }
   
   .all-categories-arrow--left {
-    left: -18px;
+    left: -36px;
   }
   
   .all-categories-arrow--right {
-    right: -18px;
+    right: -36px;
   }
   
   .category-card {
@@ -187,11 +187,11 @@
   }
   
   .all-categories-arrow--left {
-    left: -16px;
+    left: -32px;
   }
   
   .all-categories-arrow--right {
-    right: -16px;
+    right: -32px;
   }
   
   .all-categories-list {

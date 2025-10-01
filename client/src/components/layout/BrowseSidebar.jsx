@@ -21,8 +21,16 @@ const BrowseSidebar = ({ show, onHide }) => {
     onHide();
   };
 
-  // Use categories from mockData
-  const categories = categoriesData;
+  // Create categories list with "All" option
+  const categories = [
+    {
+      id: 'all',
+      name: 'All',
+      icon: '🛒',
+      description: 'All products'
+    },
+    ...categoriesData
+  ];
   const popularCards = popularCardsData;
 
   return (

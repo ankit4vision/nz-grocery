@@ -2,7 +2,6 @@
 
 .product-filters {
   background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--gray-200);
   padding: var(--spacing-sm) 0;
 }
 

@@ -2,6 +2,7 @@
 
 /* Import all component styles */
 @import './buttons/custom-button.css';
+@import './buttons/load-more.css';
 @import './forms/custom-input.css';
 @import './forms/custom-select.css';
 @import './cards/product-card.css';

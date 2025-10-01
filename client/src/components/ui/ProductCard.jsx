@@ -16,6 +16,7 @@ const ProductCard = ({
   reviews,
   discount: discountPercentage,
   isFavorite: initialIsFavorite,
+  category,
   onAddToCart,
   onToggleFavorite,
   variant = 'default', // New prop for different variants
@@ -88,7 +89,7 @@ const ProductCard = ({
     return (
       <Button variant="success" className="product-card__button" onClick={handleAddToCart}>
         <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
-        Cart
+        Add to Cart
       </Button>
     );
   };
@@ -111,7 +112,7 @@ const ProductCard = ({
 
         {/* Discount Badge */}
         {discountPercentage > 0 && (
-          <Badge className="product-card__badge">
+          <Badge bg="warning" className="product-card__badge">
             {discountPercentage}%
           </Badge>
         )}
@@ -122,6 +123,9 @@ const ProductCard = ({
           {name}
         </Card.Title>
         <p className="product-card__unit">{unit}</p>
+        {category && (
+          <p className="product-card__category">{category}</p>
+        )}
         
         <div className="product-card__rating">
           <div className="product-card__stars">

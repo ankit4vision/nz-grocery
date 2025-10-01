@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Form } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import {
   Breadcrumb,
   AllCategories,
   ProductGrid,
-  Pagination
+  LoadMore
 } from '../components';
 import {
   categoriesData,
-  productsListingData
+  productsListingData,
+  filterOptionsData
 } from '../data/mockData';
 import './Products.css';
 
@@ -17,11 +18,12 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   // State management
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [favorites, setFavorites] = useState(new Set());
+  const [sortBy, setSortBy] = useState('relevance');
+  const [visibleProducts, setVisibleProducts] = useState(12);
 
-  // Products per page
-  const productsPerPage = 20;
+  // Products per load
+  const productsPerLoad = 6;
 
   // Initialize selected category from URL parameter
   useEffect(() => {
@@ -32,6 +34,18 @@ const Products = () => {
       setSelectedCategory('all');
     }
   }, [searchParams]);
+
+  // Create categories list with "All" option
+  const categoriesWithAll = useMemo(() => {
+    const allCategory = {
+      id: 'all',
+      name: 'All',
+      icon: '🛒',
+      description: 'All products',
+      count: productsListingData.length
+    };
+    return [allCategory, ...categoriesData];
+  }, []);
 
   // Get selected category name and product count
   const selectedCategoryData = useMemo(() => {
@@ -64,17 +78,34 @@ const Products = () => {
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
       }
+
       return true;
     });
 
-    return filtered;
-  }, [selectedCategory]);
+    // Sort products
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return parseFloat(a.currentPrice) - parseFloat(b.currentPrice);
+        case 'price-high':
+          return parseFloat(b.currentPrice) - parseFloat(a.currentPrice);
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'newest':
+          return b.id - a.id;
+        default:
+          return 0;
+      }
+    });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+    return filtered;
+  }, [selectedCategory, sortBy]);
+
+  // Calculate visible products
+  const currentProducts = filteredProducts.slice(0, visibleProducts);
+  const hasMoreProducts = visibleProducts < filteredProducts.length;
 
   // Get breadcrumb data based on selected category
   const breadcrumbItems = useMemo(() => {
@@ -103,14 +134,18 @@ const Products = () => {
   // Handle category selection
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
-    setCurrentPage(1); // Reset to first page when category changes
+    setVisibleProducts(12); // Reset visible products when category changes
   };
 
-  // Handle page changes
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    // Scroll to top of products section
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Handle sort changes
+  const handleSortChange = (newSortBy) => {
+    setSortBy(newSortBy);
+    setVisibleProducts(12); // Reset visible products when sort changes
+  };
+
+  // Handle load more
+  const handleLoadMore = () => {
+    setVisibleProducts(prev => prev + productsPerLoad);
   };
 
   // Handle add to cart
@@ -150,7 +185,7 @@ const Products = () => {
       {/* 2nd Row: All Categories */}
       <section className="products-categories-section">
         <AllCategories
-          categories={categoriesData}
+          categories={categoriesWithAll}
           selectedCategory={selectedCategory}
           onCategorySelect={handleCategorySelect}
           className="products-all-categories"
@@ -160,16 +195,28 @@ const Products = () => {
       {/* Divider */}
       <div className="section-divider"></div>
 
-           {/* 3rd Row: Selected Category Name */}
-           <section className="products-category-name-section">
+           {/* 3rd Row: Category Title and Sort */}
+           <section className="products-title-sort-section">
              <Container>
-            <Row>
-                 <Col>
-                   <div className="selected-category-content">
-                     <h2 className="selected-category-title">{selectedCategoryData.name}</h2>
-                </div>
-              </Col>
-            </Row>
+               <Row className="align-items-center">
+                 <Col md={8}>
+                   <h2 className="selected-category-title">{selectedCategoryData.name}</h2>
+                 </Col>
+                 <Col md={4} className="text-md-end">
+                   <Form.Select 
+                     value={sortBy} 
+                     onChange={(e) => handleSortChange(e.target.value)}
+                     className="products-sort-select"
+                     size="sm"
+                   >
+                     {filterOptionsData.sortBy?.map(option => (
+                       <option key={option.value} value={option.value}>
+                         {option.label}
+                       </option>
+                     ))}
+                   </Form.Select>
+                 </Col>
+               </Row>
              </Container>
            </section>
 
@@ -183,15 +230,14 @@ const Products = () => {
         />
       </section>
 
-      {/* 5th Row: Pagination */}
-      <section className="products-pagination-section">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          className="products-pagination"
-        />
-      </section>
+      {/* 5th Row: Load More */}
+      <LoadMore
+        onLoadMore={handleLoadMore}
+        hasMore={hasMoreProducts}
+        text="Load More Products"
+        size="lg"
+        className="products-load-more"
+      />
     </div>
   );
 };
