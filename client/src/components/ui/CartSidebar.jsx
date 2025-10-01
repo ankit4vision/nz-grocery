@@ -166,7 +166,6 @@ const CartSidebar = ({
                           src={item.image}
                           alt={item.name}
                           className="img-fluid rounded"
-                          fallbackSrc="/placeholder.svg"
                         />
                       </div>
                     </Col>
