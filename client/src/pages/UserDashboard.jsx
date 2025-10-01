@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Tab, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Nav, Card, ListGroup } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import { ProfileInformation } from '../components/ui';
 import { ChangePassword } from '../components/ui';
@@ -54,36 +54,42 @@ const UserDashboard = () => {
     <Container className="user-dashboard-container">
       <Row>
         <Col lg={3} md={4}>
-          <div className="dashboard-sidebar">
-            <div className="sidebar-header">
-              <h4 className="sidebar-title">My Account</h4>
-            </div>
-            <Nav className="flex-column dashboard-nav">
-              {dashboardTabs.map((tab) => (
-                <Nav.Item key={tab.key}>
-                  <Nav.Link
-                    className={`dashboard-nav-link ${activeTab === tab.key ? 'active' : ''}`}
+          <Card className="dashboard-sidebar">
+            <Card.Header className="sidebar-header">
+              <Card.Title className="sidebar-title">My Account</Card.Title>
+            </Card.Header>
+            <Card.Body className="p-0">
+              <ListGroup variant="flush" className="dashboard-nav">
+                {dashboardTabs.map((tab) => (
+                  <ListGroup.Item 
+                    key={tab.key}
+                    action
+                    active={activeTab === tab.key}
                     onClick={() => handleTabChange(tab.key)}
+                    className="dashboard-nav-link"
                   >
                     <span className="nav-icon">{tab.icon}</span>
                     <span className="nav-text">{tab.title}</span>
-                  </Nav.Link>
-                </Nav.Item>
-              ))}
-              <hr className="sidebar-divider" />
-              <Nav.Item>
-                <Nav.Link className="dashboard-nav-link logout-link">
+                  </ListGroup.Item>
+                ))}
+                <ListGroup.Item className="dashboard-nav-divider"></ListGroup.Item>
+                <ListGroup.Item 
+                  action
+                  className="dashboard-nav-link logout-link"
+                >
                   <span className="nav-icon">🚪</span>
                   <span className="nav-text">Logout</span>
-                </Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </div>
+                </ListGroup.Item>
+              </ListGroup>
+            </Card.Body>
+          </Card>
         </Col>
         <Col lg={9} md={8}>
-          <div className="dashboard-content">
-            {renderTabContent()}
-          </div>
+          <Card className="dashboard-content">
+            <Card.Body>
+              {renderTabContent()}
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </Container>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Form, Alert } from 'react-bootstrap';
-import { CustomInput, CustomButton } from '../common';
+import { Card, Form, Alert, InputGroup } from 'react-bootstrap';
+import { CustomButton } from '../common';
 import '../../styles/components/ui-components/change-password.css';
 
 const ChangePassword = () => {
@@ -120,83 +120,86 @@ const ChangePassword = () => {
           )}
 
           <Form onSubmit={handleSubmit}>
-            <div className="password-field">
-              <CustomInput
-                label="Current Password"
-                type={showPasswords.current ? 'text' : 'password'}
-                value={formData.currentPassword}
-                onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                placeholder="Enter your current password"
-                error={errors.currentPassword}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => togglePasswordVisibility('current')}
-                aria-label={showPasswords.current ? 'Hide password' : 'Show password'}
-              >
-                <i className={`fas ${showPasswords.current ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
-            </div>
+            <Form.Group className="mb-4">
+              <Form.Label>Current Password</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showPasswords.current ? 'text' : 'password'}
+                  value={formData.currentPassword}
+                  onChange={(e) => handleInputChange('currentPassword', e.target.value)}
+                  placeholder="Enter your current password"
+                  isInvalid={!!errors.currentPassword}
+                  required
+                />
+                <InputGroup.Text 
+                  as="button"
+                  type="button"
+                  onClick={() => togglePasswordVisibility('current')}
+                  className="password-toggle-btn"
+                >
+                  <i className={`fas ${showPasswords.current ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </InputGroup.Text>
+              </InputGroup>
+              {errors.currentPassword && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.currentPassword}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
 
-            <div className="password-field">
-              <CustomInput
-                label="New Password"
-                type={showPasswords.new ? 'text' : 'password'}
-                value={formData.newPassword}
-                onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                placeholder="Enter your new password"
-                error={errors.newPassword}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => togglePasswordVisibility('new')}
-                aria-label={showPasswords.new ? 'Hide password' : 'Show password'}
-              >
-                <i className={`fas ${showPasswords.new ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
-            </div>
+            <Form.Group className="mb-4">
+              <Form.Label>New Password</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showPasswords.new ? 'text' : 'password'}
+                  value={formData.newPassword}
+                  onChange={(e) => handleInputChange('newPassword', e.target.value)}
+                  placeholder="Enter your new password"
+                  isInvalid={!!errors.newPassword}
+                  required
+                />
+                <InputGroup.Text 
+                  as="button"
+                  type="button"
+                  onClick={() => togglePasswordVisibility('new')}
+                  className="password-toggle-btn"
+                >
+                  <i className={`fas ${showPasswords.new ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </InputGroup.Text>
+              </InputGroup>
+              {errors.newPassword && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.newPassword}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
 
-            <div className="password-field">
-              <CustomInput
-                label="Confirm New Password"
-                type={showPasswords.confirm ? 'text' : 'password'}
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                placeholder="Confirm your new password"
-                error={errors.confirmPassword}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => togglePasswordVisibility('confirm')}
-                aria-label={showPasswords.confirm ? 'Hide password' : 'Show password'}
-              >
-                <i className={`fas ${showPasswords.confirm ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-              </button>
-            </div>
-
-            <div className="password-requirements">
-              <h6 className="requirements-title">Password Requirements:</h6>
-              <ul className="requirements-list">
-                <li className={formData.newPassword.length >= 8 ? 'valid' : ''}>
-                  <i className={`fas ${formData.newPassword.length >= 8 ? 'fa-check' : 'fa-times'}`}></i>
-                  At least 8 characters long
-                </li>
-                <li className={formData.newPassword !== formData.currentPassword ? 'valid' : ''}>
-                  <i className={`fas ${formData.newPassword !== formData.currentPassword ? 'fa-check' : 'fa-times'}`}></i>
-                  Different from current password
-                </li>
-                <li className={formData.newPassword === formData.confirmPassword && formData.confirmPassword ? 'valid' : ''}>
-                  <i className={`fas ${formData.newPassword === formData.confirmPassword && formData.confirmPassword ? 'fa-check' : 'fa-times'}`}></i>
-                  Passwords match
-                </li>
-              </ul>
-            </div>
+            <Form.Group className="mb-4">
+              <Form.Label>Confirm New Password</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showPasswords.confirm ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  placeholder="Confirm your new password"
+                  isInvalid={!!errors.confirmPassword}
+                  required
+                />
+                <InputGroup.Text 
+                  as="button"
+                  type="button"
+                  onClick={() => togglePasswordVisibility('confirm')}
+                  className="password-toggle-btn"
+                >
+                  <i className={`fas ${showPasswords.confirm ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </InputGroup.Text>
+              </InputGroup>
+              {errors.confirmPassword && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.confirmPassword}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
 
             <div className="password-actions">
               <CustomButton

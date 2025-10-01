@@ -45,7 +45,7 @@
 }
 
 .wishlist-item-card {
-  border: none;
+  border: 1px solid var(--gray-200);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-lg);
   transition: all var(--transition-fast);
@@ -124,7 +124,7 @@
 }
 
 .empty-wishlist-card {
-  border: none;
+  border: 1px solid var(--gray-200);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-lg);
   margin-top: var(--spacing-xl);
@@ -157,7 +157,7 @@
 }
 
 .summary-card {
-  border: none;
+  border: 1px solid var(--primary-color);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-lg);
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
