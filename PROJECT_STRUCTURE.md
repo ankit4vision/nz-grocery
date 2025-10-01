@@ -57,6 +57,9 @@ nz-grocery/
 │   │   │   │   ├── SimilarProducts.jsx
 │   │   │   │   ├── CustomerReviews.jsx
 │   │   │   │   ├── CartSidebar.jsx
+│   │   │   │   ├── DeliveryInfo.jsx
+│   │   │   │   ├── PaymentMethod.jsx
+│   │   │   │   ├── OrderSummary.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -66,6 +69,8 @@ nz-grocery/
 │   │   │   ├── Products.css
 │   │   │   ├── ProductDetail.jsx
 │   │   │   ├── ProductDetail.css
+│   │   │   ├── Checkout.jsx
+│   │   │   ├── Checkout.css
 │   │   │   ├── About.jsx
 │   │   │   └── About.css
 │   │   ├── data/                    # Mock data files
@@ -135,7 +140,10 @@ nz-grocery/
 │   │   │   │   │   ├── product-info.css
 │   │   │   │   │   ├── similar-products.css
 │   │   │   │   │   ├── customer-reviews.css
-│   │   │   │   │   └── cart-sidebar.css
+│   │   │   │   │   ├── cart-sidebar.css
+│   │   │   │   │   ├── delivery-info.css
+│   │   │   │   │   ├── payment-method.css
+│   │   │   │   │   └── order-summary.css
 │   │   │   │   └── index.css        # Central import file
 │   │   │   ├── layouts/             # Layout-specific styles
 │   │   │   │   └── index.css
@@ -401,6 +409,9 @@ npm update           # Update dependencies
 - `SimilarProducts` - Similar products carousel section
 - `CustomerReviews` - Customer reviews display and write review functionality
 - `CartSidebar` - Shopping cart sidebar with full cart management functionality
+- `DeliveryInfo` - Delivery information form with day/time selection and contact details
+- `PaymentMethod` - Payment method selection with card details and payment options
+- `OrderSummary` - Order summary with items, pricing breakdown, promo codes, and checkout button
 
 ## 🛒 Cart System & State Management
 
@@ -424,6 +435,7 @@ npm update           # Update dependencies
 - **Home Page** - Featured products and Half Price Special sections
 - **Products Page** - Product grid with cart functionality
 - **Product Detail** - Main product and similar products
+- **Checkout Page** - Complete checkout flow with cart integration
 - **Navigation** - Cart icon with item count badge
 - **Layout Wrapper** - Cart sidebar integration
 
@@ -464,6 +476,7 @@ npm update           # Update dependencies
 - **Home Page** (`Home.jsx`) - Main landing page with hero slider, ads banner, value section, price section, and featured products
 - **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
 - **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
+- **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary
 - **About Page** (`About.jsx`) - About page component
 
 ## 🚀 Creating New Functionality & Pages
