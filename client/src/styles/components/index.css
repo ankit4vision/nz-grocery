@@ -36,3 +36,11 @@
 @import './ui-components/product-info.css';
 @import './ui-components/similar-products.css';
 @import './ui-components/customer-reviews.css';
+@import './ui-components/cart-sidebar.css';
+@import './ui-components/delivery-info.css';
+@import './ui-components/payment-method.css';
+@import './ui-components/order-summary.css';
+@import './ui-components/order-status.css';
+@import './ui-components/order-summary-breakdown.css';
+@import './ui-components/order-items.css';
+@import './ui-components/purchase-note.css';

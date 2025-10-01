@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../context';
 import { DeliveryInfo, PaymentMethod, OrderSummary } from '../components/ui';
 import './Checkout.css';
 
 const Checkout = () => {
-  const { items, totalPrice, totalItems } = useCartContext();
+  const { items, totalPrice, totalItems, clearCart } = useCartContext();
+  const navigate = useNavigate();
   const [deliveryInfo, setDeliveryInfo] = useState({
     deliveryType: 'home',
     selectedDays: ['monday'],
@@ -83,7 +85,15 @@ const Checkout = () => {
     };
 
     console.log('Order placed:', orderData);
-    alert('Order placed successfully!');
+    
+    // Generate order ID
+    const orderId = 'ORD-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    
+    // Clear cart after successful order
+    clearCart();
+    
+    // Redirect to order details page
+    navigate(`/order/${orderId}`);
   };
 
   if (items.length === 0) {

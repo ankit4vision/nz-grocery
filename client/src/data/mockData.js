@@ -2229,3 +2229,159 @@ export const customerReviewsData = {
     }
   ]
 };
+
+// Order Details Mock Data
+export const orderDetailsData = [
+  {
+    id: 'ORD-12345678',
+    orderNumber: 'ORD-12345678',
+    orderDate: 'August 21, 2025',
+    customerName: 'John Doe',
+    totalItems: 4,
+    deliveryTime: 'Today - 2:00 PM - 4:00 PM',
+    shippingAddress: '123 Main Street, Downtown, New York, NY 10001',
+    billingAddress: '123 Main Street, Downtown, New York, NY 10001',
+    paymentMethod: 'Credit Card',
+    paymentStatus: 'payment-success',
+    orderStatus: 'processing',
+    subtotal: 16.45,
+    shippingCharge: 2.00,
+    gst: 1.32,
+    discount: 0.00,
+    totalAmount: 19.77,
+    purchaseNote: 'Please deliver to the front door. Ring doorbell twice.',
+    progressSteps: [
+      {
+        title: 'Pending',
+        description: 'Order received',
+        status: 'completed'
+      },
+      {
+        title: 'Processing',
+        description: 'Preparing your order',
+        status: 'completed'
+      },
+      {
+        title: 'At Local Facility',
+        description: 'Ready for pickup',
+        status: 'current'
+      },
+      {
+        title: 'Out For Delivery',
+        description: 'On the way',
+        status: 'pending'
+      },
+      {
+        title: 'Completed',
+        description: 'Delivered',
+        status: 'pending'
+      }
+    ],
+    items: [
+      {
+        id: 1,
+        name: 'Fresh Organic Apples',
+        image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=100&h=100&fit=crop',
+        quantity: 2,
+        unit: 'lb',
+        price: 4.98
+      },
+      {
+        id: 2,
+        name: 'Fresh Milk',
+        image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=100&h=100&fit=crop',
+        quantity: 1,
+        unit: 'gallon',
+        price: 3.49
+      },
+      {
+        id: 3,
+        name: 'Whole Grain Bread',
+        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=100&h=100&fit=crop',
+        quantity: 1,
+        unit: 'loaf',
+        price: 4.49
+      },
+      {
+        id: 4,
+        name: 'Organic Tomatoes',
+        image: 'https://images.unsplash.com/photo-1546470427-3b4b3b3b3b3b?w=100&h=100&fit=crop',
+        quantity: 1,
+        unit: 'lb',
+        price: 1.79
+      }
+    ]
+  },
+  {
+    id: 'ORD-87654321',
+    orderNumber: 'ORD-87654321',
+    orderDate: 'August 20, 2025',
+    customerName: 'Jane Smith',
+    totalItems: 3,
+    deliveryTime: 'Tomorrow - 10:00 AM - 12:00 PM',
+    shippingAddress: '456 Oak Avenue, Suburbia, Los Angeles, CA 90210',
+    billingAddress: '456 Oak Avenue, Suburbia, Los Angeles, CA 90210',
+    paymentMethod: 'PayPal',
+    paymentStatus: 'payment-success',
+    orderStatus: 'delivered',
+    subtotal: 24.99,
+    shippingCharge: 2.00,
+    gst: 1.95,
+    discount: 5.00,
+    totalAmount: 23.94,
+    purchaseNote: 'Leave package at the side door if no one answers.',
+    progressSteps: [
+      {
+        title: 'Pending',
+        description: 'Order received',
+        status: 'completed'
+      },
+      {
+        title: 'Processing',
+        description: 'Preparing your order',
+        status: 'completed'
+      },
+      {
+        title: 'At Local Facility',
+        description: 'Ready for pickup',
+        status: 'completed'
+      },
+      {
+        title: 'Out For Delivery',
+        description: 'On the way',
+        status: 'completed'
+      },
+      {
+        title: 'Completed',
+        description: 'Delivered',
+        status: 'completed'
+      }
+    ],
+    items: [
+      {
+        id: 5,
+        name: 'Organic Bananas',
+        image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=100&h=100&fit=crop',
+        quantity: 3,
+        unit: 'lb',
+        price: 2.99
+      },
+      {
+        id: 6,
+        name: 'Greek Yogurt',
+        image: 'https://images.unsplash.com/photo-1571212054556-d975548f7b8b?w=100&h=100&fit=crop',
+        quantity: 2,
+        unit: 'container',
+        price: 8.99
+      },
+      {
+        id: 7,
+        name: 'Free Range Eggs',
+        image: 'https://images.unsplash.com/photo-1518569656558-1e25a0d0c7e1?w=100&h=100&fit=crop',
+        quantity: 1,
+        unit: 'dozen',
+        price: 4.99
+      }
+    ]
+  }
+];

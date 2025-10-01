@@ -24,3 +24,7 @@ export { default as CartSidebar } from './CartSidebar';
 export { default as DeliveryInfo } from './DeliveryInfo';
 export { default as PaymentMethod } from './PaymentMethod';
 export { default as OrderSummary } from './OrderSummary';
+export { default as OrderStatus } from './OrderStatus';
+export { default as OrderSummaryBreakdown } from './OrderSummaryBreakdown';
+export { default as OrderItems } from './OrderItems';
+export { default as PurchaseNote } from './PurchaseNote';
