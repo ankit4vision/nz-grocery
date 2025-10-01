@@ -23,6 +23,8 @@ nz-grocery/
 │   │   │   │   ├── NavigationButtons.jsx
 │   │   │   │   ├── ImageWithFallback.jsx
 │   │   │   │   ├── Breadcrumb.jsx
+│   │   │   │   ├── LoadMore.jsx
+│   │   │   │   ├── ScrollToTop.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── layout/              # Layout components
 │   │   │   │   ├── AppNavbar.jsx
@@ -50,6 +52,10 @@ nz-grocery/
 │   │   │   │   ├── ProductGrid.jsx
 │   │   │   │   ├── Pagination.jsx
 │   │   │   │   ├── AllCategories.jsx
+│   │   │   │   ├── ProductImageGallery.jsx
+│   │   │   │   ├── ProductInfo.jsx
+│   │   │   │   ├── SimilarProducts.jsx
+│   │   │   │   ├── CustomerReviews.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -57,6 +63,8 @@ nz-grocery/
 │   │   │   ├── Home.css
 │   │   │   ├── Products.jsx
 │   │   │   ├── Products.css
+│   │   │   ├── ProductDetail.jsx
+│   │   │   ├── ProductDetail.css
 │   │   │   ├── About.jsx
 │   │   │   └── About.css
 │   │   ├── data/                    # Mock data files
@@ -121,7 +129,11 @@ nz-grocery/
 │   │   │   │   │   ├── form-wrapper.css
 │   │   │   │   │   ├── confirm-dialog.css
 │   │   │   │   │   ├── stat-card.css
-│   │   │   │   │   └── info-card.css
+│   │   │   │   │   ├── info-card.css
+│   │   │   │   │   ├── product-image-gallery.css
+│   │   │   │   │   ├── product-info.css
+│   │   │   │   │   ├── similar-products.css
+│   │   │   │   │   └── customer-reviews.css
 │   │   │   │   └── index.css        # Central import file
 │   │   │   ├── layouts/             # Layout-specific styles
 │   │   │   │   └── index.css
@@ -352,6 +364,8 @@ npm update           # Update dependencies
 - `NavigationButtons` - Reusable navigation arrow buttons
 - `ImageWithFallback` - Image component with fallback placeholder
 - `Breadcrumb` - Breadcrumb navigation component
+- `LoadMore` - Load more button component
+- `ScrollToTop` - Scroll to top functionality component
 
 ### **Layout Components:**
 - `AppNavbar` - Main navigation bar
@@ -379,6 +393,10 @@ npm update           # Update dependencies
 - `ProductGrid` - Product grid display component
 - `Pagination` - Pagination controls component
 - `AllCategories` - All categories horizontal slider component
+- `ProductImageGallery` - Product image gallery with thumbnails and modal
+- `ProductInfo` - Product details, pricing, and add-to-cart functionality
+- `SimilarProducts` - Similar products carousel section
+- `CustomerReviews` - Customer reviews display and write review functionality
 
 ## 📊 Data Structure & Mock Data
 
@@ -402,6 +420,9 @@ npm update           # Update dependencies
 - **Navigation Data** (`navItemsData`) - Main navigation menu items
 - **Footer Links Data** (`footerLinksData`) - Footer navigation links
 - **Social Links Data** (`socialLinksData`) - Social media links
+- **Product Detail Data** (`productDetailData`) - Detailed product information for product detail page
+- **Similar Products Data** (`similarProductsData`) - Similar products for product detail page
+- **Customer Reviews Data** (`customerReviewsData`) - Customer reviews and ratings for products
 
 ### **Asset Structure:**
 - `src/assets/images/main-slider/` - Hero slider images (4 images)
@@ -413,6 +434,7 @@ npm update           # Update dependencies
 ### **Page Structure:**
 - **Home Page** (`Home.jsx`) - Main landing page with hero slider, ads banner, value section, price section, and featured products
 - **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
+- **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
 - **About Page** (`About.jsx`) - About page component
 
 ## 🚀 Creating New Functionality & Pages
