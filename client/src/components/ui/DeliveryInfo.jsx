@@ -117,47 +117,43 @@ const DeliveryInfo = ({ deliveryInfo, onDeliveryInfoChange }) => {
           <h6 className="section-title">Contact Information</h6>
           <Row>
             <Col md={6}>
-              <Form.Group className="mb-3">
+              <Form.Group className="mb-3" controlId="deliveryFullName">
                 <Form.Label>Full Name</Form.Label>
                 <Form.Control
                   type="text"
                   value={deliveryInfo.fullName}
                   onChange={(e) => onDeliveryInfoChange('fullName', e.target.value)}
-                  className="form-input"
                 />
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group className="mb-3">
+              <Form.Group className="mb-3" controlId="deliveryPhone">
                 <Form.Label>Phone Number</Form.Label>
                 <Form.Control
                   type="tel"
                   value={deliveryInfo.phoneNumber}
                   onChange={(e) => onDeliveryInfoChange('phoneNumber', e.target.value)}
-                  className="form-input"
                 />
               </Form.Group>
             </Col>
           </Row>
           
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3" controlId="deliveryEmail">
             <Form.Label>Email Address</Form.Label>
             <Form.Control
               type="email"
               value={deliveryInfo.emailAddress}
               onChange={(e) => onDeliveryInfoChange('emailAddress', e.target.value)}
-              className="form-input"
             />
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3" controlId="deliveryAddress">
             <Form.Label>Delivery Address</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
               value={deliveryInfo.deliveryAddress}
               onChange={(e) => onDeliveryInfoChange('deliveryAddress', e.target.value)}
-              className="form-input"
             />
           </Form.Group>
         </div>

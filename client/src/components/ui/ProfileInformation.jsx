@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Button, Card, Image } from 'react-bootstrap';
-import { CustomInput, CustomButton } from '../common';
+import { CustomButton } from '../common';
 import '../../styles/components/ui-components/profile-information.css';
 
 const ProfileInformation = () => {
@@ -116,46 +116,54 @@ const ProfileInformation = () => {
                   <div className="personal-info-section">
                     <Row>
                       <Col md={6}>
-                        <CustomInput
-                          label="Full Name"
-                          type="text"
-                          value={formData.fullName}
-                          onChange={(e) => handleInputChange('fullName', e.target.value)}
-                          placeholder="Enter your full name"
-                        />
+                        <Form.Group className="mb-3" controlId="fullName">
+                          <Form.Label>Full Name</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.fullName}
+                            onChange={(e) => handleInputChange('fullName', e.target.value)}
+                            placeholder="Enter your full name"
+                          />
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <CustomInput
-                          label="Email Address"
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          placeholder="Enter your email"
-                        />
+                        <Form.Group className="mb-3" controlId="emailAddress">
+                          <Form.Label>Email Address</Form.Label>
+                          <Form.Control
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            placeholder="Enter your email"
+                          />
+                        </Form.Group>
                       </Col>
                     </Row>
 
                     <Row>
                       <Col md={6}>
-                        <CustomInput
-                          label="Contact Number"
-                          type="tel"
-                          value={formData.contactNumber}
-                          onChange={(e) => handleInputChange('contactNumber', e.target.value)}
-                          placeholder="Enter your phone number"
-                        />
+                        <Form.Group className="mb-3" controlId="contactNumber">
+                          <Form.Label>Contact Number</Form.Label>
+                          <Form.Control
+                            type="tel"
+                            value={formData.contactNumber}
+                            onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                            placeholder="Enter your phone number"
+                          />
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <CustomInput
-                          label="Date of Birth"
-                          type="date"
-                          value={formData.dateOfBirth}
-                          onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                        />
+                        <Form.Group className="mb-3" controlId="dateOfBirth">
+                          <Form.Label>Date of Birth</Form.Label>
+                          <Form.Control
+                            type="date"
+                            value={formData.dateOfBirth}
+                            onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                          />
+                        </Form.Group>
                       </Col>
                     </Row>
 
-                    <div className="mb-4">
+                    <Form.Group className="mb-3" controlId="bio">
                       <Form.Label>Bio</Form.Label>
                       <Form.Control
                         as="textarea"
@@ -164,7 +172,7 @@ const ProfileInformation = () => {
                         onChange={(e) => handleInputChange('bio', e.target.value)}
                         placeholder="Tell us about yourself"
                       />
-                    </div>
+                    </Form.Group>
                   </div>
                 </Col>
               </Row>
@@ -184,61 +192,73 @@ const ProfileInformation = () => {
                   <div className="address-section">
                     <h6 className="address-section-title">Billing Address</h6>
                     
-                    <CustomInput
-                      label="Street Address"
-                      type="text"
-                      value={formData.billingAddress.street}
-                      onChange={(e) => handleAddressChange('billingAddress', 'street', e.target.value)}
-                      placeholder="Enter street address"
-                    />
+                    <Form.Group className="mb-3" controlId="billingStreet">
+                      <Form.Label>Street Address</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.billingAddress.street}
+                        onChange={(e) => handleAddressChange('billingAddress', 'street', e.target.value)}
+                        placeholder="Enter street address"
+                      />
+                    </Form.Group>
                     
-                    <CustomInput
-                      label="Apartment/Suite"
-                      type="text"
-                      value={formData.billingAddress.apartment}
-                      onChange={(e) => handleAddressChange('billingAddress', 'apartment', e.target.value)}
-                      placeholder="Enter apartment/suite"
-                    />
+                    <Form.Group className="mb-3" controlId="billingApartment">
+                      <Form.Label>Apartment/Suite</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.billingAddress.apartment}
+                        onChange={(e) => handleAddressChange('billingAddress', 'apartment', e.target.value)}
+                        placeholder="Enter apartment/suite"
+                      />
+                    </Form.Group>
                     
                     <Row>
                       <Col md={6}>
-                        <CustomInput
-                          label="City"
-                          type="text"
-                          value={formData.billingAddress.city}
-                          onChange={(e) => handleAddressChange('billingAddress', 'city', e.target.value)}
-                          placeholder="Enter city"
-                        />
+                        <Form.Group className="mb-3" controlId="billingCity">
+                          <Form.Label>City</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.billingAddress.city}
+                            onChange={(e) => handleAddressChange('billingAddress', 'city', e.target.value)}
+                            placeholder="Enter city"
+                          />
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <CustomInput
-                          label="State/Province"
-                          type="text"
-                          value={formData.billingAddress.state}
-                          onChange={(e) => handleAddressChange('billingAddress', 'state', e.target.value)}
-                          placeholder="Enter state"
-                        />
+                        <Form.Group className="mb-3" controlId="billingState">
+                          <Form.Label>State/Province</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.billingAddress.state}
+                            onChange={(e) => handleAddressChange('billingAddress', 'state', e.target.value)}
+                            placeholder="Enter state"
+                          />
+                        </Form.Group>
                       </Col>
                     </Row>
                     
                     <Row>
                       <Col md={6}>
-                        <CustomInput
-                          label="ZIP/Postal Code"
-                          type="text"
-                          value={formData.billingAddress.zipCode}
-                          onChange={(e) => handleAddressChange('billingAddress', 'zipCode', e.target.value)}
-                          placeholder="Enter ZIP code"
-                        />
+                        <Form.Group className="mb-3" controlId="billingZip">
+                          <Form.Label>ZIP/Postal Code</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.billingAddress.zipCode}
+                            onChange={(e) => handleAddressChange('billingAddress', 'zipCode', e.target.value)}
+                            placeholder="Enter ZIP code"
+                          />
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <CustomInput
-                          label="Country"
-                          type="text"
-                          value={formData.billingAddress.country}
-                          onChange={(e) => handleAddressChange('billingAddress', 'country', e.target.value)}
-                          placeholder="Enter country"
-                        />
+                        <Form.Group className="mb-3" controlId="billingCountry">
+                          <Form.Label>Country</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.billingAddress.country}
+                            onChange={(e) => handleAddressChange('billingAddress', 'country', e.target.value)}
+                            placeholder="Enter country"
+                          />
+                        </Form.Group>
                       </Col>
                     </Row>
                   </div>
@@ -257,61 +277,73 @@ const ProfileInformation = () => {
                       </CustomButton>
                     </div>
                     
-                    <CustomInput
-                      label="Street Address"
-                      type="text"
-                      value={formData.shippingAddress.street}
-                      onChange={(e) => handleAddressChange('shippingAddress', 'street', e.target.value)}
-                      placeholder="Enter street address"
-                    />
+                    <Form.Group className="mb-3" controlId="shippingStreet">
+                      <Form.Label>Street Address</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.shippingAddress.street}
+                        onChange={(e) => handleAddressChange('shippingAddress', 'street', e.target.value)}
+                        placeholder="Enter street address"
+                      />
+                    </Form.Group>
                     
-                    <CustomInput
-                      label="Apartment/Suite"
-                      type="text"
-                      value={formData.shippingAddress.apartment}
-                      onChange={(e) => handleAddressChange('shippingAddress', 'apartment', e.target.value)}
-                      placeholder="Enter apartment/suite"
-                    />
+                    <Form.Group className="mb-3" controlId="shippingApartment">
+                      <Form.Label>Apartment/Suite</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.shippingAddress.apartment}
+                        onChange={(e) => handleAddressChange('shippingAddress', 'apartment', e.target.value)}
+                        placeholder="Enter apartment/suite"
+                      />
+                    </Form.Group>
                     
                     <Row>
                       <Col md={6}>
-                        <CustomInput
-                          label="City"
-                          type="text"
-                          value={formData.shippingAddress.city}
-                          onChange={(e) => handleAddressChange('shippingAddress', 'city', e.target.value)}
-                          placeholder="Enter city"
-                        />
+                        <Form.Group className="mb-3" controlId="shippingCity">
+                          <Form.Label>City</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.shippingAddress.city}
+                            onChange={(e) => handleAddressChange('shippingAddress', 'city', e.target.value)}
+                            placeholder="Enter city"
+                          />
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <CustomInput
-                          label="State/Province"
-                          type="text"
-                          value={formData.shippingAddress.state}
-                          onChange={(e) => handleAddressChange('shippingAddress', 'state', e.target.value)}
-                          placeholder="Enter state"
-                        />
+                        <Form.Group className="mb-3" controlId="shippingState">
+                          <Form.Label>State/Province</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.shippingAddress.state}
+                            onChange={(e) => handleAddressChange('shippingAddress', 'state', e.target.value)}
+                            placeholder="Enter state"
+                          />
+                        </Form.Group>
                       </Col>
                     </Row>
                     
                     <Row>
                       <Col md={6}>
-                        <CustomInput
-                          label="ZIP/Postal Code"
-                          type="text"
-                          value={formData.shippingAddress.zipCode}
-                          onChange={(e) => handleAddressChange('shippingAddress', 'zipCode', e.target.value)}
-                          placeholder="Enter ZIP code"
-                        />
+                        <Form.Group className="mb-3" controlId="shippingZip">
+                          <Form.Label>ZIP/Postal Code</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.shippingAddress.zipCode}
+                            onChange={(e) => handleAddressChange('shippingAddress', 'zipCode', e.target.value)}
+                            placeholder="Enter ZIP code"
+                          />
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <CustomInput
-                          label="Country"
-                          type="text"
-                          value={formData.shippingAddress.country}
-                          onChange={(e) => handleAddressChange('shippingAddress', 'country', e.target.value)}
-                          placeholder="Enter country"
-                        />
+                        <Form.Group className="mb-3" controlId="shippingCountry">
+                          <Form.Label>Country</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.shippingAddress.country}
+                            onChange={(e) => handleAddressChange('shippingAddress', 'country', e.target.value)}
+                            placeholder="Enter country"
+                          />
+                        </Form.Group>
                       </Col>
                     </Row>
                   </div>

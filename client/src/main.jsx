@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/theme.css'
 import './styles/custom.css'
+import './styles/global-forms.css'
 import './index.css'
 import './config/fontawesome' // Import FontAwesome configuration
 import App from './App.jsx'

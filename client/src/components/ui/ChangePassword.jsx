@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Alert, InputGroup } from 'react-bootstrap';
-import { CustomButton } from '../common';
+import { Card, Form, Alert, InputGroup, Button } from 'react-bootstrap';
 import '../../styles/components/ui-components/change-password.css';
 
 const ChangePassword = () => {
@@ -120,7 +119,7 @@ const ChangePassword = () => {
           )}
 
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-4">
+            <Form.Group className="mb-3" controlId="currentPassword">
               <Form.Label>Current Password</Form.Label>
               <InputGroup>
                 <Form.Control
@@ -147,7 +146,7 @@ const ChangePassword = () => {
               )}
             </Form.Group>
 
-            <Form.Group className="mb-4">
+            <Form.Group className="mb-3" controlId="newPassword">
               <Form.Label>New Password</Form.Label>
               <InputGroup>
                 <Form.Control
@@ -174,7 +173,7 @@ const ChangePassword = () => {
               )}
             </Form.Group>
 
-            <Form.Group className="mb-4">
+            <Form.Group className="mb-3" controlId="confirmPassword">
               <Form.Label>Confirm New Password</Form.Label>
               <InputGroup>
                 <Form.Control
@@ -202,7 +201,7 @@ const ChangePassword = () => {
             </Form.Group>
 
             <div className="password-actions">
-              <CustomButton
+              <Button
                 type="submit"
                 variant="success"
                 size="lg"
@@ -220,7 +219,7 @@ const ChangePassword = () => {
                     Update Password
                   </>
                 )}
-              </CustomButton>
+              </Button>
             </div>
           </Form>
         </Card.Body>

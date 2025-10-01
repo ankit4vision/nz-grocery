@@ -16,7 +16,6 @@ nz-grocery/
 │   │   ├── components/              # Reusable components
 │   │   │   ├── common/              # Common/shared components
 │   │   │   │   ├── CustomButton.jsx
-│   │   │   │   ├── CustomInput.jsx
 │   │   │   │   ├── CustomSelect.jsx
 │   │   │   │   ├── Loader.jsx
 │   │   │   │   ├── AlertMessage.jsx
@@ -104,7 +103,6 @@ nz-grocery/
 │   │   │   │   ├── buttons/         # Button component styles
 │   │   │   │   │   └── custom-button.css
 │   │   │   │   ├── forms/           # Form component styles
-│   │   │   │   │   ├── custom-input.css
 │   │   │   │   │   └── custom-select.css
 │   │   │   │   ├── cards/           # Card component styles
 │   │   │   │   │   └── product-card.css
@@ -376,7 +374,6 @@ npm update           # Update dependencies
 
 ### **Common Components:**
 - `CustomButton` - Reusable button component
-- `CustomInput` - Reusable input component
 - `CustomSelect` - Reusable select dropdown component
 - `Loader` - Loading spinner component
 - `AlertMessage` - Alert/notification component

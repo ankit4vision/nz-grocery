@@ -244,8 +244,8 @@ const CustomerReviews = ({
             </div>
 
             {/* Review Title */}
-            <Form.Group className="mb-3">
-              <Form.Label className="form-label">Review Title *</Form.Label>
+            <Form.Group className="mb-3" controlId="reviewTitle">
+              <Form.Label>Review Title *</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Summarize your review in a few words"
@@ -256,8 +256,8 @@ const CustomerReviews = ({
             </Form.Group>
 
             {/* Review Comment */}
-            <Form.Group className="mb-3">
-              <Form.Label className="form-label">Your Review *</Form.Label>
+            <Form.Group className="mb-3" controlId="reviewComment">
+              <Form.Label>Your Review *</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={4}

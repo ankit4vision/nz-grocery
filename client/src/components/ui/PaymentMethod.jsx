@@ -40,27 +40,25 @@ const PaymentMethod = ({ paymentInfo, onPaymentInfoChange }) => {
             <h6 className="section-title">Card Details</h6>
             <Row>
               <Col md={8}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="cardNumber">
                   <Form.Label>Card Number</Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="1234 5678 9012 3456"
                     value={paymentInfo.cardNumber}
                     onChange={(e) => onPaymentInfoChange('cardNumber', e.target.value)}
-                    className="form-input"
                     maxLength={19}
                   />
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="expiryDate">
                   <Form.Label>Expiry Date</Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="12/25"
                     value={paymentInfo.expiryDate}
                     onChange={(e) => onPaymentInfoChange('expiryDate', e.target.value)}
-                    className="form-input"
                     maxLength={5}
                   />
                 </Form.Group>
@@ -69,27 +67,25 @@ const PaymentMethod = ({ paymentInfo, onPaymentInfoChange }) => {
             
             <Row>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="cvv">
                   <Form.Label>CVV</Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="123"
                     value={paymentInfo.cvv}
                     onChange={(e) => onPaymentInfoChange('cvv', e.target.value)}
-                    className="form-input"
                     maxLength={4}
                   />
                 </Form.Group>
               </Col>
               <Col md={8}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="cardholderName">
                   <Form.Label>Cardholder Name</Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="John Doe"
                     value={paymentInfo.cardholderName}
                     onChange={(e) => onPaymentInfoChange('cardholderName', e.target.value)}
-                    className="form-input"
                   />
                 </Form.Group>
               </Col>
