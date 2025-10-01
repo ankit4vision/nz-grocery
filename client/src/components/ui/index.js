@@ -21,3 +21,6 @@ export { default as ProductInfo } from './ProductInfo';
 export { default as SimilarProducts } from './SimilarProducts';
 export { default as CustomerReviews } from './CustomerReviews';
 export { default as CartSidebar } from './CartSidebar';
+export { default as DeliveryInfo } from './DeliveryInfo';
+export { default as PaymentMethod } from './PaymentMethod';
+export { default as OrderSummary } from './OrderSummary';

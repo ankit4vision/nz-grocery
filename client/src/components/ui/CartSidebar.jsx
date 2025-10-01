@@ -10,6 +10,7 @@ import {
   Badge
 } from 'react-bootstrap';
 import { FaTimes, FaTrash, FaMinus, FaPlus } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../../context';
 import { ImageWithFallback } from '../common';
 import '../../styles/components/ui-components/cart-sidebar.css';
@@ -33,6 +34,7 @@ const CartSidebar = ({
   onHide, 
   className = '' 
 }) => {
+  const navigate = useNavigate();
   const {
     items,
     totalItems,
@@ -73,8 +75,8 @@ const CartSidebar = ({
   };
 
   const handleCheckout = () => {
-    // TODO: Implement checkout functionality
-    console.log('Proceeding to checkout...');
+    onHide(); // Close the cart sidebar
+    navigate('/checkout'); // Navigate to checkout page
   };
 
   const cartClasses = [
