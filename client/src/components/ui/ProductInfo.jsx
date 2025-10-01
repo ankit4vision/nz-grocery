@@ -129,93 +129,82 @@ const ProductInfo = ({
 
       {/* Pricing */}
       <div className="product-pricing">
-        <div className="pricing-main">
-          <div className="current-price">
-            {formatPrice(product.currentPrice)}
-          </div>
-          {product.discount > 0 && (
-            <Badge bg="success" className="discount-badge">
-              {product.discount}% OFF
-            </Badge>
-          )}
+        <div className="current-price">
+          {formatPrice(product.currentPrice)}/{product.unit}
         </div>
         {product.originalPrice && product.originalPrice !== product.currentPrice && (
           <div className="original-price">
             Was {formatPrice(product.originalPrice)}
           </div>
         )}
+        {product.discount > 0 && (
+          <Badge bg="success" className="discount-badge">
+            {product.discount}% OFF
+          </Badge>
+        )}
       </div>
 
-      {/* Add to Cart Section */}
-      <div className="add-to-cart-section">
-        <div className="quantity-section">
-          <div className="quantity-controls">
-            <div className="product-card__quantity-selector">
-              <Button 
-                variant="outline-secondary" 
-                size="sm"
-                onClick={() => handleQuantityChange(-1)}
-                disabled={isInCart(product.id) ? getItemQuantity(product.id) <= 1 : quantity <= 1}
-                className="product-card__quantity-btn"
-              >
-                −
-              </Button>
-              <span className="product-card__quantity">
-                {isInCart(product.id) ? getItemQuantity(product.id) : quantity}
-              </span>
-              <Button 
-                variant="outline-secondary" 
-                size="sm"
-                onClick={() => handleQuantityChange(1)}
-                disabled={isInCart(product.id) ? false : quantity >= (product.stockCount || 99)}
-                className="product-card__quantity-btn"
-              >
-                +
-              </Button>
-            </div>
+      {/* Rating */}
+      <div className="product-rating-simple">
+        <div className="stars">
+          {renderStars(product.rating)}
+        </div>
+        <span className="rating-text">{product.rating} ({product.reviews} reviews)</span>
+      </div>
+
+      {/* Add to Cart */}
+      <div className="add-to-cart-simple">
+        <div className="quantity-controls">
+          <div className="product-card__quantity-selector">
+            <Button 
+              variant="outline-secondary" 
+              size="sm"
+              onClick={() => handleQuantityChange(-1)}
+              disabled={isInCart(product.id) ? getItemQuantity(product.id) <= 1 : quantity <= 1}
+              className="product-card__quantity-btn"
+            >
+              −
+            </Button>
+            <span className="product-card__quantity">
+              {isInCart(product.id) ? getItemQuantity(product.id) : quantity}
+            </span>
+            <Button 
+              variant="outline-secondary" 
+              size="sm"
+              onClick={() => handleQuantityChange(1)}
+              disabled={isInCart(product.id) ? false : quantity >= (product.stockCount || 99)}
+              className="product-card__quantity-btn"
+            >
+              +
+            </Button>
           </div>
         </div>
         
-        <div className="action-section">
-          {!isInCart(product.id) ? (
-            <CustomButton
-              variant="success"
-              size="md"
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-              className="add-to-cart-btn"
-            >
-              <FaShoppingCart className="me-2" />
-              Add to Cart
-            </CustomButton>
-          ) : (
-            <div className="in-cart-indicator">
-              <Badge bg="success" className="in-cart-badge">
-                ✓ Added to Cart
-              </Badge>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Product Details */}
-      <div className="product-details">
-        <div className="detail-item">
-          <div className="detail-icon">⭐</div>
-          <div className="detail-content">
-            <span className="detail-label">Customer Rating</span>
-            <span className="detail-value">
-              {product.rating} ★ ({product.reviews} reviews)
-            </span>
+        {!isInCart(product.id) ? (
+          <CustomButton
+            variant="success"
+            size="md"
+            onClick={handleAddToCart}
+            disabled={!product.inStock}
+            className="add-to-cart-btn"
+          >
+            <FaShoppingCart className="me-2" />
+            Add to Cart
+          </CustomButton>
+        ) : (
+          <div className="in-cart-indicator">
+            <Badge bg="success" className="in-cart-badge">
+              ✓ Added to Cart
+            </Badge>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Tags */}
       {product.tags && product.tags.length > 0 && (
         <div className="product-tags">
           {product.tags.map((tag, index) => (
-            <Badge key={index} bg="light" text="dark" className="tag">
+            <Badge key={index} bg="light" text="muted" className="product-tag">
               {tag}
             </Badge>
           ))}
