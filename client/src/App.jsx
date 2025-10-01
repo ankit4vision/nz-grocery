@@ -9,6 +9,7 @@ import About from './pages/About';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import OrderDetails from './pages/OrderDetails';
+import UserDashboard from './pages/UserDashboard';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/order/:orderId" element={<OrderDetails />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
                 <Route path="/about" element={<About />} />
               </Routes>
         </LayoutWrapper>

@@ -30,6 +30,11 @@ const LayoutWrapper = ({
     toggleCart();
   };
 
+  const handleLogout = () => {
+    console.log('User logged out');
+    // Here you would typically clear user session, redirect to login, etc.
+  };
+
   const wrapperClasses = [
     'layout-wrapper',
     className
@@ -42,6 +47,8 @@ const LayoutWrapper = ({
           {...navbarProps} 
           onBrowseProductsClick={handleBrowseProductsClick}
           onCartClick={handleCartToggle}
+          onLogout={handleLogout}
+          userPoints={150}
         />
       )}
       

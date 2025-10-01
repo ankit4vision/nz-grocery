@@ -44,3 +44,8 @@
 @import './ui-components/order-summary-breakdown.css';
 @import './ui-components/order-items.css';
 @import './ui-components/purchase-note.css';
+@import './ui-components/profile-information.css';
+@import './ui-components/change-password.css';
+@import './ui-components/my-orders.css';
+@import './ui-components/wishlist.css';
+@import './ui-components/help-center.css';

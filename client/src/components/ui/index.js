@@ -28,3 +28,8 @@ export { default as OrderStatus } from './OrderStatus';
 export { default as OrderSummaryBreakdown } from './OrderSummaryBreakdown';
 export { default as OrderItems } from './OrderItems';
 export { default as PurchaseNote } from './PurchaseNote';
+export { default as ProfileInformation } from './ProfileInformation';
+export { default as ChangePassword } from './ChangePassword';
+export { default as MyOrders } from './MyOrders';
+export { default as Wishlist } from './Wishlist';
+export { default as HelpCenter } from './HelpCenter';

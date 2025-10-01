@@ -1,0 +1,155 @@
+/* Profile Information Styles */
+
+.profile-information {
+  padding: var(--spacing-lg);
+}
+
+.profile-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.profile-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.profile-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.profile-image-card {
+  border: none;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+}
+
+.profile-image-container {
+  margin-bottom: var(--spacing-md);
+}
+
+.profile-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.profile-image-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-size: var(--font-size-3xl);
+  color: var(--gray-500);
+}
+
+.upload-btn {
+  margin-bottom: var(--spacing-sm);
+}
+
+.upload-info {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.profile-form-card {
+  border: none;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+  height: 100%;
+}
+
+.form-section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.address-card {
+  border: none;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+  height: 100%;
+}
+
+.profile-actions {
+  margin-top: var(--spacing-xl);
+  text-align: right;
+}
+
+.save-changes-btn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-lg);
+}
+
+/* Form spacing */
+.profile-form-card .form-group,
+.address-card .form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.profile-form-card .row,
+.address-card .row {
+  margin-bottom: var(--spacing-md);
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+  .profile-information {
+    padding: var(--spacing-md);
+  }
+  
+  .profile-image-card {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .address-card {
+    margin-top: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .profile-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .profile-subtitle {
+    font-size: var(--font-size-base);
+  }
+  
+  .form-section-title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .profile-image-placeholder {
+    width: 100px;
+    height: 100px;
+    font-size: var(--font-size-2xl);
+  }
+  
+  .save-changes-btn {
+    width: 100%;
+    margin-top: var(--spacing-md);
+  }
+  
+  .profile-actions {
+    text-align: center;
+  }
+}

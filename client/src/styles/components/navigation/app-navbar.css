@@ -1,5 +1,8 @@
 /* Navigation Components Styles */
 
+/* Import User Profile Dropdown Styles */
+@import './user-profile-dropdown.css';
+
 /* AppNavbar Styles - Farm Fridge Design */
 .app-navbar-container {
   background-color: var(--white);

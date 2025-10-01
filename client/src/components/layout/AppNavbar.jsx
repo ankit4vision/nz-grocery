@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge } 
 import { LinkContainer } from 'react-router-bootstrap';
 import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
 import { useCartContext } from '../../context';
+import UserProfileDropdown from './UserProfileDropdown';
 import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/navigation/app-navbar.css';
 
@@ -12,6 +13,8 @@ const AppNavbar = ({
   className = '',
   onBrowseProductsClick,
   onCartClick,
+  onLogout,
+  userPoints = 0,
   ...props 
 }) => {
   const { totalItems } = useCartContext();
@@ -77,9 +80,13 @@ const AppNavbar = ({
                   )}
                 </div>
               </Nav.Link>
-              <Nav.Link className="app-navbar__profile">
-                <FaUser className="app-navbar__profile-icon" />
-              </Nav.Link>
+              
+              {/* User Profile Dropdown */}
+              <UserProfileDropdown 
+                userPoints={userPoints}
+                onLogout={onLogout}
+              />
+              
               <Nav.Link className="app-navbar__join">
                 Join
               </Nav.Link>

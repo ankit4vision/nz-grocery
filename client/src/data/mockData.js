@@ -2050,6 +2050,7 @@ export const navItemsData = [
   { path: '/recipes', label: 'Recipes & Ideas' },
   { path: '/value', label: 'Get more value' },
   { path: '/shop', label: 'Ways to Shop' },
+  { path: '/dashboard', label: 'My Account' },
   { path: '/help', label: 'Help' }
 ];
 
