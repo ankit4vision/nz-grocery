@@ -32,3 +32,7 @@
 @import './ui-components/confirm-dialog.css';
 @import './ui-components/stat-card.css';
 @import './ui-components/info-card.css';
+@import './ui-components/product-image-gallery.css';
+@import './ui-components/product-info.css';
+@import './ui-components/similar-products.css';
+@import './ui-components/customer-reviews.css';

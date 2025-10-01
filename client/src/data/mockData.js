@@ -2079,3 +2079,152 @@ export const socialLinksData = [
   { href: '#', icon: '📷' },
   { href: '#', icon: '🐦' }
 ];
+
+// Product Detail Data
+export const productDetailData = {
+  id: 1,
+  name: "Fresh Organic Banana",
+  unit: "kg",
+  currentPrice: "2.49",
+  originalPrice: "2.00",
+  images: [
+    "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&h=600&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=600&h=600&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1587132137056-bfbf0166836e?w=600&h=600&fit=crop&crop=center",
+    "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&h=600&fit=crop&crop=center"
+  ],
+  rating: 4.5,
+  reviews: 156,
+  discount: 20,
+  isFavorite: false,
+  description: "Sweet and juicy organic banana, perfect for healthy snacking",
+  brand: "Nature's Best",
+  tags: ["organic", "fresh", "healthy"],
+  type: "Simple",
+  vendorRating: 4.5,
+  vendorReviews: 156,
+  healthStarRating: 5,
+  inStock: true,
+  stockCount: 50,
+  category: "Fruits",
+  subcategory: "Bananas",
+  weight: "1kg",
+  origin: "Australia",
+  shelfLife: "3-4 days",
+  nutritionInfo: {
+    calories: "89 per 100g",
+    protein: "1.1g",
+    carbs: "22.8g",
+    fiber: "2.6g",
+    sugar: "12.2g"
+  }
+};
+
+// Similar Products Data
+export const similarProductsData = [
+  {
+    id: 2,
+    name: "Cavendish Bananas each",
+    unit: "1EA",
+    currentPrice: "0.72",
+    originalPrice: "0.80",
+    image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop&crop=center",
+    rating: 4.3,
+    reviews: 89,
+    discount: 10,
+    isFavorite: false,
+    badge: "Australian Grown"
+  },
+  {
+    id: 3,
+    name: "Eat Later Cavendish Bananas each",
+    unit: "1EA",
+    currentPrice: "0.65",
+    originalPrice: "0.72",
+    image: "https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=300&h=300&fit=crop&crop=center",
+    rating: 4.1,
+    reviews: 67,
+    discount: 10,
+    isFavorite: true,
+    badge: "Eat in 3-4 days"
+  },
+  {
+    id: 4,
+    name: "Banana Lady Finger each",
+    unit: "1EA",
+    currentPrice: "0.85",
+    originalPrice: "0.90",
+    image: "https://images.unsplash.com/photo-1587132137056-bfbf0166836e?w=300&h=300&fit=crop&crop=center",
+    rating: 4.4,
+    reviews: 45,
+    discount: 6,
+    isFavorite: false,
+    badge: "Premium"
+  },
+  {
+    id: 5,
+    name: "Banana Red Tipped each",
+    unit: "1EA",
+    currentPrice: "0.78",
+    originalPrice: "0.85",
+    image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=300&fit=crop&crop=center",
+    rating: 4.2,
+    reviews: 32,
+    discount: 8,
+    isFavorite: false,
+    badge: "Organic"
+  }
+];
+
+// Customer Reviews Data
+export const customerReviewsData = {
+  overallRating: 4.1,
+  totalReviews: 8,
+  reviews: [
+    {
+      id: 1,
+      userName: "John Doe",
+      rating: 5,
+      title: "Excellent Quality!",
+      comment: "Great product! Highly recommend. The quality is outstanding and it arrived fresh.",
+      date: "1/15/2024",
+      isVerified: true
+    },
+    {
+      id: 2,
+      userName: "Jane Smith",
+      rating: 4,
+      title: "Good but Expensive",
+      comment: "Good quality product, but a bit expensive for what you get. Still satisfied with the purchase.",
+      date: "1/14/2024",
+      isVerified: true
+    },
+    {
+      id: 3,
+      userName: "Peter Jones",
+      rating: 3,
+      title: "Average Product",
+      comment: "Average product, not bad but nothing special either. Would buy again if on sale.",
+      date: "1/13/2024",
+      isVerified: false
+    },
+    {
+      id: 4,
+      userName: "Sarah Wilson",
+      rating: 5,
+      title: "Perfect Bananas",
+      comment: "These bananas are exactly what I expected. Fresh, sweet, and perfect for my morning smoothie.",
+      date: "1/12/2024",
+      isVerified: true
+    },
+    {
+      id: 5,
+      userName: "Mike Brown",
+      rating: 4,
+      title: "Good Value",
+      comment: "Good quality bananas at a reasonable price. Will definitely order again.",
+      date: "1/11/2024",
+      isVerified: true
+    }
+  ]
+};

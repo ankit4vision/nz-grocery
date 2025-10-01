@@ -16,3 +16,7 @@ export { default as ProductFilters } from './ProductFilters';
 export { default as ProductGrid } from './ProductGrid';
 export { default as Pagination } from './Pagination';
 export { default as AllCategories } from './AllCategories';
+export { default as ProductImageGallery } from './ProductImageGallery';
+export { default as ProductInfo } from './ProductInfo';
+export { default as SimilarProducts } from './SimilarProducts';
+export { default as CustomerReviews } from './CustomerReviews';

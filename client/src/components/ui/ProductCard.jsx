@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faShoppingCart, faStar } from '@fortawesome/free-solid-svg-icons';
 import { ImageWithFallback } from '../common';
@@ -24,14 +25,21 @@ const ProductCard = ({
 }) => {
   const [favorite, setFavorite] = useState(initialIsFavorite);
   const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = (e) => {
+    e.stopPropagation();
     setFavorite(!favorite);
     onToggleFavorite?.(id, !favorite);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
     onAddToCart?.({ id, quantity });
+  };
+
+  const handleCardClick = () => {
+    navigate(`/product/${id}`);
   };
 
   const handleQuantityChange = (change) => {
@@ -95,7 +103,7 @@ const ProductCard = ({
   };
 
   return (
-    <Card className={`product-card product-card--${variant}`}>
+    <Card className={`product-card product-card--${variant}`} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
       <div className="product-card__image">
         <ImageWithFallback 
           src={image} 
