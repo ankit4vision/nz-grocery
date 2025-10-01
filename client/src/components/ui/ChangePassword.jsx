@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Alert, InputGroup, Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash, faSpinner, faSave, faCheck, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/components/ui-components/change-password.css';
 
 const ChangePassword = () => {
@@ -106,14 +108,14 @@ const ChangePassword = () => {
         <Card.Body>
           {successMessage && (
             <Alert variant="success" className="success-alert">
-              <i className="fas fa-check-circle me-2"></i>
+              <FontAwesomeIcon icon={faCheck} className="me-2" />
               {successMessage}
             </Alert>
           )}
 
           {errors.submit && (
             <Alert variant="danger" className="error-alert">
-              <i className="fas fa-exclamation-circle me-2"></i>
+              <FontAwesomeIcon icon={faExclamationCircle} className="me-2" />
               {errors.submit}
             </Alert>
           )}
@@ -136,7 +138,7 @@ const ChangePassword = () => {
                   onClick={() => togglePasswordVisibility('current')}
                   className="password-toggle-btn"
                 >
-                  <i className={`fas ${showPasswords.current ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                  <FontAwesomeIcon icon={showPasswords.current ? faEyeSlash : faEye} />
                 </InputGroup.Text>
               </InputGroup>
               {errors.currentPassword && (
@@ -163,7 +165,7 @@ const ChangePassword = () => {
                   onClick={() => togglePasswordVisibility('new')}
                   className="password-toggle-btn"
                 >
-                  <i className={`fas ${showPasswords.new ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                  <FontAwesomeIcon icon={showPasswords.new ? faEyeSlash : faEye} />
                 </InputGroup.Text>
               </InputGroup>
               {errors.newPassword && (
@@ -190,7 +192,7 @@ const ChangePassword = () => {
                   onClick={() => togglePasswordVisibility('confirm')}
                   className="password-toggle-btn"
                 >
-                  <i className={`fas ${showPasswords.confirm ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                  <FontAwesomeIcon icon={showPasswords.confirm ? faEyeSlash : faEye} />
                 </InputGroup.Text>
               </InputGroup>
               {errors.confirmPassword && (
@@ -210,12 +212,12 @@ const ChangePassword = () => {
               >
                 {isLoading ? (
                   <>
-                    <i className="fas fa-spinner fa-spin me-2"></i>
+                    <FontAwesomeIcon icon={faSpinner} className="fa-spin me-2" />
                     Updating...
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-save me-2"></i>
+                    <FontAwesomeIcon icon={faSave} className="me-2" />
                     Update Password
                   </>
                 )}
