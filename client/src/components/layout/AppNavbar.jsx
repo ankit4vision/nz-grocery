@@ -1,7 +1,8 @@
 import React from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
+import { useCartContext } from '../../context';
 import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/navigation/app-navbar.css';
 
@@ -10,8 +11,11 @@ const AppNavbar = ({
   navItems = [],
   className = '',
   onBrowseProductsClick,
+  onCartClick,
   ...props 
 }) => {
+  const { totalItems } = useCartContext();
+  
   const navbarClasses = [
     'app-navbar',
     className
@@ -56,8 +60,22 @@ const AppNavbar = ({
             
             {/* Actions */}
             <div className="app-navbar__actions">
-              <Nav.Link className="app-navbar__cart">
-                <FaShoppingCart className="app-navbar__cart-icon" />
+              <Nav.Link 
+                className="app-navbar__cart"
+                onClick={onCartClick}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="app-navbar__cart-container">
+                  <FaShoppingCart className="app-navbar__cart-icon" />
+                  {totalItems > 0 && (
+                    <Badge 
+                      bg="danger" 
+                      className="app-navbar__cart-badge"
+                    >
+                      {totalItems}
+                    </Badge>
+                  )}
+                </div>
               </Nav.Link>
               <Nav.Link className="app-navbar__profile">
                 <FaUser className="app-navbar__profile-icon" />

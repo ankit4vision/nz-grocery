@@ -3,6 +3,7 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CustomButton, NavigationButtons, ImageWithFallback } from '../common';
+import { useCartContext } from '../../context';
 import '../../styles/components/ui-components/price-section.css';
 
 const PriceSection = ({ 
@@ -13,6 +14,7 @@ const PriceSection = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef(null);
+  const { addItem } = useCartContext();
   
   const sectionClasses = [
     'price-section',
@@ -31,6 +33,11 @@ const PriceSection = ({
   };
 
   const visibleProducts = products.slice(currentIndex, currentIndex + productsPerView);
+
+  const handleAddToCart = (product) => {
+    addItem(product, 1);
+    console.log(`Added ${product.name} to cart`);
+  };
 
   return (
     <section className={sectionClasses}>
@@ -88,11 +95,7 @@ const PriceSection = ({
                     variant="outline-success"
                     size="sm"
                     className="product-card__button"
-                    onClick={() => {
-                      if (product.link) {
-                        console.log('Add to cart:', product.name);
-                      }
-                    }}
+                    onClick={() => handleAddToCart(product)}
                   >
                     <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
                     Add to Cart

@@ -66,7 +66,7 @@ export const useCart = () => {
   // Get total price
   const getTotalPrice = useCallback(() => {
     return cartItems.reduce((total, item) => {
-      const price = item.currentPrice || item.price || 0;
+      const price = Number(item.currentPrice || item.price || 0);
       return total + (price * item.quantity);
     }, 0);
   }, [cartItems]);

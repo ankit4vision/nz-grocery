@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faShoppingCart, faStar } from '@fortawesome/free-solid-svg-icons';
 import { ImageWithFallback } from '../common';
+import { useCartContext } from '../../context';
 import '../../styles/components/cards/product-card.css';
 
 const ProductCard = ({
@@ -26,6 +27,7 @@ const ProductCard = ({
   const [favorite, setFavorite] = useState(initialIsFavorite);
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
+  const { addItem, toggleCart, isInCart } = useCartContext();
 
   const handleToggleFavorite = (e) => {
     e.stopPropagation();
@@ -35,7 +37,29 @@ const ProductCard = ({
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    onAddToCart?.({ id, quantity });
+    
+    // Create product object for cart
+    const product = {
+      id,
+      name,
+      unit,
+      currentPrice,
+      originalPrice,
+      image,
+      rating,
+      reviews,
+      discount: discountPercentage,
+      category
+    };
+    
+    // Add to cart using context
+    addItem(product, quantity);
+    
+    // Call custom handler if provided
+    onAddToCart?.(product, quantity);
+    
+    // Show success feedback (optional)
+    console.log(`Added ${quantity} x ${name} to cart`);
   };
 
   const handleCardClick = () => {

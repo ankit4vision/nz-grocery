@@ -1,14 +1,21 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useCart } from '../hooks';
 import { STORAGE_KEYS } from '../utils/constants';
+import { productsData } from '../data/mockData';
 
 /**
  * Cart Context for managing shopping cart state globally
  */
 
+// Default mock cart items
+const getDefaultCartItems = () => {
+  // Start with empty cart
+  return [];
+};
+
 // Initial state
 const initialState = {
-  items: [],
+  items: getDefaultCartItems(),
   totalItems: 0,
   totalPrice: 0,
   isLoading: false,
@@ -122,7 +129,7 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.CALCULATE_TOTALS: {
       const totalItems = state.items.reduce((total, item) => total + item.quantity, 0);
       const totalPrice = state.items.reduce((total, item) => {
-        const price = item.currentPrice || item.price || 0;
+        const price = Number(item.currentPrice || item.price || 0);
         return total + (price * item.quantity);
       }, 0);
       

@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
+import { useCartContext } from '../context';
 import { productDetailData, similarProductsData, customerReviewsData } from '../data/mockData';
 import './ProductDetail.css';
 
@@ -13,6 +14,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const reviewsRef = useRef(null);
+  const { addItem, toggleCart } = useCartContext();
 
   // In a real app, you would fetch product data based on the ID
   // For now, we'll use the mock data
@@ -21,8 +23,13 @@ const ProductDetail = () => {
   const reviews = customerReviewsData;
 
   const handleAddToCart = (productId, quantity = 1) => {
-    console.log('Add to cart:', productId, 'Quantity:', quantity);
-    // In a real app, this would add the product to the cart
+    // Find the product in similar products or use main product
+    const productToAdd = similarProducts.find(p => p.id === productId) || product;
+    
+    if (productToAdd) {
+      addItem(productToAdd, quantity);
+      console.log(`Added ${quantity} x ${productToAdd.name} to cart`);
+    }
   };
 
   const handleToggleFavorite = (productId, isFavorite) => {

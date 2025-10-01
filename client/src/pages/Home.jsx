@@ -1,10 +1,23 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { HeroSlider, AdsBanner, ValueSection, PriceSection, FeaturedProducts } from '../components';
+import { useCartContext } from '../context';
 import { heroSlidesData, adsBannerData, valueCategoriesData, priceSectionData, featuredProductsData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
+  const { addItem } = useCartContext();
+
+  const handleAddToCart = (product) => {
+    addItem(product, 1);
+    console.log(`Added ${product.name} to cart`);
+  };
+
+  const handleToggleFavorite = (productId, isFavorite) => {
+    console.log('Toggle favorite:', productId, 'Is favorite:', isFavorite);
+    // TODO: Implement favorites functionality
+  };
+
   return (
     <div className="home-page">
       {/* Hero Slider Section */}
@@ -58,8 +71,8 @@ const Home = () => {
         products={featuredProductsData}
         productsPerRow={4}
         className="home-featured-products"
-        onAddToCart={(productId) => console.log('Add to cart:', productId)}
-        onToggleFavorite={(productId, isFavorite) => console.log('Toggle favorite:', productId, isFavorite)}
+        onAddToCart={handleAddToCart}
+        onToggleFavorite={handleToggleFavorite}
       />
 
     </div>

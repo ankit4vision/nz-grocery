@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AppNavbar from './AppNavbar';
 import AppFooter from './AppFooter';
 import BrowseSidebar from './BrowseSidebar';
+import { CartSidebar } from '../ui';
+import { useCartContext } from '../../context';
 import '../../styles/components/layout-elements/layout-wrapper.css';
 
 const LayoutWrapper = ({ 
@@ -14,6 +16,7 @@ const LayoutWrapper = ({
   ...props 
 }) => {
   const [showBrowseSidebar, setShowBrowseSidebar] = useState(false);
+  const { isOpen: isCartOpen, toggleCart } = useCartContext();
 
   const handleBrowseProductsClick = () => {
     setShowBrowseSidebar(true);
@@ -21,6 +24,10 @@ const LayoutWrapper = ({
 
   const handleCloseBrowseSidebar = () => {
     setShowBrowseSidebar(false);
+  };
+
+  const handleCartToggle = () => {
+    toggleCart();
   };
 
   const wrapperClasses = [
@@ -34,6 +41,7 @@ const LayoutWrapper = ({
         <AppNavbar 
           {...navbarProps} 
           onBrowseProductsClick={handleBrowseProductsClick}
+          onCartClick={handleCartToggle}
         />
       )}
       
@@ -47,6 +55,12 @@ const LayoutWrapper = ({
       <BrowseSidebar 
         show={showBrowseSidebar} 
         onHide={handleCloseBrowseSidebar} 
+      />
+      
+      {/* Cart Sidebar */}
+      <CartSidebar 
+        show={isCartOpen} 
+        onHide={handleCartToggle} 
       />
     </div>
   );

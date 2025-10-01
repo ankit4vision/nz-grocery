@@ -7,6 +7,7 @@ import {
   ProductGrid,
   LoadMore
 } from '../components';
+import { useCartContext } from '../context';
 import {
   categoriesData,
   productsListingData,
@@ -16,6 +17,8 @@ import './Products.css';
 
 const Products = () => {
   const [searchParams] = useSearchParams();
+  const { addItem } = useCartContext();
+  
   // State management
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [favorites, setFavorites] = useState(new Set());
@@ -150,8 +153,8 @@ const Products = () => {
 
   // Handle add to cart
   const handleAddToCart = (product) => {
-    console.log('Added to cart:', product);
-    // TODO: Implement cart functionality
+    addItem(product, 1);
+    console.log(`Added ${product.name} to cart`);
   };
 
   // Handle toggle favorite

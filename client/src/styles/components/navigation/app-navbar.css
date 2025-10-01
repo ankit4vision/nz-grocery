@@ -143,6 +143,38 @@
   color: var(--primary-color);
 }
 
+.app-navbar__cart-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.app-navbar__cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: var(--font-size-xs);
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-full);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .app-navbar__join {
   background-color: var(--primary-color);
   color: var(--text-white) !important;
