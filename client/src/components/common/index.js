@@ -8,3 +8,4 @@ export { default as NavigationButtons } from './NavigationButtons';
 export { default as ImageWithFallback } from './ImageWithFallback';
 export { default as Breadcrumb } from './Breadcrumb';
 export { default as LoadMore } from './LoadMore';
+export { default as ScrollToTop } from './ScrollToTop';
