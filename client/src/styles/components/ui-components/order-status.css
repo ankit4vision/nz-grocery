@@ -31,7 +31,6 @@
 }
 
 .summary-card {
-  background: var(--bg-primary);
   border: 1px solid var(--gray-200);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);

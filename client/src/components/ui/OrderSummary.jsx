@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Form, Row, Col } from 'react-bootstrap';
+import { Card, Button, Form, ListGroup } from 'react-bootstrap';
 import '../../styles/components/ui-components/order-summary.css';
 
 const OrderSummary = ({
@@ -39,29 +39,28 @@ const OrderSummary = ({
       </Card.Header>
       <Card.Body>
         {/* Order Items */}
-        <div className="order-items">
-          <div className="items-header">
-            <Row>
-              <Col xs={6}><strong>Item</strong></Col>
-              <Col xs={3}><strong>Qty</strong></Col>
-              <Col xs={3}><strong>Price</strong></Col>
-            </Row>
-          </div>
+        <div>
+          <h6 className="items-header">Order Items</h6>
           
-          <div className="items-list">
-            {items.map((item) => (
-              <Row key={item.id} className="order-item">
-                <Col xs={6} className="item-name">
-                  {item.name}
-                </Col>
-                <Col xs={3} className="item-quantity">
-                  {item.quantity}
-                </Col>
-                <Col xs={3} className="item-price">
-                  {formatPrice(item.currentPrice || item.price || 0)}
-                </Col>
-              </Row>
-            ))}
+          <div className="table-responsive">
+            <table className="table table-sm">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th className="text-center">Qty</th>
+                  <th className="text-end">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td className="text-center">{item.quantity}</td>
+                    <td className="text-end">{formatPrice(item.currentPrice || item.price || 0)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -104,12 +103,10 @@ const OrderSummary = ({
               placeholder="Enter promo code"
               value={promoCode}
               onChange={(e) => onPromoCodeChange(e.target.value)}
-              className="promo-input"
             />
             <Button
               variant="success"
               onClick={onPromoCodeApply}
-              className="promo-apply-btn"
             >
               Apply
             </Button>

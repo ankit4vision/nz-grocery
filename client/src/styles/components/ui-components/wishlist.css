@@ -160,15 +160,14 @@
   border: 1px solid var(--primary-color);
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-lg);
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  color: var(--text-white);
+  color: var(--text-primary);
 }
 
 .summary-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   margin: 0;
-  color: var(--text-white);
+  color: var(--text-primary);
 }
 
 .add-all-btn {
