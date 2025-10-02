@@ -64,6 +64,17 @@
   color: var(--gray-500);
 }
 
+/* Delete icon styles for wishlist */
+.product-card__favorite.delete-icon {
+  color: var(--danger-color);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.product-card__favorite.delete-icon:hover {
+  background: var(--white);
+  color: var(--danger-color);
+}
+
 .product-card__badge {
   position: absolute;
   top: var(--spacing-sm);

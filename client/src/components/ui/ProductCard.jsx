@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faShoppingCart, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faShoppingCart, faStar, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ImageWithFallback } from '../common';
 import { useCartContext } from '../../context';
 import '../../styles/components/cards/product-card.css';
@@ -22,7 +22,8 @@ const ProductCard = ({
   onAddToCart,
   onToggleFavorite,
   variant = 'default', // New prop for different variants
-  showQuantitySelector = false // New prop for quantity selector
+  showQuantitySelector = false, // New prop for quantity selector
+  showDeleteIcon = false // New prop to show delete icon instead of heart
 }) => {
   const [favorite, setFavorite] = useState(initialIsFavorite);
   const [quantity, setQuantity] = useState(1);
@@ -193,11 +194,11 @@ const ProductCard = ({
           className="product-card__image-element"
         />
         <button
-          className={`product-card__favorite ${favorite ? 'favorited' : ''}`}
+          className={`product-card__favorite ${favorite ? 'favorited' : ''} ${showDeleteIcon ? 'delete-icon' : ''}`}
           onClick={handleToggleFavorite}
-          aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
+          aria-label={showDeleteIcon ? 'Remove from wishlist' : (favorite ? 'Remove from favorites' : 'Add to favorites')}
         >
-          <FontAwesomeIcon icon={faHeart} />
+          <FontAwesomeIcon icon={showDeleteIcon ? faTrash : faHeart} />
         </button>
 
         {/* Discount Badge */}

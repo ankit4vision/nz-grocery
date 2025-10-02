@@ -502,7 +502,7 @@ export const productsListingData = [
     rating: 4.8,
     reviews: 124,
     discount: 27,
-    isFavorite: false,
+    isFavorite: true,
     category: 'fruit-veg',
     subcategory: 'Apples',
     brand: 'Organic Valley',
@@ -546,7 +546,7 @@ export const productsListingData = [
     rating: 4.7,
     reviews: 156,
     discount: 19,
-    isFavorite: false,
+    isFavorite: true,
     category: 'fruit-veg',
     subcategory: 'Red Grapes',
     brand: 'Vineyard Select',
@@ -568,7 +568,7 @@ export const productsListingData = [
     rating: 4.5,
     reviews: 203,
     discount: 19,
-    isFavorite: false,
+    isFavorite: true,
     category: 'fruit-veg',
     subcategory: 'Nightshades',
     brand: 'Garden Fresh',
@@ -612,7 +612,7 @@ export const productsListingData = [
     rating: 4.4,
     reviews: 178,
     discount: 19,
-    isFavorite: false,
+    isFavorite: true,
     category: 'fruit-veg',
     subcategory: 'Bananas',
     brand: 'Tropical Fresh',
@@ -656,7 +656,7 @@ export const productsListingData = [
     rating: 4.7,
     reviews: 198,
     discount: 19,
-    isFavorite: true,
+    isFavorite: false,
     category: 'fruit-veg',
     subcategory: 'Root Vegetables',
     brand: 'Garden Fresh',
@@ -766,7 +766,7 @@ export const productsListingData = [
     rating: 4.8,
     reviews: 89,
     discount: 11,
-    isFavorite: true,
+    isFavorite: false,
     category: 'fruit-veg',
     subcategory: 'Avocados',
     brand: 'Tropical Fresh',
@@ -832,7 +832,7 @@ export const productsListingData = [
     rating: 4.6,
     reviews: 189,
     discount: 13,
-    isFavorite: true,
+    isFavorite: false,
     category: 'pantry',
     subcategory: 'Potatoes',
     brand: 'Garden Fresh',
@@ -899,7 +899,7 @@ export const productsListingData = [
     rating: 4.8,
     reviews: 156,
     discount: 9,
-    isFavorite: true,
+    isFavorite: false,
     category: 'fruit-veg',
     subcategory: 'Blueberries',
     brand: 'Berry Fresh',
@@ -1075,7 +1075,7 @@ export const productsListingData = [
     rating: 4.6,
     reviews: 156,
     discount: 11,
-    isFavorite: true,
+    isFavorite: false,
     category: 'pantry',
     subcategory: 'Sweet Potatoes',
     brand: 'Garden Fresh',
@@ -1141,7 +1141,7 @@ export const productsListingData = [
     rating: 4.5,
     reviews: 145,
     discount: 11,
-    isFavorite: true,
+    isFavorite: false,
     category: 'fruit-veg',
     subcategory: 'Pineapple',
     brand: 'Tropical Fresh',
@@ -1163,7 +1163,7 @@ export const productsListingData = [
     rating: 4.7,
     reviews: 178,
     discount: 9,
-    isFavorite: true,
+    isFavorite: false,
     category: 'fruit-veg',
     subcategory: 'Mangoes',
     brand: 'Tropical Fresh',
@@ -1273,7 +1273,7 @@ export const productsListingData = [
     rating: 4.7,
     reviews: 98,
     discount: 9,
-    isFavorite: true,
+    isFavorite: false,
     category: 'fruit-veg',
     subcategory: 'Black Grapes',
     brand: 'Vineyard Select',
@@ -1406,7 +1406,7 @@ export const productsListingData = [
     rating: 4.9,
     reviews: 89,
     discount: 14,
-    isFavorite: true,
+    isFavorite: false,
     category: 'poultry-meat',
     subcategory: 'Seafood',
     brand: 'Ocean Fresh',
@@ -1450,7 +1450,7 @@ export const productsListingData = [
     rating: 4.8,
     reviews: 67,
     discount: 14,
-    isFavorite: true,
+    isFavorite: false,
     category: 'poultry-meat',
     subcategory: 'Seafood',
     brand: 'Ocean Fresh',
@@ -1494,7 +1494,7 @@ export const productsListingData = [
     rating: 4.6,
     reviews: 156,
     discount: 14,
-    isFavorite: true,
+    isFavorite: false,
     category: 'snacks',
     subcategory: 'Nuts',
     brand: 'Nutty Fresh',
@@ -1516,7 +1516,7 @@ export const productsListingData = [
     rating: 4.7,
     reviews: 189,
     discount: 13,
-    isFavorite: true,
+    isFavorite: false,
     category: 'snacks',
     subcategory: 'Chocolate',
     brand: 'Choco Delight',
@@ -1560,7 +1560,7 @@ export const productsListingData = [
     rating: 4.8,
     reviews: 267,
     discount: 11,
-    isFavorite: true,
+    isFavorite: false,
     category: 'pantry',
     subcategory: 'Rice',
     brand: 'Grain Masters',
@@ -1648,7 +1648,7 @@ export const productsListingData = [
     rating: 4.8,
     reviews: 145,
     discount: 14,
-    isFavorite: true,
+    isFavorite: false,
     category: 'indian-sweets',
     subcategory: 'Traditional Sweets',
     brand: 'Sweet Delights',
@@ -1692,7 +1692,7 @@ export const productsListingData = [
     rating: 4.6,
     reviews: 98,
     discount: 9,
-    isFavorite: true,
+    isFavorite: false,
     category: 'indian-sweets',
     subcategory: 'Traditional Sweets',
     brand: 'Sweet Delights',
@@ -1736,7 +1736,7 @@ export const productsListingData = [
     rating: 4.6,
     reviews: 189,
     discount: 11,
-    isFavorite: true,
+    isFavorite: false,
     category: 'dietary',
     subcategory: 'Supplements',
     brand: 'FitLife',
@@ -1780,7 +1780,7 @@ export const productsListingData = [
     rating: 4.3,
     reviews: 98,
     discount: 8,
-    isFavorite: true,
+    isFavorite: false,
     category: 'dietary',
     subcategory: 'Vegan',
     brand: 'Plant Based',
@@ -2147,7 +2147,7 @@ export const similarProductsData = [
     rating: 4.1,
     reviews: 67,
     discount: 10,
-    isFavorite: true,
+    isFavorite: false,
     badge: "Eat in 3-4 days"
   },
   {
@@ -2382,6 +2382,153 @@ export const orderDetailsData = [
         quantity: 1,
         unit: 'dozen',
         price: 4.99
+      }
+    ]
+  }
+];
+
+export const faqCategoriesData = [
+  {
+    id: 'getting-started',
+    title: 'Getting Started',
+    icon: '🚀',
+    color: '#dc3545',
+    questions: [
+      {
+        question: 'How to create an account',
+        answer: 'To create an account, click on the "Sign Up" button in the top right corner, fill in your details, and verify your email address.'
+      },
+      {
+        question: 'How to place your first order',
+        answer: 'Browse our products, add items to your cart, proceed to checkout, enter your delivery details, and complete payment.'
+      },
+      {
+        question: 'How to track your order',
+        answer: 'Go to "My Orders" in your account dashboard to see real-time updates on your order status and delivery tracking.'
+      },
+      {
+        question: 'How to contact customer support',
+        answer: 'You can reach us via email, phone, or live chat. Visit our Contact Us page for all available support channels.'
+      }
+    ]
+  },
+  {
+    id: 'account-profile',
+    title: 'Account & Profile',
+    icon: '👤',
+    color: '#007bff',
+    questions: [
+      {
+        question: 'How to update your profile',
+        answer: 'Go to your account dashboard and click on "Profile" to update your personal information, addresses, and preferences.'
+      },
+      {
+        question: 'How to change your password',
+        answer: 'In your account dashboard, go to "Change Password" and follow the security steps to update your password.'
+      },
+      {
+        question: 'How to manage addresses',
+        answer: 'In your profile settings, you can add, edit, or delete multiple delivery addresses for convenience.'
+      },
+      {
+        question: 'How to view order history',
+        answer: 'All your past and current orders are available in the "My Orders" section of your account dashboard.'
+      }
+    ]
+  },
+  {
+    id: 'payment-billing',
+    title: 'Payment & Billing',
+    icon: '💳',
+    color: '#ffc107',
+    questions: [
+      {
+        question: 'Accepted payment methods',
+        answer: 'We accept credit cards, debit cards, PayPal, Apple Pay, Google Pay, and cash on delivery.'
+      },
+      {
+        question: 'How to add payment cards',
+        answer: 'Go to your account settings, select "Payment Methods", and securely add your card details.'
+      },
+      {
+        question: 'Understanding charges',
+        answer: 'Your total includes item prices, delivery fees, taxes, and any applicable service charges. All fees are clearly displayed before checkout.'
+      },
+      {
+        question: 'Refund policies',
+        answer: 'We offer full refunds for damaged or incorrect items within 7 days of delivery. Process returns through your account dashboard.'
+      }
+    ]
+  },
+  {
+    id: 'delivery',
+    title: 'Delivery',
+    icon: '🚚',
+    color: '#fd7e14',
+    questions: [
+      {
+        question: 'Delivery timeframes',
+        answer: 'Standard delivery: 2-3 business days. Express delivery: Same day or next day (where available).'
+      },
+      {
+        question: 'Delivery fees',
+        answer: 'Delivery fees vary by location and order size. Free delivery is available on orders over $50 in most areas.'
+      },
+      {
+        question: 'How to track delivery',
+        answer: 'Use the tracking link in your order confirmation email or check "My Orders" for real-time delivery updates.'
+      },
+      {
+        question: 'Contact delivery partner',
+        answer: 'If you need to contact the delivery driver, use the contact information provided in your delivery notifications.'
+      }
+    ]
+  },
+  {
+    id: 'returns-refunds',
+    title: 'Returns & Refunds',
+    icon: '🔄',
+    color: '#6f42c1',
+    questions: [
+      {
+        question: 'Return policy',
+        answer: 'We accept returns within 30 days for unopened items and 7 days for perishable goods. Items must be in original condition.'
+      },
+      {
+        question: 'How to return items',
+        answer: 'Initiate a return through your account dashboard, print the return label, and schedule a pickup or drop off at a designated location.'
+      },
+      {
+        question: 'Refund processing time',
+        answer: 'Refunds are processed within 3-5 business days after we receive your returned items.'
+      },
+      {
+        question: 'Damaged items',
+        answer: 'Report damaged items immediately upon delivery. We will arrange for replacement or full refund at no cost to you.'
+      }
+    ]
+  },
+  {
+    id: 'contact-us',
+    title: 'Contact Us',
+    icon: '📞',
+    color: '#212529',
+    questions: [
+      {
+        question: 'Customer support hours',
+        answer: 'Our support team is available Monday-Friday 8AM-8PM and Saturday-Sunday 9AM-6PM (local time).'
+      },
+      {
+        question: 'Email support',
+        answer: 'Send us an email at support@farmfridge.com and we will respond within 24 hours.'
+      },
+      {
+        question: 'Phone support',
+        answer: 'Call us at 1-800-FARM-FRIDGE (1-800-327-6374) for immediate assistance with your orders.'
+      },
+      {
+        question: 'Live chat',
+        answer: 'Use our live chat feature available on the website for instant support during business hours.'
       }
     ]
   }

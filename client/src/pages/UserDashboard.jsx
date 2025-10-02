@@ -56,7 +56,19 @@ const UserDashboard = () => {
         <Col lg={3} md={4}>
           <Card className="dashboard-sidebar">
             <Card.Header className="sidebar-header">
-              <Card.Title className="sidebar-title">My Account</Card.Title>
+              <div className="account-header">
+                <div className="user-avatar">
+                  <img 
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" 
+                    alt="Demo User"
+                    className="avatar-image"
+                  />
+                </div>
+                <div className="user-info">
+                  <h5 className="user-name">Demo User</h5>
+                  <p className="user-email">demo@egrocerymart.com</p>
+                </div>
+              </div>
             </Card.Header>
             <Card.Body className="p-0">
               <ListGroup variant="flush" className="dashboard-nav">
