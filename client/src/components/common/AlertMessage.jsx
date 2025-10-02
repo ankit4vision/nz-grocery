@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
-import './AlertMessage.css';
+import '../../styles/components/ui-elements/alert-message.css';
 
 const AlertMessage = ({ 
   variant = 'info',

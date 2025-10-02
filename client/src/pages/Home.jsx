@@ -1,92 +1,81 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import { CustomButton, InfoCard, StatCard } from '../components';
+import { Container } from 'react-bootstrap';
+import { HeroSlider, AdsBanner, ValueSection, PriceSection, FeaturedProducts } from '../components';
+import { useCartContext } from '../context';
+import { heroSlidesData, adsBannerData, valueCategoriesData, priceSectionData, featuredProductsData } from '../data/mockData';
 import './Home.css';
 
 const Home = () => {
+  const { addItem } = useCartContext();
+
+  const handleAddToCart = (product) => {
+    addItem(product, 1);
+    console.log(`Added ${product.name} to cart`);
+  };
+
+  const handleToggleFavorite = (productId, isFavorite) => {
+    console.log('Toggle favorite:', productId, 'Is favorite:', isFavorite);
+    // TODO: Implement favorites functionality
+  };
+
   return (
-    <Container>
-      {/* Hero Section */}
-      <div className="home-hero">
-        <h1 className="home-hero-title">Welcome to NZ Grocery Store</h1>
-        <p className="home-hero-subtitle">
-          Your one-stop destination for fresh groceries, quality products, and exceptional service.
-        </p>
-        <CustomButton variant="primary" size="lg">
-          Shop Now
-        </CustomButton>
-      </div>
+    <div className="home-page">
+      {/* Hero Slider Section */}
+      <section className="home-hero-section">
+        <Container>
+          <HeroSlider 
+            slides={heroSlidesData}
+            showBadge={true}
+            showControls={true}
+            showIndicators={true}
+            autoPlay={true}
+            interval={2000}
+            className="home-hero-slider"
+          />
+        </Container>
+      </section>
 
-      {/* Features Section */}
-      <Row className="home-features">
-        <Col md={4} className="mb-4">
-          <InfoCard
-            icon="🥬"
-            title="Fresh Produce"
-            description="Hand-picked fresh fruits and vegetables delivered daily from local farms."
-            variant="success"
-          />
-        </Col>
-        <Col md={4} className="mb-4">
-          <InfoCard
-            icon="🚚"
-            title="Fast Delivery"
-            description="Quick and reliable delivery service to your doorstep within 24 hours."
-            variant="info"
-          />
-        </Col>
-        <Col md={4} className="mb-4">
-          <InfoCard
-            icon="💰"
-            title="Best Prices"
-            description="Competitive prices with regular discounts and special offers for our customers."
-            variant="warning"
-          />
-        </Col>
-      </Row>
+      {/* Ads Banner Section */}
+      <section className="home-ads-section">
+        <AdsBanner 
+          ads={adsBannerData}
+          autoPlay={true}
+          interval={3000}
+          cardsPerSlide={3}
+          className="home-ads-banner"
+        />
+      </section>
 
-      {/* Stats Section */}
-      <Row className="home-stats">
-        <Col md={3} className="mb-3">
-          <StatCard
-            title="Products"
-            value={500}
-            change={12}
-            changeType="positive"
-            icon="📦"
-            variant="primary"
+      {/* Value Section */}
+      <ValueSection 
+        title="Helping you find great value"
+        categories={valueCategoriesData}
+        className="home-value-section"
+        onViewAllClick={() => console.log('View all categories clicked')}
+      />
+
+          {/* Price Section */}
+          <PriceSection
+            title="Half Price Special"
+            products={priceSectionData}
+            className="home-price-section"
+            onViewAllClick={() => console.log('View all half price specials clicked')}
           />
-        </Col>
-        <Col md={3} className="mb-3">
-          <StatCard
-            title="Happy Customers"
-            value={1000}
-            change={8}
-            changeType="positive"
-            icon="😊"
-            variant="success"
-          />
-        </Col>
-        <Col md={3} className="mb-3">
-          <StatCard
-            title="Customer Support"
-            value="24/7"
-            change={null}
-            icon="🛟"
-            variant="info"
-          />
-        </Col>
-        <Col md={3} className="mb-3">
-          <StatCard
-            title="Average Rating"
-            value="5★"
-            change={null}
-            icon="⭐"
-            variant="warning"
-          />
-        </Col>
-      </Row>
-    </Container>
+
+      {/* Section Divider */}
+      <div className="section-divider"></div>
+
+      {/* Featured Products Section */}
+      <FeaturedProducts
+        title="Featured Products - Best Deals & Fresh Picks"
+        products={featuredProductsData}
+        productsPerRow={4}
+        className="home-featured-products"
+        onAddToCart={handleAddToCart}
+        onToggleFavorite={handleToggleFavorite}
+      />
+
+    </div>
   );
 };
 

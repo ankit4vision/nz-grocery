@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import './CustomButton.css';
+import '../../styles/components/buttons/custom-button.css';
 
 const CustomButton = ({ 
   variant = 'primary', 

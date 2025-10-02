@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Form } from 'react-bootstrap';
-import './CustomSelect.css';
+import '../../styles/components/forms/custom-select.css';
 
 const CustomSelect = forwardRef(({ 
   label,

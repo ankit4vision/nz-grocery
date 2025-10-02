@@ -7,33 +7,63 @@ nz-grocery/
 ├── client/                          # Main React application
 │   ├── public/                      # Static assets
 │   │   ├── vite.svg
+│   │   ├── approval-requirnment/    # Approval requirement images
+│   │   │   ├── browseprodcuts.png
+│   │   │   ├── home.png
+│   │   │   └── listing.png
 │   │   └── index.html
 │   ├── src/                         # Source code
 │   │   ├── components/              # Reusable components
 │   │   │   ├── common/              # Common/shared components
 │   │   │   │   ├── CustomButton.jsx
-│   │   │   │   ├── CustomButton.css
-│   │   │   │   ├── InfoCard.jsx
-│   │   │   │   ├── InfoCard.css
-│   │   │   │   ├── StatCard.jsx
-│   │   │   │   ├── StatCard.css
+│   │   │   │   ├── CustomInput.jsx
+│   │   │   │   ├── CustomSelect.jsx
+│   │   │   │   ├── Loader.jsx
+│   │   │   │   ├── AlertMessage.jsx
+│   │   │   │   ├── NavigationButtons.jsx
+│   │   │   │   ├── ImageWithFallback.jsx
+│   │   │   │   ├── Breadcrumb.jsx
+│   │   │   │   ├── LoadMore.jsx
+│   │   │   │   ├── ScrollToTop.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── layout/              # Layout components
 │   │   │   │   ├── AppNavbar.jsx
-│   │   │   │   ├── AppNavbar.css
 │   │   │   │   ├── AppFooter.jsx
-│   │   │   │   ├── AppFooter.css
 │   │   │   │   ├── LayoutWrapper.jsx
 │   │   │   │   ├── BrowseSidebar.jsx
-│   │   │   │   ├── BrowseSidebar.css
+│   │   │   │   ├── Layout.jsx
 │   │   │   │   └── index.js
 │   │   │   ├── ui/                  # UI components
-│   │   │   │   ├── DataTable.jsx
-│   │   │   │   ├── DataTable.css
+│   │   │   │   ├── InfoCard.jsx
+│   │   │   │   ├── StatCard.jsx
 │   │   │   │   ├── ModalDialog.jsx
-│   │   │   │   ├── ModalDialog.css
 │   │   │   │   ├── ConfirmDialog.jsx
-│   │   │   │   ├── ConfirmDialog.css
+│   │   │   │   ├── DataTable.jsx
+│   │   │   │   ├── FormWrapper.jsx
+│   │   │   │   ├── HeroSlider.jsx
+│   │   │   │   ├── AdsBanner.jsx
+│   │   │   │   ├── ValueSection.jsx
+│   │   │   │   ├── PriceSection.jsx
+│   │   │   │   ├── HalfPriceSpecial.jsx
+│   │   │   │   ├── ProductCard.jsx
+│   │   │   │   ├── FeaturedProducts.jsx
+│   │   │   │   ├── CategoryOverview.jsx
+│   │   │   │   ├── ProductFilters.jsx
+│   │   │   │   ├── ProductGrid.jsx
+│   │   │   │   ├── Pagination.jsx
+│   │   │   │   ├── AllCategories.jsx
+│   │   │   │   ├── ProductImageGallery.jsx
+│   │   │   │   ├── ProductInfo.jsx
+│   │   │   │   ├── SimilarProducts.jsx
+│   │   │   │   ├── CustomerReviews.jsx
+│   │   │   │   ├── CartSidebar.jsx
+│   │   │   │   ├── DeliveryInfo.jsx
+│   │   │   │   ├── PaymentMethod.jsx
+│   │   │   │   ├── OrderSummary.jsx
+│   │   │   │   ├── OrderStatus.jsx
+│   │   │   │   ├── OrderSummaryBreakdown.jsx
+│   │   │   │   ├── OrderItems.jsx
+│   │   │   │   ├── PurchaseNote.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -41,24 +71,144 @@ nz-grocery/
 │   │   │   ├── Home.css
 │   │   │   ├── Products.jsx
 │   │   │   ├── Products.css
+│   │   │   ├── ProductDetail.jsx
+│   │   │   ├── ProductDetail.css
+│   │   │   ├── Checkout.jsx
+│   │   │   ├── Checkout.css
 │   │   │   ├── About.jsx
 │   │   │   └── About.css
+│   │   ├── data/                    # Mock data files
+│   │   │   └── mockData.js
+│   │   ├── assets/                  # Static assets
+│   │   │   ├── images/              # Image assets
+│   │   │   │   ├── ads-banner/      # Ads banner images
+│   │   │   │   │   ├── banner1.jpg
+│   │   │   │   │   ├── banner2.jpg
+│   │   │   │   │   ├── banner3.jpg
+│   │   │   │   │   ├── banner4.jpg
+│   │   │   │   │   ├── banner5.jpg
+│   │   │   │   │   └── banner6.jpg
+│   │   │   │   └── main-slider/     # Hero slider images
+│   │   │   │       ├── 6994918.jpg
+│   │   │   │       ├── 8449371.jpg
+│   │   │   │       ├── 8449377.jpg
+│   │   │   │       └── 8486222.jpg
+│   │   │   │   ├── logo/            # Logo images
+│   │   │   │   │   └── logo-transprant.png
+│   │   │   │   └── placeholder.svg  # Default placeholder image
+│   │   │   └── react.svg
 │   │   ├── styles/                  # Global styles
 │   │   │   ├── theme.css            # CSS variables & theme
-│   │   │   └── custom.css           # Bootstrap overrides
+│   │   │   ├── custom.css           # Bootstrap overrides
+│   │   │   ├── components/          # Component-specific styles
+│   │   │   │   ├── buttons/         # Button component styles
+│   │   │   │   │   └── custom-button.css
+│   │   │   │   ├── forms/           # Form component styles
+│   │   │   │   │   ├── custom-input.css
+│   │   │   │   │   └── custom-select.css
+│   │   │   │   ├── cards/           # Card component styles
+│   │   │   │   │   └── product-card.css
+│   │   │   │   ├── modals/          # Modal component styles
+│   │   │   │   │   └── modal-dialog.css
+│   │   │   │   ├── tables/          # Table component styles
+│   │   │   │   │   └── data-table.css
+│   │   │   │   ├── navigation/      # Navigation component styles
+│   │   │   │   │   ├── app-navbar.css
+│   │   │   │   │   ├── breadcrumb.css
+│   │   │   │   │   └── navigation-buttons.css
+│   │   │   │   ├── layout-elements/ # Layout component styles
+│   │   │   │   │   ├── app-footer.css
+│   │   │   │   │   ├── browse-sidebar.css
+│   │   │   │   │   ├── layout.css
+│   │   │   │   │   └── layout-wrapper.css
+│   │   │   │   ├── ui-elements/     # UI element styles
+│   │   │   │   │   ├── hero-slider.css
+│   │   │   │   │   ├── alert-message.css
+│   │   │   │   │   ├── loader.css
+│   │   │   │   │   └── image-with-fallback.css
+│   │   │   │   ├── ui-components/   # UI component styles
+│   │   │   │   │   ├── all-categories.css
+│   │   │   │   │   ├── product-filters.css
+│   │   │   │   │   ├── product-grid.css
+│   │   │   │   │   ├── pagination.css
+│   │   │   │   │   ├── category-overview.css
+│   │   │   │   │   ├── featured-products.css
+│   │   │   │   │   ├── price-section.css
+│   │   │   │   │   ├── value-section.css
+│   │   │   │   │   ├── ads-banner.css
+│   │   │   │   │   ├── form-wrapper.css
+│   │   │   │   │   ├── confirm-dialog.css
+│   │   │   │   │   ├── stat-card.css
+│   │   │   │   │   ├── info-card.css
+│   │   │   │   │   ├── product-image-gallery.css
+│   │   │   │   │   ├── product-info.css
+│   │   │   │   │   ├── similar-products.css
+│   │   │   │   │   ├── customer-reviews.css
+│   │   │   │   │   ├── cart-sidebar.css
+│   │   │   │   │   ├── delivery-info.css
+│   │   │   │   │   ├── payment-method.css
+│   │   │   │   │   ├── order-summary.css
+│   │   │   │   │   ├── order-status.css
+│   │   │   │   │   ├── order-summary-breakdown.css
+│   │   │   │   │   ├── order-items.css
+│   │   │   │   │   └── purchase-note.css
+│   │   │   │   └── index.css        # Central import file
+│   │   │   ├── layouts/             # Layout-specific styles
+│   │   │   │   └── index.css
+│   │   │   └── utilities/           # Utility classes
+│   │   │       └── index.css
 │   │   ├── utils/                   # Utility functions
+│   │   │   ├── api.js               # API utilities
+│   │   │   ├── formatters.js        # Data formatting
+│   │   │   ├── validators.js        # Form validation
+│   │   │   ├── constants.js         # App constants
+│   │   │   ├── helpers.js           # General helpers
+│   │   │   └── index.js             # Export file
 │   │   ├── hooks/                   # Custom React hooks
+│   │   │   ├── useLocalStorage.js   # Local storage hook
+│   │   │   ├── useDebounce.js       # Debounce hook
+│   │   │   ├── useApi.js            # API hook
+│   │   │   ├── useCart.js           # Cart management hook
+│   │   │   ├── useFavorites.js      # Favorites hook
+│   │   │   └── index.js             # Export file
+│   │   ├── services/                # API services
+│   │   │   ├── api/                 # API service modules
+│   │   │   │   ├── products.js      # Products API
+│   │   │   │   ├── categories.js    # Categories API
+│   │   │   │   ├── users.js         # Users API
+│   │   │   │   ├── cart.js          # Cart API
+│   │   │   │   ├── orders.js        # Orders API
+│   │   │   │   └── auth.js          # Authentication API
+│   │   │   └── index.js             # Export file
 │   │   ├── context/                 # React Context providers
+│   │   │   ├── CartContext.jsx      # Cart state management
+│   │   │   ├── UserContext.jsx      # User state management
+│   │   │   ├── ThemeContext.jsx     # Theme state management
+│   │   │   ├── AppContext.jsx       # App-wide state
+│   │   │   └── index.js             # Export file
+│   │   ├── __tests__/               # Test files
+│   │   │   └── sample.test.js       # Sample test
+│   │   ├── __mocks__/               # Mock files
+│   │   │   └── index.js             # Mock utilities
+│   │   ├── test-utils/              # Test utilities
+│   │   │   ├── render.js            # Custom render function
+│   │   │   └── testData.js          # Test data
+│   │   ├── config/                  # Configuration files
+│   │   │   └── fontawesome.js       # FontAwesome configuration
 │   │   ├── App.jsx                  # Main App component
 │   │   ├── main.jsx                 # Entry point
 │   │   └── index.css                # Global CSS
-│   ├── .env                         # Environment variables (local)
+│   ├── .env.local                   # Environment variables (local)
 │   ├── .env.staging                 # Environment variables (staging)
 │   ├── .env.production              # Environment variables (production)
+│   ├── .env.example                 # Environment variables template
 │   ├── package.json                 # Dependencies & scripts
 │   ├── package-lock.json            # Dependency lock file
 │   ├── vite.config.js               # Vite configuration
-│   └── node_modules/                # Dependencies
+│   ├── vitest.config.js             # Vitest configuration
+│   ├── eslint.config.js             # ESLint configuration
+│   ├── .gitignore                   # Git ignore rules
+│   └── node_modules/                 # Dependencies
 ├── PROJECT_STRUCTURE.md             # This file
 └── README.md                        # Project documentation
 ```
@@ -66,18 +216,23 @@ nz-grocery/
 ## 🛠️ Technology Stack
 
 ### **Frontend Framework:**
-- **React 18** - UI library
+- **React 19** - UI library
 - **Vite** - Build tool & dev server
 - **React Router DOM** - Client-side routing
 
 ### **UI Library:**
 - **React Bootstrap** - Component library
 - **Bootstrap 5** - CSS framework
+- **React Icons** - Icon library (FaSearch, FaShoppingCart, FaUser, FaChevronLeft, FaChevronRight, FaTimes, FaTrash, FaMinus, FaPlus)
+- **FontAwesome** - Icon library for existing components
 - **Custom CSS** - Theme & overrides
+- **Offcanvas** - React Bootstrap offcanvas for cart sidebar
 
 ### **Development Tools:**
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
+- **Vitest** - Unit testing framework
+- **React Testing Library** - Component testing
 - **Git** - Version control
 
 ## 📋 Development Rules & Guidelines
@@ -90,9 +245,10 @@ nz-grocery/
 
 ### **2. Component Structure**
 - ✅ **One component per file**
-- ✅ **Separate CSS file** for each component
+- ✅ **Centralized CSS** in `styles/components/` directory
 - ✅ **Export from index.js** for clean imports
 - ✅ **Use functional components** with hooks
+- ✅ **Import CSS from centralized location**
 
 ### **3. CSS & Styling Rules**
 - ❌ **NO inline CSS** - Always use separate CSS files
@@ -100,6 +256,8 @@ nz-grocery/
 - ✅ **Bootstrap classes** for layout & utilities
 - ✅ **Custom CSS** for component-specific styles
 - ✅ **Mobile-first** responsive design
+- ✅ **Centralized CSS** in `styles/components/` directory
+- ✅ **Categorized styles** by component type
 
 ### **4. Import Organization**
 ```jsx
@@ -114,7 +272,7 @@ import { CustomButton } from '../common';
 import { AppNavbar } from '../layout';
 
 // 4. Styles
-import './ComponentName.css';
+import '../../styles/components/category/component-name.css';
 ```
 
 ### **5. Component Props & State**
@@ -172,8 +330,21 @@ import './ComponentName.css';
 # Development
 npm run dev          # Start dev server
 npm run build        # Build for production
+npm run build:dev    # Build for development
+npm run build:staging # Build for staging
+npm run build:prod   # Build for production
 npm run preview      # Preview production build
+npm run preview:dev  # Preview development build
+npm run preview:staging # Preview staging build
+npm run preview:prod # Preview production build
 npm run lint         # Run ESLint
+
+# Testing
+npm run test         # Run tests
+npm run test:ui      # Run tests with UI
+npm run test:run     # Run tests once
+npm run test:coverage # Run tests with coverage
+npm run test:watch   # Run tests in watch mode
 
 # Dependencies
 npm install          # Install dependencies
@@ -184,12 +355,20 @@ npm update           # Update dependencies
 
 ```json
 {
-  "react": "^18.2.0",
-  "react-dom": "^18.2.0",
-  "react-bootstrap": "^2.8.0",
-  "bootstrap": "^5.3.0",
-  "react-router-dom": "^6.15.0",
-  "vite": "^4.4.5"
+  "react": "^19.1.1",
+  "react-dom": "^19.1.1",
+  "react-bootstrap": "^2.10.10",
+  "bootstrap": "^5.3.8",
+  "react-router-dom": "^7.9.3",
+  "react-icons": "^5.5.0",
+  "@fortawesome/fontawesome-svg-core": "^7.0.1",
+  "@fortawesome/free-solid-svg-icons": "^7.0.1",
+  "@fortawesome/react-fontawesome": "^3.0.2",
+  "vite": "npm:rolldown-vite@7.1.12",
+  "vitest": "^3.2.4",
+  "@testing-library/react": "^16.3.0",
+  "@testing-library/jest-dom": "^6.8.0",
+  "@testing-library/user-event": "^14.6.1"
 }
 ```
 
@@ -197,19 +376,123 @@ npm update           # Update dependencies
 
 ### **Common Components:**
 - `CustomButton` - Reusable button component
-- `InfoCard` - Information display card
-- `StatCard` - Statistics display card
+- `CustomInput` - Reusable input component
+- `CustomSelect` - Reusable select dropdown component
+- `Loader` - Loading spinner component
+- `AlertMessage` - Alert/notification component
+- `NavigationButtons` - Reusable navigation arrow buttons
+- `ImageWithFallback` - Image component with fallback placeholder
+- `Breadcrumb` - Breadcrumb navigation component
+- `LoadMore` - Load more button component
+- `ScrollToTop` - Scroll to top functionality component
 
 ### **Layout Components:**
 - `AppNavbar` - Main navigation bar
 - `AppFooter` - Footer component
 - `LayoutWrapper` - Main layout wrapper
 - `BrowseSidebar` - Product browsing sidebar
+- `Layout` - Base layout component
 
 ### **UI Components:**
+- `InfoCard` - Information display card
+- `StatCard` - Statistics display card
 - `DataTable` - Data table with sorting/filtering
 - `ModalDialog` - Modal dialog component
 - `ConfirmDialog` - Confirmation dialog
+- `FormWrapper` - Form wrapper component
+- `HeroSlider` - Hero section image slider
+- `AdsBanner` - Promotional ads carousel banner
+- `ValueSection` - Value categories display section
+- `PriceSection` - Half price specials section with cart integration
+- `HalfPriceSpecial` - Half price special component
+- `ProductCard` - Individual product display card with dynamic cart functionality
+- `FeaturedProducts` - Featured products grid section
+- `CategoryOverview` - Category overview component
+- `ProductFilters` - Product filtering and sorting component
+- `ProductGrid` - Product grid display component
+- `Pagination` - Pagination controls component
+- `AllCategories` - All categories horizontal slider component
+- `ProductImageGallery` - Product image gallery with thumbnails and modal
+- `ProductInfo` - Product details, pricing, and add-to-cart functionality
+- `SimilarProducts` - Similar products carousel section
+- `CustomerReviews` - Customer reviews display and write review functionality
+- `CartSidebar` - Shopping cart sidebar with full cart management functionality
+- `DeliveryInfo` - Delivery information form with day/time selection and contact details
+- `PaymentMethod` - Payment method selection with card details and payment options
+- `OrderSummary` - Order summary with items, pricing breakdown, promo codes, and checkout button
+- `OrderStatus` - Order status display with payment status badge, order summary cards, and progress tracker
+- `OrderSummaryBreakdown` - Order amount breakdown component showing subtotal, shipping, tax, discount, and total
+- `OrderItems` - Itemized product list component displaying order items with images, quantities, and prices
+- `PurchaseNote` - Delivery instructions and special notes component
+
+## 🛒 Cart System & State Management
+
+### **Cart Context (`CartContext.jsx`):**
+- **Global State Management** - Centralized cart state using React Context
+- **Cart Actions** - Add, remove, update quantity, clear cart
+- **Real-time Updates** - Instant cart count and price calculations
+- **Local Storage** - Persistent cart data across sessions
+- **Error Handling** - Comprehensive error states and loading management
+
+### **Cart Functionality:**
+- **Add to Cart** - Works across all pages (Home, Products, Product Detail)
+- **Dynamic UI** - Shows "Add to Cart" or quantity selector based on cart state
+- **Quantity Management** - Increase/decrease quantities with visual feedback
+- **Cart Sidebar** - Professional offcanvas cart panel
+- **Real-time Badge** - Cart item count in navigation
+- **Price Calculations** - Automatic subtotal and savings calculations
+- **Empty State** - Engaging empty cart with call-to-action
+
+### **Cart Integration Points:**
+- **Home Page** - Featured products and Half Price Special sections
+- **Products Page** - Product grid with cart functionality
+- **Product Detail** - Main product and similar products
+- **Checkout Page** - Complete checkout flow with cart integration
+- **Order Details Page** - Order confirmation and tracking after checkout
+- **Navigation** - Cart icon with item count badge
+- **Layout Wrapper** - Cart sidebar integration
+
+## 📊 Data Structure & Mock Data
+
+### **Mock Data Files:**
+- `src/data/mockData.js` - Contains all mock data for the application
+
+### **Data Categories:**
+- **Ads Banner Data** (`adsBannerData`) - Promotional offers and deals
+- **Hero Slider Data** (`heroSlidesData`) - Image-only slides for hero section
+- **Products Data** (`productsData`) - Sample products for home page
+- **Categories Data** (`categoriesData`) - Product categories with icons and descriptions
+- **Features Data** (`featuresData`) - Application features and benefits
+- **Stats Data** (`statsData`) - Statistics and metrics
+- **Specials Data** (`specialsData`) - Special offers and promotions
+- **Value Categories Data** (`valueCategoriesData`) - Value section categories with discounts
+- **Price Section Data** (`priceSectionData`) - Half price special products
+- **Products Listing Data** (`productsListingData`) - Comprehensive product data for Products page
+- **Filter Options Data** (`filterOptionsData`) - Sorting and filtering options
+- **Featured Products Data** (`featuredProductsData`) - Featured products with ratings, discounts, and favorites
+- **Popular Cards Data** (`popularCardsData`) - BrowseSidebar popular suggestions and offers
+- **Navigation Data** (`navItemsData`) - Main navigation menu items
+- **Footer Links Data** (`footerLinksData`) - Footer navigation links
+- **Social Links Data** (`socialLinksData`) - Social media links
+- **Product Detail Data** (`productDetailData`) - Detailed product information for product detail page
+- **Similar Products Data** (`similarProductsData`) - Similar products for product detail page
+- **Customer Reviews Data** (`customerReviewsData`) - Customer reviews and ratings for products
+- **Order Details Data** (`orderDetailsData`) - Sample order data with status, progress steps, items, and customer information
+
+### **Asset Structure:**
+- `src/assets/images/main-slider/` - Hero slider images (4 images)
+- `src/assets/images/ads-banner/` - Ads banner images (6 images)
+- `src/assets/images/logo/` - Logo images (logo-transprant.png)
+- `src/assets/images/placeholder.svg` - Default placeholder image for broken images
+- `public/approval-requirnment/` - Project requirement reference images
+
+### **Page Structure:**
+- **Home Page** (`Home.jsx`) - Main landing page with hero slider, ads banner, value section, price section, and featured products
+- **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
+- **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
+- **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary
+- **Order Details Page** (`OrderDetails.jsx`) - Order tracking and details page with progress status, order summary, items list, and delivery notes
+- **About Page** (`About.jsx`) - About page component
 
 ## 🚀 Creating New Functionality & Pages
 
@@ -228,7 +511,7 @@ touch src/pages/NewPage.css
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { CustomButton } from '../components/common';
-import './NewPage.css';
+import '../../styles/pages/new-page.css';
 
 const NewPage = () => {
   return (
@@ -253,6 +536,9 @@ import NewPage from './pages/NewPage';
 
 // Add to Routes
 <Route path="/new-page" element={<NewPage />} />
+
+// Example: Order Details route
+<Route path="/order/:orderId" element={<OrderDetails />} />
 ```
 
 #### **Step 4: Update Navigation**
@@ -273,15 +559,15 @@ import NewPage from './pages/NewPage';
 ```bash
 # For common component
 touch src/components/common/NewComponent.jsx
-touch src/components/common/NewComponent.css
+touch src/styles/components/category/new-component.css
 
 # For layout component
 touch src/components/layout/NewComponent.jsx
-touch src/components/layout/NewComponent.css
+touch src/styles/components/layout-elements/new-component.css
 
 # For UI component
 touch src/components/ui/NewComponent.jsx
-touch src/components/ui/NewComponent.css
+touch src/styles/components/ui-components/new-component.css
 ```
 
 #### **Step 3: Component Template**
@@ -289,7 +575,7 @@ touch src/components/ui/NewComponent.css
 // src/components/category/NewComponent.jsx
 import React, { useState, useEffect } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import './NewComponent.css';
+import '../../styles/components/category/new-component.css';
 
 const NewComponent = ({ 
   title, 
@@ -387,7 +673,7 @@ touch src/context/NewFeatureContext.jsx
 
 #### **CSS File Structure:**
 ```css
-/* src/components/category/NewComponent.css */
+/* src/styles/components/category/new-component.css */
 
 /* Component root */
 .new-component {

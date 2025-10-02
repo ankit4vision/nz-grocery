@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import './StatCard.css';
+import '../../styles/components/ui-components/stat-card.css';
 
 const StatCard = ({ 
   title,

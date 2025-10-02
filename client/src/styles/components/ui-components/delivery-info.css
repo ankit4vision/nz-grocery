@@ -1,0 +1,192 @@
+/* Delivery Info Component Styles */
+
+.delivery-info-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.delivery-info-card .card-header {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--gray-200);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.delivery-info-card .card-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.delivery-info-card .card-body {
+  padding: var(--spacing-lg);
+}
+
+.form-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Delivery Type Radio Buttons */
+.radio-group {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.delivery-radio .form-check-input {
+  border-color: var(--primary-color);
+}
+
+.delivery-radio .form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.delivery-radio .form-check-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+/* Days Selection */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.day-item {
+  display: flex;
+  align-items: center;
+}
+
+.day-checkbox .form-check-input {
+  border-color: var(--primary-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.day-checkbox .form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.day-checkbox .form-check-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-left: var(--spacing-sm);
+}
+
+/* Time Slots */
+.time-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.time-slot-radio .form-check-input {
+  border-color: var(--primary-color);
+}
+
+.time-slot-radio .form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.time-slot-radio .form-check-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--gray-200);
+  transition: var(--transition-fast);
+}
+
+.time-slot-radio .form-check-input:checked + .form-check-label {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-color);
+}
+
+/* Delivery Instructions */
+.delivery-instructions {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  resize: vertical;
+  min-height: 80px;
+}
+
+.delivery-instructions:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Form Inputs */
+.form-input {
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  transition: var(--transition-fast);
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+/* Responsive Design */
+@media (max-width: 767.98px) {
+  .delivery-info-card .card-body {
+    padding: var(--spacing-md);
+  }
+  
+  .radio-group {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .days-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .time-slots {
+    gap: var(--spacing-xs);
+  }
+  
+  .time-slot-radio .form-check-label {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .days-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-section {
+    margin-bottom: var(--spacing-lg);
+  }
+}

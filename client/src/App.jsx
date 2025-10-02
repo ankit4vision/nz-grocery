@@ -1,58 +1,35 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { LayoutWrapper } from './components';
+import { LayoutWrapper, ScrollToTop } from './components';
+import { CartProvider } from './context';
+import { navItemsData, footerLinksData, socialLinksData } from './data/mockData';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import About from './pages/About';
+import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
+import OrderDetails from './pages/OrderDetails';
 
 function App() {
-  const navItems = [
-    { path: '/products', label: 'Browse products' },
-    { path: '/specials', label: 'Specials & catalogue' },
-    { path: '/recipes', label: 'Recipes & Ideas' },
-    { path: '/value', label: 'Get more value' },
-    { path: '/shop', label: 'Ways to Shop' },
-    { path: '/help', label: 'Help' }
-  ];
-
-  const footerLinks = [
-    {
-      title: 'Quick Links',
-      items: [
-        { href: '/', label: 'Home' },
-        { href: '/products', label: 'Products' },
-        { href: '/about', label: 'About' }
-      ]
-    },
-    {
-      title: 'Support',
-      items: [
-        { href: '/contact', label: 'Contact Us' },
-        { href: '/help', label: 'Help Center' },
-        { href: '/faq', label: 'FAQ' }
-      ]
-    }
-  ];
-
-  const socialLinks = [
-    { href: '#', icon: '📘' },
-    { href: '#', icon: '📷' },
-    { href: '#', icon: '🐦' }
-  ];
-
   return (
-    <Router>
-      <LayoutWrapper
-        navbarProps={{ navItems }}
-        footerProps={{ links: footerLinks, socialLinks }}
-      >
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/about" element={<About />} />
-            </Routes>
-      </LayoutWrapper>
-    </Router>
+    <CartProvider>
+      <Router>
+        <ScrollToTop />
+        <LayoutWrapper
+          navbarProps={{ navItems: navItemsData }}
+          footerProps={{ links: footerLinksData, socialLinks: socialLinksData }}
+        >
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order/:orderId" element={<OrderDetails />} />
+                <Route path="/about" element={<About />} />
+              </Routes>
+        </LayoutWrapper>
+      </Router>
+    </CartProvider>
   );
 }
 

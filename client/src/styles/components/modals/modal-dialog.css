@@ -1,0 +1,79 @@
+/* Modal Dialog Components Styles */
+
+/* ModalDialog Styles */
+.modal-dialog .modal-content {
+  border: none;
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-2xl);
+  overflow: hidden;
+}
+
+.modal-dialog__header {
+  background: var(--bg-gradient-primary);
+  color: var(--text-white);
+  border-bottom: none;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.modal-dialog__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-white);
+  margin: 0;
+}
+
+.modal-dialog .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+
+.modal-dialog .btn-close:hover {
+  opacity: 1;
+}
+
+.modal-dialog__body {
+  padding: var(--spacing-xl);
+  background-color: var(--bg-primary);
+}
+
+/* Variants */
+.modal-dialog--success .modal-dialog__header {
+  background: var(--success-color);
+}
+
+.modal-dialog--warning .modal-dialog__header {
+  background: var(--warning-color);
+  color: var(--text-primary);
+}
+
+.modal-dialog--warning .modal-dialog__title {
+  color: var(--text-primary);
+}
+
+.modal-dialog--warning .btn-close {
+  filter: none;
+}
+
+.modal-dialog--danger .modal-dialog__header {
+  background: var(--danger-color);
+}
+
+.modal-dialog--info .modal-dialog__header {
+  background: var(--info-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-dialog__header {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .modal-dialog__title {
+    font-size: var(--font-size-base);
+  }
+  
+  .modal-dialog__body {
+    padding: var(--spacing-lg);
+  }
+}

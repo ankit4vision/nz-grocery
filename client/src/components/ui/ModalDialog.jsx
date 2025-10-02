@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import './ModalDialog.css';
+import '../../styles/components/modals/modal-dialog.css';
 
 const ModalDialog = ({ 
   show,

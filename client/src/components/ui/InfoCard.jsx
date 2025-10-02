@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import './InfoCard.css';
+import '../../styles/components/ui-components/info-card.css';
 
 const InfoCard = ({ 
   title,

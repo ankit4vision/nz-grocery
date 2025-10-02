@@ -1,0 +1,486 @@
+/* Product Image Gallery Styles */
+.product-image-gallery {
+  position: relative;
+}
+
+.product-image-gallery .main-image-container {
+  position: relative;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-gallery .image-wrapper {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.product-image-gallery .image-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.product-image-gallery .main-image {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  border-radius: var(--border-radius-lg);
+  transition: transform 0.3s ease;
+}
+
+.product-image-gallery .image-wrapper:hover .main-image {
+  transform: scale(1.02);
+}
+
+.product-image-gallery .image-counter {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.product-image-gallery .health-rating-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 0.75rem;
+  border-radius: var(--border-radius-lg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  z-index: 2;
+  text-align: center;
+  min-width: 80px;
+}
+
+.product-image-gallery .health-rating-badge .rating-stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.product-image-gallery .health-rating-badge .rating-stars .star {
+  font-size: 0.75rem;
+}
+
+.product-image-gallery .health-rating-badge .rating-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.product-image-gallery .health-rating-badge .rating-text {
+  display: block;
+  font-size: 0.625rem;
+  opacity: 0.9;
+  margin-top: 0.125rem;
+}
+
+.product-image-gallery .modal-icon {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.product-image-gallery .modal-icon:hover {
+  background: rgba(0, 0, 0, 0.95);
+  transform: scale(1.1);
+}
+
+.product-image-gallery .icon-tooltip {
+  position: absolute;
+  bottom: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.product-image-gallery .fullscreen-icon:hover .icon-tooltip {
+  opacity: 1;
+}
+
+.product-image-gallery .nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--dark);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.product-image-gallery .nav-arrow:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.product-image-gallery .nav-arrow-left {
+  left: 1rem;
+}
+
+.product-image-gallery .nav-arrow-right {
+  right: 1rem;
+}
+
+.product-image-gallery .image-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+.product-image-gallery .image-loading-overlay.loading {
+  opacity: 1;
+}
+
+.product-image-gallery .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--light);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.product-image-gallery .thumbnail-gallery {
+  margin-top: 1.5rem;
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-gallery .thumbnail-scroll-container {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.25rem 0;
+}
+
+.product-image-gallery .thumbnail-container {
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.product-image-gallery .thumbnail-container:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.product-image-gallery .thumbnail-container.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
+}
+
+.product-image-gallery .thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-image-gallery .thumbnail-container:hover .thumbnail-image {
+  transform: scale(1.1);
+}
+
+.product-image-gallery .thumbnail-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-image-gallery .thumbnail-container:hover .thumbnail-overlay {
+  opacity: 1;
+}
+
+.product-image-gallery .thumbnail-number {
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Fullscreen Modal Styles */
+.product-image-modal .modal-content {
+  background: rgba(0, 0, 0, 0.95);
+  border: none;
+  border-radius: 0;
+  height: 100vh;
+}
+
+.product-image-modal .modal-header {
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.product-image-modal .modal-title {
+  color: white;
+  font-weight: 600;
+}
+
+.product-image-modal .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+.product-image-modal .btn-close:hover {
+  opacity: 1;
+}
+
+.product-image-modal .modal-body-custom {
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(100vh - 120px);
+}
+
+.product-image-modal .modal-image-container {
+  position: relative;
+  margin-bottom: 2rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image-modal .modal-image {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.product-image-modal .modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--dark);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.product-image-modal .modal-nav:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.product-image-modal .modal-nav-left {
+  left: 2rem;
+}
+
+.product-image-modal .modal-nav-right {
+  right: 2rem;
+}
+
+.product-image-modal .modal-thumbnails {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  justify-content: center;
+  padding: 1rem 0;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius-lg);
+  margin-top: 1rem;
+}
+
+.product-image-modal .modal-thumbnail {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.product-image-modal .modal-thumbnail:hover {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.product-image-modal .modal-thumbnail.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+}
+
+.product-image-modal .modal-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive Design */
+@media (max-width: 767.98px) {
+  .product-image-gallery .main-image {
+    height: 350px;
+  }
+  
+  .product-image-gallery .thumbnail-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .product-image-gallery .thumbnail-gallery {
+    padding: 0.75rem;
+  }
+  
+  .product-image-gallery .thumbnail-scroll-container {
+    gap: 0.5rem;
+  }
+  
+  .product-image-gallery .health-rating-badge {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem;
+    min-width: 60px;
+  }
+  
+  .product-image-gallery .health-rating-badge .rating-number {
+    font-size: 1.25rem;
+  }
+  
+  .product-image-gallery .health-rating-badge .rating-text {
+    font-size: 0.5rem;
+  }
+  
+  .product-image-gallery .image-counter {
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .product-image-gallery .modal-icon {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    width: 40px;
+    height: 40px;
+    padding: 0.5rem;
+  }
+  
+  .product-image-gallery .nav-arrow {
+    padding: 0.5rem;
+  }
+  
+  .product-image-gallery .nav-arrow-left {
+    left: 0.5rem;
+  }
+  
+  .product-image-gallery .nav-arrow-right {
+    right: 0.5rem;
+  }
+  
+  .product-image-modal .modal-body-custom {
+    padding: 1rem;
+    height: calc(100vh - 100px);
+  }
+  
+  .product-image-modal .modal-image-container {
+    margin-bottom: 1rem;
+  }
+  
+  .product-image-modal .modal-image {
+    max-height: 60vh;
+  }
+  
+  .product-image-modal .modal-nav {
+    padding: 0.75rem;
+  }
+  
+  .product-image-modal .modal-nav-left {
+    left: 1rem;
+  }
+  
+  .product-image-modal .modal-nav-right {
+    right: 1rem;
+  }
+  
+  .product-image-modal .modal-thumbnails {
+    padding: 0.75rem 0;
+    gap: 0.5rem;
+  }
+  
+  .product-image-modal .modal-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+}

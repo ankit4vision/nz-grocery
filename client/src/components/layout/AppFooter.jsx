@@ -1,74 +1,137 @@
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import './AppFooter.css';
+import React, { useState } from 'react';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import logoImage from '../../assets/logo/logo-transprant.png';
+import '../../styles/components/layout-elements/app-footer.css';
 
 const AppFooter = ({ 
-  companyName = 'NZ Grocery Store',
+  companyName = 'Farm 2 Fridge',
   year = new Date().getFullYear(),
   links = [],
   socialLinks = [],
-  className = '',
-  ...props 
+  className = ''
 }) => {
+  const [email, setEmail] = useState('');
+  
   const footerClasses = [
     'app-footer',
     className
   ].filter(Boolean).join(' ');
 
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    console.log('Newsletter subscription:', email);
+    setEmail('');
+  };
+
   return (
-    <footer className={footerClasses} {...props}>
+    <footer className={footerClasses}>
       <Container>
         <Row className="app-footer__content">
-          <Col md={6} className="app-footer__info">
-            <h5 className="app-footer__title">{companyName}</h5>
-            <p className="app-footer__description">
-              Your trusted partner for fresh groceries and quality products.
-            </p>
-          </Col>
-          
-          <Col md={6} className="app-footer__links">
-            <Row>
-              {links.map((linkGroup, index) => (
-                <Col key={index} sm={6} className="app-footer__link-group">
-                  <h6 className="app-footer__link-title">{linkGroup.title}</h6>
-                  <ul className="app-footer__link-list">
-                    {linkGroup.items.map((link, linkIndex) => (
-                      <li key={linkIndex} className="app-footer__link-item">
-                        <a href={link.href} className="app-footer__link">
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </Col>
+          {/* Logo and Social Media Section */}
+          <Col lg={3} md={6} className="app-footer__logo-section">
+            <div className="app-footer__logo">
+              <img 
+                src={logoImage} 
+                alt="Farm Fridge Logo" 
+                className="app-footer__logo-image"
+              />
+              <div className="app-footer__logo-sub">
+                Farm 2 Fridge
+              </div>
+            </div>
+            
+            <div className="app-footer__social-links">
+              {socialLinks.map((link, index) => (
+                <a 
+                  key={index}
+                  href={link.href} 
+                  className="app-footer__social-link"
+                >
+                  {link.icon}
+                </a>
               ))}
-            </Row>
+            </div>
+          </Col>
+
+          {/* Quick Links Section */}
+          <Col lg={2} md={6} className="app-footer__section">
+            <h6 className="app-footer__section-title">Quick Links</h6>
+            <ul className="app-footer__link-list">
+              {links.map((linkGroup, groupIndex) => (
+                linkGroup.title === 'Quick Links' && 
+                linkGroup.items.map((item, itemIndex) => (
+                  <li key={`${groupIndex}-${itemIndex}`}>
+                    <a href={item.href} className="app-footer__link">
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              ))}
+            </ul>
+          </Col>
+
+          {/* Customer Service Section */}
+          <Col lg={2} md={6} className="app-footer__section">
+            <h6 className="app-footer__section-title">Customer Service</h6>
+            <ul className="app-footer__link-list">
+              {links.map((linkGroup, groupIndex) => (
+                linkGroup.title === 'Support' && 
+                linkGroup.items.map((item, itemIndex) => (
+                  <li key={`${groupIndex}-${itemIndex}`}>
+                    <a href={item.href} className="app-footer__link">
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              ))}
+            </ul>
+          </Col>
+
+          {/* About Us Section */}
+          <Col lg={2} md={6} className="app-footer__section">
+            <h6 className="app-footer__section-title">About Us</h6>
+            <ul className="app-footer__link-list">
+              <li><a href="/about" className="app-footer__link">About eGroceryMart</a></li>
+              <li><a href="/seller" className="app-footer__link">Become a Seller</a></li>
+              <li><a href="/careers" className="app-footer__link">Careers</a></li>
+              <li><a href="/press" className="app-footer__link">Press</a></li>
+            </ul>
+          </Col>
+
+          {/* Stay Updated Section */}
+          <Col lg={3} md={12} className="app-footer__newsletter-section">
+            <h6 className="app-footer__section-title">Stay Updated</h6>
+            <p className="app-footer__newsletter-description">
+              Subscribe to our newsletter for the latest updates and offers.
+            </p>
+            <Form onSubmit={handleSubscribe} className="app-footer__newsletter-form">
+              <div className="app-footer__newsletter-input-group">
+                <Form.Control
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="app-footer__newsletter-input"
+                  required
+                />
+                <Button 
+                  type="submit" 
+                  className="app-footer__newsletter-btn"
+                >
+                  Subscribe
+                </Button>
+              </div>
+            </Form>
           </Col>
         </Row>
         
         <hr className="app-footer__divider" />
         
         <Row className="app-footer__bottom">
-          <Col md={6} className="app-footer__copyright">
+          <Col className="app-footer__copyright">
             <p className="app-footer__copyright-text">
-              &copy; {year} {companyName}. All rights reserved.
+              &copy; {year} Farm to Fridge. All rights reserved.
             </p>
-          </Col>
-          
-          <Col md={6} className="app-footer__social">
-            <div className="app-footer__social-links">
-              {socialLinks.map((social, index) => (
-                <a 
-                  key={index}
-                  href={social.href} 
-                  className="app-footer__social-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
           </Col>
         </Row>
       </Container>

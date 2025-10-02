@@ -1,164 +1,247 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Badge, Form } from 'react-bootstrap';
-import { CustomButton, DataTable, ModalDialog, ConfirmDialog } from '../components';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Container, Row, Col, Form } from 'react-bootstrap';
+import { useSearchParams } from 'react-router-dom';
+import {
+  Breadcrumb,
+  AllCategories,
+  ProductGrid,
+  LoadMore
+} from '../components';
+import { useCartContext } from '../context';
+import {
+  categoriesData,
+  productsListingData,
+  filterOptionsData
+} from '../data/mockData';
 import './Products.css';
 
 const Products = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [searchParams] = useSearchParams();
+  const { addItem } = useCartContext();
+  
+  // State management
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [favorites, setFavorites] = useState(new Set());
+  const [sortBy, setSortBy] = useState('relevance');
+  const [visibleProducts, setVisibleProducts] = useState(12);
 
-  // Sample product data
-  const products = [
-    { id: 1, name: 'Fresh Apples', category: 'Fruits', price: 4.99, stock: 50, image: '🍎' },
-    { id: 2, name: 'Organic Bananas', category: 'Fruits', price: 3.49, stock: 30, image: '🍌' },
-    { id: 3, name: 'Fresh Carrots', category: 'Vegetables', price: 2.99, stock: 25, image: '🥕' },
-    { id: 4, name: 'Premium Milk', category: 'Dairy', price: 5.99, stock: 40, image: '🥛' },
-    { id: 5, name: 'Whole Wheat Bread', category: 'Bakery', price: 3.99, stock: 20, image: '🍞' },
-    { id: 6, name: 'Free Range Eggs', category: 'Dairy', price: 6.99, stock: 35, image: '🥚' },
-  ];
+  // Products per load
+  const productsPerLoad = 6;
 
-  const handleViewProduct = (product) => {
-    setSelectedProduct(product);
-    setShowModal(true);
-  };
-
-  const handleAddToCart = () => {
-    setShowConfirm(true);
-  };
-
-  const handleConfirmAddToCart = () => {
-    // Add to cart logic here
-    console.log('Added to cart:', selectedProduct);
-    setShowConfirm(false);
-    setShowModal(false);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedProduct(null);
-  };
-
-  const columns = [
-    {
-      key: 'product',
-      title: 'Product',
-      render: (item) => (
-        <div className="products-table-product">
-          <span className="products-table-icon">{item.image}</span>
-          {item.name}
-        </div>
-      )
-    },
-    { key: 'category', title: 'Category' },
-    { 
-      key: 'price', 
-      title: 'Price',
-      render: (item) => (
-        <span className="products-table-price">${item.price}</span>
-      )
-    },
-    { 
-      key: 'stock', 
-      title: 'Stock',
-      render: (item) => (
-        <Badge bg={item.stock > 20 ? 'success' : 'warning'}>
-          {item.stock}
-        </Badge>
-      )
-    },
-    { 
-      key: 'actions', 
-      title: 'Actions',
-      render: (item) => (
-        <CustomButton 
-          variant="outline-primary" 
-          size="sm"
-          onClick={() => handleViewProduct(item)}
-        >
-          View
-        </CustomButton>
-      )
+  // Initialize selected category from URL parameter
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl && categoriesData.find(cat => cat.id === categoryFromUrl)) {
+      setSelectedCategory(categoryFromUrl);
+    } else {
+      setSelectedCategory('all');
     }
-  ];
+  }, [searchParams]);
+
+  // Create categories list with "All" option
+  const categoriesWithAll = useMemo(() => {
+    const allCategory = {
+      id: 'all',
+      name: 'All',
+      icon: '🛒',
+      description: 'All products',
+      count: productsListingData.length
+    };
+    return [allCategory, ...categoriesData];
+  }, []);
+
+  // Get selected category name and product count
+  const selectedCategoryData = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return {
+        name: 'All Products',
+        count: productsListingData.length
+      };
+    }
+    
+    const category = categoriesData.find(cat => cat.id === selectedCategory);
+    if (category) {
+      const categoryProducts = productsListingData.filter(product => product.category === selectedCategory);
+      return {
+        name: category.name,
+        count: categoryProducts.length
+      };
+    }
+    
+    return {
+      name: 'Products',
+      count: 0
+    };
+  }, [selectedCategory]);
+
+  // Filter and sort products based on current filters and category
+  const filteredProducts = useMemo(() => {
+    let filtered = productsListingData.filter(product => {
+      // Category filter
+      if (selectedCategory !== 'all' && product.category !== selectedCategory) {
+        return false;
+      }
+
+      return true;
+    });
+
+    // Sort products
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return parseFloat(a.currentPrice) - parseFloat(b.currentPrice);
+        case 'price-high':
+          return parseFloat(b.currentPrice) - parseFloat(a.currentPrice);
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'newest':
+          return b.id - a.id;
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [selectedCategory, sortBy]);
+
+  // Calculate visible products
+  const currentProducts = filteredProducts.slice(0, visibleProducts);
+  const hasMoreProducts = visibleProducts < filteredProducts.length;
+
+  // Get breadcrumb data based on selected category
+  const breadcrumbItems = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return [
+        { label: 'Home', path: '/' },
+        { label: 'Products', path: '/products' }
+      ];
+    }
+    
+    const category = categoriesData.find(cat => cat.id === selectedCategory);
+    if (category) {
+      return [
+        { label: 'Home', path: '/' },
+        { label: 'Products', path: '/products' },
+        { label: category.name, path: `/products/${selectedCategory}` }
+      ];
+    }
+    
+    return [
+      { label: 'Home', path: '/' },
+      { label: 'Products', path: '/products' }
+    ];
+  }, [selectedCategory]);
+
+  // Handle category selection
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setVisibleProducts(12); // Reset visible products when category changes
+  };
+
+  // Handle sort changes
+  const handleSortChange = (newSortBy) => {
+    setSortBy(newSortBy);
+    setVisibleProducts(12); // Reset visible products when sort changes
+  };
+
+  // Handle load more
+  const handleLoadMore = () => {
+    setVisibleProducts(prev => prev + productsPerLoad);
+  };
+
+  // Handle add to cart
+  const handleAddToCart = (product) => {
+    addItem(product, 1);
+    console.log(`Added ${product.name} to cart`);
+  };
+
+  // Handle toggle favorite
+  const handleToggleFavorite = (productId) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(productId)) {
+        newFavorites.delete(productId);
+      } else {
+        newFavorites.add(productId);
+      }
+      return newFavorites;
+    });
+  };
+
+  // Update products with favorite status
+  const productsWithFavorites = currentProducts.map(product => ({
+    ...product,
+    isFavorite: favorites.has(product.id)
+  }));
 
   return (
+    <div className="products-page">
+      {/* 1st Row: Breadcrumb */}
+      <section className="products-breadcrumb-section">
     <Container>
-      <Row className="products-header">
-        <Col>
-          <h1 className="products-title">Our Products</h1>
-          <p className="products-subtitle">
-            Discover our wide range of fresh and quality grocery items
-          </p>
-        </Col>
-      </Row>
+          <Breadcrumb items={breadcrumbItems} className="products-breadcrumb" />
+        </Container>
+      </section>
 
-      {/* Products Table */}
-      <Row>
-        <Col>
-          <DataTable
-            columns={columns}
-            data={products}
-            variant="primary"
-            hover={true}
-            striped={true}
-          />
-        </Col>
-      </Row>
+      {/* 2nd Row: All Categories */}
+      <section className="products-categories-section">
+        <AllCategories
+          categories={categoriesWithAll}
+          selectedCategory={selectedCategory}
+          onCategorySelect={handleCategorySelect}
+          className="products-all-categories"
+        />
+      </section>
 
-      {/* Product Detail Modal */}
-      <ModalDialog
-        show={showModal}
-        onHide={handleCloseModal}
-        title={selectedProduct ? `${selectedProduct.image} ${selectedProduct.name}` : ''}
-        size="md"
-      >
-        {selectedProduct && (
-          <>
-            <Row>
-              <Col md={6}>
-                <div className="products-modal-icon">{selectedProduct.image}</div>
-              </Col>
-              <Col md={6}>
-                <div className="products-modal-details">
-                  <h5>Product Details</h5>
-                  <p><strong>Category:</strong> {selectedProduct.category}</p>
-                  <p><strong>Price:</strong> <span className="products-modal-price">${selectedProduct.price}</span></p>
-                  <p><strong>Stock:</strong> <Badge bg={selectedProduct.stock > 20 ? 'success' : 'warning'}>{selectedProduct.stock} units</Badge></p>
-                </div>
-              </Col>
-            </Row>
-            <hr />
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Quantity</Form.Label>
-                <Form.Control type="number" min="1" max={selectedProduct.stock} defaultValue="1" />
-              </Form.Group>
-            </Form>
-            <div className="d-flex gap-2">
-              <CustomButton variant="secondary" onClick={handleCloseModal}>
-                Close
-              </CustomButton>
-              <CustomButton variant="primary" onClick={handleAddToCart}>
-                Add to Cart
-              </CustomButton>
-            </div>
-          </>
-        )}
-      </ModalDialog>
+      {/* Divider */}
+      <div className="section-divider"></div>
 
-      {/* Confirm Dialog */}
-      <ConfirmDialog
-        show={showConfirm}
-        onHide={() => setShowConfirm(false)}
-        onConfirm={handleConfirmAddToCart}
-        title="Add to Cart"
-        message={`Are you sure you want to add "${selectedProduct?.name}" to your cart?`}
-        confirmText="Add to Cart"
-        cancelText="Cancel"
-        variant="primary"
+           {/* 3rd Row: Category Title and Sort */}
+           <section className="products-title-sort-section">
+             <Container>
+               <Row className="align-items-center">
+                 <Col md={8}>
+                   <h2 className="selected-category-title">{selectedCategoryData.name}</h2>
+                 </Col>
+                 <Col md={4} className="text-md-end">
+                   <Form.Select 
+                     value={sortBy} 
+                     onChange={(e) => handleSortChange(e.target.value)}
+                     className="products-sort-select"
+                     size="sm"
+                   >
+                     {filterOptionsData.sortBy?.map(option => (
+                       <option key={option.value} value={option.value}>
+                         {option.label}
+                       </option>
+                     ))}
+                   </Form.Select>
+                 </Col>
+               </Row>
+             </Container>
+           </section>
+
+      {/* 4th Row: Product Grid */}
+      <section className="products-grid-section">
+        <ProductGrid
+          products={productsWithFavorites}
+          onAddToCart={handleAddToCart}
+          onToggleFavorite={handleToggleFavorite}
+          className="products-grid"
+        />
+      </section>
+
+      {/* 5th Row: Load More */}
+      <LoadMore
+        onLoadMore={handleLoadMore}
+        hasMore={hasMoreProducts}
+        text="Load More Products"
+        size="lg"
+        className="products-load-more"
       />
-    </Container>
+    </div>
   );
 };
 

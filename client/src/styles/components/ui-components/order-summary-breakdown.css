@@ -1,0 +1,108 @@
+/* Order Summary Breakdown Component Styles */
+
+.order-summary-breakdown {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  height: 100%;
+}
+
+.summary-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.amount-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-item.total {
+  border-top: 2px solid var(--primary-color);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.breakdown-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+.breakdown-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.breakdown-item.discount .breakdown-label {
+  color: var(--success-color);
+}
+
+.discount-value {
+  color: var(--success-color) !important;
+}
+
+.total-value {
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .order-summary-breakdown {
+    padding: var(--spacing-md);
+  }
+  
+  .summary-title {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .breakdown-item {
+    padding: var(--spacing-xs) 0;
+  }
+  
+  .breakdown-label,
+  .breakdown-value {
+    font-size: var(--font-size-xs);
+  }
+  
+  .total-value {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 576px) {
+  .order-summary-breakdown {
+    padding: var(--spacing-sm);
+  }
+  
+  .amount-breakdown {
+    gap: var(--spacing-xs);
+  }
+  
+  .breakdown-item.total {
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-sm);
+  }
+}

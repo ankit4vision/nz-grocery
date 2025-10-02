@@ -2,143 +2,36 @@ import React, { useState } from 'react';
 import { 
   Offcanvas, 
   Card, 
-  ListGroup, 
-  Button
+  ListGroup
 } from 'react-bootstrap';
-import './BrowseSidebar.css';
+import { useNavigate } from 'react-router-dom';
+import { categoriesData, popularCardsData } from '../../data/mockData';
+import '../../styles/components/layout-elements/browse-sidebar.css';
 
 const BrowseSidebar = ({ show, onHide }) => {
-  const [activeCategory, setActiveCategory] = useState('fruit-veg');
-  const [expandedCategories, setExpandedCategories] = useState({});
-  const [showSubcategoryPanel, setShowSubcategoryPanel] = useState(false);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
-  };
+  const navigate = useNavigate();
 
   const handleCategoryClick = (category) => {
-    setActiveCategory(category.id);
-    setSelectedSubcategory(category);
-    setShowSubcategoryPanel(true);
+    // Navigate to products page with selected category
+    navigate(`/products?category=${category.id}`);
+    onHide(); // Close the sidebar
   };
 
-  const handleSubcategoryClick = (subcategory) => {
-    console.log(`Selected subcategory: ${subcategory}`);
-    // Here you can add navigation logic or API calls
-  };
-
-  const handleBackToCategories = () => {
-    setShowSubcategoryPanel(false);
-    setSelectedSubcategory(null);
-  };
-
-  // Reset sidebar state when closing
   const handleCloseSidebar = () => {
-    setShowSubcategoryPanel(false);
-    setSelectedSubcategory(null);
-    setActiveCategory('fruit-veg');
     onHide();
   };
 
+  // Create categories list with "All" option
   const categories = [
     {
-      id: 'fruit-veg',
-      name: 'Fruit & Veg',
-      icon: '🥬',
-      subcategories: ['Fresh Fruits', 'Fresh Vegetables', 'Organic Produce', 'Frozen Fruits & Veg']
+      id: 'all',
+      name: 'All',
+      icon: '🛒',
+      description: 'All products'
     },
-    {
-      id: 'poultry-meat',
-      name: 'Poultry, Meat & Seafood',
-      icon: '🥩',
-      subcategories: ['Fresh Chicken', 'Beef & Lamb', 'Fresh Fish', 'Frozen Seafood']
-    },
-    {
-      id: 'religious',
-      name: 'Religious Items',
-      icon: '🕉️',
-      subcategories: ['Prayer Items', 'Religious Books', 'Temple Items']
-    },
-    {
-      id: 'indian-sweets',
-      name: 'Indian Sweets',
-      icon: '🍯',
-      subcategories: ['Traditional Sweets', 'Festival Sweets', 'Dry Fruits']
-    },
-    {
-      id: 'dairy',
-      name: 'Dairy, Eggs & Fridge',
-      icon: '🥛',
-      subcategories: ['Milk & Cream', 'Cheese', 'Eggs', 'Yogurt']
-    },
-    {
-      id: 'philippine',
-      name: 'Philippine Groceries',
-      icon: '🍜',
-      subcategories: ['Filipino Foods', 'Spices', 'Canned Goods']
-    },
-    {
-      id: 'south-indian',
-      name: 'South Indian Groceries',
-      icon: '🍚',
-      subcategories: ['Rice & Grains', 'Spices', 'Coconut Products']
-    },
-    {
-      id: 'sri-lankan',
-      name: 'Sri Lankan Groceries',
-      icon: '🍵',
-      subcategories: ['Ceylon Tea', 'Spices', 'Traditional Foods']
-    },
-    {
-      id: 'snacks',
-      name: 'Snacks & Beverages',
-      icon: '🥤',
-      subcategories: ['Chips & Crackers', 'Soft Drinks', 'Energy Drinks']
-    },
-    {
-      id: 'pantry',
-      name: 'Pantry & Staples',
-      icon: '🫒',
-      subcategories: ['Rice & Grains', 'Cooking Oils', 'Spices']
-    },
-    {
-      id: 'dietary',
-      name: 'Dietary Preferences',
-      icon: '🥗',
-      subcategories: ['Gluten Free', 'Organic', 'Vegan', 'Keto']
-    }
+    ...categoriesData
   ];
-
-  const popularCards = [
-    {
-      title: 'Try this',
-      subtitle: 'Whole body deodorants',
-      color: 'success',
-      icon: '🧴'
-    },
-    {
-      title: 'Lower Shelf Price',
-      subtitle: 'Family essentials',
-      color: 'danger',
-      icon: '💰'
-    },
-    {
-      title: '1/2 Price',
-      subtitle: 'Snacking & treats',
-      color: 'warning',
-      icon: '🍪'
-    },
-    {
-      title: 'Winter Wine',
-      subtitle: 'Under $15',
-      color: 'info',
-      icon: '🍷'
-    }
-  ];
+  const popularCards = popularCardsData;
 
   return (
     <div className="sidebar-container">
@@ -179,7 +72,7 @@ const BrowseSidebar = ({ show, onHide }) => {
                       <ListGroup.Item 
                         key={category.id}
                         action
-                        className={`category-item ${activeCategory === category.id ? 'active' : ''}`}
+                        className="category-item"
                         onClick={() => handleCategoryClick(category)}
                       >
                         <div className="category-content">
@@ -193,102 +86,6 @@ const BrowseSidebar = ({ show, onHide }) => {
                 </div>
       </Offcanvas.Body>
     </Offcanvas>
-
-    {/* Horizontal Subcategory Panel */}
-    {showSubcategoryPanel && selectedSubcategory && (
-      <div className="subcategory-panel">
-        <div className="subcategory-header">
-          <h6 className="subcategory-title">
-            {selectedSubcategory.icon} {selectedSubcategory.name}
-          </h6>
-        </div>
-        
-        <div className="subcategory-content">
-          <ListGroup variant="flush" className="subcategory-list">
-            {selectedSubcategory.subcategories.map((subcategory, index) => {
-              // Get appropriate icon for each subcategory
-              const getSubcategoryIcon = (subcategory) => {
-                const iconMap = {
-                  // Fruit & Veg
-                  'Fresh Fruits': '🍎',
-                  'Fresh Vegetables': '🥕',
-                  'Organic Produce': '🌱',
-                  'Frozen Fruits & Veg': '🧊',
-                  
-                  // Poultry, Meat & Seafood
-                  'Fresh Chicken': '🐔',
-                  'Beef & Lamb': '🥩',
-                  'Fresh Fish': '🐟',
-                  'Frozen Seafood': '🦐',
-                  
-                  // Religious Items
-                  'Prayer Items': '📿',
-                  'Religious Books': '📖',
-                  'Temple Items': '🕯️',
-                  
-                  // Indian Sweets
-                  'Traditional Sweets': '🍯',
-                  'Festival Sweets': '🎂',
-                  'Dry Fruits': '🥜',
-                  
-                  // Dairy, Eggs & Fridge
-                  'Milk & Cream': '🥛',
-                  'Cheese': '🧀',
-                  'Eggs': '🥚',
-                  'Yogurt': '🍶',
-                  
-                  // Philippine Groceries
-                  'Filipino Foods': '🍜',
-                  'Spices': '🌶️',
-                  'Canned Goods': '🥫',
-                  
-                  // South Indian Groceries
-                  'Rice & Grains': '🍚',
-                  'Spices': '🌶️',
-                  'Coconut Products': '🥥',
-                  
-                  // Sri Lankan Groceries
-                  'Ceylon Tea': '🍵',
-                  'Spices': '🌶️',
-                  'Traditional Foods': '🍛',
-                  
-                  // Snacks & Beverages
-                  'Chips & Crackers': '🍿',
-                  'Soft Drinks': '🥤',
-                  'Energy Drinks': '⚡',
-                  
-                  // Pantry & Staples
-                  'Rice & Grains': '🍚',
-                  'Cooking Oils': '🫒',
-                  'Spices': '🌶️',
-                  
-                  // Dietary Preferences
-                  'Gluten Free': '🌾',
-                  'Organic': '🌿',
-                  'Vegan': '🥗',
-                  'Keto': '🥑'
-                };
-                return iconMap[subcategory] || '📦';
-              };
-
-              return (
-                <ListGroup.Item 
-                  key={index}
-                  className="subcategory-item"
-                  action
-                  onClick={() => handleSubcategoryClick(subcategory)}
-                >
-                  <div className="subcategory-item-content">
-                    <span className="subcategory-item-icon">{getSubcategoryIcon(subcategory)}</span>
-                    <span className="subcategory-item-name">{subcategory}</span>
-                  </div>
-                </ListGroup.Item>
-              );
-            })}
-          </ListGroup>
-        </div>
-      </div>
-    )}
     </div>
   );
 };
