@@ -69,6 +69,9 @@ nz-grocery/
 │   │   │   │   ├── MyOrders.jsx
 │   │   │   │   ├── Wishlist.jsx
 │   │   │   │   ├── HelpCenter.jsx
+│   │   │   │   ├── LoginModal.jsx
+│   │   │   │   ├── SignupModal.jsx
+│   │   │   │   ├── ForgotPasswordModal.jsx
 │   │   │   │   └── index.js
 │   │   │   └── index.js
 │   │   ├── pages/                   # Page components
@@ -166,7 +169,8 @@ nz-grocery/
 │   │   │   │   │   ├── change-password.css
 │   │   │   │   │   ├── my-orders.css
 │   │   │   │   │   ├── wishlist.css
-│   │   │   │   │   └── help-center.css
+│   │   │   │   │   ├── help-center.css
+│   │   │   │   │   └── auth-modal.css
 │   │   │   │   └── index.css        # Central import file
 │   │   │   ├── layouts/             # Layout-specific styles
 │   │   │   │   └── index.css
@@ -401,12 +405,12 @@ npm update           # Update dependencies
 - `ScrollToTop` - Scroll to top functionality component
 
 ### **Layout Components:**
-- `AppNavbar` - Main navigation bar
+- `AppNavbar` - Main navigation bar with search, cart, and user authentication
 - `AppFooter` - Footer component
 - `LayoutWrapper` - Main layout wrapper
 - `BrowseSidebar` - Product browsing sidebar
 - `Layout` - Base layout component
-- `UserProfileDropdown` - User profile dropdown menu with navigation links
+- `UserProfileDropdown` - User profile dropdown menu with authentication state, user info display, and navigation links
 
 ### **UI Components:**
 - `InfoCard` - Information display card
@@ -444,6 +448,9 @@ npm update           # Update dependencies
 - `MyOrders` - User order history display with order status and details
 - `Wishlist` - User wishlist management with product cards and summary
 - `HelpCenter` - FAQ and help center with categorized questions and contact options
+- `LoginModal` - User login modal with email/mobile toggle and form validation
+- `SignupModal` - User registration modal with form validation and terms acceptance
+- `ForgotPasswordModal` - Password reset modal with 3-step process (Email → OTP → New Password)
 
 ## 🛒 Cart System & State Management
 
@@ -453,6 +460,14 @@ npm update           # Update dependencies
 - **Real-time Updates** - Instant cart count and price calculations
 - **Local Storage** - Persistent cart data across sessions
 - **Error Handling** - Comprehensive error states and loading management
+
+### **User Context (`UserContext.jsx`):**
+- **Authentication Management** - Login, logout, signup, password reset
+- **User Profile State** - User information, preferences, and session management
+- **Loading States** - Prevents premature redirects during authentication checks
+- **Local Storage Integration** - Persistent user sessions across browser refreshes
+- **OTP Management** - OTP generation, storage, and verification for password reset
+- **Session Management** - Session creation, validation, and destruction
 
 ### **Cart Functionality:**
 - **Add to Cart** - Works across all pages (Home, Products, Product Detail)
@@ -498,6 +513,7 @@ npm update           # Update dependencies
 - **Similar Products Data** (`similarProductsData`) - Similar products for product detail page
 - **Customer Reviews Data** (`customerReviewsData`) - Customer reviews and ratings for products
 - **Order Details Data** (`orderDetailsData`) - Sample order data with status, progress steps, items, and customer information
+- **Authentication Mock Data** (`authMockData`) - User authentication data with users, OTP storage, sessions, and helper functions
 
 ### **Asset Structure:**
 - `src/assets/images/main-slider/` - Hero slider images (4 images)
@@ -511,9 +527,34 @@ npm update           # Update dependencies
 - **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
 - **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
 - **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary
-- **Order Details Page** (`OrderDetails.jsx`) - Order tracking and details page with progress status, order summary, items list, and delivery notes
-- **User Dashboard Page** (`UserDashboard.jsx`) - User account dashboard with tabbed navigation for profile, password, orders, wishlist, and help
+- **Order Details Page** (`OrderDetails.jsx`) - Order tracking and details page with progress status, order summary, items list, delivery notes, and context-aware back navigation
+- **User Dashboard Page** (`UserDashboard.jsx`) - User account dashboard with tabbed navigation for profile, password, orders, wishlist, and help, with authentication protection and loading states
 - **About Page** (`About.jsx`) - About page component
+
+## 🔐 Authentication System
+
+### **Authentication Features:**
+- **Login Modal** - Email/mobile toggle with form validation and pre-filled demo credentials
+- **Signup Modal** - User registration with form validation and terms acceptance
+- **Forgot Password Modal** - 3-step password reset process (Email → OTP → New Password)
+- **User Profile Dropdown** - Context-aware navigation with user avatar, name, and role display
+- **Session Management** - Persistent login sessions with localStorage integration
+- **Loading States** - Prevents premature redirects during authentication checks
+- **OTP System** - OTP generation, storage, and verification for password reset
+
+### **Authentication Flow:**
+1. **Login** - User enters credentials → Validation → Session creation → Dashboard access
+2. **Signup** - User registration → Account creation → Auto-login → Dashboard access
+3. **Password Reset** - Email entry → OTP verification → New password → Login
+4. **Logout** - Session destruction → Redirect to home page
+5. **Protected Routes** - Dashboard requires authentication with loading states
+
+### **User Context Integration:**
+- **Global State** - User authentication state across entire application
+- **Profile Data** - User information, preferences, and session management
+- **Loading Management** - Prevents race conditions during authentication checks
+- **Local Storage** - Persistent sessions across browser refreshes
+- **Error Handling** - Comprehensive error states and user feedback
 
 ## 🚀 Creating New Functionality & Pages
 
