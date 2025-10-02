@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Badge, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { CustomButton } from '../common';
 import '../../styles/components/ui-components/my-orders.css';
 
 const MyOrders = () => {
+  const navigate = useNavigate();
   const [orders] = useState([
     {
       id: 'ORD-12345',
@@ -67,9 +69,9 @@ const MyOrders = () => {
   const getActionButtons = (order) => {
     if (order.status === 'current') {
       return (
-        <div className="order-actions">
+        <div className="order-actions-compact">
           <CustomButton
-            variant="outline-secondary"
+            variant="outline-primary"
             size="sm"
             onClick={() => handleViewDetails(order.id)}
             className="action-btn"
@@ -77,7 +79,7 @@ const MyOrders = () => {
             View Details
           </CustomButton>
           <CustomButton
-            variant="success"
+            variant="primary"
             size="sm"
             onClick={() => handleTrackOrder(order.id)}
             className="action-btn"
@@ -88,9 +90,9 @@ const MyOrders = () => {
       );
     } else {
       return (
-        <div className="order-actions">
+        <div className="order-actions-compact">
           <CustomButton
-            variant="outline-secondary"
+            variant="outline-primary"
             size="sm"
             onClick={() => handleViewDetails(order.id)}
             className="action-btn"
@@ -98,7 +100,7 @@ const MyOrders = () => {
             View Details
           </CustomButton>
           <CustomButton
-            variant="success"
+            variant="primary"
             size="sm"
             onClick={() => handleReorder(order.id)}
             className="action-btn"
@@ -112,12 +114,12 @@ const MyOrders = () => {
 
   const handleViewDetails = (orderId) => {
     console.log('View details for order:', orderId);
-    // Navigate to order details page
+    navigate(`/order/${orderId}`);
   };
 
   const handleTrackOrder = (orderId) => {
     console.log('Track order:', orderId);
-    // Navigate to tracking page
+    navigate(`/order/${orderId}`);
   };
 
   const handleReorder = (orderId) => {
@@ -129,42 +131,45 @@ const MyOrders = () => {
   const pastOrders = orders.filter(order => order.status !== 'current');
 
   return (
-    <div className="my-orders">
-      <div className="orders-header">
-        <h2 className="orders-title">My Orders</h2>
-        <p className="orders-subtitle">Track your order history and current orders</p>
+    <div className="my-orders-compact">
+      <div className="orders-header-compact">
+        <h3 className="orders-title-compact">My Orders</h3>
+        <p className="orders-subtitle-compact">Track your order history and current orders</p>
       </div>
 
       {currentOrders.length > 0 && (
-        <div className="orders-section">
-          <h4 className="section-title">Current Order</h4>
+        <div className="orders-section-compact">
+          <h5 className="section-title-compact">Current Order</h5>
           {currentOrders.map((order) => (
-            <Card key={order.id} className="order-card current-order">
-              <Card.Body>
+            <Card key={order.id} className="order-card-compact current-order">
+              <Card.Body className="p-3">
                 <Row className="align-items-center">
-                  <Col md={8}>
-                    <div className="order-info">
-                      <div className="order-header">
-                        <h5 className="order-id">Order #{order.id}</h5>
-                        <span className="order-date">Placed on: {order.date}</span>
+                  <Col xs={12} md={8}>
+                    <div className="order-info-compact">
+                      <div className="order-header-compact">
+                        <div className="order-title-section">
+                          <h6 className="order-id-compact">Order #{order.id}</h6>
+                          <span className="order-date-compact">Placed on: {order.date}</span>
+                        </div>
+                        {getStatusBadge(order.status)}
                       </div>
-                      <div className="order-items">
+                      <div className="order-items-compact">
                         {order.items.map((item, index) => (
-                          <div key={index} className="order-item">
-                            <span className="item-name">{item.name}</span>
-                            {item.price && (
-                              <span className="item-price">(${item.price.toFixed(2)})</span>
-                            )}
+                          <div key={index} className="order-item-compact">
+                            <span className="item-name-compact">{item.name}</span>
+                            <span className="item-price-compact">(${item.price.toFixed(2)})</span>
                           </div>
                         ))}
                       </div>
-                      <div className="order-total">
+                      <div className="order-total-compact">
                         <strong>Total: ${order.total.toFixed(2)}</strong>
                       </div>
                     </div>
                   </Col>
-                  <Col md={4} className="text-end">
-                    {getActionButtons(order)}
+                  <Col xs={12} md={4} className="text-end">
+                    <div className="order-actions-compact">
+                      {getActionButtons(order)}
+                    </div>
                   </Col>
                 </Row>
               </Card.Body>
@@ -174,36 +179,38 @@ const MyOrders = () => {
       )}
 
       {pastOrders.length > 0 && (
-        <div className="orders-section">
-          <h4 className="section-title">Past Orders</h4>
+        <div className="orders-section-compact">
+          <h5 className="section-title-compact">Past Orders</h5>
           {pastOrders.map((order) => (
-            <Card key={order.id} className="order-card past-order">
-              <Card.Body>
+            <Card key={order.id} className="order-card-compact past-order">
+              <Card.Body className="p-3">
                 <Row className="align-items-center">
-                  <Col md={8}>
-                    <div className="order-info">
-                      <div className="order-header">
-                        <h5 className="order-id">Order #{order.id}</h5>
-                        <span className="order-date">Delivered on: {order.date}</span>
+                  <Col xs={12} md={8}>
+                    <div className="order-info-compact">
+                      <div className="order-header-compact">
+                        <div className="order-title-section">
+                          <h6 className="order-id-compact">Order #{order.id}</h6>
+                          <span className="order-date-compact">Delivered on: {order.date}</span>
+                        </div>
                         {getStatusBadge(order.status)}
                       </div>
-                      <div className="order-items">
+                      <div className="order-items-compact">
                         {order.items.map((item, index) => (
-                          <div key={index} className="order-item">
-                            <span className="item-name">{item.name}</span>
-                            {item.price && (
-                              <span className="item-price">(${item.price.toFixed(2)})</span>
-                            )}
+                          <div key={index} className="order-item-compact">
+                            <span className="item-name-compact">{item.name}</span>
+                            <span className="item-price-compact">(${item.price.toFixed(2)})</span>
                           </div>
                         ))}
                       </div>
-                      <div className="order-total">
+                      <div className="order-total-compact">
                         <strong>Total: ${order.total.toFixed(2)}</strong>
                       </div>
                     </div>
                   </Col>
-                  <Col md={4} className="text-end">
-                    {getActionButtons(order)}
+                  <Col xs={12} md={4} className="text-end">
+                    <div className="order-actions-compact">
+                      {getActionButtons(order)}
+                    </div>
                   </Col>
                 </Row>
               </Card.Body>
@@ -213,13 +220,13 @@ const MyOrders = () => {
       )}
 
       {orders.length === 0 && (
-        <Card className="empty-orders-card">
-          <Card.Body className="text-center">
-            <div className="empty-orders-icon">
+        <Card className="empty-orders-card-compact">
+          <Card.Body className="text-center p-4">
+            <div className="empty-orders-icon-compact">
               <i className="fas fa-shopping-bag"></i>
             </div>
-            <h5 className="empty-orders-title">No Orders Yet</h5>
-            <p className="empty-orders-text">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+            <h5 className="empty-orders-title-compact">No Orders Yet</h5>
+            <p className="empty-orders-text-compact">You haven't placed any orders yet. Start shopping to see your orders here!</p>
             <CustomButton variant="success" size="lg">
               Start Shopping
             </CustomButton>
