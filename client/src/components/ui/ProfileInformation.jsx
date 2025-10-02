@@ -3,28 +3,28 @@ import { Row, Col, Form, Button, Card, Image } from 'react-bootstrap';
 import { CustomButton } from '../common';
 import '../../styles/components/ui-components/profile-information.css';
 
-const ProfileInformation = () => {
+const ProfileInformation = ({ user }) => {
   const [formData, setFormData] = useState({
-    fullName: 'Demo User',
-    email: 'demo@egrocerymart.com',
-    contactNumber: '+1 (555) 123-4567',
-    dateOfBirth: '01/01/1990',
-    bio: 'Demo user for eGroceryMart',
+    fullName: user ? `${user.firstName} ${user.lastName}` : 'Demo User',
+    email: user?.email || 'demo@egrocerymart.com',
+    contactNumber: user?.profile?.phone || user?.mobile || '+1 (555) 123-4567',
+    dateOfBirth: user?.profile?.dateOfBirth || '01/01/1990',
+    bio: user?.profile?.bio || 'Demo user for eGroceryMart',
     billingAddress: {
-      street: '123 Main Street',
-      apartment: 'Apt 4B',
-      city: 'New York',
-      state: 'NY',
-      zipCode: '10001',
-      country: 'United States'
+      street: user?.profile?.billingAddress?.street || '123 Main Street',
+      apartment: user?.profile?.billingAddress?.apartment || 'Apt 4B',
+      city: user?.profile?.billingAddress?.city || 'New York',
+      state: user?.profile?.billingAddress?.state || 'NY',
+      zipCode: user?.profile?.billingAddress?.zipCode || '10001',
+      country: user?.profile?.billingAddress?.country || 'United States'
     },
     shippingAddress: {
-      street: '456 Oak Avenue',
-      apartment: 'Unit 7',
-      city: 'Los Angeles',
-      state: 'CA',
-      zipCode: '90210',
-      country: 'United States'
+      street: user?.profile?.shippingAddress?.street || '456 Oak Avenue',
+      apartment: user?.profile?.shippingAddress?.apartment || 'Unit 7',
+      city: user?.profile?.shippingAddress?.city || 'Los Angeles',
+      state: user?.profile?.shippingAddress?.state || 'CA',
+      zipCode: user?.profile?.shippingAddress?.zipCode || '90210',
+      country: user?.profile?.shippingAddress?.country || 'United States'
     }
   });
 

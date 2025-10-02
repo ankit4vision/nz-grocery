@@ -24,6 +24,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-lg);
+  min-width: 0;
 }
 
 .app-navbar__logo {
@@ -58,6 +59,7 @@
   flex: 1;
   max-width: 400px;
   margin: 0 var(--spacing-md);
+  min-width: 0;
 }
 
 .app-navbar__search-form {
@@ -120,6 +122,7 @@
   align-items: center;
   gap: var(--spacing-md);
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .app-navbar__cart,

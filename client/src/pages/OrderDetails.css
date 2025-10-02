@@ -39,6 +39,19 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Button variant for back-link */
+.back-link.btn {
+  border: 2px solid var(--primary-color);
+  background: var(--bg-primary);
+  color: var(--primary-color);
+}
+
+.back-link.btn:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-color);
+}
+
 .back-text {
   margin-left: var(--spacing-xs);
 }

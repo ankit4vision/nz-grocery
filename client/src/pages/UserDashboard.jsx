@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Nav, Card, ListGroup } from 'react-bootstrap';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ProfileInformation } from '../components/ui';
 import { ChangePassword } from '../components/ui';
 import { MyOrders } from '../components/ui';
 import { Wishlist } from '../components/ui';
 import { HelpCenter } from '../components/ui';
+import { useUserContext } from '../context';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('profile');
+  const { user, isAuthenticated, isLoading, logout } = useUserContext();
+  const navigate = useNavigate();
 
   // Handle tab from URL parameters
   useEffect(() => {
@@ -20,9 +23,21 @@ const UserDashboard = () => {
     }
   }, [searchParams]);
 
+  // Redirect to login if not authenticated (only after loading is complete)
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     setSearchParams({ tab: tabKey });
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const dashboardTabs = [
@@ -36,19 +51,35 @@ const UserDashboard = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'profile':
-        return <ProfileInformation />;
+        return <ProfileInformation user={user} />;
       case 'password':
-        return <ChangePassword />;
+        return <ChangePassword user={user} />;
       case 'orders':
-        return <MyOrders />;
+        return <MyOrders user={user} />;
       case 'wishlist':
-        return <Wishlist />;
+        return <Wishlist user={user} />;
       case 'help':
-        return <HelpCenter />;
+        return <HelpCenter user={user} />;
       default:
-        return <ProfileInformation />;
+        return <ProfileInformation user={user} />;
     }
   };
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <Container className="user-dashboard-container">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading dashboard...</p>
+          </div>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container className="user-dashboard-container">
@@ -65,8 +96,10 @@ const UserDashboard = () => {
                   />
                 </div>
                 <div className="user-info">
-                  <h5 className="user-name">Demo User</h5>
-                  <p className="user-email">demo@egrocerymart.com</p>
+                  <h5 className="user-name">
+                    {user ? `${user.firstName} ${user.lastName}` : 'User'}
+                  </h5>
+                  <p className="user-email">{user?.email || 'user@example.com'}</p>
                 </div>
               </div>
             </Card.Header>
@@ -88,6 +121,7 @@ const UserDashboard = () => {
                 <ListGroup.Item 
                   action
                   className="dashboard-nav-link logout-link"
+                  onClick={handleLogout}
                 >
                   <span className="nav-icon">🚪</span>
                   <span className="nav-text">Logout</span>

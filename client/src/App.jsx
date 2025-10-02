@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LayoutWrapper, ScrollToTop } from './components';
-import { CartProvider } from './context';
+import { CartProvider, UserProvider } from './context';
 import { navItemsData, footerLinksData, socialLinksData } from './data/mockData';
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -13,25 +13,27 @@ import UserDashboard from './pages/UserDashboard';
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <ScrollToTop />
-        <LayoutWrapper
-          navbarProps={{ navItems: navItemsData }}
-          footerProps={{ links: footerLinksData, socialLinks: socialLinksData }}
-        >
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/order/:orderId" element={<OrderDetails />} />
-                <Route path="/dashboard" element={<UserDashboard />} />
-                <Route path="/about" element={<About />} />
-              </Routes>
-        </LayoutWrapper>
-      </Router>
-    </CartProvider>
+    <UserProvider>
+      <CartProvider>
+        <Router>
+          <ScrollToTop />
+          <LayoutWrapper
+            navbarProps={{ navItems: navItemsData }}
+            footerProps={{ links: footerLinksData, socialLinks: socialLinksData }}
+          >
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/order/:orderId" element={<OrderDetails />} />
+                  <Route path="/dashboard" element={<UserDashboard />} />
+                  <Route path="/about" element={<About />} />
+                </Routes>
+          </LayoutWrapper>
+        </Router>
+      </CartProvider>
+    </UserProvider>
   );
 }
 

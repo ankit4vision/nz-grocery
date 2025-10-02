@@ -114,12 +114,12 @@ const MyOrders = () => {
 
   const handleViewDetails = (orderId) => {
     console.log('View details for order:', orderId);
-    navigate(`/order/${orderId}`);
+    navigate(`/order/${orderId}`, { state: { from: 'dashboard' } });
   };
 
   const handleTrackOrder = (orderId) => {
     console.log('Track order:', orderId);
-    navigate(`/order/${orderId}`);
+    navigate(`/order/${orderId}`, { state: { from: 'dashboard' } });
   };
 
   const handleReorder = (orderId) => {

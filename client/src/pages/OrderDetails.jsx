@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useParams, Link } from 'react-router-dom';
-import { FaHome, FaArrowLeft } from 'react-icons/fa';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { FaHome, FaArrowLeft, FaList } from 'react-icons/fa';
 import { OrderStatus, OrderSummaryBreakdown, OrderItems, PurchaseNote } from '../components/ui';
 import { orderDetailsData } from '../data/mockData';
 import './OrderDetails.css';
@@ -10,6 +10,11 @@ const OrderDetails = () => {
   const { orderId } = useParams();
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check if user came from dashboard orders
+  const cameFromDashboard = location.state?.from === 'dashboard';
 
   useEffect(() => {
     // Simulate API call to fetch order details
@@ -63,19 +68,38 @@ const OrderDetails = () => {
 
   return (
     <Container fluid="lg" className="order-details-container">
-      {/* Back to Home Link */}
+      {/* Back Navigation */}
       <Row>
         <Col>
           <div className="back-to-home">
-            <Link to="/" className="back-link">
-              <FaArrowLeft className="me-2" />
-              <span className="back-text">Back to Home</span>
-            </Link>
+            {cameFromDashboard ? (
+              <Button 
+                variant="outline-primary" 
+                className="back-link"
+                onClick={() => navigate('/dashboard?tab=orders')}
+              >
+                <FaArrowLeft className="me-2" />
+                <span className="back-text">Back to Orders</span>
+              </Button>
+            ) : (
+              <Link to="/" className="back-link">
+                <FaArrowLeft className="me-2" />
+                <span className="back-text">Back to Home</span>
+              </Link>
+            )}
             <div className="order-details-breadcrumb">
               <span className="breadcrumb-item">
                 <Link to="/">Home</Link>
               </span>
               <span className="breadcrumb-separator">/</span>
+              {cameFromDashboard && (
+                <>
+                  <span className="breadcrumb-item">
+                    <Link to="/dashboard?tab=orders">My Orders</Link>
+                  </span>
+                  <span className="breadcrumb-separator">/</span>
+                </>
+              )}
               <span className="breadcrumb-item active">Order Details</span>
             </div>
           </div>

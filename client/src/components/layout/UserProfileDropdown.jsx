@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { NavDropdown, Badge } from 'react-bootstrap';
+import { NavDropdown, Badge, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaShoppingBag, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaShoppingBag, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { LoginModal, SignupModal, ForgotPasswordModal } from '../ui';
 import '../../styles/components/navigation/user-profile-dropdown.css';
 
-const UserProfileDropdown = ({ userPoints = 0, onLogout }) => {
+const UserProfileDropdown = ({ onLogout, isAuthenticated = false, user = null }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,11 +22,78 @@ const UserProfileDropdown = ({ userPoints = 0, onLogout }) => {
     navigate(path);
   };
 
+  // If user is not authenticated, show single login button
+  if (!isAuthenticated) {
+    return (
+      <>
+        <div className="user-profile-dropdown">
+          <Button 
+            variant="primary" 
+            size="sm"
+            className="auth-btn"
+            onClick={() => setShowLoginModal(true)}
+          >
+            <FaSignInAlt className="me-1" />
+            Login
+          </Button>
+        </div>
+
+        {/* Authentication Modals */}
+        <LoginModal
+          show={showLoginModal}
+          onHide={() => setShowLoginModal(false)}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
+          onSwitchToForgotPassword={() => {
+            setShowLoginModal(false);
+            setShowForgotPasswordModal(true);
+          }}
+        />
+
+        <SignupModal
+          show={showSignupModal}
+          onHide={() => setShowSignupModal(false)}
+          onSwitchToLogin={() => {
+            setShowSignupModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+
+        <ForgotPasswordModal
+          show={showForgotPasswordModal}
+          onHide={() => setShowForgotPasswordModal(false)}
+          onSwitchToLogin={() => {
+            setShowForgotPasswordModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      </>
+    );
+  }
+
   return (
     <NavDropdown
       title={
         <div className="user-profile-trigger">
-          <FaUser className="user-profile-icon" />
+          <div className="user-avatar">
+            {user ? (
+              <div className="user-avatar-circle">
+                {user.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
+              </div>
+            ) : (
+              <FaUser className="user-profile-icon" />
+            )}
+          </div>
+          <div className="user-info">
+            <span className="user-name">
+              {user ? `${user.firstName} ${user.lastName}` : 'User'}
+            </span>
+            <span className="user-role">
+              {user?.role === 'admin' ? 'Admin' : 'Customer'}
+            </span>
+          </div>
         </div>
       }
       id="user-profile-dropdown"
@@ -31,13 +102,18 @@ const UserProfileDropdown = ({ userPoints = 0, onLogout }) => {
       className="user-profile-dropdown"
       align="end"
     >
-      {/* Points Section */}
-      <div className="user-points-section">
-        <div className="user-points-content">
-          <span className="user-points-label">Points</span>
-          <span className="user-points-value">{userPoints}</span>
+      {/* User Info Section */}
+      <div className="user-info-section">
+        <div className="user-info-content">
+          <div className="user-name-display">
+            {user ? `${user.firstName} ${user.lastName}` : 'User'}
+          </div>
+          <div className="user-email-display">
+            {user?.email}
+          </div>
         </div>
       </div>
+
 
       {/* Menu Items */}
       <NavDropdown.Item 

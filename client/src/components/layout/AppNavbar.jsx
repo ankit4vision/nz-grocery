@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
-import { useCartContext } from '../../context';
+import { useCartContext, useUserContext } from '../../context';
 import UserProfileDropdown from './UserProfileDropdown';
 import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/navigation/app-navbar.css';
@@ -18,6 +18,7 @@ const AppNavbar = ({
   ...props 
 }) => {
   const { totalItems } = useCartContext();
+  const { isAuthenticated, user, logout } = useUserContext();
   
   const navbarClasses = [
     'app-navbar',
@@ -83,13 +84,11 @@ const AppNavbar = ({
               
               {/* User Profile Dropdown */}
               <UserProfileDropdown 
-                userPoints={userPoints}
-                onLogout={onLogout}
+                onLogout={logout}
+                isAuthenticated={isAuthenticated}
+                user={user}
               />
               
-              <Nav.Link className="app-navbar__join">
-                Join
-              </Nav.Link>
             </div>
           </div>
         </Container>

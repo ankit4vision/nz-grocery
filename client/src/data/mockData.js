@@ -7,6 +7,231 @@ import slider2 from '../assets/images/main-slider/8486222.jpg';
 import slider3 from '../assets/images/main-slider/8449377.jpg';
 import slider4 from '../assets/images/main-slider/8449371.jpg';
 
+// Authentication Mock Data
+export const authMockData = {
+  users: [
+    {
+      id: '1',
+      email: 'john.doe@example.com',
+      mobile: '+64 21 123 4567',
+      password: 'password123',
+      firstName: 'John',
+      lastName: 'Doe',
+      role: 'customer',
+      isEmailVerified: true,
+      isMobileVerified: true,
+      createdAt: '2024-01-15T10:30:00Z',
+      lastLogin: '2024-01-20T14:22:00Z',
+      profile: {
+        avatar: null,
+        dateOfBirth: '1990-05-15',
+        gender: 'male',
+        bio: 'Passionate about fresh groceries and healthy living',
+        phone: '+64 21 123 4567',
+        address: {
+          street: '123 Queen Street',
+          city: 'Auckland',
+          postalCode: '1010',
+          country: 'New Zealand'
+        },
+        billingAddress: {
+          street: '123 Queen Street',
+          apartment: 'Apt 4B',
+          city: 'Auckland',
+          state: 'Auckland',
+          zipCode: '1010',
+          country: 'New Zealand'
+        },
+        shippingAddress: {
+          street: '456 Ponsonby Road',
+          apartment: 'Unit 7',
+          city: 'Auckland',
+          state: 'Auckland',
+          zipCode: '1021',
+          country: 'New Zealand'
+        },
+        preferences: {
+          newsletter: true,
+          smsNotifications: true,
+          emailNotifications: true
+        }
+      }
+    },
+    {
+      id: '2',
+      email: 'jane.smith@example.com',
+      mobile: '+64 22 987 6543',
+      password: 'password123',
+      firstName: 'Jane',
+      lastName: 'Smith',
+      role: 'customer',
+      isEmailVerified: true,
+      isMobileVerified: false,
+      createdAt: '2024-01-10T09:15:00Z',
+      lastLogin: '2024-01-19T16:45:00Z',
+      profile: {
+        avatar: null,
+        dateOfBirth: '1985-12-03',
+        gender: 'female',
+        bio: 'Food enthusiast and cooking lover',
+        phone: '+64 22 987 6543',
+        address: {
+          street: '456 Ponsonby Road',
+          city: 'Auckland',
+          postalCode: '1021',
+          country: 'New Zealand'
+        },
+        billingAddress: {
+          street: '456 Ponsonby Road',
+          apartment: 'Unit 3',
+          city: 'Auckland',
+          state: 'Auckland',
+          zipCode: '1021',
+          country: 'New Zealand'
+        },
+        shippingAddress: {
+          street: '789 Dominion Road',
+          apartment: 'Apt 12',
+          city: 'Auckland',
+          state: 'Auckland',
+          zipCode: '1041',
+          country: 'New Zealand'
+        },
+        preferences: {
+          newsletter: false,
+          smsNotifications: true,
+          emailNotifications: false
+        }
+      }
+    },
+    {
+      id: '3',
+      email: 'admin@farmfridge.co.nz',
+      mobile: '+64 23 555 0123',
+      password: 'admin123',
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'admin',
+      isEmailVerified: true,
+      isMobileVerified: true,
+      createdAt: '2024-01-01T00:00:00Z',
+      lastLogin: '2024-01-20T08:30:00Z',
+      profile: {
+        avatar: null,
+        dateOfBirth: '1980-03-20',
+        gender: 'other',
+        address: {
+          street: '789 Admin Street',
+          city: 'Wellington',
+          postalCode: '6011',
+          country: 'New Zealand'
+        },
+        preferences: {
+          newsletter: true,
+          smsNotifications: true,
+          emailNotifications: true
+        }
+      }
+    }
+  ],
+  
+  // Mock OTP storage (in real app, this would be in database)
+  otpStorage: new Map(),
+  
+  // Mock session storage
+  sessions: new Map(),
+  
+  // Helper functions
+  findUserByEmail: function(email) {
+    return this.users.find(user => user.email.toLowerCase() === email.toLowerCase());
+  },
+  
+  findUserByMobile: function(mobile) {
+    return this.users.find(user => user.mobile === mobile);
+  },
+  
+  findUserById: function(id) {
+    return this.users.find(user => user.id === id);
+  },
+  
+  validateCredentials: function(emailOrMobile, password) {
+    const user = this.findUserByEmail(emailOrMobile) || this.findUserByMobile(emailOrMobile);
+    if (user && user.password === password) {
+      return { success: true, user };
+    }
+    return { success: false, error: 'Invalid credentials' };
+  },
+  
+  generateOTP: function() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  },
+  
+  storeOTP: function(email, otp) {
+    this.otpStorage.set(email, {
+      otp,
+      timestamp: Date.now(),
+      attempts: 0
+    });
+  },
+  
+  verifyOTP: function(email, otp) {
+    const stored = this.otpStorage.get(email);
+    if (!stored) {
+      return { success: false, error: 'OTP not found or expired' };
+    }
+    
+    // OTP expires after 10 minutes
+    if (Date.now() - stored.timestamp > 10 * 60 * 1000) {
+      this.otpStorage.delete(email);
+      return { success: false, error: 'OTP expired' };
+    }
+    
+    // Check attempt limit
+    if (stored.attempts >= 3) {
+      this.otpStorage.delete(email);
+      return { success: false, error: 'Too many attempts. Please request a new OTP.' };
+    }
+    
+    if (stored.otp === otp) {
+      this.otpStorage.delete(email);
+      return { success: true };
+    } else {
+      stored.attempts++;
+      return { success: false, error: 'Invalid OTP' };
+    }
+  },
+  
+  createSession: function(userId) {
+    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    this.sessions.set(sessionId, {
+      userId,
+      createdAt: Date.now(),
+      lastActivity: Date.now()
+    });
+    return sessionId;
+  },
+  
+  validateSession: function(sessionId) {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      return { success: false, error: 'Invalid session' };
+    }
+    
+    // Session expires after 24 hours
+    if (Date.now() - session.createdAt > 24 * 60 * 60 * 1000) {
+      this.sessions.delete(sessionId);
+      return { success: false, error: 'Session expired' };
+    }
+    
+    session.lastActivity = Date.now();
+    return { success: true, session };
+  },
+  
+  destroySession: function(sessionId) {
+    this.sessions.delete(sessionId);
+  }
+};
+
 // Ads Banner Data Mock
 export const adsBannerData = [
   {

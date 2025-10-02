@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';
 import { STORAGE_KEYS } from '../utils/constants';
+import { authMockData } from '../data/mockData';
 
 /**
  * User Context for managing user authentication and profile state globally
@@ -10,7 +11,7 @@ import { STORAGE_KEYS } from '../utils/constants';
 const initialState = {
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true, // Start with loading true to prevent premature redirects
   error: null,
   profile: null,
   preferences: {
@@ -115,6 +116,9 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     if (storedUser) {
       dispatch({ type: USER_ACTIONS.SET_USER, payload: storedUser });
+    } else {
+      // No stored user, set loading to false
+      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
     }
   }, [storedUser]);
 
@@ -130,31 +134,32 @@ export const UserProvider = ({ children }) => {
     login: async (credentials) => {
       dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
       try {
-        // TODO: Replace with actual API call
-        const mockUser = {
-          id: '1',
-          email: credentials.email,
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'customer',
-        };
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const mockProfile = {
-          ...mockUser,
-          phone: '+64 21 123 4567',
-          address: {
-            street: '123 Main Street',
-            city: 'Auckland',
-            postalCode: '1010',
-            country: 'New Zealand',
-          },
+        // Validate credentials using mock data
+        const validation = authMockData.validateCredentials(credentials.email, credentials.password);
+        
+        if (!validation.success) {
+          throw new Error(validation.error);
+        }
+        
+        const user = validation.user;
+        const sessionId = authMockData.createSession(user.id);
+        
+        // Remove password from user object
+        const { password, ...userWithoutPassword } = user;
+        
+        // Create user profile
+        const userProfile = {
+          ...userWithoutPassword,
           preferences: state.preferences,
         };
 
-        setStoredUser(mockUser);
-        dispatch({ type: USER_ACTIONS.LOGIN_SUCCESS, payload: { user: mockUser, profile: mockProfile } });
+        setStoredUser(userWithoutPassword);
+        dispatch({ type: USER_ACTIONS.LOGIN_SUCCESS, payload: { user: userWithoutPassword, profile: userProfile } });
         
-        return { success: true, user: mockUser };
+        return { success: true, user: userWithoutPassword };
       } catch (error) {
         dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
         throw error;
@@ -162,6 +167,13 @@ export const UserProvider = ({ children }) => {
     },
 
     logout: () => {
+      // Destroy session in mock data
+      const sessionId = localStorage.getItem('sessionId');
+      if (sessionId) {
+        authMockData.destroySession(sessionId);
+        localStorage.removeItem('sessionId');
+      }
+      
       setStoredUser(null);
       dispatch({ type: USER_ACTIONS.LOGOUT });
     },
@@ -200,11 +212,127 @@ export const UserProvider = ({ children }) => {
     changePassword: async (passwordData) => {
       dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
       try {
-        // TODO: Replace with actual API call
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // In real app, this would validate current password and update new password
+        // For mock, we'll just simulate success
         
         dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
         return { success: true };
+      } catch (error) {
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
+        throw error;
+      }
+    },
+
+    // New authentication methods
+    signup: async (userData) => {
+      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Check if user already exists
+        const existingUser = authMockData.findUserByEmail(userData.email);
+        if (existingUser) {
+          throw new Error('User with this email already exists');
+        }
+        
+        // Create new user
+        const newUser = {
+          id: (authMockData.users.length + 1).toString(),
+          ...userData,
+          role: 'customer',
+          isEmailVerified: false,
+          isMobileVerified: false,
+          createdAt: new Date().toISOString(),
+          lastLogin: null,
+          profile: {
+            avatar: null,
+            dateOfBirth: null,
+            gender: null,
+            address: null,
+            preferences: {
+              newsletter: true,
+              smsNotifications: true,
+              emailNotifications: true
+            }
+          }
+        };
+        
+        // Add to mock data
+        authMockData.users.push(newUser);
+        
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        return { success: true, user: newUser };
+      } catch (error) {
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
+        throw error;
+      }
+    },
+
+    sendOTP: async (email) => {
+      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Generate and store OTP
+        const otp = authMockData.generateOTP();
+        authMockData.storeOTP(email, otp);
+        
+        // In real app, this would send OTP via email/SMS
+        console.log(`OTP for ${email}: ${otp}`); // For development
+        
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        return { success: true, message: 'OTP sent successfully' };
+      } catch (error) {
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
+        throw error;
+      }
+    },
+
+    verifyOTP: async (email, otp) => {
+      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const verification = authMockData.verifyOTP(email, otp);
+        
+        if (!verification.success) {
+          throw new Error(verification.error);
+        }
+        
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        return { success: true, message: 'OTP verified successfully' };
+      } catch (error) {
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
+        throw error;
+      }
+    },
+
+    resetPassword: async (email, otp, newPassword) => {
+      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Verify OTP first
+        const otpVerification = authMockData.verifyOTP(email, otp);
+        if (!otpVerification.success) {
+          throw new Error(otpVerification.error);
+        }
+        
+        // Find user and update password
+        const user = authMockData.findUserByEmail(email);
+        if (user) {
+          user.password = newPassword;
+        }
+        
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        return { success: true, message: 'Password reset successfully' };
       } catch (error) {
         dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
         throw error;
