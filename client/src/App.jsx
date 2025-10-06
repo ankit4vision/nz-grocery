@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { LayoutWrapper, ScrollToTop } from './components';
 import { CartProvider, UserProvider } from './context';
 import { navItemsData, footerLinksData, socialLinksData } from './data/mockData';
