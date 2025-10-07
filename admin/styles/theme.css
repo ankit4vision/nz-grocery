@@ -1,5 +1,27 @@
 /* Simple CoreUI Theme - Clean and Minimal */
 
+:root,
+html,
+body,
+html[data-coreui-theme="light"],
+body[data-coreui-theme="light"] {
+  /* E-Grocery palette */
+  --cui-primary: #2e7d32; /* fresh green */
+  --cui-secondary: #6c757d;
+  --cui-success: #198754;
+  --cui-info: #0dcaf0;
+  --cui-warning: #ffc107;
+  --cui-danger: #dc3545;
+  --cui-light: #f8f9fa;
+  --cui-dark: #212529;
+}
+
+/* Optional: darker-friendly primary */
+html[data-coreui-theme="dark"],
+body[data-coreui-theme="dark"] {
+  --cui-primary: #5fbf6b; /* brighter green for contrast */
+}
+
 /* App Content Layout */
 .app-content {
   padding: 1rem;

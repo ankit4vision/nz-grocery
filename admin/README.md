@@ -1,18 +1,53 @@
-# React + Vite
+# NZ Grocery Admin - Run & Build
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Local Development
 
-Currently, two official plugins are available:
+```bash
+# From the admin directory
+npm install
+npm run dev
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The dev server uses environment variables from `env.local` (see `env.example` for all keys). Hot Module Replacement (HMR) is enabled.
 
-## React Compiler
+## Environment Builds
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```bash
+# Development build (mode=development)
+npm run build:dev
 
-Note: This will impact Vite dev & build performances.
+# Staging build (mode=staging)
+npm run build:staging
 
-## Expanding the ESLint configuration
+# Production build (mode=production)
+npm run build:prod
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Build outputs go to `dist/`.
+
+## Preview Built Artifacts
+
+```bash
+# Preview generic build
+npm run preview
+
+# Preview by environment
+npm run preview:dev
+npm run preview:staging
+npm run preview:prod
+```
+
+## Environment Files
+
+- `env.example`: template with all variables
+- `env.local`: used by `npm run dev`
+- `env.staging`: used by `build:staging`/`preview:staging`
+- `env.production`: used by `build:prod`/`preview:prod`
+
+Variables are available via `import.meta.env`, e.g.:
+
+```js
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+```
+
+For full details, see `ENVIRONMENT_SETUP.md` and `ENVIRONMENT_SETUP_COMPLETE.md`.
