@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
-import { CCol, CFormCheck } from '@coreui/react'
+import { Col, FormCheck } from 'react-bootstrap'
 import { TextField, SelectField, FormRow } from '../../common/FormFields'
 
 const SubCategoryForm = forwardRef(({
@@ -137,16 +137,16 @@ const SubCategoryForm = forwardRef(({
       </FormRow>
 
       <FormRow>
-        <CCol md={12}>
+        <Col md={12}>
           <div className="form-check mb-3">
-            <CFormCheck
+            <FormCheck
               id="isActive"
               label="Active"
               checked={formData.isActive}
               onChange={(e) => handleChange('isActive', e.target.checked)}
             />
           </div>
-        </CCol>
+        </Col>
       </FormRow>
     </div>
   )

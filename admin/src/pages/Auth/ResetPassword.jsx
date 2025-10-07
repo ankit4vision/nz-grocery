@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { CContainer, CRow, CCol, CForm, CFormInput } from '@coreui/react'
+import { Container, Row, Col, Form, FormControl, Button as RBButton } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
-import { cilLockLocked, cilUser, cilCheckCircle, cilArrowLeft } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLock, faCheckCircle, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { Button } from '../../components'
 import '../../styles/auth.css'
@@ -86,14 +86,14 @@ const ResetPassword = () => {
 
   return (
     <div className="auth-page">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={6} lg={5} xl={4}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={6} lg={5} xl={4}>
             {/* Logo/Brand Section */}
             <div className="text-center mb-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
                    style={{ width: '80px', height: '80px' }}>
-                <CIcon icon={cilLockLocked} size="2xl" className="text-primary" />
+                <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
               </div>
               <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
               <p className="text-muted mb-0">Secure Admin Dashboard</p>
@@ -104,17 +104,17 @@ const ResetPassword = () => {
                 <h3 className="mb-2">Reset Password</h3>
                 <p className="text-muted">Enter your new password</p>
               </div>
-              <CForm onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <div className="position-relative">
-                    <CIcon icon={cilLockLocked} className="auth-input-icon" />
-                    <CFormInput
+                    <FontAwesomeIcon icon={faLock} className="auth-input-icon" />
+                    <FormControl
                       type="password"
                       name="password"
                       placeholder="New password"
                       value={formData.password}
                       onChange={handleChange}
-                      invalid={!!errors.password}
+                      isInvalid={!!errors.password}
                       className={`auth-input ${errors.password ? 'is-invalid' : ''}`}
                     />
                   </div>
@@ -125,14 +125,14 @@ const ResetPassword = () => {
 
                 <div className="mb-3">
                   <div className="position-relative">
-                    <CIcon icon={cilCheckCircle} className="auth-input-icon" />
-                    <CFormInput
+                    <FontAwesomeIcon icon={faCheckCircle} className="auth-input-icon" />
+                    <FormControl
                       type="password"
                       name="confirmPassword"
                       placeholder="Confirm new password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      invalid={!!errors.confirmPassword}
+                      isInvalid={!!errors.confirmPassword}
                       className={`auth-input ${errors.confirmPassword ? 'is-invalid' : ''}`}
                     />
                   </div>
@@ -143,7 +143,7 @@ const ResetPassword = () => {
 
                 <div className="alert alert-info border-0 mb-4">
                   <small className="mb-0">
-                    <CIcon icon={cilCheckCircle} className="me-2" />
+                    <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
                     Password requirements:
                     <ul className="mb-0 mt-2 small">
                       <li>At least 6 characters long</li>
@@ -162,11 +162,11 @@ const ResetPassword = () => {
 
                 <div className="text-center">
                   <Link to="/login" className="text-decoration-none text-primary fw-medium">
-                    <CIcon icon={cilArrowLeft} className="me-2" />
+                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
                     Back to Login
                   </Link>
                 </div>
-              </CForm>
+              </Form>
             </div>
 
             {/* Footer */}
@@ -175,9 +175,9 @@ const ResetPassword = () => {
                 © 2024 BaseAdmin. All rights reserved.
               </p>
             </div>
-          </CCol>
-        </CRow>
-      </CContainer>
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }

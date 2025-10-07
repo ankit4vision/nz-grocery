@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { CContainer, CRow, CCol, CForm, CFormInput, CFormCheck } from '@coreui/react'
+import { Container, Row, Col, Form, FormControl, FormCheck, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
-import { cilLockLocked, cilUser, cilEnvelopeOpen, cilInfo } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLock, faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { useAuth } from '../../context/AuthContext'
-import { Button } from '../../components'
 import '../../styles/auth.css'
 
 const Login = () => {
@@ -118,14 +117,14 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={6} lg={5} xl={4}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={6} lg={5} xl={4}>
             {/* Logo/Brand Section */}
             <div className="text-center mb-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
                    style={{ width: '80px', height: '80px' }}>
-                <CIcon icon={cilLockLocked} size="2xl" className="text-primary" />
+                <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
               </div>
               <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
               <p className="text-muted mb-0">Secure Admin Dashboard</p>
@@ -136,17 +135,17 @@ const Login = () => {
                 <h3 className="mb-2">Welcome Back</h3>
                 <p className="text-muted">Sign in to your account</p>
               </div>
-              <CForm onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <div className="position-relative">
-                    <CIcon icon={cilEnvelopeOpen} className="auth-input-icon" />
-                    <CFormInput
+                    <FontAwesomeIcon icon={faEnvelope} className="auth-input-icon" />
+                    <FormControl
                       type="email"
                       name="email"
                       placeholder="Email address"
                       value={formData.email}
                       onChange={handleChange}
-                      invalid={!!errors.email}
+                      isInvalid={!!errors.email}
                       className={`auth-input ${errors.email ? 'is-invalid' : ''}`}
                     />
                   </div>
@@ -157,14 +156,14 @@ const Login = () => {
 
                 <div className="mb-3">
                   <div className="position-relative">
-                    <CIcon icon={cilLockLocked} className="auth-input-icon" />
-                    <CFormInput
+                    <FontAwesomeIcon icon={faLock} className="auth-input-icon" />
+                    <FormControl
                       type="password"
                       name="password"
                       placeholder="Password"
                       value={formData.password}
                       onChange={handleChange}
-                      invalid={!!errors.password}
+                      isInvalid={!!errors.password}
                       className={`auth-input ${errors.password ? 'is-invalid' : ''}`}
                     />
                   </div>
@@ -174,7 +173,7 @@ const Login = () => {
                 </div>
 
                 <div className="mb-4 d-flex justify-content-between align-items-center">
-                  <CFormCheck
+                  <FormCheck
                     type="checkbox"
                     name="remember"
                     label="Remember me"
@@ -187,20 +186,21 @@ const Login = () => {
                   </Link>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
-                  className="auth-button"
+                  className="auth-button w-100"
+                  variant="primary"
                 >
                   {loading ? 'Signing In...' : 'Sign In'}
-                </button>
-              </CForm>
+                </Button>
+              </Form>
             </div>
 
             {/* Demo Credentials */}
             <div className="demo-credentials">
               <div className="d-flex align-items-center mb-3">
-                <CIcon icon={cilInfo} className="me-2 text-muted" />
+                <FontAwesomeIcon icon={faInfoCircle} className="me-2 text-muted" />
                 <h6 className="demo-credentials-title mb-0">Demo Credentials</h6>
               </div>
               <div className="demo-credential-item">
@@ -223,9 +223,9 @@ const Login = () => {
                 © 2024 BaseAdmin. All rights reserved.
               </p>
             </div>
-          </CCol>
-        </CRow>
-      </CContainer>
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }

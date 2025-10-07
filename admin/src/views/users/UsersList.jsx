@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { CContainer, CRow, CCol, CButton, CFormInput, CFormSelect, CCard, CCardHeader, CCardBody, CCardTitle } from '@coreui/react'
+import { Container, Row, Col, Button, FormControl, FormSelect, Card } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faPencil, faTrash, faInfo, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../../components'
 import { useUserManagement, usePermissions } from '../../hooks'
-import { Button, Card, Table, Modal, FormModal, UserForm } from '../../components'
-import { cilPlus, cilPencil, cilTrash, cilInfo, cilMagnifyingGlass } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Table, Modal, FormModal, UserForm } from '../../components'
 
 const UsersList = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -214,9 +214,8 @@ const UsersList = () => {
       label: 'Actions',
       render: (value, user, index) => (
         <div className="d-flex gap-2">
-          <CButton
-            color="info"
-            variant="outline"
+          <Button
+            variant="info"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -224,11 +223,10 @@ const UsersList = () => {
             }}
             title="View User"
           >
-            <CIcon icon={cilInfo} />
-          </CButton>
-          <CButton
-            color="warning"
-            variant="outline"
+            <FontAwesomeIcon icon={faInfo} />
+          </Button>
+          <Button
+            variant="warning"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -236,11 +234,10 @@ const UsersList = () => {
             }}
             title="Edit User"
           >
-            <CIcon icon={cilPencil} />
-          </CButton>
-          <CButton
-            color="danger"
-            variant="outline"
+            <FontAwesomeIcon icon={faPencil} />
+          </Button>
+          <Button
+            variant="danger"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -248,41 +245,41 @@ const UsersList = () => {
             }}
             title="Delete User"
           >
-            <CIcon icon={cilTrash} />
-          </CButton>
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
         </div>
       )
     }
   ]
 
   return (
-    <CContainer fluid>
-      <CRow>
-        <CCol xs={12}>
+    <Container fluid>
+      <Row>
+        <Col xs={12}>
           {/* Users Table Card */}
-          <CCard>
-            <CCardHeader>
+          <Card>
+            <Card.Header>
               <div className="d-flex justify-content-between align-items-center w-100">
-                <CCardTitle className="mb-0">Users</CCardTitle>
+                <Card.Title className="mb-0">Users</Card.Title>
                 <Button
                   variant="primary"
-                  icon={<CIcon icon={cilPlus} />}
                   onClick={handleCreateUser}
                 >
+                  <FontAwesomeIcon icon={faPlus} className="me-2" />
                   Add User
                 </Button>
               </div>
-            </CCardHeader>
-            <CCardBody>
+            </Card.Header>
+            <Card.Body>
               {/* Filters */}
               <div className="d-flex gap-2 align-items-center mb-3">
-                <CFormInput
+                <FormControl
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={handleSearch}
                   style={{ width: '200px' }}
                 />
-                <CFormSelect
+                <FormSelect
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
                   style={{ width: '120px' }}
@@ -291,8 +288,8 @@ const UsersList = () => {
                   <option value="admin">Admin</option>
                   <option value="manager">Manager</option>
                   <option value="user">User</option>
-                </CFormSelect>
-                <CFormSelect
+                </FormSelect>
+                <FormSelect
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   style={{ width: '120px' }}
@@ -300,7 +297,7 @@ const UsersList = () => {
                   <option value="">All Status</option>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
-                </CFormSelect>
+                </FormSelect>
                 {selectedUsers.length > 0 && (
                   <Button
                     variant="danger"
@@ -324,10 +321,10 @@ const UsersList = () => {
                 onPageChange={setCurrentPage}
                 onPageSizeChange={setPageSize}
               />
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -350,7 +347,7 @@ const UsersList = () => {
         title="Add New User"
         onSubmit={handleAddUser}
         submitText="Create User"
-        submitIcon={cilPlus}
+        submitIcon={faPlus}
         loading={addUserLoading}
         loadingText="Creating..."
       >
@@ -367,7 +364,7 @@ const UsersList = () => {
         title="Edit User"
         onSubmit={handleEditUser}
         submitText="Update User"
-        submitIcon={cilPencil}
+        submitIcon={faPencil}
         loading={editUserLoading}
         loadingText="Updating..."
       >
@@ -457,7 +454,7 @@ const UsersList = () => {
           </div>
         )}
       </Modal>
-    </CContainer>
+    </Container>
   )
 }
 

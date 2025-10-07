@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { CContainer, CRow, CCol, CButton, CFormInput, CFormSelect, CCard, CCardHeader, CCardBody, CCardTitle } from '@coreui/react'
-import { cilPlus, cilPencil, cilTrash, cilInfo, cilSearch, cilFolder } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Container, Row, Col, Button, FormControl, FormSelect, Card } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faPencil, faTrash, faInfo, faSearch, faFolder } from '@fortawesome/free-solid-svg-icons'
 import { Table, FormModal, Modal } from '../../components'
 import CategoryForm from '../../components/pages/categories/CategoryForm'
 import { categoryService } from '../../services/categoryService'
@@ -64,7 +64,7 @@ const CategoriesList = () => {
       label: 'Category Name',
       render: (value, category, index) => (
         <div className="d-flex align-items-center">
-          <CIcon icon={cilFolder} className="me-2 text-primary" />
+          <FontAwesomeIcon icon={faFolder} className="me-2 text-primary" />
           <div>
             <div className="fw-semibold">{category.name}</div>
             <small className="text-muted">{category.description}</small>
@@ -104,9 +104,8 @@ const CategoriesList = () => {
       label: 'Actions',
       render: (value, category, index) => (
         <div className="d-flex gap-2">
-          <CButton
-            color="info"
-            variant="outline"
+          <Button
+            variant="info"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -114,11 +113,10 @@ const CategoriesList = () => {
             }}
             title="View Category"
           >
-            <CIcon icon={cilInfo} />
-          </CButton>
-          <CButton
-            color="warning"
-            variant="outline"
+            <FontAwesomeIcon icon={faInfo} />
+          </Button>
+          <Button
+            variant="warning"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -126,11 +124,10 @@ const CategoriesList = () => {
             }}
             title="Edit Category"
           >
-            <CIcon icon={cilPencil} />
-          </CButton>
-          <CButton
-            color="danger"
-            variant="outline"
+            <FontAwesomeIcon icon={faPencil} />
+          </Button>
+          <Button
+            variant="danger"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -138,8 +135,8 @@ const CategoriesList = () => {
             }}
             title="Delete Category"
           >
-            <CIcon icon={cilTrash} />
-          </CButton>
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
         </div>
       )
     }
@@ -212,33 +209,33 @@ const CategoriesList = () => {
   }
 
   return (
-    <CContainer fluid>
-      <CRow>
-        <CCol xs={12}>
+    <Container fluid>
+      <Row>
+        <Col xs={12}>
           {/* Categories Table Card */}
-          <CCard>
-            <CCardHeader>
+          <Card>
+            <Card.Header>
               <div className="d-flex justify-content-between align-items-center w-100">
-                <CCardTitle className="mb-0">Categories</CCardTitle>
-                <CButton
-                  color="primary"
+                <Card.Title className="mb-0">Categories</Card.Title>
+                <Button
+                  variant="primary"
                   onClick={handleAddCategory}
                 >
-                  <CIcon icon={cilPlus} className="me-2" />
+                  <FontAwesomeIcon icon={faPlus} className="me-2" />
                   Add Category
-                </CButton>
+                </Button>
               </div>
-            </CCardHeader>
-            <CCardBody>
+            </Card.Header>
+            <Card.Body>
               {/* Filters */}
               <div className="d-flex gap-2 align-items-center mb-3">
-                <CFormInput
+                <FormControl
                   placeholder="Search categories..."
                   value={searchTerm}
                   onChange={handleSearch}
                   style={{ width: '200px' }}
                 />
-                <CFormSelect
+                <FormSelect
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   style={{ width: '120px' }}
@@ -246,7 +243,7 @@ const CategoriesList = () => {
                   <option value="">All Status</option>
                   <option value="true">Active</option>
                   <option value="false">Inactive</option>
-                </CFormSelect>
+                </FormSelect>
               </div>
               <Table
                 data={filteredCategories}
@@ -262,10 +259,10 @@ const CategoriesList = () => {
                 sortable={true}
                 totalItems={filteredCategories.length}
               />
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Add Category Modal */}
       <FormModal
@@ -368,7 +365,7 @@ const CategoriesList = () => {
         <p>Are you sure you want to delete the category <strong>"{categoryToDelete?.name}"</strong>?</p>
         <p className="text-muted">This action cannot be undone.</p>
       </Modal>
-    </CContainer>
+    </Container>
   )
 }
 

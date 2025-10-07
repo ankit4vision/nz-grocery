@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { CContainer, CRow, CCol, CButton, CFormInput, CFormSelect, CCard, CCardHeader, CCardBody, CCardTitle } from '@coreui/react'
+import { Container, Row, Col, Button, FormControl, FormSelect, Card } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faPencil, faTrash, faInfo, faMagnifyingGlass, faLock } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
-import { Button, Table, Modal, FormModal } from '../../components'
+import { Table, Modal, FormModal } from '../../components'
 import RoleForm from '../../components/pages/roles/RoleForm'
-import { cilPlus, cilPencil, cilTrash, cilInfo, cilMagnifyingGlass, cilLockLocked } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
 import roleService from '../../services/roleService'
 
 const RolesList = () => {
@@ -139,7 +139,7 @@ const RolesList = () => {
       label: 'Role Name',
       render: (value, role, index) => (
         <div className="d-flex align-items-center">
-          <CIcon icon={cilLockLocked} className="me-2 text-primary" />
+          <FontAwesomeIcon icon={faLock} className="me-2 text-primary" />
           <div>
             <div className="fw-semibold">{role.name}</div>
             <small className="text-muted">{role.description}</small>
@@ -181,9 +181,8 @@ const RolesList = () => {
       label: 'Actions',
       render: (value, role, index) => (
         <div className="d-flex gap-2">
-          <CButton
-            color="info"
-            variant="outline"
+          <Button
+            variant="info"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -191,11 +190,10 @@ const RolesList = () => {
             }}
             title="View Role"
           >
-            <CIcon icon={cilInfo} />
-          </CButton>
-          <CButton
-            color="warning"
-            variant="outline"
+            <FontAwesomeIcon icon={faInfo} />
+          </Button>
+          <Button
+            variant="warning"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -203,11 +201,10 @@ const RolesList = () => {
             }}
             title="Edit Role"
           >
-            <CIcon icon={cilPencil} />
-          </CButton>
-          <CButton
-            color="danger"
-            variant="outline"
+            <FontAwesomeIcon icon={faPencil} />
+          </Button>
+          <Button
+            variant="danger"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -215,41 +212,41 @@ const RolesList = () => {
             }}
             title="Delete Role"
           >
-            <CIcon icon={cilTrash} />
-          </CButton>
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
         </div>
       )
     }
   ]
 
   return (
-    <CContainer fluid>
-      <CRow>
-        <CCol xs={12}>
+    <Container fluid>
+      <Row>
+        <Col xs={12}>
           {/* Roles Table Card */}
-          <CCard>
-            <CCardHeader>
+          <Card>
+            <Card.Header>
               <div className="d-flex justify-content-between align-items-center w-100">
-                <CCardTitle className="mb-0">Roles</CCardTitle>
+                <Card.Title className="mb-0">Roles</Card.Title>
                 <Button
                   variant="primary"
-                  icon={<CIcon icon={cilPlus} />}
                   onClick={handleAddRole}
                 >
+                  <FontAwesomeIcon icon={faPlus} className="me-2" />
                   Add Role
                 </Button>
               </div>
-            </CCardHeader>
-            <CCardBody>
+            </Card.Header>
+            <Card.Body>
               {/* Filters */}
               <div className="d-flex gap-2 align-items-center mb-3">
-                <CFormInput
+                <FormControl
                   placeholder="Search roles..."
                   value={searchTerm}
                   onChange={handleSearch}
                   style={{ width: '200px' }}
                 />
-                <CFormSelect
+                <FormSelect
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   style={{ width: '150px' }}
@@ -257,7 +254,7 @@ const RolesList = () => {
                   <option value="">All Status</option>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
-                </CFormSelect>
+                </FormSelect>
               </div>
               
               <Table
@@ -274,10 +271,10 @@ const RolesList = () => {
                 onPageChange={setCurrentPage}
                 onPageSizeChange={setPageSize}
               />
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Add Role Modal */}
       <FormModal
@@ -347,7 +344,7 @@ const RolesList = () => {
                   backgroundColor: '#6c757d'
                 }}
               >
-                <CIcon icon={cilLockLocked} size="2xl" />
+                <FontAwesomeIcon icon={faLock} size="2xl" />
               </div>
               <h5 className="mt-2 mb-0">{roleToView.name}</h5>
               <p className="text-muted mb-0">{roleToView.description}</p>
@@ -407,7 +404,7 @@ const RolesList = () => {
         <p>Are you sure you want to delete role <strong>{roleToDelete?.name}</strong>?</p>
         <p className="text-muted">This action cannot be undone and may affect users assigned to this role.</p>
       </Modal>
-    </CContainer>
+    </Container>
   )
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { FormRow, TextField, SelectField } from '../../common/FormFields'
 import PropTypes from 'prop-types'
-import { CFormCheck, CCol } from '@coreui/react'
+import { FormCheck, Col } from 'react-bootstrap'
 
 const RoleForm = forwardRef(({ 
   mode = 'create', 
@@ -183,7 +183,7 @@ const RoleForm = forwardRef(({
       </FormRow>
 
       <FormRow>
-        <CCol md={12}>
+        <Col md={12}>
           <label className="form-label">
             Permissions <span className="text-danger">*</span>
           </label>
@@ -194,7 +194,7 @@ const RoleForm = forwardRef(({
                   <h6 className="text-primary">{category}</h6>
                   {permissions.map((permission) => (
                     <div key={permission.id} className="form-check">
-                      <CFormCheck
+                      <FormCheck
                         id={permission.id}
                         label={permission.label}
                         checked={formData.permissions.includes(permission.id)}
@@ -211,7 +211,7 @@ const RoleForm = forwardRef(({
               </div>
             )}
           </div>
-        </CCol>
+        </Col>
       </FormRow>
     </div>
   )

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
-import { CCard, CCardHeader, CCardBody, CCardTitle, CButton, CImage, CSpinner, CFormInput, CFormText, CAlert } from '@coreui/react'
-import { cilUser, cilPencil, cilTrash, cilSave, cilX } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Card, Button, Image, Spinner, FormControl, FormText, Alert } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faPencil, faTrash, faSave, faX } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 
 const ProfilePictureSection = ({ 
@@ -89,46 +89,46 @@ const ProfilePictureSection = ({
   }
 
   return (
-    <CCard>
-      <CCardHeader>
+    <Card>
+      <Card.Header>
         <div className="d-flex justify-content-between align-items-center w-100">
-          <CCardTitle className="mb-0 d-flex align-items-center">
-            <CIcon icon={cilUser} className="me-2" />
+          <Card.Title className="mb-0 d-flex align-items-center">
+            <FontAwesomeIcon icon={faUser} className="me-2" />
             Profile Picture
-          </CCardTitle>
+          </Card.Title>
           {!isEditing && (
             <div className="d-flex gap-2">
-              <CButton
+              <Button
                 color="primary"
                 variant="outline"
                 size="sm"
                 onClick={handleEditClick}
                 disabled={loading}
               >
-                <CIcon icon={cilPencil} className="me-1" />
+                <FontAwesomeIcon icon={faPencil} className="me-1" />
                 Edit Photo
-              </CButton>
+              </Button>
               {avatarPreview && (
-                <CButton
+                <Button
                   color="danger"
                   variant="outline"
                   size="sm"
                   onClick={handleDelete}
                   disabled={loading}
                 >
-                  <CIcon icon={cilTrash} className="me-1" />
+                  <FontAwesomeIcon icon={faTrash} className="me-1" />
                   Delete Photo
-                </CButton>
+                </Button>
               )}
             </div>
           )}
         </div>
-      </CCardHeader>
-      <CCardBody>
+      </Card.Header>
+      <Card.Body>
         <div className="d-flex align-items-center gap-3">
           <div className="position-relative">
             {avatarPreview ? (
-              <CImage
+              <Image
                 src={avatarPreview}
                 alt="Profile Avatar"
                 className="rounded-circle"
@@ -139,53 +139,53 @@ const ProfilePictureSection = ({
                 className="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
                 style={{ width: '100px', height: '100px' }}
               >
-                <CIcon icon={cilUser} size="xl" className="text-white" />
+                <FontAwesomeIcon icon={faUser} size="xl" className="text-white" />
               </div>
             )}
             {avatarLoading && (
               <div className="position-absolute top-50 start-50 translate-middle">
-                <CSpinner size="sm" />
+                <Spinner size="sm" />
               </div>
             )}
           </div>
           <div className="flex-grow-1">
             {isEditing ? (
               <div>
-                <CFormInput
+                <FormControl
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
                   className="mb-2"
                 />
-                <CFormText className="text-muted mb-3">
+                <FormText className="text-muted mb-3">
                   JPG, PNG, GIF or WebP. Max size 5MB.
-                </CFormText>
+                </FormText>
                 {error && (
-                  <CAlert color="danger" className="mb-3">
+                  <Alert color="danger" className="mb-3">
                     {error}
-                  </CAlert>
+                  </Alert>
                 )}
                 <div className="d-flex gap-2">
-                  <CButton
+                  <Button
                     color="primary"
                     size="sm"
                     onClick={handleSave}
                     disabled={avatarLoading}
                   >
-                    <CIcon icon={cilSave} className="me-1" />
+                    <FontAwesomeIcon icon={faSave} className="me-1" />
                     Save
-                  </CButton>
-                  <CButton
+                  </Button>
+                  <Button
                     color="secondary"
                     variant="outline"
                     size="sm"
                     onClick={handleCancelEdit}
                     disabled={avatarLoading}
                   >
-                    <CIcon icon={cilX} className="me-1" />
+                    <FontAwesomeIcon icon={faX} className="me-1" />
                     Cancel
-                  </CButton>
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -197,8 +197,8 @@ const ProfilePictureSection = ({
             )}
           </div>
         </div>
-      </CCardBody>
-    </CCard>
+      </Card.Body>
+    </Card>
   )
 }
 

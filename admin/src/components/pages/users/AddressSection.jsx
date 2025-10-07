@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { CCard, CCardHeader, CCardBody, CCardTitle, CButton, CSpinner } from '@coreui/react'
-import { cilLocationPin, cilPencil, cilSave, cilX } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Card, Button, Spinner } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLocationPin, faPencil, faSave, faX } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import { TextField, FormRow } from '../../common/FormFields'
 
@@ -72,28 +72,28 @@ const AddressSection = ({
   }
 
   return (
-    <CCard>
-      <CCardHeader>
+    <Card>
+      <Card.Header>
         <div className="d-flex justify-content-between align-items-center w-100">
-          <CCardTitle className="mb-0 d-flex align-items-center">
-            <CIcon icon={cilLocationPin} className="me-2" />
+          <Card.Title className="mb-0 d-flex align-items-center">
+            <FontAwesomeIcon icon={faLocationPin} className="me-2" />
             Address Information
-          </CCardTitle>
+          </Card.Title>
           {!isEditing && (
-            <CButton
+            <Button
               color="primary"
               variant="outline"
               size="sm"
               onClick={handleEditClick}
               disabled={loading}
             >
-              <CIcon icon={cilPencil} className="me-1" />
+              <FontAwesomeIcon icon={faPencil} className="me-1" />
               Edit
-            </CButton>
+            </Button>
           )}
         </div>
-      </CCardHeader>
-      <CCardBody>
+      </Card.Header>
+      <Card.Body>
         {isEditing ? (
           <div>
             <FormRow>
@@ -148,17 +148,17 @@ const AddressSection = ({
             </FormRow>
 
             <div className="d-flex gap-2 justify-content-end mt-3">
-              <CButton
+              <Button
                 color="secondary"
                 variant="outline"
                 size="sm"
                 onClick={handleCancelEdit}
                 disabled={loading}
               >
-                <CIcon icon={cilX} className="me-1" />
+                <FontAwesomeIcon icon={faX} className="me-1" />
                 Cancel
-              </CButton>
-              <CButton
+              </Button>
+              <Button
                 color="primary"
                 size="sm"
                 onClick={handleSave}
@@ -166,16 +166,16 @@ const AddressSection = ({
               >
                 {loading ? (
                   <>
-                    <CSpinner size="sm" className="me-1" />
+                    <Spinner size="sm" className="me-1" />
                     Saving...
                   </>
                 ) : (
                   <>
-                    <CIcon icon={cilSave} className="me-1" />
+                    <FontAwesomeIcon icon={faSave} className="me-1" />
                     Save Changes
                   </>
                 )}
-              </CButton>
+              </Button>
             </div>
           </div>
         ) : (
@@ -202,8 +202,8 @@ const AddressSection = ({
             </div>
           </div>
         )}
-      </CCardBody>
-    </CCard>
+      </Card.Body>
+    </Card>
   )
 }
 

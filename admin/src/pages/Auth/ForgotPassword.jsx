@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { CContainer, CRow, CCol, CForm, CFormInput } from '@coreui/react'
+import { Container, Row, Col, Form, FormControl, Button as RBButton } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { cilEnvelopeOpen, cilLockLocked, cilArrowLeft } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelope, faLock, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { Button } from '../../components'
 import '../../styles/auth.css'
@@ -71,14 +71,14 @@ const ForgotPassword = () => {
   if (emailSent) {
     return (
       <div className="auth-page">
-        <CContainer>
-          <CRow className="justify-content-center">
-            <CCol md={6} lg={5} xl={4}>
+        <Container>
+          <Row className="justify-content-center">
+            <Col md={6} lg={5} xl={4}>
               {/* Logo/Brand Section */}
               <div className="text-center mb-4">
                 <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
                      style={{ width: '80px', height: '80px' }}>
-                  <CIcon icon={cilLockLocked} size="2xl" className="text-primary" />
+                  <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
                 </div>
               <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
               <p className="text-muted mb-0">Secure Admin Dashboard</p>
@@ -92,7 +92,7 @@ const ForgotPassword = () => {
                 <div className="mb-4">
                   <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" 
                        style={{ width: '80px', height: '80px' }}>
-                    <CIcon icon={cilEnvelopeOpen} size="2xl" className="text-primary" />
+                    <FontAwesomeIcon icon={faEnvelope} size="2x" className="text-primary" />
                   </div>
                 </div>
                 
@@ -103,7 +103,7 @@ const ForgotPassword = () => {
                 
                 <div className="alert alert-info border-0 mb-4">
                   <small className="mb-0">
-                    <CIcon icon={cilEnvelopeOpen} className="me-2" />
+                    <FontAwesomeIcon icon={faEnvelope} className="me-2" />
                     Didn't receive the email? Check your spam folder or try again.
                   </small>
                 </div>
@@ -120,7 +120,7 @@ const ForgotPassword = () => {
                   </button>
                   
                   <Link to="/login" className="btn btn-outline-secondary fw-medium">
-                    <CIcon icon={cilArrowLeft} className="me-2" />
+                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
                     Back to Login
                   </Link>
                 </div>
@@ -132,23 +132,23 @@ const ForgotPassword = () => {
                   © 2024 BaseAdmin. All rights reserved.
                 </p>
               </div>
-            </CCol>
-          </CRow>
-        </CContainer>
+            </Col>
+          </Row>
+        </Container>
       </div>
     )
   }
 
   return (
     <div className="auth-page">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={6} lg={5} xl={4}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={6} lg={5} xl={4}>
             {/* Logo/Brand Section */}
             <div className="text-center mb-4">
               <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
                    style={{ width: '80px', height: '80px' }}>
-                <CIcon icon={cilLockLocked} size="2xl" className="text-primary" />
+                <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
               </div>
               <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
               <p className="text-muted mb-0">Secure Admin Dashboard</p>
@@ -159,16 +159,16 @@ const ForgotPassword = () => {
                 <h3 className="mb-2">Forgot Password</h3>
                 <p className="text-muted">Enter your email to reset your password</p>
               </div>
-              <CForm onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <div className="position-relative">
-                    <CIcon icon={cilEnvelopeOpen} className="auth-input-icon" />
-                    <CFormInput
+                    <FontAwesomeIcon icon={faEnvelope} className="auth-input-icon" />
+                    <FormControl
                       type="email"
                       placeholder="Email address"
                       value={email}
                       onChange={handleChange}
-                      invalid={!!errors.email}
+                      isInvalid={!!errors.email}
                       className={`auth-input ${errors.email ? 'is-invalid' : ''}`}
                     />
                   </div>
@@ -179,7 +179,7 @@ const ForgotPassword = () => {
 
                 <div className="alert alert-info border-0 mb-4">
                   <small className="mb-0">
-                    <CIcon icon={cilEnvelopeOpen} className="me-2" />
+                    <FontAwesomeIcon icon={faEnvelope} className="me-2" />
                     We'll send you a link to reset your password
                   </small>
                 </div>
@@ -194,11 +194,11 @@ const ForgotPassword = () => {
 
                 <div className="text-center">
                   <Link to="/login" className="text-decoration-none text-primary fw-medium">
-                    <CIcon icon={cilArrowLeft} className="me-2" />
+                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
                     Back to Login
                   </Link>
                 </div>
-              </CForm>
+              </Form>
             </div>
 
             {/* Footer */}
@@ -207,9 +207,9 @@ const ForgotPassword = () => {
                 © 2024 BaseAdmin. All rights reserved.
               </p>
             </div>
-          </CCol>
-        </CRow>
-      </CContainer>
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }

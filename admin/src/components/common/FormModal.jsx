@@ -1,6 +1,6 @@
 import React from 'react'
-import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton, CForm, CFormLabel, CFormInput, CFormSelect, CFormText, CRow, CCol } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+import { Modal, Form } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PropTypes from 'prop-types'
 
 const FormModal = ({
@@ -20,21 +20,27 @@ const FormModal = ({
   ...props
 }) => {
   return (
-    <CModal visible={visible} onClose={onClose} size={size}>
-      <CModalHeader>
-        <CModalTitle>{title}</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CForm>
+    <Modal show={visible} onHide={onClose} size={size}>
+      <Modal.Header>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
           {children}
-        </CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={onClose} disabled={loading}>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <button 
+          type="button" 
+          className="btn btn-secondary" 
+          onClick={onClose} 
+          disabled={loading}
+        >
           {cancelText}
-        </CButton>
-        <CButton 
-          color="primary" 
+        </button>
+        <button 
+          type="button" 
+          className="btn btn-primary" 
           onClick={onSubmit}
           disabled={loading}
         >
@@ -45,13 +51,13 @@ const FormModal = ({
             </>
           ) : (
             <>
-              {submitIcon && <CIcon icon={submitIcon} className="me-1" />}
+              {submitIcon && <FontAwesomeIcon icon={submitIcon} className="me-1" />}
               {submitText}
             </>
           )}
-        </CButton>
-      </CModalFooter>
-    </CModal>
+        </button>
+      </Modal.Footer>
+    </Modal>
   )
 }
 

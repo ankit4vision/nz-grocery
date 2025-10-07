@@ -1,5 +1,5 @@
 import React from 'react'
-import { CFormLabel, CFormInput, CFormSelect, CFormText, CRow, CCol } from '@coreui/react'
+import { FormLabel, FormControl, FormSelect, FormText, Row, Col } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 // Text Input Field
@@ -15,21 +15,21 @@ export const TextField = ({
   feedback,
   ...props 
 }) => (
-  <CCol md={col}>
-    <CFormLabel htmlFor={props.id}>
+  <Col md={col}>
+    <FormLabel htmlFor={props.id}>
       {label} {required && <span className="text-danger">*</span>}
-    </CFormLabel>
-    <CFormInput
+    </FormLabel>
+    <FormControl
       {...props}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       required={required}
-      invalid={invalid}
+      isInvalid={invalid}
     />
     {feedback && <div className="invalid-feedback d-block">{feedback}</div>}
-    {helpText && <CFormText>{helpText}</CFormText>}
-  </CCol>
+    {helpText && <FormText>{helpText}</FormText>}
+  </Col>
 )
 
 // Select Field
@@ -45,33 +45,33 @@ export const SelectField = ({
   feedback,
   ...props 
 }) => (
-  <CCol md={col}>
-    <CFormLabel htmlFor={props.id}>
+  <Col md={col}>
+    <FormLabel htmlFor={props.id}>
       {label} {required && <span className="text-danger">*</span>}
-    </CFormLabel>
-    <CFormSelect
+    </FormLabel>
+    <FormSelect
       {...props}
       value={value}
       onChange={onChange}
       required={required}
-      invalid={invalid}
+      isInvalid={invalid}
     >
       {options.map((option, index) => (
         <option key={`option-${option.value}-${index}`} value={option.value}>
           {option.label}
         </option>
       ))}
-    </CFormSelect>
+    </FormSelect>
     {feedback && <div className="invalid-feedback d-block">{feedback}</div>}
-    {helpText && <CFormText>{helpText}</CFormText>}
-  </CCol>
+    {helpText && <FormText>{helpText}</FormText>}
+  </Col>
 )
 
 // Row Wrapper
 export const FormRow = ({ children, className = "mt-3" }) => (
-  <CRow className={className}>
+  <Row className={className}>
     {children}
-  </CRow>
+  </Row>
 )
 
 TextField.propTypes = {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { CCol, CRow, CCard, CCardHeader, CCardBody, CCardTitle, CButton, CBadge, CProgress } from '@coreui/react'
-import { cilPeople, cilDollar, cilCart, cilUserPlus, cilChartLine, cilSettings, cilBell, cilShieldAlt } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Container, Row, Col, Card, Button, Badge, ProgressBar } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUsers, faDollarSign, faCartShopping, faUserPlus, faChartLine, faCog, faBell, faShieldAlt, faArrowTrendUp, faArrowTrendDown } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import { Card, Table } from '../../components'
+import { Table } from '../../components'
 import MainChart from './MainChart'
 
 const Dashboard = () => {
@@ -34,8 +34,7 @@ const Dashboard = () => {
       value: dashboardStats.totalUsers.toLocaleString(),
       change: '+12%',
       changeType: 'positive',
-      icon: cilPeople,
-      variant: 'primary',
+      icon: faUsers,
       color: 'primary'
     },
     {
@@ -43,8 +42,7 @@ const Dashboard = () => {
       value: `$${dashboardStats.totalRevenue.toLocaleString()}`,
       change: '+8%',
       changeType: 'positive',
-      icon: cilDollar,
-      variant: 'success',
+      icon: faDollarSign,
       color: 'success'
     },
     {
@@ -52,8 +50,7 @@ const Dashboard = () => {
       value: dashboardStats.totalOrders.toLocaleString(),
       change: '+15%',
       changeType: 'positive',
-      icon: cilCart,
-      variant: 'info',
+      icon: faCartShopping,
       color: 'info'
     },
     {
@@ -61,64 +58,29 @@ const Dashboard = () => {
       value: dashboardStats.activeUsers.toLocaleString(),
       change: '+5%',
       changeType: 'positive',
-      icon: cilUserPlus,
-      variant: 'warning',
+      icon: faUserPlus,
       color: 'warning'
     }
   ]
 
   // Recent activities data
   const recentActivities = [
-    {
-      id: 1,
-      user: 'John Doe',
-      action: 'Created new account',
-      time: '2 minutes ago',
-      type: 'user'
-    },
-    {
-      id: 2,
-      user: 'Jane Smith',
-      action: 'Updated profile',
-      time: '5 minutes ago',
-      type: 'profile'
-    },
-    {
-      id: 3,
-      user: 'Admin User',
-      action: 'Deleted user account',
-      time: '10 minutes ago',
-      type: 'admin'
-    },
-    {
-      id: 4,
-      user: 'Mike Johnson',
-      action: 'Changed password',
-      time: '15 minutes ago',
-      type: 'security'
-    },
-    {
-      id: 5,
-      user: 'Sarah Wilson',
-      action: 'Uploaded document',
-      time: '20 minutes ago',
-      type: 'upload'
-    }
+    { id: 1, user: 'John Doe', action: 'Created new account', time: '2 minutes ago', type: 'user' },
+    { id: 2, user: 'Jane Smith', action: 'Updated profile', time: '5 minutes ago', type: 'profile' },
+    { id: 3, user: 'Admin User', action: 'Deleted user account', time: '10 minutes ago', type: 'admin' },
+    { id: 4, user: 'Mike Johnson', action: 'Changed password', time: '15 minutes ago', type: 'security' },
+    { id: 5, user: 'Sarah Wilson', action: 'Uploaded document', time: '20 minutes ago', type: 'upload' }
   ]
 
   const activityColumns = [
     {
       key: 'user',
       label: 'User',
-      render: (value, activity) => (
+      render: (value) => (
         <div className="d-flex align-items-center">
           <div 
             className="rounded-circle me-2 d-flex align-items-center justify-content-center text-white fw-bold"
-            style={{
-              width: '32px',
-              height: '32px',
-              backgroundColor: '#6c757d'
-            }}
+            style={{ width: '32px', height: '32px', backgroundColor: '#6c757d' }}
           >
             {value.charAt(0)}
           </div>
@@ -126,65 +88,33 @@ const Dashboard = () => {
         </div>
       )
     },
-    {
-      key: 'action',
-      label: 'Action',
-      render: (value) => <span>{value}</span>
-    },
+    { key: 'action', label: 'Action', render: (value) => <span>{value}</span> },
     {
       key: 'type',
       label: 'Type',
       render: (value) => (
-        <CBadge color={
+        <Badge bg={
           value === 'user' ? 'primary' : 
           value === 'profile' ? 'info' : 
           value === 'admin' ? 'danger' : 
           value === 'security' ? 'warning' : 'success'
         }>
           {value}
-        </CBadge>
+        </Badge>
       )
     },
-    {
-      key: 'time',
-      label: 'Time',
-      render: (value) => <span className="text-muted">{value}</span>
-    }
+    { key: 'time', label: 'Time', render: (value) => <span className="text-muted">{value}</span> }
   ]
 
   const quickActions = [
-    {
-      title: 'Add New User',
-      description: 'Create a new user account',
-      icon: cilPeople,
-      color: 'primary',
-      onClick: () => navigate('/users/create')
-    },
-    {
-      title: 'Manage Roles',
-      description: 'Configure user roles and permissions',
-      icon: cilShieldAlt,
-      color: 'warning',
-      onClick: () => navigate('/roles')
-    },
-    {
-      title: 'View Reports',
-      description: 'Access analytics and reports',
-      icon: cilChartLine,
-      color: 'info',
-      onClick: () => navigate('/reports')
-    },
-    {
-      title: 'System Settings',
-      description: 'Configure system preferences',
-      icon: cilSettings,
-      color: 'secondary',
-      onClick: () => navigate('/settings')
-    }
+    { title: 'Add New User', description: 'Create a new user account', icon: faUsers, color: 'primary', onClick: () => navigate('/users/create') },
+    { title: 'Manage Roles', description: 'Configure user roles and permissions', icon: faShieldAlt, color: 'warning', onClick: () => navigate('/roles') },
+    { title: 'View Reports', description: 'Access analytics and reports', icon: faChartLine, color: 'info', onClick: () => navigate('/reports') },
+    { title: 'System Settings', description: 'Configure system preferences', icon: faCog, color: 'secondary', onClick: () => navigate('/settings') }
   ]
 
   return (
-    <>
+    <Container fluid>
       {/* Welcome Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -192,107 +122,104 @@ const Dashboard = () => {
           <p className="text-muted mb-0">Welcome back! Here's what's happening with your system.</p>
         </div>
         <div className="d-flex gap-2">
-          <CButton color="outline-primary" variant="outline">
-            <CIcon icon={cilBell} className="me-1" />
+          <Button variant="outline-primary">
+            <FontAwesomeIcon icon={faBell} className="me-1" />
             Notifications
-          </CButton>
-          <CButton color="primary">
-            <CIcon icon={cilSettings} className="me-1" />
+          </Button>
+          <Button variant="primary">
+            <FontAwesomeIcon icon={faCog} className="me-1" />
             Settings
-          </CButton>
+          </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <CRow className="mb-4">
+      <Row className="mb-4">
         {dashboardData.map((item, index) => (
-          <CCol md={3} key={`dashboard-card-${index}`}>
-            <CCard className="h-100">
-              <CCardBody>
+          <Col md={3} key={`dashboard-card-${index}`}>
+            <Card className="h-100">
+              <Card.Body>
                 <div className="d-flex align-items-center">
                   <div className="flex-shrink-0">
                     <div className={`p-3 rounded-3 bg-${item.color} bg-opacity-10`}>
-                      <CIcon icon={item.icon} size="xl" className={`text-${item.color}`} />
+                      <FontAwesomeIcon icon={item.icon} size="xl" className={`text-${item.color}`} />
                     </div>
                   </div>
                   <div className="flex-grow-1 ms-3">
                     <div className="text-muted small fw-semibold">{item.title}</div>
                     <div className="h4 mb-0 fw-bold">{item.value}</div>
                     <div className={`small ${item.changeType === 'positive' ? 'text-success' : 'text-danger'}`}>
-                      <CIcon icon={item.changeType === 'positive' ? 'cil-trending-up' : 'cil-trending-down'} className="me-1" />
+                      <FontAwesomeIcon icon={item.changeType === 'positive' ? faArrowTrendUp : faArrowTrendDown} className="me-1" />
                       {item.change} from last month
                     </div>
                   </div>
                 </div>
-              </CCardBody>
-            </CCard>
-          </CCol>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </CRow>
+      </Row>
 
-      <CRow className="mb-4">
+      <Row className="mb-4">
         {/* Analytics Chart */}
-        <CCol md={8}>
-          <CCard className="h-100">
-            <CCardHeader>
+        <Col md={8}>
+          <Card className="h-100">
+            <Card.Header>
               <div className="d-flex justify-content-between align-items-center">
-                <CCardTitle className="mb-0">Analytics Overview</CCardTitle>
+                <Card.Title className="mb-0">Analytics Overview</Card.Title>
                 <div className="d-flex gap-2">
-                  <CButton color="outline-primary" size="sm">7 Days</CButton>
-                  <CButton color="primary" size="sm">30 Days</CButton>
-                  <CButton color="outline-primary" size="sm">90 Days</CButton>
+                  <Button variant="outline-primary" size="sm">7 Days</Button>
+                  <Button variant="primary" size="sm">30 Days</Button>
+                  <Button variant="outline-primary" size="sm">90 Days</Button>
                 </div>
               </div>
-            </CCardHeader>
-            <CCardBody>
+            </Card.Header>
+            <Card.Body>
               <p className="text-muted mb-4">Performance metrics for the last 30 days</p>
               <MainChart />
-            </CCardBody>
-          </CCard>
-        </CCol>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Quick Actions */}
-        <CCol md={4}>
-          <CCard className="h-100">
-            <CCardHeader>
-              <CCardTitle className="mb-0">Quick Actions</CCardTitle>
-            </CCardHeader>
-            <CCardBody>
+        <Col md={4}>
+          <Card className="h-100">
+            <Card.Header>
+              <Card.Title className="mb-0">Quick Actions</Card.Title>
+            </Card.Header>
+            <Card.Body>
               <div className="d-grid gap-3">
                 {quickActions.map((action, index) => (
-                  <CButton
+                  <Button
                     key={`quick-action-${index}`}
-                    color={action.color}
-                    variant="outline"
+                    variant={`outline-${action.color}`}
                     className="d-flex align-items-center justify-content-start p-3"
                     onClick={action.onClick}
                   >
-                    <CIcon icon={action.icon} className="me-3" />
+                    <FontAwesomeIcon icon={action.icon} className="me-3" />
                     <div className="text-start">
                       <div className="fw-semibold">{action.title}</div>
                       <small className="text-muted">{action.description}</small>
                     </div>
-                  </CButton>
+                  </Button>
                 ))}
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
-      <CRow>
+      <Row>
         {/* Recent Activities */}
-        <CCol md={8}>
-          <CCard>
-            <CCardHeader>
+        <Col md={8}>
+          <Card>
+            <Card.Header>
               <div className="d-flex justify-content-between align-items-center">
-                <CCardTitle className="mb-0">Recent Activities</CCardTitle>
-                <CButton color="outline-primary" size="sm">
-                  View All
-                </CButton>
+                <Card.Title className="mb-0">Recent Activities</Card.Title>
+                <Button variant="outline-primary" size="sm">View All</Button>
               </div>
-            </CCardHeader>
-            <CCardBody>
+            </Card.Header>
+            <Card.Body>
               <Table
                 data={recentActivities}
                 columns={activityColumns}
@@ -301,23 +228,23 @@ const Dashboard = () => {
                 pagination={false}
                 sortable={false}
               />
-            </CCardBody>
-          </CCard>
-        </CCol>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* System Status */}
-        <CCol md={4}>
-          <CCard>
-            <CCardHeader>
-              <CCardTitle className="mb-0">System Status</CCardTitle>
-            </CCardHeader>
-            <CCardBody>
+        <Col md={4}>
+          <Card>
+            <Card.Header>
+              <Card.Title className="mb-0">System Status</Card.Title>
+            </Card.Header>
+            <Card.Body>
               <div className="mb-3">
                 <div className="d-flex justify-content-between mb-1">
                   <span>CPU Usage</span>
                   <span className="fw-semibold">45%</span>
                 </div>
-                <CProgress value={45} className="mb-3" />
+                <ProgressBar now={45} className="mb-3" />
               </div>
               
               <div className="mb-3">
@@ -325,7 +252,7 @@ const Dashboard = () => {
                   <span>Memory Usage</span>
                   <span className="fw-semibold">67%</span>
                 </div>
-                <CProgress value={67} color="warning" className="mb-3" />
+                <ProgressBar now={67} variant="warning" className="mb-3" />
               </div>
               
               <div className="mb-3">
@@ -333,7 +260,7 @@ const Dashboard = () => {
                   <span>Disk Usage</span>
                   <span className="fw-semibold">23%</span>
                 </div>
-                <CProgress value={23} color="success" className="mb-3" />
+                <ProgressBar now={23} variant="success" className="mb-3" />
               </div>
               
               <div className="mb-3">
@@ -341,13 +268,13 @@ const Dashboard = () => {
                   <span>Network</span>
                   <span className="fw-semibold">89%</span>
                 </div>
-                <CProgress value={89} color="danger" className="mb-3" />
+                <ProgressBar now={89} variant="danger" className="mb-3" />
               </div>
 
               <div className="mt-4">
                 <div className="d-flex align-items-center justify-content-between">
                   <span className="text-muted">Server Status</span>
-                  <CBadge color="success">Online</CBadge>
+                  <Badge bg="success">Online</Badge>
                 </div>
                 <div className="d-flex align-items-center justify-content-between mt-2">
                   <span className="text-muted">Last Backup</span>
@@ -358,11 +285,11 @@ const Dashboard = () => {
                   <span className="small">99.9%</span>
                 </div>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   )
 }
 

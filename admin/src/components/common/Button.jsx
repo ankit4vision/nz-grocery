@@ -1,5 +1,5 @@
 import React from 'react'
-import { CButton } from '@coreui/react'
+import { Button as BootstrapButton } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 const Button = ({ 
@@ -18,32 +18,29 @@ const Button = ({
 }) => {
   const getVariantClass = () => {
     const variants = {
-      primary: 'btn-primary',
-      secondary: 'btn-secondary',
-      success: 'btn-success',
-      info: 'btn-info',
-      warning: 'btn-warning',
-      danger: 'btn-danger',
-      light: 'btn-light',
-      dark: 'btn-dark',
-      outline: 'btn-outline-primary'
+      primary: 'primary',
+      secondary: 'secondary',
+      success: 'success',
+      info: 'info',
+      warning: 'warning',
+      danger: 'danger',
+      light: 'light',
+      dark: 'dark',
+      outline: 'outline-primary'
     }
     return variants[variant] || variants.primary
   }
 
   const getSizeClass = () => {
     const sizes = {
-      sm: 'btn-sm',
+      sm: 'sm',
       md: '',
-      lg: 'btn-lg'
+      lg: 'lg'
     }
     return sizes[size] || ''
   }
 
   const buttonClasses = [
-    'btn',
-    getVariantClass(),
-    getSizeClass(),
     fullWidth ? 'w-100' : '',
     className
   ].filter(Boolean).join(' ')
@@ -90,7 +87,9 @@ const Button = ({
   }
 
   return (
-    <CButton
+    <BootstrapButton
+      variant={getVariantClass()}
+      size={getSizeClass()}
       className={buttonClasses}
       disabled={disabled || loading}
       onClick={onClick}
@@ -98,7 +97,7 @@ const Button = ({
       {...props}
     >
       {renderContent()}
-    </CButton>
+    </BootstrapButton>
   )
 }
 

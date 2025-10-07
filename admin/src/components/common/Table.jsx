@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CPagination, CPaginationItem, CFormSelect, CRow, CCol } from '@coreui/react'
+import { Table as BootstrapTable, Pagination, FormSelect, Row, Col } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
 const Table = ({ 
@@ -156,13 +156,13 @@ const Table = ({
 
     return (
       <div className="mt-3">
-        <CRow className="align-items-center">
-          <CCol md={6}>
+        <Row className="align-items-center">
+          <Col md={6}>
             {/* Page Size and Info - Left Side */}
             <div className="d-flex align-items-center">
               <span className="text-muted me-2">Show:</span>
               {showPageSize && (
-                <CFormSelect
+                <FormSelect
                   value={pageSize}
                   onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
                   size="sm"
@@ -172,67 +172,61 @@ const Table = ({
                   {pageSizeOptions.map(size => (
                     <option key={`page-size-${size}`} value={size}>{size}</option>
                   ))}
-                </CFormSelect>
+                </FormSelect>
               )}
               <span className="text-muted">
                 Showing {startIndex + 1} to {endIndex} of {totalItems} entries
               </span>
             </div>
-          </CCol>
-          <CCol md={6}>
+          </Col>
+          <Col md={6}>
             {/* Centered Pagination - Right Side */}
             <div className="d-flex justify-content-end">
-              <CPagination
+              <Pagination
                 aria-label="Table pagination"
                 size="sm"
               >
-                <CPaginationItem
+                <Pagination.Prev
                   disabled={currentPage === 1}
                   onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  Previous
-                </CPaginationItem>
+                />
                 
                 {getVisiblePages().map((page, index) => {
                   if (page === '...') {
                     return (
-                      <CPaginationItem key={`dots-${index}-${currentPage}`} disabled>
-                        ...
-                      </CPaginationItem>
+                      <Pagination.Ellipsis key={`dots-${index}-${currentPage}`} />
                     )
                   }
                   
                   return (
-                    <CPaginationItem
+                    <Pagination.Item
                       key={`page-${page}-${index}`}
                       active={currentPage === page}
                       onClick={() => handlePageChange(page)}
                     >
                       {page}
-                    </CPaginationItem>
+                    </Pagination.Item>
                   )
                 })}
                 
-                <CPaginationItem
+                <Pagination.Next
                   disabled={currentPage === totalPages}
                   onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  Next
-                </CPaginationItem>
-              </CPagination>
+                />
+              </Pagination>
             </div>
-          </CCol>
-        </CRow>
+          </Col>
+        </Row>
       </div>
     )
   }
 
   const renderHeader = () => {
     return (
-      <CTableHead>
-        <CTableRow>
+      <thead>
+        <tr>
           {columns.map((column, index) => (
-            <CTableHeaderCell 
+            <th 
               key={`header-${index}-${column.key}`} 
               scope="col"
               className={isColumnSortable(column.key) ? 'cursor-pointer user-select-none' : ''}
@@ -250,69 +244,69 @@ const Table = ({
                   </span>
                 )}
               </div>
-            </CTableHeaderCell>
+            </th>
           ))}
-        </CTableRow>
-      </CTableHead>
+        </tr>
+      </thead>
     )
   }
 
   const renderBody = () => {
     if (loading) {
       return (
-        <CTableBody>
-          <CTableRow>
-            <CTableDataCell colSpan={columns.length} className="text-center py-4">
+        <tbody>
+          <tr>
+            <td colSpan={columns.length} className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
+            </td>
+          </tr>
+        </tbody>
       )
     }
 
     if (data.length === 0) {
       return (
-        <CTableBody>
-          <CTableRow>
-            <CTableDataCell colSpan={columns.length} className="text-center py-4 text-muted">
+        <tbody>
+          <tr>
+            <td colSpan={columns.length} className="text-center py-4 text-muted">
               {emptyMessage}
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
+            </td>
+          </tr>
+        </tbody>
       )
     }
 
     return (
-      <CTableBody>
+      <tbody>
         {paginatedData.map((row, rowIndex) => {
           // Generate a truly unique key
           const uniqueKey = row.id ? `row-${row.id}` : `row-${startIndex + rowIndex}`
           return (
-            <CTableRow 
+            <tr 
               key={uniqueKey} 
               className={onRowClick ? 'cursor-pointer' : ''}
               onClick={() => handleRowClick(row, rowIndex)}
             >
               {columns.map((column, colIndex) => (
-                <CTableDataCell key={`${uniqueKey}-col-${colIndex}`}>
+                <td key={`${uniqueKey}-col-${colIndex}`}>
                   {column.render ? column.render(row[column.key], row, rowIndex) : row[column.key]}
-                </CTableDataCell>
+                </td>
               ))}
-            </CTableRow>
+            </tr>
           )
         })}
-      </CTableBody>
+      </tbody>
     )
   }
 
   return (
     <>
-      <CTable className={getTableClasses()} {...props}>
+      <BootstrapTable className={getTableClasses()} {...props}>
         {renderHeader()}
         {renderBody()}
-      </CTable>
+      </BootstrapTable>
       {renderPagination()}
     </>
   )

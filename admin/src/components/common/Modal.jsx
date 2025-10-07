@@ -1,5 +1,5 @@
 import React from 'react'
-import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react'
+import { Modal as BootstrapModal } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import Button from './Button'
 
@@ -44,10 +44,10 @@ const Modal = ({
 
   const getSizeClass = () => {
     const sizes = {
-      sm: 'modal-sm',
+      sm: 'sm',
       md: '',
-      lg: 'modal-lg',
-      xl: 'modal-xl'
+      lg: 'lg',
+      xl: 'xl'
     }
     return sizes[size] || ''
   }
@@ -92,12 +92,12 @@ const Modal = ({
     if (footer === null || !showFooter) return null
 
     if (footer) {
-      return <CModalFooter>{footer}</CModalFooter>
+      return <BootstrapModal.Footer>{footer}</BootstrapModal.Footer>
     }
 
     if (onConfirm || onCancel) {
       return (
-        <CModalFooter>
+        <BootstrapModal.Footer>
           <Button 
             variant="secondary" 
             onClick={handleCancel}
@@ -115,7 +115,7 @@ const Modal = ({
               {confirmText}
             </Button>
           )}
-        </CModalFooter>
+        </BootstrapModal.Footer>
       )
     }
 
@@ -125,26 +125,26 @@ const Modal = ({
   const typeStyles = getTypeStyles()
 
   return (
-    <CModal
-      visible={visible}
-      onClose={handleClose}
-      size={size}
+    <BootstrapModal
+      show={visible}
+      onHide={handleClose}
+      size={getSizeClass()}
       backdrop={maskClosable ? true : 'static'}
       className={className}
       {...props}
     >
       {title && (
-        <CModalHeader closeButton={closable} className={typeStyles.headerClass}>
-          <CModalTitle className={typeStyles.titleClass}>{title}</CModalTitle>
-        </CModalHeader>
+        <BootstrapModal.Header closeButton={closable} className={typeStyles.headerClass}>
+          <BootstrapModal.Title className={typeStyles.titleClass}>{title}</BootstrapModal.Title>
+        </BootstrapModal.Header>
       )}
       
-      <CModalBody>
+      <BootstrapModal.Body>
         {children}
-      </CModalBody>
+      </BootstrapModal.Body>
       
       {renderFooter()}
-    </CModal>
+    </BootstrapModal>
   )
 }
 

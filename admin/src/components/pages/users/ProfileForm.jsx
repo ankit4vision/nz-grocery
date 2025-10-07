@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from 'react'
-import { CForm, CFormLabel, CFormInput, CFormSelect, CFormTextarea, CFormText, CRow, CCol, CButton, CCard, CCardHeader, CCardBody, CCardTitle, CImage, CSpinner } from '@coreui/react'
-import { cilUser, cilPhone, cilLocationPin, cilLockLocked, cilSave, cilX } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Form, FormLabel, FormControl, FormSelect, FormText, Row, Col, Button, Card, Image, Spinner } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faPhone, faLocationPin, faLock, faSave, faX } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import { TextField, SelectField, FormRow } from '../../common/FormFields'
 
@@ -163,22 +163,22 @@ const ProfileForm = forwardRef(({
   const isEditMode = mode === 'edit'
 
   return (
-    <CForm>
-      <CRow>
+    <Form>
+      <Row>
         {/* Avatar Section */}
-        <CCol xs={12} className="mb-4">
-          <CCard>
-            <CCardHeader>
-              <CCardTitle className="mb-0 d-flex align-items-center">
-                <CIcon icon={cilUser} className="me-2" />
+        <Col xs={12} className="mb-4">
+          <Card>
+            <Card.Header>
+              <Card.Title className="mb-0 d-flex align-items-center">
+                <FontAwesomeIcon icon={faUser} className="me-2" />
                 Profile Picture
-              </CCardTitle>
-            </CCardHeader>
-            <CCardBody>
+              </Card.Title>
+            </Card.Header>
+            <Card.Body>
               <div className="d-flex align-items-center gap-3">
                 <div className="position-relative">
                   {avatarPreview ? (
-                    <CImage
+                    <Image
                       src={avatarPreview}
                       alt="Profile Avatar"
                       className="rounded-circle"
@@ -189,52 +189,52 @@ const ProfileForm = forwardRef(({
                       className="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
                       style={{ width: '80px', height: '80px' }}
                     >
-                      <CIcon icon={cilUser} size="xl" className="text-white" />
+                      <FontAwesomeIcon icon={faUser} size="xl" className="text-white" />
                     </div>
                   )}
                   {avatarLoading && (
                     <div className="position-absolute top-50 start-50 translate-middle">
-                      <CSpinner size="sm" />
+                      <Spinner size="sm" />
                     </div>
                   )}
                 </div>
                 <div>
                   {isEditMode && (
                     <>
-                      <CFormInput
+                      <FormControl
                         type="file"
                         accept="image/*"
                         onChange={handleAvatarChange}
                         className="mb-2"
                         style={{ width: '200px' }}
                       />
-                      <CFormText className="text-muted">
+                      <FormText className="text-muted">
                         JPG, PNG, GIF or WebP. Max size 5MB.
-                      </CFormText>
+                      </FormText>
                     </>
                   )}
                   {errors.avatar && (
-                    <CFormText className="text-danger">
+                    <FormText className="text-danger">
                       {errors.avatar}
-                    </CFormText>
+                    </FormText>
                   )}
                 </div>
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Personal Information */}
-        <CCol xs={12} className="mb-4">
-          <CCard>
-            <CCardHeader>
-              <CCardTitle className="mb-0 d-flex align-items-center">
-                <CIcon icon={cilUser} className="me-2" />
+        <Col xs={12} className="mb-4">
+          <Card>
+            <Card.Header>
+              <Card.Title className="mb-0 d-flex align-items-center">
+                <FontAwesomeIcon icon={faUser} className="me-2" />
                 Personal Information
-              </CCardTitle>
-            </CCardHeader>
-            <CCardBody>
-              <CRow>
+              </Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Row>
                 <FormRow>
                   <TextField
                     id="firstName"
@@ -331,22 +331,22 @@ const ProfileForm = forwardRef(({
                     disabled={isViewMode}
                   />
                 </FormRow>
-              </CRow>
-            </CCardBody>
-          </CCard>
-        </CCol>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Address Information */}
-        <CCol xs={12} className="mb-4">
-          <CCard>
-            <CCardHeader>
-              <CCardTitle className="mb-0 d-flex align-items-center">
-                <CIcon icon={cilLocationPin} className="me-2" />
+        <Col xs={12} className="mb-4">
+          <Card>
+            <Card.Header>
+              <Card.Title className="mb-0 d-flex align-items-center">
+                <FontAwesomeIcon icon={faLocationPin} className="me-2" />
                 Address Information
-              </CCardTitle>
-            </CCardHeader>
-            <CCardBody>
-              <CRow>
+              </Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Row>
                 <FormRow>
                   <TextField
                     id="address"
@@ -400,26 +400,25 @@ const ProfileForm = forwardRef(({
                     disabled={isViewMode}
                   />
                 </FormRow>
-              </CRow>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Action Buttons */}
       {isEditMode && (
         <div className="d-flex gap-2 justify-content-end mt-4">
-          <CButton
-            color="secondary"
-            variant="outline"
+          <Button
+            variant="secondary"
             onClick={onCancel}
             disabled={loading}
           >
-            <CIcon icon={cilX} className="me-2" />
+            <FontAwesomeIcon icon={faX} className="me-2" />
             Cancel
-          </CButton>
-          <CButton
-            color="primary"
+          </Button>
+          <Button
+            variant="primary"
             onClick={() => {
               if (validateForm()) {
                 onSubmit(formData)
@@ -429,19 +428,19 @@ const ProfileForm = forwardRef(({
           >
             {loading ? (
               <>
-                <CSpinner size="sm" className="me-2" />
+                <Spinner size="sm" className="me-2" />
                 Saving...
               </>
             ) : (
               <>
-                <CIcon icon={cilSave} className="me-2" />
+                <FontAwesomeIcon icon={faSave} className="me-2" />
                 Save Changes
               </>
             )}
-          </CButton>
+          </Button>
         </div>
       )}
-    </CForm>
+    </Form>
   )
 })
 

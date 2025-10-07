@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { CContainer, CRow, CCol, CCard, CCardHeader, CCardBody, CCardTitle, CButton, CSpinner, CNav, CNavItem, CNavLink, CTabContent, CTabPane, CFormInput, CFormSelect, CFormTextarea, CFormText, CAlert } from '@coreui/react'
-import { cilSettings, cilPencil, cilSave, cilX } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+import { Container, Row, Col, Card, Button, Spinner, Nav, Form, FormControl, FormSelect, FormText, Alert } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCog, faPencil, faSave, faX } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { settingsService } from '../../services/settingsService'
 
@@ -154,75 +154,76 @@ const Settings = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h5 className="mb-0">General Settings</h5>
           {!isEditing && (
-            <CButton color="primary" variant="outline" size="sm" onClick={() => handleEditClick('general')} disabled={saving}>
-              <CIcon icon={cilPencil} className="me-1" />
+            <Button variant="primary" size="sm" onClick={() => handleEditClick('general')} disabled={saving}>
+              <FontAwesomeIcon icon={faPencil} className="me-1" />
               Edit
-            </CButton>
+            </Button>
           )}
         </div>
 
         {isEditing ? (
           <div>
-            <CRow className="mb-3">
-              <CCol md={6}>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">Application Name</label>
-                <CFormInput
+                <FormControl
                   value={data.appName || ''}
                   onChange={(e) => handleChange('appName', e.target.value)}
                   placeholder="Enter application name"
-                  invalid={!!errors.appName}
+                  isInvalid={!!errors.appName}
                 />
-                {errors.appName && <CFormText className="text-danger">{errors.appName}</CFormText>}
-              </CCol>
-              <CCol md={6}>
+                {errors.appName && <FormText className="text-danger">{errors.appName}</FormText>}
+              </Col>
+              <Col md={6}>
                 <label className="form-label">Business Name</label>
-                <CFormInput
+                <FormControl
                   value={data.businessName || ''}
                   onChange={(e) => handleChange('businessName', e.target.value)}
                   placeholder="Enter business name"
                 />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={12}>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={12}>
                 <label className="form-label">Business Address</label>
-                <CFormTextarea
+                <FormControl
+                  as="textarea"
                   value={data.businessAddress || ''}
                   onChange={(e) => handleChange('businessAddress', e.target.value)}
                   placeholder="Enter business address"
                   rows={3}
                 />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={6}>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">Contact Info</label>
-                <CFormInput
+                <FormControl
                   value={data.contactInfo || ''}
                   onChange={(e) => handleChange('contactInfo', e.target.value)}
                   placeholder="Enter contact info"
                 />
-              </CCol>
-              <CCol md={6}>
+              </Col>
+              <Col md={6}>
                 <label className="form-label">Email</label>
-                <CFormInput
+                <FormControl
                   type="email"
                   value={data.email || ''}
                   onChange={(e) => handleChange('email', e.target.value)}
                   placeholder="Enter email"
-                  invalid={!!errors.email}
+                  isInvalid={!!errors.email}
                 />
-                {errors.email && <CFormText className="text-danger">{errors.email}</CFormText>}
-              </CCol>
-            </CRow>
+                {errors.email && <FormText className="text-danger">{errors.email}</FormText>}
+              </Col>
+            </Row>
             <div className="d-flex gap-2 justify-content-end">
-              <CButton color="secondary" variant="outline" size="sm" onClick={handleCancelEdit} disabled={saving}>
-                <CIcon icon={cilX} className="me-1" />
+              <Button variant="secondary" size="sm" onClick={handleCancelEdit} disabled={saving}>
+                <FontAwesomeIcon icon={faX} className="me-1" />
                 Cancel
-              </CButton>
-              <CButton color="primary" size="sm" onClick={() => handleSave('general')} disabled={saving}>
-                {saving ? (<><CSpinner size="sm" className="me-1" />Saving...</>) : (<><CIcon icon={cilSave} className="me-1" />Save Changes</>)}
-              </CButton>
+              </Button>
+              <Button variant="primary" size="sm" onClick={() => handleSave('general')} disabled={saving}>
+                {saving ? (<><Spinner size="sm" className="me-1" />Saving...</>) : (<><FontAwesomeIcon icon={faSave} className="me-1" />Save Changes</>)}
+              </Button>
             </div>
           </div>
         ) : (
@@ -247,102 +248,102 @@ const Settings = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h5 className="mb-0">Email Settings</h5>
           {!isEditing && (
-            <CButton color="primary" variant="outline" size="sm" onClick={() => handleEditClick('email')} disabled={saving}>
-              <CIcon icon={cilPencil} className="me-1" />
+            <Button variant="primary" size="sm" onClick={() => handleEditClick('email')} disabled={saving}>
+              <FontAwesomeIcon icon={faPencil} className="me-1" />
               Edit
-            </CButton>
+            </Button>
           )}
         </div>
 
         {isEditing ? (
           <div>
-            <CRow className="mb-3">
-              <CCol md={6}>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">SMTP Host</label>
-                <CFormInput
+                <FormControl
                   value={data.smtpHost || ''}
                   onChange={(e) => handleChange('smtpHost', e.target.value)}
                   placeholder="smtp.gmail.com"
-                  invalid={!!errors.smtpHost}
+                  isInvalid={!!errors.smtpHost}
                 />
-                {errors.smtpHost && <CFormText className="text-danger">{errors.smtpHost}</CFormText>}
-              </CCol>
-              <CCol md={6}>
+                {errors.smtpHost && <FormText className="text-danger">{errors.smtpHost}</FormText>}
+              </Col>
+              <Col md={6}>
                 <label className="form-label">SMTP Port</label>
-                <CFormInput
+                <FormControl
                   value={data.smtpPort || ''}
                   onChange={(e) => handleChange('smtpPort', e.target.value)}
                   placeholder="587"
-                  invalid={!!errors.smtpPort}
+                  isInvalid={!!errors.smtpPort}
                 />
-                {errors.smtpPort && <CFormText className="text-danger">{errors.smtpPort}</CFormText>}
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={6}>
+                {errors.smtpPort && <FormText className="text-danger">{errors.smtpPort}</FormText>}
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">Username</label>
-                <CFormInput
+                <FormControl
                   value={data.username || ''}
                   onChange={(e) => handleChange('username', e.target.value)}
                   placeholder="your-email@gmail.com"
-                  invalid={!!errors.username}
+                  isInvalid={!!errors.username}
                 />
-                {errors.username && <CFormText className="text-danger">{errors.username}</CFormText>}
-              </CCol>
-              <CCol md={6}>
+                {errors.username && <FormText className="text-danger">{errors.username}</FormText>}
+              </Col>
+              <Col md={6}>
                 <label className="form-label">Password</label>
-                <CFormInput
+                <FormControl
                   type="password"
                   value={data.password || ''}
                   onChange={(e) => handleChange('password', e.target.value)}
                   placeholder="Enter password"
-                  invalid={!!errors.password}
+                  isInvalid={!!errors.password}
                 />
-                {errors.password && <CFormText className="text-danger">{errors.password}</CFormText>}
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={6}>
+                {errors.password && <FormText className="text-danger">{errors.password}</FormText>}
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">From Email</label>
-                <CFormInput
+                <FormControl
                   type="email"
                   value={data.fromEmail || ''}
                   onChange={(e) => handleChange('fromEmail', e.target.value)}
                   placeholder="noreply@yourcompany.com"
-                  invalid={!!errors.fromEmail}
+                  isInvalid={!!errors.fromEmail}
                 />
-                {errors.fromEmail && <CFormText className="text-danger">{errors.fromEmail}</CFormText>}
-              </CCol>
-              <CCol md={6}>
+                {errors.fromEmail && <FormText className="text-danger">{errors.fromEmail}</FormText>}
+              </Col>
+              <Col md={6}>
                 <label className="form-label">From Name</label>
-                <CFormInput
+                <FormControl
                   value={data.fromName || ''}
                   onChange={(e) => handleChange('fromName', e.target.value)}
                   placeholder="Your Company Name"
                 />
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={6}>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">Encryption</label>
-                <CFormSelect
+                <FormSelect
                   value={data.encryption || 'tls'}
                   onChange={(e) => handleChange('encryption', e.target.value)}
                 >
                   <option value="tls">TLS</option>
                   <option value="ssl">SSL</option>
                   <option value="none">None</option>
-                </CFormSelect>
-              </CCol>
-            </CRow>
+                </FormSelect>
+              </Col>
+            </Row>
             <div className="d-flex gap-2 justify-content-end">
-              <CButton color="secondary" variant="outline" size="sm" onClick={handleCancelEdit} disabled={saving}>
-                <CIcon icon={cilX} className="me-1" />
+              <Button variant="secondary" size="sm" onClick={handleCancelEdit} disabled={saving}>
+                <FontAwesomeIcon icon={faX} className="me-1" />
                 Cancel
-              </CButton>
-              <CButton color="primary" size="sm" onClick={() => handleSave('email')} disabled={saving}>
-                {saving ? (<><CSpinner size="sm" className="me-1" />Saving...</>) : (<><CIcon icon={cilSave} className="me-1" />Save Changes</>)}
-              </CButton>
+              </Button>
+              <Button variant="primary" size="sm" onClick={() => handleSave('email')} disabled={saving}>
+                {saving ? (<><Spinner size="sm" className="me-1" />Saving...</>) : (<><FontAwesomeIcon icon={faSave} className="me-1" />Save Changes</>)}
+              </Button>
             </div>
           </div>
         ) : (
@@ -362,35 +363,35 @@ const Settings = () => {
         <div className="mb-4">
           <h6 className="fw-bold mb-2">Test Email Configuration</h6>
           <p className="text-muted mb-3">Test your email settings by sending a test email.</p>
-          <CRow className="align-items-end">
-            <CCol md={8}>
+          <Row className="align-items-end">
+            <Col md={8}>
               <label className="form-label">Test Email Address</label>
-              <CFormInput
+              <FormControl
                 type="email"
                 value={testEmail}
                 onChange={(e) => setTestEmail(e.target.value)}
                 placeholder="Enter email address to test"
                 disabled={testingEmail}
               />
-            </CCol>
-            <CCol md={4}>
-              <CButton 
-                color="info" 
+            </Col>
+            <Col md={4}>
+              <Button 
+                variant="info" 
                 onClick={handleTestEmail} 
                 disabled={testingEmail || !testEmail.trim()}
                 className="w-100"
               >
                 {testingEmail ? (
                   <>
-                    <CSpinner size="sm" className="me-1" />
+                    <Spinner size="sm" className="me-1" />
                     Sending...
                   </>
                 ) : (
                   'Send Test Email'
                 )}
-              </CButton>
-            </CCol>
-          </CRow>
+              </Button>
+            </Col>
+          </Row>
         </div>
       </div>
     )
@@ -405,78 +406,78 @@ const Settings = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h5 className="mb-0">AWS S3 Settings</h5>
           {!isEditing && (
-            <CButton color="primary" variant="outline" size="sm" onClick={() => handleEditClick('awsS3')} disabled={saving}>
-              <CIcon icon={cilPencil} className="me-1" />
+            <Button variant="primary" size="sm" onClick={() => handleEditClick('awsS3')} disabled={saving}>
+              <FontAwesomeIcon icon={faPencil} className="me-1" />
               Edit
-            </CButton>
+            </Button>
           )}
         </div>
 
         {isEditing ? (
           <div>
-            <CRow className="mb-3">
-              <CCol md={6}>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">Access Key ID</label>
-                <CFormInput
+                <FormControl
                   value={data.accessKeyId || ''}
                   onChange={(e) => handleChange('accessKeyId', e.target.value)}
                   placeholder="AKIAIOSFODNN7EXAMPLE"
-                  invalid={!!errors.accessKeyId}
+                  isInvalid={!!errors.accessKeyId}
                 />
-                {errors.accessKeyId && <CFormText className="text-danger">{errors.accessKeyId}</CFormText>}
-              </CCol>
-              <CCol md={6}>
+                {errors.accessKeyId && <FormText className="text-danger">{errors.accessKeyId}</FormText>}
+              </Col>
+              <Col md={6}>
                 <label className="form-label">Secret Access Key</label>
-                <CFormInput
+                <FormControl
                   type="password"
                   value={data.secretAccessKey || ''}
                   onChange={(e) => handleChange('secretAccessKey', e.target.value)}
                   placeholder="Enter secret access key"
-                  invalid={!!errors.secretAccessKey}
+                  isInvalid={!!errors.secretAccessKey}
                 />
-                {errors.secretAccessKey && <CFormText className="text-danger">{errors.secretAccessKey}</CFormText>}
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={6}>
+                {errors.secretAccessKey && <FormText className="text-danger">{errors.secretAccessKey}</FormText>}
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
                 <label className="form-label">Bucket Name</label>
-                <CFormInput
+                <FormControl
                   value={data.bucketName || ''}
                   onChange={(e) => handleChange('bucketName', e.target.value)}
                   placeholder="my-bucket-name"
-                  invalid={!!errors.bucketName}
+                  isInvalid={!!errors.bucketName}
                 />
-                {errors.bucketName && <CFormText className="text-danger">{errors.bucketName}</CFormText>}
-              </CCol>
-              <CCol md={6}>
+                {errors.bucketName && <FormText className="text-danger">{errors.bucketName}</FormText>}
+              </Col>
+              <Col md={6}>
                 <label className="form-label">Region</label>
-                <CFormInput
+                <FormControl
                   value={data.region || ''}
                   onChange={(e) => handleChange('region', e.target.value)}
                   placeholder="us-east-1"
-                  invalid={!!errors.region}
+                  isInvalid={!!errors.region}
                 />
-                {errors.region && <CFormText className="text-danger">{errors.region}</CFormText>}
-              </CCol>
-            </CRow>
-            <CRow className="mb-3">
-              <CCol md={12}>
+                {errors.region && <FormText className="text-danger">{errors.region}</FormText>}
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={12}>
                 <label className="form-label">Custom Endpoint (Optional)</label>
-                <CFormInput
+                <FormControl
                   value={data.customEndpoint || ''}
                   onChange={(e) => handleChange('customEndpoint', e.target.value)}
                   placeholder="https://s3.amazonaws.com"
                 />
-              </CCol>
-            </CRow>
+              </Col>
+            </Row>
             <div className="d-flex gap-2 justify-content-end">
-              <CButton color="secondary" variant="outline" size="sm" onClick={handleCancelEdit} disabled={saving}>
-                <CIcon icon={cilX} className="me-1" />
+              <Button variant="secondary" size="sm" onClick={handleCancelEdit} disabled={saving}>
+                <FontAwesomeIcon icon={faX} className="me-1" />
                 Cancel
-              </CButton>
-              <CButton color="primary" size="sm" onClick={() => handleSave('awsS3')} disabled={saving}>
-                {saving ? (<><CSpinner size="sm" className="me-1" />Saving...</>) : (<><CIcon icon={cilSave} className="me-1" />Save Changes</>)}
-              </CButton>
+              </Button>
+              <Button variant="primary" size="sm" onClick={() => handleSave('awsS3')} disabled={saving}>
+                {saving ? (<><Spinner size="sm" className="me-1" />Saving...</>) : (<><FontAwesomeIcon icon={faSave} className="me-1" />Save Changes</>)}
+              </Button>
             </div>
           </div>
         ) : (
@@ -495,21 +496,21 @@ const Settings = () => {
           <h6 className="fw-bold mb-2">Test S3 Connection</h6>
           <p className="text-muted mb-3">Test your AWS S3 configuration by verifying the connection.</p>
           <div className="d-flex justify-content-start">
-            <CButton 
-              color="info" 
+            <Button 
+              variant="info" 
               onClick={handleTestS3} 
               disabled={testingS3}
               style={{ minWidth: '150px' }}
             >
               {testingS3 ? (
                 <>
-                  <CSpinner size="sm" className="me-1" />
+                  <Spinner size="sm" className="me-1" />
                   Testing...
                 </>
               ) : (
                 'Test S3 Connection'
               )}
-            </CButton>
+            </Button>
           </div>
         </div>
       </div>
@@ -518,63 +519,55 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <CContainer fluid className="d-flex justify-content-center align-items-center min-vh-100">
-        <CSpinner color="primary" />
-      </CContainer>
+      <Container fluid className="d-flex justify-content-center align-items-center min-vh-100">
+        <Spinner variant="primary" />
+      </Container>
     )
   }
 
   return (
-    <CContainer fluid>
-      <CCard>
-        <CCardHeader>
-          <CCardTitle className="mb-0">Settings</CCardTitle>
-        </CCardHeader>
-        <CCardBody>
-          <CNav variant="tabs" className="mb-4">
-            <CNavItem>
-              <CNavLink
+    <Container fluid>
+      <Card>
+        <Card.Header>
+          <Card.Title className="mb-0">Settings</Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Nav variant="tabs" className="mb-4">
+            <Nav.Item>
+              <Nav.Link
                 active={activeTab === 'general'}
                 onClick={() => setActiveTab('general')}
                 style={{ cursor: 'pointer' }}
               >
                 General Settings
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
                 active={activeTab === 'email'}
                 onClick={() => setActiveTab('email')}
                 style={{ cursor: 'pointer' }}
               >
                 Email Settings
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
                 active={activeTab === 'awsS3'}
                 onClick={() => setActiveTab('awsS3')}
                 style={{ cursor: 'pointer' }}
               >
                 AWS S3 Settings
-              </CNavLink>
-            </CNavItem>
-          </CNav>
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
 
-          <CTabContent>
-            <CTabPane visible={activeTab === 'general'}>
-              {renderGeneralSettings()}
-            </CTabPane>
-            <CTabPane visible={activeTab === 'email'}>
-              {renderEmailSettings()}
-            </CTabPane>
-            <CTabPane visible={activeTab === 'awsS3'}>
-              {renderAWSS3Settings()}
-            </CTabPane>
-          </CTabContent>
-        </CCardBody>
-      </CCard>
-    </CContainer>
+          {activeTab === 'general' && renderGeneralSettings()}
+          {activeTab === 'email' && renderEmailSettings()}
+          {activeTab === 'awsS3' && renderAWSS3Settings()}
+        </Card.Body>
+      </Card>
+    </Container>
   )
 }
 
