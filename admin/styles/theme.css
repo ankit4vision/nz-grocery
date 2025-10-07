@@ -6,21 +6,32 @@ body,
 html[data-coreui-theme="light"],
 body[data-coreui-theme="light"] {
   /* E-Grocery palette */
-  --cui-primary: #2e7d32; /* fresh green */
-  --cui-secondary: #6c757d;
-  --cui-success: #198754;
-  --cui-info: #0dcaf0;
-  --cui-warning: #ffc107;
-  --cui-danger: #dc3545;
-  --cui-light: #f8f9fa;
-  --cui-dark: #212529;
+  --cui-primary: #2e7d32 !important; /* fresh green */
+  --cui-primary-rgb: 46, 125, 50 !important;
+  --cui-secondary: #6c757d !important;
+  --cui-success: #198754 !important;
+  --cui-info: #0dcaf0 !important;
+  --cui-warning: #ffc107 !important;
+  --cui-danger: #dc3545 !important;
+  --cui-light: #f8f9fa !important;
+  --cui-dark: #212529 !important;
 }
 
 /* Optional: darker-friendly primary */
 html[data-coreui-theme="dark"],
 body[data-coreui-theme="dark"] {
-  --cui-primary: #5fbf6b; /* brighter green for contrast */
+  --cui-primary: #5fbf6b !important; /* brighter green for contrast */
+  --cui-primary-rgb: 95, 191, 107 !important;
 }
+
+/* Force immediate primary look on common utilities/components */
+.btn-primary {
+  background-color: var(--cui-primary) !important;
+  border-color: var(--cui-primary) !important;
+}
+
+.text-primary { color: var(--cui-primary) !important; }
+.bg-primary { background-color: var(--cui-primary) !important; }
 
 /* App Content Layout */
 .app-content {
