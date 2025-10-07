@@ -1,0 +1,130 @@
+[
+  {
+    "id": 1,
+    "name": "Electronics",
+    "description": "Electronic devices and gadgets",
+    "isActive": true,
+    "subCategories": [
+      {
+        "id": 1,
+        "name": "Smartphones",
+        "description": "Mobile phones and accessories",
+        "isActive": true
+      },
+      {
+        "id": 2,
+        "name": "Laptops",
+        "description": "Portable computers and accessories",
+        "isActive": true
+      },
+      {
+        "id": 3,
+        "name": "Audio",
+        "description": "Headphones, speakers, and audio equipment",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Clothing",
+    "description": "Apparel and fashion items",
+    "isActive": true,
+    "subCategories": [
+      {
+        "id": 4,
+        "name": "Men's Clothing",
+        "description": "Clothing for men",
+        "isActive": true
+      },
+      {
+        "id": 5,
+        "name": "Women's Clothing",
+        "description": "Clothing for women",
+        "isActive": true
+      },
+      {
+        "id": 6,
+        "name": "Kids' Clothing",
+        "description": "Clothing for children",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-16T09:15:00.000Z",
+    "updatedAt": "2024-01-16T09:15:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Home & Garden",
+    "description": "Home improvement and garden supplies",
+    "isActive": true,
+    "subCategories": [
+      {
+        "id": 7,
+        "name": "Furniture",
+        "description": "Home and office furniture",
+        "isActive": true
+      },
+      {
+        "id": 8,
+        "name": "Kitchen & Dining",
+        "description": "Kitchen appliances and dining items",
+        "isActive": true
+      },
+      {
+        "id": 9,
+        "name": "Garden Tools",
+        "description": "Gardening equipment and tools",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-17T14:20:00.000Z",
+    "updatedAt": "2024-01-17T14:20:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Sports & Outdoors",
+    "description": "Sports equipment and outdoor gear",
+    "isActive": true,
+    "subCategories": [
+      {
+        "id": 10,
+        "name": "Fitness",
+        "description": "Exercise equipment and fitness gear",
+        "isActive": true
+      },
+      {
+        "id": 11,
+        "name": "Outdoor Recreation",
+        "description": "Camping, hiking, and outdoor activities",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-18T11:45:00.000Z",
+    "updatedAt": "2024-01-18T11:45:00.000Z"
+  },
+  {
+    "id": 5,
+    "name": "Books & Media",
+    "description": "Books, movies, and digital media",
+    "isActive": false,
+    "subCategories": [
+      {
+        "id": 12,
+        "name": "Fiction",
+        "description": "Fictional books and novels",
+        "isActive": true
+      },
+      {
+        "id": 13,
+        "name": "Non-Fiction",
+        "description": "Educational and reference books",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-19T16:30:00.000Z",
+    "updatedAt": "2024-01-19T16:30:00.000Z"
+  }
+]
