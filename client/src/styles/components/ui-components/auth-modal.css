@@ -45,6 +45,17 @@
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+.auth-modal__logo-image {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 .auth-modal__close-btn {
   position: absolute;
   top: var(--spacing-md);
@@ -399,6 +410,11 @@
   
   .auth-modal__logo-icon {
     font-size: var(--font-size-xl);
+  }
+  
+  .auth-modal__logo-image {
+    height: 35px;
+    padding: calc(var(--spacing-xs) * 0.5);
   }
   
   .auth-modal__submit-btn {

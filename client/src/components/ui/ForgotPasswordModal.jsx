@@ -3,6 +3,7 @@ import { Modal, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import { FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useUserContext } from '../../context';
 import { CustomButton } from '../common';
+import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/ui-components/auth-modal.css';
 
 const ForgotPasswordModal = ({ show, onHide, onSwitchToLogin }) => {
@@ -366,9 +367,11 @@ const ForgotPasswordModal = ({ show, onHide, onSwitchToLogin }) => {
     >
       <Modal.Header className="auth-modal__header">
         <div className="auth-modal__logo">
-          <span className="auth-modal__logo-text">Farm</span>
-          <span className="auth-modal__logo-icon">🛒</span>
-          <span className="auth-modal__logo-text">Fridge</span>
+          <img 
+            src={logoImage} 
+            alt="Farm Fridge Logo" 
+            className="auth-modal__logo-image"
+          />
         </div>
         <Button 
           variant="link" 

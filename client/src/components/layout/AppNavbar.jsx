@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { FaSearch, FaShoppingCart, FaUser } from 'react-icons/fa';
+import { FaSearch, FaShoppingCart, FaUser, FaAlignJustify } from 'react-icons/fa';
 import { useCartContext, useUserContext } from '../../context';
 import UserProfileDropdown from './UserProfileDropdown';
 import logoImage from '../../assets/logo/logo-transprant.png';
@@ -107,6 +107,7 @@ const AppNavbar = ({
                 onClick={onBrowseProductsClick}
                 style={{ cursor: 'pointer' }}
               >
+                <FaAlignJustify className="me-2" />
                 Browse products
               </Nav.Link>
 
