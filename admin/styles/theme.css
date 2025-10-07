@@ -5,23 +5,23 @@ html,
 body,
 html[data-coreui-theme="light"],
 body[data-coreui-theme="light"] {
-  /* E-Grocery palette */
-  --cui-primary: #2e7d32 !important; /* fresh green */
-  --cui-primary-rgb: 46, 125, 50 !important;
-  --cui-secondary: #6c757d !important;
-  --cui-success: #198754 !important;
-  --cui-info: #0dcaf0 !important;
-  --cui-warning: #ffc107 !important;
-  --cui-danger: #dc3545 !important;
-  --cui-light: #f8f9fa !important;
-  --cui-dark: #212529 !important;
+  /* E-Grocery Fresh Theme */
+  --cui-primary: #22c55e !important; /* fresh green */
+  --cui-primary-rgb: 34, 197, 94 !important;
+  --cui-secondary: #6b7280 !important; /* neutral gray */
+  --cui-success: #10b981 !important; /* success green */
+  --cui-info: #06b6d4 !important; /* cyan blue */
+  --cui-warning: #f59e0b !important; /* amber orange */
+  --cui-danger: #ef4444 !important; /* red */
+  --cui-light: #f9fafb !important; /* light gray */
+  --cui-dark: #1f2937 !important; /* dark gray */
 }
 
 /* Optional: darker-friendly primary */
 html[data-coreui-theme="dark"],
 body[data-coreui-theme="dark"] {
-  --cui-primary: #5fbf6b !important; /* brighter green for contrast */
-  --cui-primary-rgb: 95, 191, 107 !important;
+  --cui-primary: #34d399 !important; /* brighter fresh green for contrast */
+  --cui-primary-rgb: 52, 211, 153 !important;
 }
 
 /* Force immediate primary look on common utilities/components */
@@ -32,6 +32,213 @@ body[data-coreui-theme="dark"] {
 
 .text-primary { color: var(--cui-primary) !important; }
 .bg-primary { background-color: var(--cui-primary) !important; }
+
+/* Links */
+:root, html, body {
+  --cui-link-color: var(--cui-primary) !important;
+  --cui-link-hover-color: #16a34a !important; /* darker green */
+}
+
+a, .link-primary { color: var(--cui-link-color) !important; }
+a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !important; }
+
+/* Buttons - hover/focus/active */
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle {
+  background-color: #15803d !important;
+  border-color: #15803d !important;
+}
+
+.btn-primary:focus-visible {
+  box-shadow: 0 0 0 0.2rem rgba(var(--cui-primary-rgb), 0.35) !important;
+}
+
+.btn-outline-primary {
+  color: var(--cui-primary) !important;
+  border-color: var(--cui-primary) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  color: #fff !important;
+  background-color: var(--cui-primary) !important;
+  border-color: var(--cui-primary) !important;
+}
+
+/* Badges */
+.badge.bg-primary,
+.badge.text-bg-primary {
+  background-color: var(--cui-primary) !important;
+}
+
+/* Alerts */
+.alert-primary {
+  color: #12351a !important; /* readable on green tints */
+  background-color: rgba(var(--cui-primary-rgb), 0.12) !important;
+  border-color: rgba(var(--cui-primary-rgb), 0.3) !important;
+}
+
+/* Nav active states */
+.nav-link.active,
+.nav-pills .nav-link.active {
+  background-color: rgba(var(--cui-primary-rgb), 0.15) !important;
+  color: var(--cui-primary) !important;
+}
+
+/* Tables and pagination accents */
+.page-item.active .page-link {
+  background-color: var(--cui-primary) !important;
+  border-color: var(--cui-primary) !important;
+}
+
+/* Subtle gradients for headers/cards */
+.card-header,
+.page-header {
+  background-image: linear-gradient(180deg, rgba(var(--cui-primary-rgb), 0.04), rgba(0,0,0,0)) !important;
+}
+
+/* Chart color tokens (use in chart configs via CSS variables) */
+:root, html, body {
+  --chart-primary: var(--cui-primary) !important;
+  --chart-primary-rgb: var(--cui-primary-rgb) !important;
+  --chart-success: var(--cui-success) !important;
+  --chart-warning: var(--cui-warning) !important;
+  --chart-info: var(--cui-info) !important;
+}
+
+/* Sidebar - solid green background like Farm Fridge */
+.c-sidebar,
+.c-sidebar-dark,
+.c-sidebar-light,
+.c-sidebar[class*="sidebar"],
+.c-sidebar[data-coreui-theme],
+html[data-coreui-theme="light"] .c-sidebar,
+body[data-coreui-theme="light"] .c-sidebar,
+html[data-coreui-theme="dark"] .c-sidebar,
+body[data-coreui-theme="dark"] .c-sidebar,
+.c-sidebar.bg-dark,
+.c-sidebar.bg-light {
+  /* Solid vibrant green background */
+  background-color: #22c55e !important;
+  background-image: none !important;
+  background: #22c55e !important;
+}
+
+/* Force override any CoreUI sidebar background */
+[class*="sidebar"] {
+  background-color: #22c55e !important;
+  background-image: linear-gradient(135deg, #28a745, #20c997) !important;
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Sidebar brand logo enhancement */
+.c-sidebar .c-sidebar-brand,
+.sidebar-brand-full {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  margin: 8px !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.c-sidebar .c-sidebar-brand img,
+.sidebar-brand-full img {
+  filter: brightness(1.1) contrast(1.1) !important;
+}
+
+/* Force white text on any sidebar element */
+[class*="sidebar"] *,
+[class*="sidebar"] span,
+[class*="sidebar"] div,
+[class*="sidebar"] p,
+[class*="sidebar"] a,
+[class*="sidebar"] i,
+[class*="sidebar"] svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Force white text on ALL sidebar elements */
+.c-sidebar,
+.c-sidebar *,
+.sidebar,
+.sidebar *,
+.c-sidebar .c-sidebar-brand,
+.c-sidebar .c-sidebar-brand *,
+.sidebar .sidebar-brand,
+.sidebar .sidebar-brand *,
+.c-sidebar .nav-link,
+.c-sidebar .nav-link *,
+.sidebar .nav-link,
+.sidebar .nav-link *,
+.c-sidebar .nav-title,
+.c-sidebar .nav-title *,
+.sidebar .nav-title,
+.sidebar .nav-title *,
+.c-sidebar .nav-group .nav-link,
+.c-sidebar .nav-group .nav-link *,
+.sidebar .nav-group .nav-link,
+.sidebar .nav-group .nav-link *,
+.c-sidebar .c-sidebar-nav-link,
+.c-sidebar .c-sidebar-nav-link *,
+.sidebar .sidebar-nav-link,
+.sidebar .sidebar-nav-link *,
+.c-sidebar .c-sidebar-brand-text,
+.c-sidebar .c-sidebar-nav-link-text,
+.sidebar .sidebar-brand-text,
+.sidebar .sidebar-nav-link-text,
+.c-sidebar span,
+.c-sidebar div,
+.c-sidebar p,
+.c-sidebar a,
+.sidebar span,
+.sidebar div,
+.sidebar p,
+.sidebar a {
+  color: #ffffff !important;
+}
+
+/* Sidebar icons - force white */
+.c-sidebar .nav-link .nav-icon,
+.c-sidebar .nav-title .nav-icon,
+.c-sidebar .c-sidebar-nav-icon,
+.c-sidebar .c-sidebar-brand-icon,
+.c-sidebar i,
+.c-sidebar svg,
+.c-sidebar .icon,
+.sidebar .nav-link .nav-icon,
+.sidebar .nav-title .nav-icon,
+.sidebar .sidebar-nav-icon,
+.sidebar .sidebar-brand-icon,
+.sidebar i,
+.sidebar svg,
+.sidebar .icon {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Hover states */
+.c-sidebar .nav-link:hover,
+.c-sidebar .nav-link.active,
+.c-sidebar .c-sidebar-nav-link:hover,
+.c-sidebar .c-sidebar-nav-link.active,
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active,
+.sidebar .sidebar-nav-link:hover,
+.sidebar .sidebar-nav-link.active {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
 
 /* App Content Layout */
 .app-content {

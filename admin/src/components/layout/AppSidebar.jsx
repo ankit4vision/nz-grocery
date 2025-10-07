@@ -13,8 +13,8 @@ import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from './AppSidebarNav.jsx'
 
-import { logo } from 'src/assets/brand/logo'
-import { sygnet } from 'src/assets/brand/sygnet'
+// Replace CoreUI SVG logo with custom image logo
+import logoImg from 'src/assets/logo/logo-transprant.png'
 
 // sidebar nav config
 import navigation from '../../_nav.jsx'
@@ -26,7 +26,7 @@ const AppSidebar = () => {
 
   return (
     <CSidebar
-      className="border-end"
+      className=""
       colorScheme="dark"
       position="fixed"
       unfoldable={unfoldable}
@@ -37,8 +37,12 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
-          <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
-          <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
+          <img
+            src={logoImg}
+            alt="Farm Fridge"
+            className="sidebar-brand-full"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
