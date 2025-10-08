@@ -1,4 +1,4 @@
-# Admin Project Structure & Development Guidelines
+# NZ Grocery Admin - Project Structure & Development Guidelines
 
 ## 📁 Project Folder Structure
 
@@ -15,10 +15,12 @@ admin/
 │   │   │   ├── logo.jsx               # Logo component
 │   │   │   └── sygnet.jsx             # Sygnet component
 │   │   ├── 📁 images/                 # Image assets
-│   │   │   ├── 📁 avatars/            # User avatars
+│   │   │   ├── 📁 avatars/            # User avatars (1-9.jpg)
 │   │   │   ├── angular.jpg            # Framework images
 │   │   │   ├── react.jpg              # Framework images
 │   │   │   └── vue.jpg                # Framework images
+│   │   ├── 📁 logo/                   # Logo assets
+│   │   │   └── logo-transprant.png    # Main logo (transparent)
 │   │   └── login-background.png       # Auth background
 │   │
 │   ├── 📁 components/                 # Reusable components
@@ -43,7 +45,7 @@ admin/
 │   │   │   ├── AppContent.jsx         # Main content wrapper
 │   │   │   ├── AppFooter.jsx          # Application footer
 │   │   │   ├── AppHeader.jsx          # Application header
-│   │   │   ├── AppSidebar.jsx         # Application sidebar
+│   │   │   ├── AppSidebar.jsx         # Application sidebar (CoreUI)
 │   │   │   ├── AppSidebarNav.jsx      # Sidebar navigation
 │   │   │   ├── PermissionRoute.jsx     # Route permission wrapper
 │   │   │   └── 📁 header/             # Header sub-components
@@ -100,8 +102,7 @@ admin/
 │   │       └── ResetPassword.jsx      # Reset password page
 │   │
 │   ├── 📁 routes/                     # Routing configuration
-│   │   ├── routes.jsx                  # Route definitions
-│   │   └── routesConfig.jsx           # Route configuration
+│   │   └── index.jsx                  # Route definitions (lazy loading)
 │   │
 │   ├── 📁 scss/                       # SCSS stylesheets
 │   │   ├── examples.scss              # Example styles
@@ -137,15 +138,17 @@ admin/
 │   │       ├── Profile.jsx            # User profile view
 │   │       └── UsersList.jsx          # Users list view
 │   │
+│   ├── _nav.jsx                       # Navigation configuration
 │   ├── App.css                        # Main app styles
 │   ├── App.jsx                        # Main app component
 │   ├── config.js                      # App configuration
 │   ├── main.jsx                       # App entry point
+│   ├── routesConfig.jsx               # Route configuration
 │   ├── store.jsx                      # Redux store configuration
 │   └── utils.js                       # Utility functions
 │
 ├── 📁 styles/                         # Global styles
-│   └── theme.css                      # Theme styles
+│   └── theme.css                      # Theme styles (CoreUI overrides)
 │
 ├── .env.example                       # Environment variables example
 ├── .env.local                         # Local environment variables
@@ -156,9 +159,7 @@ admin/
 ├── index.html                         # HTML template
 ├── package.json                       # Dependencies and scripts
 ├── package-lock.json                  # Dependency lock file
-├── PROJECT_STRUCTURE.md               # Project structure documentation
 ├── README.md                          # Project documentation
-├── setup-env.sh                       # Environment setup script
 └── vite.config.js                     # Vite build configuration
 ```
 
@@ -191,14 +192,16 @@ admin/
 ### 🎨 UI/UX Rules
 
 #### 1. **UI Framework Rules**
-- **Primary Framework**: React Bootstrap
-- **Icon Library**: FontAwesome (free solid icons)
-- **Styling**: Bootstrap classes + custom CSS
+- **Primary Framework**: React Bootstrap (for main content)
+- **Sidebar Framework**: CoreUI React (for sidebar and navigation only)
+- **Icon Library**: FontAwesome (free solid icons) + CoreUI Icons (sidebar only)
+- **Styling**: Bootstrap classes + custom CSS + CoreUI overrides
+- **Theme**: Custom white sidebar with green accents
 - **Responsive Design**: Mobile-first approach
 
 #### 2. **Component Structure Rules**
 ```jsx
-// Standard Page Structure
+// Standard Page Structure with React Bootstrap
 <Container fluid>
   <Row>
     <Col xs={12}>
@@ -229,26 +232,36 @@ admin/
 
 #### 3. **Form Structure Rules**
 ```jsx
-// Standard Form Structure
+// Standard Form Structure with React Bootstrap
 <Form>
-  <FormRow>
-    <TextField
-      label="Field Label"
-      value={value}
-      onChange={handleChange}
-      required
-      col={6}
-      invalid={!!errors.field}
-      feedback={errors.field}
-    />
-  </FormRow>
+  <Row>
+    <Col xs={12} md={6}>
+      <Form.Group className="mb-3">
+        <Form.Label htmlFor="field">Field Label</Form.Label>
+        <Form.Control
+          id="field"
+          type="text"
+          value={value}
+          onChange={handleChange}
+          required
+          isInvalid={!!errors.field}
+        />
+        <Form.Control.Feedback type="invalid">
+          {errors.field}
+        </Form.Control.Feedback>
+      </Form.Group>
+    </Col>
+  </Row>
 </Form>
 ```
 
 #### 4. **Modal Structure Rules**
 ```jsx
-// Standard Modal Structure
-<Modal visible={visible} onClose={onClose} title="Modal Title">
+// Standard Modal Structure with React Bootstrap
+<Modal show={visible} onHide={onClose}>
+  <Modal.Header closeButton>
+    <Modal.Title>Modal Title</Modal.Title>
+  </Modal.Header>
   <Modal.Body>
     {/* Modal content */}
   </Modal.Body>
@@ -258,6 +271,53 @@ admin/
   </Modal.Footer>
 </Modal>
 ```
+
+#### 5. **Sidebar & Navigation Rules (CoreUI Only)**
+```jsx
+// Navigation Configuration (_nav.jsx) - CoreUI Components
+const _nav = [
+  {
+    component: CNavTitle,
+    name: 'Main',
+  },
+  {
+    component: CNavGroup,
+    name: 'Dashboard',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Admin Dashboard',
+        to: '/dashboard',
+        badge: {
+          color: 'success',
+          text: '●',
+        },
+      },
+    ],
+  },
+]
+
+// Sidebar Structure (AppSidebar.jsx) - CoreUI Components Only
+<CSidebar className="sidebar-custom" colorScheme="dark">
+  <CSidebarHeader className="border-bottom">
+    <CSidebarBrand to="/" className="sidebar-brand-custom">
+      <img src={logoImg} alt="NZ Grocery Admin" className="sidebar-brand-logo-full" />
+    </CSidebarBrand>
+    <CCloseButton className="d-lg-none" dark />
+  </CSidebarHeader>
+  <AppSidebarNav items={navigation} />
+</CSidebar>
+```
+
+#### 6. **Theme & Styling Rules**
+- **Main Content**: React Bootstrap components with standard Bootstrap styling
+- **Sidebar**: CoreUI components with custom white background and subtle shadows
+- **Navigation**: CoreUI navigation with dark text and proper contrast on white background
+- **Icons**: FontAwesome for main content, CoreUI icons for sidebar only
+- **Colors**: Green primary color (#16a34a) with proper contrast
+- **Typography**: Clean, readable fonts with proper hierarchy
+- **Spacing**: Consistent padding and margins throughout
 
 ### 🔧 State Management Rules
 
@@ -428,10 +488,24 @@ const userService = {
 - Ensure **accessibility compliance**
 
 ### 🔧 Development Tools
-- **Vite** for build tooling
+- **Vite** for build tooling with Rolldown optimization
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **React DevTools** for debugging
+- **React Router DOM** for routing with lazy loading
+- **Redux** for state management
+- **React Context** for authentication and theme
+
+### 📦 Key Dependencies
+- **React 19** - Latest React version
+- **React Bootstrap** - Primary UI component library for main content
+- **CoreUI React** - UI component library for sidebar and navigation only
+- **React Router DOM** - Client-side routing
+- **Redux** - State management
+- **FontAwesome** - Icon library for main content
+- **CoreUI Icons** - Icon library for sidebar only
+- **SimpleBar** - Custom scrollbars
+- **Axios** - HTTP client for API calls
 
 ### 📊 Performance Monitoring
 - **Bundle size** monitoring
@@ -444,6 +518,39 @@ const userService = {
 - **Security patch** management
 - **Performance optimization**
 - **Code refactoring** as needed
+
+---
+
+## 🚀 Current Project Status
+
+### ✅ Completed Features
+- **Sidebar Design**: Clean white sidebar with proper CoreUI structure
+- **Navigation**: Working navigation groups with toggle arrows
+- **Logo Integration**: Full-width logo in sidebar header
+- **Theme Styling**: Custom CSS overrides for CoreUI components
+- **Responsive Design**: Mobile-friendly sidebar with close button
+- **Icon System**: CoreUI icons with proper contrast on white background
+
+### 🎯 Current Navigation Structure
+- **Main Section**: Dashboard groups with multiple dashboard options
+- **Inventory Section**: Products, categories, subcategories, brands, units
+- **User Management**: Users and role & permission management
+- **Account Section**: Profile and settings
+
+### 🔧 Technical Implementation
+- **CoreUI Components**: Proper use of CSidebar, CSidebarHeader, CSidebarBrand
+- **Custom Styling**: theme.css with CoreUI overrides
+- **State Management**: Redux for sidebar state (unfoldable, visible)
+- **Routing**: React Router with lazy loading for performance
+- **Authentication**: JWT-based auth with role-based access control
+
+### 📋 Next Development Priorities
+1. **Dashboard Implementation**: Create main dashboard with charts and stats
+2. **Product Management**: Build product CRUD operations
+3. **Category Management**: Implement category and subcategory management
+4. **User Management**: Complete user and role management features
+5. **API Integration**: Connect frontend with backend APIs
+6. **Testing**: Add unit and integration tests
 
 ---
 
