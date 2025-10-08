@@ -296,7 +296,7 @@ body[data-coreui-theme="dark"] .c-sidebar,
   font-weight: 600 !important;
 }
 
-/* Navigation group headers with better styling */
+/* Navigation group headers with clean styling */
 .c-sidebar .nav-title,
 .sidebar .nav-title {
   color: #374151 !important;
@@ -306,10 +306,10 @@ body[data-coreui-theme="dark"] .c-sidebar,
   font-size: 0.75rem !important;
   margin: 20px 12px 12px 12px !important;
   padding: 10px 16px !important;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
-  border-radius: 8px !important;
-  border: 1px solid #cbd5e1 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  background: none !important;
+  border: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
 }
 
 /* Enhanced sidebar footer with better styling */
@@ -407,6 +407,39 @@ body[data-coreui-theme="dark"] .c-sidebar,
   display: block !important;
 }
 
+
+/* Navigation Group Toggle Arrows - Simple background color fix */
+.sidebar-nav .nav-group-toggle::after {
+  background-color: #4b5563 !important;
+}
+
+/* Hide nav icon bullet */
+.nav-icon-bullet {
+  display: none !important;
+}
+
+/* Ensure navigation group items are visible */
+.c-sidebar-nav .nav-group-items,
+.c-sidebar-nav .collapse {
+  display: none !important;
+}
+
+.c-sidebar-nav .nav-group-items.show,
+.c-sidebar-nav .collapse.show {
+  display: block !important;
+}
+
+/* Force show navigation group items when expanded */
+.c-sidebar-nav .nav-group[aria-expanded="true"] .nav-group-items,
+.c-sidebar-nav .nav-group.show .nav-group-items {
+  display: block !important;
+}
+
+/* Hide navigation group items when collapsed */
+.c-sidebar-nav .nav-group[aria-expanded="false"] .nav-group-items,
+.c-sidebar-nav .nav-group:not(.show) .nav-group-items {
+  display: none !important;
+}
 
 /* Enhanced Navigation Items */
 .c-sidebar .nav-link,
