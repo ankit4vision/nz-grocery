@@ -1,521 +1,415 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Card, Button, Spinner, Nav, Form, FormControl, FormSelect, FormText, Alert } from 'react-bootstrap'
+import { Container, Row, Col, Card, Button, Spinner, Form, FormControl, FormSelect, FormText, Alert } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCog, faPencil, faSave, faX } from '@fortawesome/free-solid-svg-icons'
+import { faPercentage, faBuilding, faEnvelope, faGlobe, faShieldAlt, faSave } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { settingsService } from '../../services/settingsService'
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('general')
   const [settingsData, setSettingsData] = useState({
-    general: {},
-    email: {},
-    awsS3: {},
+    taxPricing: {
+      defaultGstRate: 15,
+      defaultProfitMargin: 25
+    },
+    businessInfo: {
+      businessName: 'Farm2Fridge',
+      gstNumber: '',
+      businessAddress: '123 Queen Street, Auckland Central, Auckland 1010, New Zealand'
+    },
+    emailNotifications: {
+      supportEmail: 'support@farm2fridge.co.nz',
+      adminEmail: 'admin@farm2fridge.co.nz',
+      enableOrderNotifications: false
+    },
+    currencyRegional: {
+      currency: 'NZD',
+      dateFormat: 'DD/MM/YYYY',
+      timeZone: 'Pacific/Auckland'
+    },
+    security: {
+      sessionTimeout: 30,
+      passwordExpiry: 90,
+      enableTwoFactor: false
+    }
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [editingSection, setEditingSection] = useState(null)
-  const [formData, setFormData] = useState({})
   const [errors, setErrors] = useState({})
-  const [testEmail, setTestEmail] = useState('')
-  const [testingEmail, setTestingEmail] = useState(false)
-  const [testingS3, setTestingS3] = useState(false)
   const { success, error } = useToast()
 
   useEffect(() => {
     const fetchSettings = async () => {
       setLoading(true)
-      const response = await settingsService.getSettings()
-      if (response.success) {
-        setSettingsData(response.data)
-      } else {
-        error(response.message)
+      try {
+        const response = await settingsService.getSettings()
+        if (response.success) {
+          setSettingsData({ ...settingsData, ...response.data })
+        }
+      } catch (err) {
+        console.log('Using default settings')
       }
       setLoading(false)
     }
     fetchSettings()
-  }, [error])
+  }, [])
 
-  const handleEditClick = (section) => {
-    setEditingSection(section)
-    setFormData({ ...settingsData[section] })
-    setErrors({})
-  }
-
-  const handleCancelEdit = () => {
-    setEditingSection(null)
-    setFormData({})
-    setErrors({})
-  }
-
-  const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
+  const handleChange = (section, field, value) => {
+    setSettingsData(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value
+      }
+    }))
+    
+    // Clear error if exists
+    if (errors[`${section}.${field}`]) {
+      setErrors(prev => ({
+        ...prev,
+        [`${section}.${field}`]: ''
+      }))
     }
   }
 
-  const validateForm = (section) => {
+  const validateForm = () => {
     const newErrors = {}
     
-    if (section === 'general') {
-      if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = 'Please enter a valid email address'
-      }
+    // Validate GST Rate
+    if (settingsData.taxPricing.defaultGstRate < 0 || settingsData.taxPricing.defaultGstRate > 100) {
+      newErrors['taxPricing.defaultGstRate'] = 'GST rate must be between 0 and 100'
     }
     
-    if (section === 'email') {
-      if (formData.fromEmail && !/\S+@\S+\.\S+/.test(formData.fromEmail)) {
-        newErrors.fromEmail = 'Please enter a valid email address'
-      }
+    // Validate Profit Margin
+    if (settingsData.taxPricing.defaultProfitMargin < 0 || settingsData.taxPricing.defaultProfitMargin > 100) {
+      newErrors['taxPricing.defaultProfitMargin'] = 'Profit margin must be between 0 and 100'
     }
     
-    if (section === 'awsS3') {
-      // No required validations for AWS S3 fields
+    // Validate Email addresses
+    const emailRegex = /\S+@\S+\.\S+/
+    if (settingsData.emailNotifications.supportEmail && !emailRegex.test(settingsData.emailNotifications.supportEmail)) {
+      newErrors['emailNotifications.supportEmail'] = 'Please enter a valid email address'
+    }
+    if (settingsData.emailNotifications.adminEmail && !emailRegex.test(settingsData.emailNotifications.adminEmail)) {
+      newErrors['emailNotifications.adminEmail'] = 'Please enter a valid email address'
+    }
+    
+    // Validate Session Timeout
+    if (settingsData.security.sessionTimeout < 5 || settingsData.security.sessionTimeout > 480) {
+      newErrors['security.sessionTimeout'] = 'Session timeout must be between 5 and 480 minutes'
+    }
+    
+    // Validate Password Expiry
+    if (settingsData.security.passwordExpiry < 30 || settingsData.security.passwordExpiry > 365) {
+      newErrors['security.passwordExpiry'] = 'Password expiry must be between 30 and 365 days'
     }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSave = async (section) => {
-    if (!validateForm(section)) return
-    
-    setSaving(true)
-    let response
-    
-    // Call the appropriate method based on section
-    switch (section) {
-      case 'general':
-        response = await settingsService.updateGeneralSettings(formData)
-        break
-      case 'email':
-        response = await settingsService.updateEmailSettings(formData)
-        break
-      case 'awsS3':
-        response = await settingsService.updateAWSSettings(formData)
-        break
-      default:
-        response = { success: false, message: 'Invalid section' }
+  const handleSaveAll = async () => {
+    if (!validateForm()) {
+      error('Please fix the validation errors before saving')
+      return
     }
     
-    if (response.success) {
-      setSettingsData(prev => ({ ...prev, [section]: response.data }))
-      setEditingSection(null)
-      setFormData({})
-      setErrors({})
-      success(response.message)
-    } else {
-      error(response.message)
+    setSaving(true)
+    try {
+      const response = await settingsService.updateAllSettings(settingsData)
+      if (response.success) {
+        success('All settings saved successfully!')
+      } else {
+        error(response.message || 'Failed to save settings')
+      }
+    } catch (err) {
+      error('Failed to save settings. Please try again.')
     }
     setSaving(false)
   }
 
-  const handleTestEmail = async () => {
-    if (!testEmail.trim()) {
-      error('Please enter an email address to test')
-      return
-    }
+  const renderTaxPricingSettings = () => (
+    <Card className="mb-4">
+      <Card.Header className="bg-success text-white d-flex align-items-center">
+        <FontAwesomeIcon icon={faPercentage} className="me-2" />
+        <h5 className="mb-0">Tax & Pricing Settings</h5>
+      </Card.Header>
+      <Card.Body>
+        {/* Summary Cards */}
+        <Row className="mb-4">
+          <Col md={6}>
+            <Card className="border-0" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+              <Card.Body className="text-center">
+                <h3 className="mb-1">{settingsData.taxPricing.defaultGstRate}%</h3>
+                <p className="mb-0">Default GST Rate</p>
+                <small>Default GST rate applied to all products unless specified individually.</small>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6}>
+            <Card className="border-0" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+              <Card.Body className="text-center">
+                <h3 className="mb-1">{settingsData.taxPricing.defaultProfitMargin}%</h3>
+                <p className="mb-0">Default Profit Margin</p>
+                <small>Default profit margin applied to all products unless specified individually.</small>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
 
-    if (!/\S+@\S+\.\S+/.test(testEmail)) {
-      error('Please enter a valid email address')
-      return
-    }
+        {/* Input Fields */}
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Default GST Rate (%)</Form.Label>
+              <FormControl
+                type="number"
+                min="0"
+                max="100"
+                value={settingsData.taxPricing.defaultGstRate}
+                onChange={(e) => handleChange('taxPricing', 'defaultGstRate', parseInt(e.target.value) || 0)}
+                isInvalid={!!errors['taxPricing.defaultGstRate']}
+              />
+              <FormText>This will be used for products that don't have a specific GST rate set.</FormText>
+              {errors['taxPricing.defaultGstRate'] && (
+                <FormText className="text-danger">{errors['taxPricing.defaultGstRate']}</FormText>
+              )}
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Default Profit Margin (%)</Form.Label>
+              <FormControl
+                type="number"
+                min="0"
+                max="100"
+                value={settingsData.taxPricing.defaultProfitMargin}
+                onChange={(e) => handleChange('taxPricing', 'defaultProfitMargin', parseInt(e.target.value) || 0)}
+                isInvalid={!!errors['taxPricing.defaultProfitMargin']}
+              />
+              <FormText>This will be used for products that don't have a specific margin set.</FormText>
+              {errors['taxPricing.defaultProfitMargin'] && (
+                <FormText className="text-danger">{errors['taxPricing.defaultProfitMargin']}</FormText>
+              )}
+            </Form.Group>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  )
 
-    setTestingEmail(true)
-    const response = await settingsService.testEmailConfiguration()
-    
-    if (response.success) {
-      success(`Test email sent successfully to ${testEmail}`)
-    } else {
-      error(response.message || 'Failed to send test email')
-    }
-    setTestingEmail(false)
-  }
+  const renderBusinessInfo = () => (
+    <Card className="mb-4">
+      <Card.Header className="bg-success text-white d-flex align-items-center">
+        <FontAwesomeIcon icon={faBuilding} className="me-2" />
+        <h5 className="mb-0">Business Information</h5>
+      </Card.Header>
+      <Card.Body>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Business Name</Form.Label>
+              <FormControl
+                value={settingsData.businessInfo.businessName}
+                onChange={(e) => handleChange('businessInfo', 'businessName', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>GST Number</Form.Label>
+              <FormControl
+                placeholder="Enter GST registration number"
+                value={settingsData.businessInfo.gstNumber}
+                onChange={(e) => handleChange('businessInfo', 'gstNumber', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={12}>
+            <Form.Group className="mb-3">
+              <Form.Label>Business Address</Form.Label>
+              <FormControl
+                as="textarea"
+                rows={3}
+                value={settingsData.businessInfo.businessAddress}
+                onChange={(e) => handleChange('businessInfo', 'businessAddress', e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  )
 
-  const handleTestS3 = async () => {
-    setTestingS3(true)
-    const response = await settingsService.testAWSConfiguration()
-    
-    if (response.success) {
-      success('AWS S3 connection test successful!')
-    } else {
-      error(response.message || 'Failed to test AWS S3 connection')
-    }
-    setTestingS3(false)
-  }
-
-  const renderGeneralSettings = () => {
-    const data = editingSection === 'general' ? formData : (settingsData.general || {})
-    const isEditing = editingSection === 'general'
-
-    return (
-      <div>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h5 className="mb-0">General Settings</h5>
-          {!isEditing && (
-            <Button variant="primary" size="sm" onClick={() => handleEditClick('general')} disabled={saving}>
-              <FontAwesomeIcon icon={faPencil} className="me-1" />
-              Edit
-            </Button>
-          )}
-        </div>
-
-        {isEditing ? (
-          <div>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">Application Name</label>
-                <FormControl
-                  value={data.appName || ''}
-                  onChange={(e) => handleChange('appName', e.target.value)}
-                  placeholder="Enter application name"
-                  isInvalid={!!errors.appName}
-                />
-                {errors.appName && <FormText className="text-danger">{errors.appName}</FormText>}
-              </Col>
-              <Col md={6}>
-                <label className="form-label">Business Name</label>
-                <FormControl
-                  value={data.businessName || ''}
-                  onChange={(e) => handleChange('businessName', e.target.value)}
-                  placeholder="Enter business name"
-                />
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={12}>
-                <label className="form-label">Business Address</label>
-                <FormControl
-                  as="textarea"
-                  value={data.businessAddress || ''}
-                  onChange={(e) => handleChange('businessAddress', e.target.value)}
-                  placeholder="Enter business address"
-                  rows={3}
-                />
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">Contact Info</label>
-                <FormControl
-                  value={data.contactInfo || ''}
-                  onChange={(e) => handleChange('contactInfo', e.target.value)}
-                  placeholder="Enter contact info"
-                />
-              </Col>
-              <Col md={6}>
-                <label className="form-label">Email</label>
-                <FormControl
-                  type="email"
-                  value={data.email || ''}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  placeholder="Enter email"
-                  isInvalid={!!errors.email}
-                />
-                {errors.email && <FormText className="text-danger">{errors.email}</FormText>}
-              </Col>
-            </Row>
-            <div className="d-flex gap-2 justify-content-end">
-              <Button variant="secondary" size="sm" onClick={handleCancelEdit} disabled={saving}>
-                <FontAwesomeIcon icon={faX} className="me-1" />
-                Cancel
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => handleSave('general')} disabled={saving}>
-                {saving ? (<><Spinner size="sm" className="me-1" />Saving...</>) : (<><FontAwesomeIcon icon={faSave} className="me-1" />Save Changes</>)}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="row">
-            <div className="col-md-6 mb-3"><strong>Application Name:</strong><p className="text-muted mb-0">{data.appName || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Business Name:</strong><p className="text-muted mb-0">{data.businessName || 'Not provided'}</p></div>
-            <div className="col-12 mb-3"><strong>Business Address:</strong><p className="text-muted mb-0">{data.businessAddress || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Contact Info:</strong><p className="text-muted mb-0">{data.contactInfo || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Email:</strong><p className="text-muted mb-0">{data.email || 'Not provided'}</p></div>
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  const renderEmailSettings = () => {
-    const data = editingSection === 'email' ? formData : (settingsData.email || {})
-    const isEditing = editingSection === 'email'
-
-    return (
-      <div>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h5 className="mb-0">Email Settings</h5>
-          {!isEditing && (
-            <Button variant="primary" size="sm" onClick={() => handleEditClick('email')} disabled={saving}>
-              <FontAwesomeIcon icon={faPencil} className="me-1" />
-              Edit
-            </Button>
-          )}
-        </div>
-
-        {isEditing ? (
-          <div>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">SMTP Host</label>
-                <FormControl
-                  value={data.smtpHost || ''}
-                  onChange={(e) => handleChange('smtpHost', e.target.value)}
-                  placeholder="smtp.gmail.com"
-                  isInvalid={!!errors.smtpHost}
-                />
-                {errors.smtpHost && <FormText className="text-danger">{errors.smtpHost}</FormText>}
-              </Col>
-              <Col md={6}>
-                <label className="form-label">SMTP Port</label>
-                <FormControl
-                  value={data.smtpPort || ''}
-                  onChange={(e) => handleChange('smtpPort', e.target.value)}
-                  placeholder="587"
-                  isInvalid={!!errors.smtpPort}
-                />
-                {errors.smtpPort && <FormText className="text-danger">{errors.smtpPort}</FormText>}
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">Username</label>
-                <FormControl
-                  value={data.username || ''}
-                  onChange={(e) => handleChange('username', e.target.value)}
-                  placeholder="your-email@gmail.com"
-                  isInvalid={!!errors.username}
-                />
-                {errors.username && <FormText className="text-danger">{errors.username}</FormText>}
-              </Col>
-              <Col md={6}>
-                <label className="form-label">Password</label>
-                <FormControl
-                  type="password"
-                  value={data.password || ''}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  placeholder="Enter password"
-                  isInvalid={!!errors.password}
-                />
-                {errors.password && <FormText className="text-danger">{errors.password}</FormText>}
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">From Email</label>
-                <FormControl
-                  type="email"
-                  value={data.fromEmail || ''}
-                  onChange={(e) => handleChange('fromEmail', e.target.value)}
-                  placeholder="noreply@yourcompany.com"
-                  isInvalid={!!errors.fromEmail}
-                />
-                {errors.fromEmail && <FormText className="text-danger">{errors.fromEmail}</FormText>}
-              </Col>
-              <Col md={6}>
-                <label className="form-label">From Name</label>
-                <FormControl
-                  value={data.fromName || ''}
-                  onChange={(e) => handleChange('fromName', e.target.value)}
-                  placeholder="Your Company Name"
-                />
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">Encryption</label>
-                <FormSelect
-                  value={data.encryption || 'tls'}
-                  onChange={(e) => handleChange('encryption', e.target.value)}
-                >
-                  <option value="tls">TLS</option>
-                  <option value="ssl">SSL</option>
-                  <option value="none">None</option>
-                </FormSelect>
-              </Col>
-            </Row>
-            <div className="d-flex gap-2 justify-content-end">
-              <Button variant="secondary" size="sm" onClick={handleCancelEdit} disabled={saving}>
-                <FontAwesomeIcon icon={faX} className="me-1" />
-                Cancel
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => handleSave('email')} disabled={saving}>
-                {saving ? (<><Spinner size="sm" className="me-1" />Saving...</>) : (<><FontAwesomeIcon icon={faSave} className="me-1" />Save Changes</>)}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="row">
-            <div className="col-md-6 mb-3"><strong>SMTP Host:</strong><p className="text-muted mb-0">{data.smtpHost || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>SMTP Port:</strong><p className="text-muted mb-0">{data.smtpPort || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Username:</strong><p className="text-muted mb-0">{data.username || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Password:</strong><p className="text-muted mb-0">{data.password ? '••••••••' : 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>From Email:</strong><p className="text-muted mb-0">{data.fromEmail || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>From Name:</strong><p className="text-muted mb-0">{data.fromName || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Encryption:</strong><p className="text-muted mb-0">{data.encryption ? data.encryption.toUpperCase() : 'Not provided'}</p></div>
-          </div>
-        )}
-
-        {/* Test Email Configuration Section */}
-        <hr className="my-4" />
-        <div className="mb-4">
-          <h6 className="fw-bold mb-2">Test Email Configuration</h6>
-          <p className="text-muted mb-3">Test your email settings by sending a test email.</p>
-          <Row className="align-items-end">
-            <Col md={8}>
-              <label className="form-label">Test Email Address</label>
+  const renderEmailNotifications = () => (
+    <Card className="mb-4">
+      <Card.Header className="bg-success text-white d-flex align-items-center">
+        <FontAwesomeIcon icon={faEnvelope} className="me-2" />
+        <h5 className="mb-0">Email & Notification Settings</h5>
+      </Card.Header>
+      <Card.Body>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Support Email</Form.Label>
               <FormControl
                 type="email"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                placeholder="Enter email address to test"
-                disabled={testingEmail}
+                value={settingsData.emailNotifications.supportEmail}
+                onChange={(e) => handleChange('emailNotifications', 'supportEmail', e.target.value)}
+                isInvalid={!!errors['emailNotifications.supportEmail']}
               />
-            </Col>
-            <Col md={4}>
-              <Button 
-                variant="info" 
-                onClick={handleTestEmail} 
-                disabled={testingEmail || !testEmail.trim()}
-                className="w-100"
-              >
-                {testingEmail ? (
-                  <>
-                    <Spinner size="sm" className="me-1" />
-                    Sending...
-                  </>
-                ) : (
-                  'Send Test Email'
-                )}
-              </Button>
-            </Col>
-          </Row>
-        </div>
-      </div>
-    )
-  }
-
-  const renderAWSS3Settings = () => {
-    const data = editingSection === 'awsS3' ? formData : (settingsData.awsS3 || {})
-    const isEditing = editingSection === 'awsS3'
-
-    return (
-      <div>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h5 className="mb-0">AWS S3 Settings</h5>
-          {!isEditing && (
-            <Button variant="primary" size="sm" onClick={() => handleEditClick('awsS3')} disabled={saving}>
-              <FontAwesomeIcon icon={faPencil} className="me-1" />
-              Edit
-            </Button>
-          )}
-        </div>
-
-        {isEditing ? (
-          <div>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">Access Key ID</label>
-                <FormControl
-                  value={data.accessKeyId || ''}
-                  onChange={(e) => handleChange('accessKeyId', e.target.value)}
-                  placeholder="AKIAIOSFODNN7EXAMPLE"
-                  isInvalid={!!errors.accessKeyId}
-                />
-                {errors.accessKeyId && <FormText className="text-danger">{errors.accessKeyId}</FormText>}
-              </Col>
-              <Col md={6}>
-                <label className="form-label">Secret Access Key</label>
-                <FormControl
-                  type="password"
-                  value={data.secretAccessKey || ''}
-                  onChange={(e) => handleChange('secretAccessKey', e.target.value)}
-                  placeholder="Enter secret access key"
-                  isInvalid={!!errors.secretAccessKey}
-                />
-                {errors.secretAccessKey && <FormText className="text-danger">{errors.secretAccessKey}</FormText>}
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={6}>
-                <label className="form-label">Bucket Name</label>
-                <FormControl
-                  value={data.bucketName || ''}
-                  onChange={(e) => handleChange('bucketName', e.target.value)}
-                  placeholder="my-bucket-name"
-                  isInvalid={!!errors.bucketName}
-                />
-                {errors.bucketName && <FormText className="text-danger">{errors.bucketName}</FormText>}
-              </Col>
-              <Col md={6}>
-                <label className="form-label">Region</label>
-                <FormControl
-                  value={data.region || ''}
-                  onChange={(e) => handleChange('region', e.target.value)}
-                  placeholder="us-east-1"
-                  isInvalid={!!errors.region}
-                />
-                {errors.region && <FormText className="text-danger">{errors.region}</FormText>}
-              </Col>
-            </Row>
-            <Row className="mb-3">
-              <Col md={12}>
-                <label className="form-label">Custom Endpoint (Optional)</label>
-                <FormControl
-                  value={data.customEndpoint || ''}
-                  onChange={(e) => handleChange('customEndpoint', e.target.value)}
-                  placeholder="https://s3.amazonaws.com"
-                />
-              </Col>
-            </Row>
-            <div className="d-flex gap-2 justify-content-end">
-              <Button variant="secondary" size="sm" onClick={handleCancelEdit} disabled={saving}>
-                <FontAwesomeIcon icon={faX} className="me-1" />
-                Cancel
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => handleSave('awsS3')} disabled={saving}>
-                {saving ? (<><Spinner size="sm" className="me-1" />Saving...</>) : (<><FontAwesomeIcon icon={faSave} className="me-1" />Save Changes</>)}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="row">
-            <div className="col-md-6 mb-3"><strong>Access Key ID:</strong><p className="text-muted mb-0">{data.accessKeyId || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Secret Access Key:</strong><p className="text-muted mb-0">{data.secretAccessKey ? '••••••••' : 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Bucket Name:</strong><p className="text-muted mb-0">{data.bucketName || 'Not provided'}</p></div>
-            <div className="col-md-6 mb-3"><strong>Region:</strong><p className="text-muted mb-0">{data.region || 'Not provided'}</p></div>
-            <div className="col-12 mb-3"><strong>Custom Endpoint:</strong><p className="text-muted mb-0">{data.customEndpoint || 'Not provided'}</p></div>
-          </div>
-        )}
-
-        {/* Test S3 Connection Section */}
-        <hr className="my-4" />
-        <div className="mb-4">
-          <h6 className="fw-bold mb-2">Test S3 Connection</h6>
-          <p className="text-muted mb-3">Test your AWS S3 configuration by verifying the connection.</p>
-          <div className="d-flex justify-content-start">
-            <Button 
-              variant="info" 
-              onClick={handleTestS3} 
-              disabled={testingS3}
-              style={{ minWidth: '150px' }}
-            >
-              {testingS3 ? (
-                <>
-                  <Spinner size="sm" className="me-1" />
-                  Testing...
-                </>
-              ) : (
-                'Test S3 Connection'
+              {errors['emailNotifications.supportEmail'] && (
+                <FormText className="text-danger">{errors['emailNotifications.supportEmail']}</FormText>
               )}
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Admin Email</Form.Label>
+              <FormControl
+                type="email"
+                value={settingsData.emailNotifications.adminEmail}
+                onChange={(e) => handleChange('emailNotifications', 'adminEmail', e.target.value)}
+                isInvalid={!!errors['emailNotifications.adminEmail']}
+              />
+              {errors['emailNotifications.adminEmail'] && (
+                <FormText className="text-danger">{errors['emailNotifications.adminEmail']}</FormText>
+              )}
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={12}>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Enable email notifications for new orders"
+                checked={settingsData.emailNotifications.enableOrderNotifications}
+                onChange={(e) => handleChange('emailNotifications', 'enableOrderNotifications', e.target.checked)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  )
+
+  const renderCurrencyRegional = () => (
+    <Card className="mb-4">
+      <Card.Header className="bg-success text-white d-flex align-items-center">
+        <FontAwesomeIcon icon={faGlobe} className="me-2" />
+        <h5 className="mb-0">Currency & Regional Settings</h5>
+      </Card.Header>
+      <Card.Body>
+        <Row>
+          <Col md={4}>
+            <Form.Group className="mb-3">
+              <Form.Label>Currency</Form.Label>
+              <FormSelect
+                value={settingsData.currencyRegional.currency}
+                onChange={(e) => handleChange('currencyRegional', 'currency', e.target.value)}
+              >
+                <option value="NZD">New Zealand Dollar (NZD)</option>
+                <option value="USD">US Dollar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="GBP">British Pound (GBP)</option>
+                <option value="AUD">Australian Dollar (AUD)</option>
+              </FormSelect>
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group className="mb-3">
+              <Form.Label>Date Format</Form.Label>
+              <FormSelect
+                value={settingsData.currencyRegional.dateFormat}
+                onChange={(e) => handleChange('currencyRegional', 'dateFormat', e.target.value)}
+              >
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+              </FormSelect>
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group className="mb-3">
+              <Form.Label>Time Zone</Form.Label>
+              <FormSelect
+                value={settingsData.currencyRegional.timeZone}
+                onChange={(e) => handleChange('currencyRegional', 'timeZone', e.target.value)}
+              >
+                <option value="Pacific/Auckland">Pacific/Auckland (NZDT/NZST)</option>
+                <option value="UTC">UTC</option>
+                <option value="America/New_York">America/New_York (EST/EDT)</option>
+                <option value="Europe/London">Europe/London (GMT/BST)</option>
+                <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+              </FormSelect>
+            </Form.Group>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  )
+
+  const renderSecuritySettings = () => (
+    <Card className="mb-4">
+      <Card.Header className="bg-success text-white d-flex align-items-center">
+        <FontAwesomeIcon icon={faShieldAlt} className="me-2" />
+        <h5 className="mb-0">Security Settings</h5>
+      </Card.Header>
+      <Card.Body>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Session Timeout (minutes)</Form.Label>
+              <FormControl
+                type="number"
+                min="5"
+                max="480"
+                value={settingsData.security.sessionTimeout}
+                onChange={(e) => handleChange('security', 'sessionTimeout', parseInt(e.target.value) || 30)}
+                isInvalid={!!errors['security.sessionTimeout']}
+              />
+              <FormText>Automatically log out inactive users after this period.</FormText>
+              {errors['security.sessionTimeout'] && (
+                <FormText className="text-danger">{errors['security.sessionTimeout']}</FormText>
+              )}
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Password Expiry (days)</Form.Label>
+              <FormControl
+                type="number"
+                min="30"
+                max="365"
+                value={settingsData.security.passwordExpiry}
+                onChange={(e) => handleChange('security', 'passwordExpiry', parseInt(e.target.value) || 90)}
+                isInvalid={!!errors['security.passwordExpiry']}
+              />
+              <FormText>Force password change after this period.</FormText>
+              {errors['security.passwordExpiry'] && (
+                <FormText className="text-danger">{errors['security.passwordExpiry']}</FormText>
+              )}
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={12}>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Enable Two-Factor Authentication for admin accounts"
+                checked={settingsData.security.enableTwoFactor}
+                onChange={(e) => handleChange('security', 'enableTwoFactor', e.target.checked)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  )
 
   if (loading) {
     return (
@@ -527,46 +421,45 @@ const Settings = () => {
 
   return (
     <Container fluid>
-      <Card>
-        <Card.Header>
-          <Card.Title className="mb-0">Settings</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Nav variant="tabs" className="mb-4">
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'general'}
-                onClick={() => setActiveTab('general')}
-                style={{ cursor: 'pointer' }}
-              >
-                General Settings
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'email'}
-                onClick={() => setActiveTab('email')}
-                style={{ cursor: 'pointer' }}
-              >
-                Email Settings
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'awsS3'}
-                onClick={() => setActiveTab('awsS3')}
-                style={{ cursor: 'pointer' }}
-              >
-                AWS S3 Settings
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-
-          {activeTab === 'general' && renderGeneralSettings()}
-          {activeTab === 'email' && renderEmailSettings()}
-          {activeTab === 'awsS3' && renderAWSS3Settings()}
-        </Card.Body>
-      </Card>
+      <Row>
+        <Col xs={12}>
+          <Card>
+            <Card.Header>
+              <Card.Title className="mb-0">Global Settings</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              {renderTaxPricingSettings()}
+              {renderBusinessInfo()}
+              {renderEmailNotifications()}
+              {renderCurrencyRegional()}
+              {renderSecuritySettings()}
+              
+              {/* Save All Settings Button */}
+              <div className="text-center mt-4">
+                <Button 
+                  variant="success" 
+                  size="lg" 
+                  onClick={handleSaveAll}
+                  disabled={saving}
+                  className="px-5"
+                >
+                  {saving ? (
+                    <>
+                      <Spinner size="sm" className="me-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faSave} className="me-2" />
+                      Save All Settings
+                    </>
+                  )}
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   )
 }

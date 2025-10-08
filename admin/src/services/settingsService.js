@@ -124,6 +124,33 @@ class SettingsService {
     }
   }
 
+  // Update all settings at once
+  async updateAllSettings(allSettingsData) {
+    try {
+      // For development, simulate successful update
+      return {
+        success: true,
+        data: allSettingsData,
+        message: 'All settings updated successfully'
+      }
+      
+      // Uncomment for real API integration
+      // const response = await apiService.put(API_ENDPOINTS.SETTINGS.BASE, allSettingsData)
+      // return {
+      //   success: true,
+      //   data: response.data,
+      //   message: 'All settings updated successfully'
+      // }
+    } catch (error) {
+      console.error('Error updating all settings:', error)
+      return {
+        success: false,
+        data: null,
+        message: error.response?.data?.message || 'Failed to update settings'
+      }
+    }
+  }
+
   // Test email configuration
   async testEmailConfiguration() {
     try {
