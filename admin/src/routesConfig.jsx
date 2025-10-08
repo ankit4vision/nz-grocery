@@ -15,10 +15,34 @@ const routesConfig = [
   { path: '/roles/edit/:id', name: 'Edit Role' },
   { path: '/roles/:id', name: 'Role Details' },
   
+  // Category Management Routes
+  { path: '/categories', name: 'Categories' },
+  { path: '/categories/create', name: 'Create Category' },
+  { path: '/categories/edit/:id', name: 'Edit Category' },
+  { path: '/categories/:id', name: 'Category Details' },
+  
+  // Product Management Routes
+  { path: '/products', name: 'Products' },
+  { path: '/add-product', name: 'Add Product' },
+  { path: '/products/edit/:id', name: 'Edit Product' },
+  { path: '/products/:id', name: 'Product Details' },
+  
+  // Order Management Routes
+  { path: '/orders', name: 'Order Management' },
+  { path: '/order-history', name: 'Order History' },
+  { path: '/orders/:id', name: 'Order Details' },
+  
+  // Customer Management Routes
+  { path: '/customers', name: 'Customer Management' },
+  { path: '/customers/:id', name: 'Customer Details' },
+  
+  // Content Management Routes
+  { path: '/content', name: 'Content Management' },
+  
   // Account Routes
   { path: '/profile', name: 'Profile' },
   { path: '/profile/edit', name: 'Edit Profile' },
-  { path: '/settings', name: 'Settings' },
+  { path: '/settings', name: 'Global Settings' },
   
   // Auth Routes
   { path: '/login', name: 'Login' },
