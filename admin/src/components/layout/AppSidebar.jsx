@@ -26,7 +26,7 @@ const AppSidebar = () => {
 
   return (
     <CSidebar
-      className=""
+      className="sidebar-custom"
       colorScheme="dark"
       position="fixed"
       unfoldable={unfoldable}
@@ -36,6 +36,13 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
+        <CSidebarBrand to="/" className="sidebar-brand-custom">
+          <img
+            src={logoImg}
+            alt="NZ Grocery Admin"
+            className="sidebar-brand-logo-full"
+          />
+        </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
           dark
@@ -43,24 +50,9 @@ const AppSidebar = () => {
         />
       </CSidebarHeader>
       
-      {/* Logo positioned before menu */}
-      <div className="sidebar-logo-container">
-        <CSidebarBrand to="/">
-          <img
-            src={logoImg}
-            alt="Farm Fridge"
-            className="sidebar-brand-full"
-            style={{ width: '100%', height: 'auto', display: 'block' }}
-          />
-        </CSidebarBrand>
-      </div>
-      
+      {/* Navigation */}
       <AppSidebarNav items={navigation} />
-      <CSidebarFooter className="border-top d-none d-lg-flex">
-        <CSidebarToggler
-          onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
-        />
-      </CSidebarFooter>
+      
     </CSidebar>
   )
 }

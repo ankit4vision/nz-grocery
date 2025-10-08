@@ -1,33 +1,43 @@
-/* Simple CoreUI Theme - Clean and Minimal */
+/* NZ Grocery Admin Theme - Green & Blue Design */
 
 :root,
 html,
 body,
 html[data-coreui-theme="light"],
 body[data-coreui-theme="light"] {
-  /* E-Grocery Fresh Theme */
-  --cui-primary: #22c55e !important; /* fresh green */
+  /* Primary Green Theme - Matching POS Design */
+  --cui-primary: #22c55e !important; /* Fresh green - matches design */
   --cui-primary-rgb: 34, 197, 94 !important;
-  --cui-secondary: #6b7280 !important; /* neutral gray */
-  --cui-success: #10b981 !important; /* success green */
-  --cui-info: #06b6d4 !important; /* cyan blue */
-  --cui-warning: #f59e0b !important; /* amber orange */
-  --cui-danger: #ef4444 !important; /* red */
-  --cui-light: #f9fafb !important; /* light gray */
-  --cui-dark: #1f2937 !important; /* dark gray */
+  --cui-secondary: #6b7280 !important; /* Neutral gray */
+  --cui-success: #10b981 !important; /* Success green */
+  --cui-info: #3b82f6 !important; /* Blue for data visualization */
+  --cui-warning: #f59e0b !important; /* Amber orange */
+  --cui-danger: #ef4444 !important; /* Red */
+  --cui-light: #f8fafc !important; /* Light gray background */
+  --cui-dark: #1e293b !important; /* Dark gray */
+  
+  /* Additional color palette for charts and data */
+  --chart-green: #22c55e !important;
+  --chart-blue: #3b82f6 !important;
+  --chart-light-green: #86efac !important;
+  --chart-light-blue: #93c5fd !important;
+  --chart-dark-green: #16a34a !important;
+  --chart-dark-blue: #1d4ed8 !important;
 }
 
-/* Optional: darker-friendly primary */
+/* Dark theme adjustments */
 html[data-coreui-theme="dark"],
 body[data-coreui-theme="dark"] {
-  --cui-primary: #34d399 !important; /* brighter fresh green for contrast */
+  --cui-primary: #34d399 !important; /* Brighter green for dark mode */
   --cui-primary-rgb: 52, 211, 153 !important;
+  --cui-info: #60a5fa !important; /* Lighter blue for dark mode */
 }
 
 /* Force immediate primary look on common utilities/components */
 .btn-primary {
   background-color: var(--cui-primary) !important;
   border-color: var(--cui-primary) !important;
+  box-shadow: 0 2px 4px rgba(var(--cui-primary-rgb), 0.2) !important;
 }
 
 .text-primary { color: var(--cui-primary) !important; }
@@ -36,17 +46,19 @@ body[data-coreui-theme="dark"] {
 /* Links */
 :root, html, body {
   --cui-link-color: var(--cui-primary) !important;
-  --cui-link-hover-color: #16a34a !important; /* darker green */
+  --cui-link-hover-color: #16a34a !important; /* Darker green */
 }
 
 a, .link-primary { color: var(--cui-link-color) !important; }
 a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !important; }
 
-/* Buttons - hover/focus/active */
+/* Enhanced button styles */
 .btn-primary:hover,
 .btn-primary:focus {
   background-color: #16a34a !important;
   border-color: #16a34a !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(var(--cui-primary-rgb), 0.3) !important;
 }
 
 .btn-primary:active,
@@ -54,6 +66,7 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
 .show > .btn-primary.dropdown-toggle {
   background-color: #15803d !important;
   border-color: #15803d !important;
+  transform: translateY(0) !important;
 }
 
 .btn-primary:focus-visible {
@@ -80,9 +93,9 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
 
 /* Alerts */
 .alert-primary {
-  color: #12351a !important; /* readable on green tints */
-  background-color: rgba(var(--cui-primary-rgb), 0.12) !important;
-  border-color: rgba(var(--cui-primary-rgb), 0.3) !important;
+  color: #12351a !important;
+  background-color: rgba(var(--cui-primary-rgb), 0.1) !important;
+  border-color: rgba(var(--cui-primary-rgb), 0.2) !important;
 }
 
 /* Nav active states */
@@ -98,13 +111,13 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
   border-color: var(--cui-primary) !important;
 }
 
-/* Subtle gradients for headers/cards */
+/* Card headers with subtle gradients */
 .card-header,
 .page-header {
-  background-image: linear-gradient(180deg, rgba(var(--cui-primary-rgb), 0.04), rgba(0,0,0,0)) !important;
+  background-image: linear-gradient(180deg, rgba(var(--cui-primary-rgb), 0.05), rgba(0,0,0,0)) !important;
 }
 
-/* Chart color tokens (use in chart configs via CSS variables) */
+/* Chart color tokens */
 :root, html, body {
   --chart-primary: var(--cui-primary) !important;
   --chart-primary-rgb: var(--cui-primary-rgb) !important;
@@ -113,7 +126,7 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
   --chart-info: var(--cui-info) !important;
 }
 
-/* Sidebar - Enhanced gradient background */
+/* Enhanced Sidebar - Clean White Design */
 .c-sidebar,
 .c-sidebar-dark,
 .c-sidebar-light,
@@ -125,30 +138,30 @@ html[data-coreui-theme="dark"] .c-sidebar,
 body[data-coreui-theme="dark"] .c-sidebar,
 .c-sidebar.bg-dark,
 .c-sidebar.bg-light {
-  /* Rich gradient background with depth */
-  background: linear-gradient(180deg, #14532d 0%, #166534 30%, #3f6212 70%, #4d7c0f 100%) !important;
-  background-color: #22c55e !important;
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1) !important;
+  /* Clean white background */
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08) !important;
+  border-right: 1px solid #e2e8f0 !important;
 }
 
 /* Force override any CoreUI sidebar background */
 [class*="sidebar"] {
-  background: linear-gradient(180deg, #14532d 0%, #166534 30%, #3f6212 70%, #4d7c0f 100%) !important;
-  background-color: #22c55e !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   border: none !important;
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1), 2px 0 8px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Logo positioned before menu items */
+/* Logo styling - Clean and modern for white background */
 .c-sidebar .c-sidebar-brand,
 .sidebar-brand-full {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-radius: 10px !important;
-  padding: 12px 16px !important;
-  margin: 16px 12px 20px 12px !important;
-  backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  background: transparent !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  margin: 20px 16px 24px 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -156,24 +169,27 @@ body[data-coreui-theme="dark"] .c-sidebar,
 
 .c-sidebar .c-sidebar-brand img,
 .sidebar-brand-full img {
-  max-width: 160px !important;
+  max-width: 180px !important;
   height: auto !important;
-  filter: brightness(1.1) contrast(1.1) !important;
+  filter: none !important;
 }
 
-/* Remove header styling */
+/* Show header styling */
 .c-sidebar .c-sidebar-header {
-  display: none !important;
+  display: flex !important;
 }
 
-/* Logo container styling */
-.sidebar-logo-container {
-  padding: 0 !important;
-  margin: 0 !important;
+/* Sidebar Header with Logo - proper CoreUI structure */
+.c-sidebar-header {
+  background: transparent !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
 }
 
-
-/* Enhanced sidebar text and icon colors with subtle variations */
+/* Enhanced sidebar text and icon colors for white background */
 .c-sidebar,
 .c-sidebar *,
 .sidebar,
@@ -210,11 +226,11 @@ body[data-coreui-theme="dark"] .c-sidebar,
 .sidebar div,
 .sidebar p,
 .sidebar a {
-  color: rgba(255, 255, 255, 0.95) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  color: #1f2937 !important;
+  text-shadow: none !important;
 }
 
-/* Sidebar icons with enhanced styling */
+/* Sidebar icons with better colors for white background */
 .c-sidebar .nav-link .nav-icon,
 .c-sidebar .nav-title .nav-icon,
 .c-sidebar .c-sidebar-nav-icon,
@@ -229,179 +245,333 @@ body[data-coreui-theme="dark"] .c-sidebar,
 .sidebar i,
 .sidebar svg,
 .sidebar .icon {
-  color: rgba(255, 255, 255, 0.9) !important;
-  fill: rgba(255, 255, 255, 0.9) !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)) !important;
+  color: #4b5563 !important;
+  fill: #4b5563 !important;
+  filter: none !important;
   transition: all 0.3s ease !important;
 }
 
-/* Icon hover effects */
+/* Icon hover effects for white background */
 .c-sidebar .nav-link:hover .nav-icon,
 .c-sidebar .nav-link:hover i,
 .c-sidebar .nav-link:hover svg,
 .sidebar .nav-link:hover .nav-icon,
 .sidebar .nav-link:hover i,
 .sidebar .nav-link:hover svg {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-  transform: scale(1.1) !important;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
+  color: var(--cui-primary) !important;
+  fill: var(--cui-primary) !important;
+  transform: scale(1.05) !important;
 }
 
-/* Enhanced hover and active states with smooth transitions */
+/* Enhanced hover and active states for white background */
 .c-sidebar .nav-link,
 .c-sidebar .c-sidebar-nav-link,
 .sidebar .nav-link,
 .sidebar .sidebar-nav-link {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  border-radius: 8px !important;
-  margin: 2px 8px !important;
+  border-radius: 10px !important;
+  margin: 3px 12px !important;
   position: relative !important;
+  padding: 12px 16px !important;
 }
 
 .c-sidebar .nav-link:hover,
 .c-sidebar .c-sidebar-nav-link:hover,
 .sidebar .nav-link:hover,
 .sidebar .sidebar-nav-link:hover {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
-  backdrop-filter: blur(10px) !important;
+  color: var(--cui-primary) !important;
+  background: rgba(var(--cui-primary-rgb), 0.08) !important;
   transform: translateX(4px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(var(--cui-primary-rgb), 0.15) !important;
 }
 
 .c-sidebar .nav-link.active,
 .c-sidebar .c-sidebar-nav-link.active,
 .sidebar .nav-link.active,
 .sidebar .sidebar-nav-link.active {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15)) !important;
-  backdrop-filter: blur(15px) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-  border-left: 3px solid rgba(255, 255, 255, 0.8) !important;
+  color: var(--cui-primary) !important;
+  background: rgba(var(--cui-primary-rgb), 0.12) !important;
+  box-shadow: 0 4px 12px rgba(var(--cui-primary-rgb), 0.2) !important;
+  border-left: 4px solid var(--cui-primary) !important;
+  font-weight: 600 !important;
 }
 
-/* Navigation group headers with enhanced styling */
+/* Navigation group headers with better styling */
 .c-sidebar .nav-title,
 .sidebar .nav-title {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 600 !important;
+  color: #374151 !important;
+  font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
+  letter-spacing: 1px !important;
   font-size: 0.75rem !important;
-  margin: 16px 8px 8px 8px !important;
-  padding: 8px 12px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 6px !important;
-  backdrop-filter: blur(5px) !important;
+  margin: 20px 12px 12px 12px !important;
+  padding: 10px 16px !important;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+  border-radius: 8px !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Enhanced sidebar footer styling */
+/* Enhanced sidebar footer with better styling */
 .c-sidebar .c-sidebar-footer,
 .sidebar .sidebar-footer {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px) !important;
-  padding: 12px !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  border-top: 2px solid #e2e8f0 !important;
+  padding: 16px !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Enhanced sidebar toggler */
+/* Enhanced sidebar toggler for white background */
 .c-sidebar .c-sidebar-toggler,
 .sidebar .sidebar-toggler {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 8px !important;
-  color: rgba(255, 255, 255, 0.9) !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  color: #6b7280 !important;
   transition: all 0.3s ease !important;
-  backdrop-filter: blur(10px) !important;
+  padding: 8px !important;
 }
 
 .c-sidebar .c-sidebar-toggler:hover,
 .sidebar .sidebar-toggler:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  color: #ffffff !important;
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: var(--cui-primary) !important;
   transform: scale(1.05) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Enhanced close button */
+/* Enhanced close button for white background */
 .c-sidebar .c-close-button,
 .sidebar .close-button {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 6px !important;
-  color: rgba(255, 255, 255, 0.9) !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  color: #6b7280 !important;
   transition: all 0.3s ease !important;
-  backdrop-filter: blur(10px) !important;
 }
 
 .c-sidebar .c-close-button:hover,
 .sidebar .close-button:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  color: #ffffff !important;
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: var(--cui-primary) !important;
   transform: scale(1.1) !important;
+}
+
+/* Badge styling for active indicators - white background */
+.c-sidebar .badge,
+.sidebar .badge {
+  background-color: var(--cui-primary) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 50% !important;
+  width: 8px !important;
+  height: 8px !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+}
+
+/* Enhanced Sidebar Custom Components - white background */
+.sidebar-custom {
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+/* Sidebar Brand in Header */
+.sidebar-brand-custom {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: all 0.2s ease !important;
+  flex: 1 !important;
+}
+
+.sidebar-brand-custom:hover {
+  background: transparent !important;
+}
+
+.sidebar-brand-logo-full {
+  width: 100% !important;
+  max-width: 180px !important;
+  height: auto !important;
+  filter: none !important;
+  margin: 0 !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+
+/* Enhanced Navigation Items */
+.c-sidebar .nav-link,
+.c-sidebar .c-sidebar-nav-link {
+  padding: 12px 16px !important;
+  margin: 2px 12px !important;
+  border-radius: 10px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.c-sidebar .nav-link:hover,
+.c-sidebar .c-sidebar-nav-link:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
+  backdrop-filter: blur(10px) !important;
+  transform: translateX(6px) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.c-sidebar .nav-link.active,
+.c-sidebar .c-sidebar-nav-link.active {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15)) !important;
+  backdrop-filter: blur(15px) !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  border-left: 4px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Navigation Group Styling */
+.c-sidebar .nav-group {
+  margin-bottom: 8px !important;
+}
+
+.c-sidebar .nav-group .nav-link {
+  padding: 10px 16px !important;
+  margin: 1px 12px !important;
+  font-size: 0.875rem !important;
+}
+
+/* Navigation Icons */
+.c-sidebar .nav-icon {
+  width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+  .sidebar-brand-custom {
+    margin: 0 0 16px 0 !important;
+    padding: 16px 12px !important;
+  }
+  
+  .sidebar-brand-logo-full {
+    max-width: 140px !important;
+  }
+  
+  .sidebar-footer-custom {
+    padding: 10px 12px !important;
+  }
+  
+  .sidebar-toggler-custom {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 6px !important;
+  }
+  
+  .c-sidebar .nav-link,
+  .c-sidebar .c-sidebar-nav-link {
+    padding: 10px 12px !important;
+    margin: 1px 8px !important;
+  }
 }
 
 /* App Content Layout */
 .app-content {
-  padding: 1rem;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
 }
 
 /* Page Header Styles */
 .page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #212529;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0;
 }
 
 .page-subtitle {
   font-size: 0.875rem;
-  color: #6c757d;
-  margin: 0.25rem 0 0 0;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
 }
 
 .page-actions {
   margin-top: 1rem;
 }
 
+/* Enhanced Card Styles */
+.card {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  background-color: #ffffff !important;
+}
+
+.card-header {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.card-body {
+  padding: 1.5rem !important;
+}
+
 /* Table Container Styles */
 .table-container {
   background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
 /* Table Border Styles */
 .table-bordered {
-  border: 1px solid #e9ecef !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 .table-bordered th,
 .table-bordered td {
-  border: 1px solid #e9ecef !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 .table-bordered thead th {
   border-bottom-width: 1px !important;
-  border-color: #e9ecef !important;
+  border-color: #e2e8f0 !important;
+  background-color: #f8fafc !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
 }
 
 .table-bordered tbody tr:first-child td {
-  border-top: 1px solid #e9ecef !important;
+  border-top: 1px solid #e2e8f0 !important;
 }
 
-/* Pagination Styles */
+/* Enhanced Pagination Styles */
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -415,7 +585,7 @@ body[data-coreui-theme="dark"] .c-sidebar,
 
 .table-info {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: #64748b;
   font-weight: 500;
   order: 2;
 }
@@ -428,41 +598,43 @@ body[data-coreui-theme="dark"] .c-sidebar,
 }
 
 .pagination-btn {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #e9ecef;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
   background-color: #ffffff;
-  color: #495057;
-  border-radius: 0.25rem;
+  color: #374151;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.2s ease-in-out;
   min-width: 2.5rem;
   text-align: center;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: #f8f9fa;
-  border-color: #dee2e6;
-  color: #495057;
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #374151;
+  transform: translateY(-1px);
 }
 
 .pagination-btn:disabled {
-  background-color: #f8f9fa;
-  border-color: #e9ecef;
-  color: #6c757d;
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #94a3b8;
   cursor: not-allowed;
 }
 
 .pagination-btn.active {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+  background-color: var(--cui-primary);
+  border-color: var(--cui-primary);
   color: #ffffff;
+  box-shadow: 0 2px 4px rgba(var(--cui-primary-rgb), 0.2);
 }
 
 .pagination-btn.active:hover {
-  background-color: #0b5ed7;
-  border-color: #0a58ca;
+  background-color: #16a34a;
+  border-color: #16a34a;
 }
 
 /* Responsive pagination */
@@ -479,154 +651,113 @@ body[data-coreui-theme="dark"] .c-sidebar,
 }
 
 .table-header {
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-  background-color: #f8f9fa;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
 }
 
 .table-title {
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #212529;
+  color: #1e293b;
   margin: 0;
 }
 
 .table-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
 }
 
-/* Stats Cards */
+/* Enhanced Stats Cards */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .stat-card {
   background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  padding: 1rem;
-  transition: box-shadow 0.15s ease-in-out;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .stat-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .stat-card-primary {
-  border-left: 4px solid #007bff;
+  border-left: 4px solid var(--cui-primary);
 }
 
 .stat-card-success {
-  border-left: 4px solid #28a745;
+  border-left: 4px solid var(--cui-success);
 }
 
 .stat-card-info {
-  border-left: 4px solid #17a2b8;
+  border-left: 4px solid var(--cui-info);
 }
 
 .stat-card-warning {
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid var(--cui-warning);
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #212529;
+  color: #1e293b;
   margin: 0;
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: #6c757d;
-  margin: 0.25rem 0 0 0;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
 }
 
 .stat-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 0.375rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .stat-icon-primary {
-  background-color: #e3f2fd;
-  color: #007bff;
+  background-color: rgba(var(--cui-primary-rgb), 0.1);
+  color: var(--cui-primary);
 }
 
 .stat-icon-success {
-  background-color: #d4edda;
-  color: #28a745;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--cui-success);
 }
 
 .stat-icon-info {
-  background-color: #d1ecf1;
-  color: #17a2b8;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--cui-info);
 }
 
 .stat-icon-warning {
-  background-color: #fff3cd;
-  color: #ffc107;
-}
-
-/* Pagination Styles */
-.table-footer {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid #dee2e6;
-  background-color: #f8f9fa;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.table-info {
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
-.table-pagination {
-  display: flex;
-  gap: 0.25rem;
-  align-items: center;
-}
-
-.pagination-btn {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #dee2e6;
-  background-color: #ffffff;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: all 0.15s ease-in-out;
-}
-
-.pagination-btn:hover {
-  background-color: #e9ecef;
-}
-
-.pagination-btn.active {
-  background-color: #007bff;
-  color: #ffffff;
-  border-color: #007bff;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--cui-warning);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .app-content {
-    padding: 0.75rem;
+    padding: 1rem;
   }
   
   .stats-grid {
@@ -636,7 +767,7 @@ body[data-coreui-theme="dark"] .c-sidebar,
   .table-header .d-flex {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
   
   .table-actions {
@@ -647,6 +778,14 @@ body[data-coreui-theme="dark"] .c-sidebar,
   .table-actions .form-control,
   .table-actions .form-select {
     width: 100% !important;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.75rem;
   }
 }
