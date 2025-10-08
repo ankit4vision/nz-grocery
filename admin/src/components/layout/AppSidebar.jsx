@@ -36,6 +36,15 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
+        <CCloseButton
+          className="d-lg-none"
+          dark
+          onClick={() => dispatch({ type: 'set', sidebarShow: false })}
+        />
+      </CSidebarHeader>
+      
+      {/* Logo positioned before menu */}
+      <div className="sidebar-logo-container">
         <CSidebarBrand to="/">
           <img
             src={logoImg}
@@ -44,12 +53,8 @@ const AppSidebar = () => {
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </CSidebarBrand>
-        <CCloseButton
-          className="d-lg-none"
-          dark
-          onClick={() => dispatch({ type: 'set', sidebarShow: false })}
-        />
-      </CSidebarHeader>
+      </div>
+      
       <AppSidebarNav items={navigation} />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler

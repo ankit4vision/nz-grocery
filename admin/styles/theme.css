@@ -113,7 +113,7 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
   --chart-info: var(--cui-info) !important;
 }
 
-/* Sidebar - solid green background like Farm Fridge */
+/* Sidebar - Enhanced gradient background */
 .c-sidebar,
 .c-sidebar-dark,
 .c-sidebar-light,
@@ -125,50 +125,55 @@ html[data-coreui-theme="dark"] .c-sidebar,
 body[data-coreui-theme="dark"] .c-sidebar,
 .c-sidebar.bg-dark,
 .c-sidebar.bg-light {
-  /* Solid vibrant green background */
+  /* Rich gradient background with depth */
+  background: linear-gradient(180deg, #14532d 0%, #166534 30%, #3f6212 70%, #4d7c0f 100%) !important;
   background-color: #22c55e !important;
-  background-image: none !important;
-  background: #22c55e !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Force override any CoreUI sidebar background */
 [class*="sidebar"] {
+  background: linear-gradient(180deg, #14532d 0%, #166534 30%, #3f6212 70%, #4d7c0f 100%) !important;
   background-color: #22c55e !important;
-  background-image: linear-gradient(135deg, #28a745, #20c997) !important;
-  background: linear-gradient(135deg, #28a745, #20c997) !important;
   border: none !important;
-  box-shadow: none !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1), 2px 0 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Sidebar brand logo enhancement */
+/* Logo positioned before menu items */
 .c-sidebar .c-sidebar-brand,
 .sidebar-brand-full {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border-radius: 8px !important;
-  padding: 8px 12px !important;
-  margin: 8px !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  margin: 16px 12px 20px 12px !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 .c-sidebar .c-sidebar-brand img,
 .sidebar-brand-full img {
+  max-width: 160px !important;
+  height: auto !important;
   filter: brightness(1.1) contrast(1.1) !important;
 }
 
-/* Force white text on any sidebar element */
-[class*="sidebar"] *,
-[class*="sidebar"] span,
-[class*="sidebar"] div,
-[class*="sidebar"] p,
-[class*="sidebar"] a,
-[class*="sidebar"] i,
-[class*="sidebar"] svg {
-  color: #ffffff !important;
-  fill: #ffffff !important;
+/* Remove header styling */
+.c-sidebar .c-sidebar-header {
+  display: none !important;
 }
 
-/* Force white text on ALL sidebar elements */
+/* Logo container styling */
+.sidebar-logo-container {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+
+/* Enhanced sidebar text and icon colors with subtle variations */
 .c-sidebar,
 .c-sidebar *,
 .sidebar,
@@ -205,10 +210,11 @@ body[data-coreui-theme="dark"] .c-sidebar,
 .sidebar div,
 .sidebar p,
 .sidebar a {
-  color: #ffffff !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Sidebar icons - force white */
+/* Sidebar icons with enhanced styling */
 .c-sidebar .nav-link .nav-icon,
 .c-sidebar .nav-title .nav-icon,
 .c-sidebar .c-sidebar-nav-icon,
@@ -223,21 +229,119 @@ body[data-coreui-theme="dark"] .c-sidebar,
 .sidebar i,
 .sidebar svg,
 .sidebar .icon {
-  color: #ffffff !important;
-  fill: #ffffff !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  fill: rgba(255, 255, 255, 0.9) !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)) !important;
+  transition: all 0.3s ease !important;
 }
 
-/* Hover states */
+/* Icon hover effects */
+.c-sidebar .nav-link:hover .nav-icon,
+.c-sidebar .nav-link:hover i,
+.c-sidebar .nav-link:hover svg,
+.sidebar .nav-link:hover .nav-icon,
+.sidebar .nav-link:hover i,
+.sidebar .nav-link:hover svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  transform: scale(1.1) !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
+}
+
+/* Enhanced hover and active states with smooth transitions */
+.c-sidebar .nav-link,
+.c-sidebar .c-sidebar-nav-link,
+.sidebar .nav-link,
+.sidebar .sidebar-nav-link {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 8px !important;
+  margin: 2px 8px !important;
+  position: relative !important;
+}
+
 .c-sidebar .nav-link:hover,
-.c-sidebar .nav-link.active,
 .c-sidebar .c-sidebar-nav-link:hover,
-.c-sidebar .c-sidebar-nav-link.active,
 .sidebar .nav-link:hover,
+.sidebar .sidebar-nav-link:hover {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
+  backdrop-filter: blur(10px) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.c-sidebar .nav-link.active,
+.c-sidebar .c-sidebar-nav-link.active,
 .sidebar .nav-link.active,
-.sidebar .sidebar-nav-link:hover,
 .sidebar .sidebar-nav-link.active {
   color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15)) !important;
+  backdrop-filter: blur(15px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  border-left: 3px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Navigation group headers with enhanced styling */
+.c-sidebar .nav-title,
+.sidebar .nav-title {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-size: 0.75rem !important;
+  margin: 16px 8px 8px 8px !important;
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 6px !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* Enhanced sidebar footer styling */
+.c-sidebar .c-sidebar-footer,
+.sidebar .sidebar-footer {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  padding: 12px !important;
+}
+
+/* Enhanced sidebar toggler */
+.c-sidebar .c-sidebar-toggler,
+.sidebar .sidebar-toggler {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.c-sidebar .c-sidebar-toggler:hover,
+.sidebar .sidebar-toggler:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Enhanced close button */
+.c-sidebar .c-close-button,
+.sidebar .close-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.c-sidebar .c-close-button:hover,
+.sidebar .close-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  transform: scale(1.1) !important;
 }
 
 /* App Content Layout */
