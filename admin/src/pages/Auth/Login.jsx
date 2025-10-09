@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { useAuth } from '../../context/AuthContext'
+import logoImg from '../../assets/logo/logo-transprant.png'
 import '../../styles/auth.css'
 
 const Login = () => {
@@ -122,12 +123,12 @@ const Login = () => {
           <Col md={6} lg={5} xl={4}>
             {/* Logo/Brand Section */}
             <div className="text-center mb-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
-                   style={{ width: '80px', height: '80px' }}>
-                <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
+              <div className="d-inline-flex align-items-center justify-content-center mb-3 p-3" 
+                   style={{ boxShadow: '0 4px 20px rgba(34, 197, 94, 0.15)' }}>
+                <img src={logoImg} alt="Farm2Fridge Logo" style={{ width: '120px', height: 'auto' }} />
               </div>
-              <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
-              <p className="text-muted mb-0">Secure Admin Dashboard</p>
+              <h2 className="text-success fw-bold mb-1">Farm2Fridge Admin</h2>
+              <p className="text-muted mb-0">Fresh Farm to Table Management</p>
             </div>
 
             <div className="auth-card">
@@ -181,7 +182,7 @@ const Login = () => {
                     onChange={handleChange}
                     className="fw-medium"
                   />
-                  <Link to="/forgot-password" className="text-decoration-none text-primary fw-medium">
+                  <Link to="/forgot-password" className="text-decoration-none text-success fw-medium">
                     Forgot password?
                   </Link>
                 </div>
@@ -190,7 +191,7 @@ const Login = () => {
                   type="submit"
                   disabled={loading}
                   className="auth-button w-100"
-                  variant="primary"
+                  variant="success"
                 >
                   {loading ? 'Signing In...' : 'Sign In'}
                 </Button>
@@ -205,22 +206,14 @@ const Login = () => {
               </div>
               <div className="demo-credential-item">
                 <span className="demo-credential-label">Admin:</span>
-                <code className="demo-credential-value">admin@example.com / admin123</code>
-              </div>
-              <div className="demo-credential-item">
-                <span className="demo-credential-label">Manager:</span>
-                <code className="demo-credential-value">manager@example.com / manager123</code>
-              </div>
-              <div className="demo-credential-item">
-                <span className="demo-credential-label">User:</span>
-                <code className="demo-credential-value">user@example.com / user123</code>
+                <code className="demo-credential-value">admin@farm2fridge.com / admin123</code>
               </div>
             </div>
 
             {/* Footer */}
             <div className="text-center mt-4">
               <p className="text-muted small mb-0">
-                © 2024 BaseAdmin. All rights reserved.
+                © 2024 Farm2Fridge Admin. All rights reserved.
               </p>
             </div>
           </Col>

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faLock, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { Button } from '../../components'
+import logoImg from '../../assets/logo/logo-transprant.png'
 import '../../styles/auth.css'
 
 const ForgotPassword = () => {
@@ -76,12 +77,12 @@ const ForgotPassword = () => {
             <Col md={6} lg={5} xl={4}>
               {/* Logo/Brand Section */}
               <div className="text-center mb-4">
-                <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
-                     style={{ width: '80px', height: '80px' }}>
-                  <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
+                <div className="d-inline-flex align-items-center justify-content-center mb-3 p-3" 
+                     style={{ boxShadow: '0 4px 20px rgba(34, 197, 94, 0.15)' }}>
+                  <img src={logoImg} alt="Farm2Fridge Logo" style={{ width: '120px', height: 'auto' }} />
                 </div>
-              <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
-              <p className="text-muted mb-0">Secure Admin Dashboard</p>
+              <h2 className="text-success fw-bold mb-1">Farm2Fridge Admin</h2>
+              <p className="text-muted mb-0">Fresh Farm to Table Management</p>
               </div>
 
               <div className="auth-card text-center">
@@ -90,15 +91,15 @@ const ForgotPassword = () => {
                   <p className="text-muted">Password reset instructions sent</p>
                 </div>
                 <div className="mb-4">
-                  <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" 
+                  <div className="d-inline-flex align-items-center justify-content-center bg-gradient-success rounded-circle mb-3" 
                        style={{ width: '80px', height: '80px' }}>
-                    <FontAwesomeIcon icon={faEnvelope} size="2x" className="text-primary" />
+                    <FontAwesomeIcon icon={faEnvelope} size="2x" className="text-white" />
                   </div>
                 </div>
                 
                 <p className="text-muted mb-4">
                   We've sent password reset instructions to <br />
-                  <strong className="text-primary">{email}</strong>
+                  <strong className="text-success">{email}</strong>
                 </p>
                 
                 <div className="alert alert-info border-0 mb-4">
@@ -119,7 +120,7 @@ const ForgotPassword = () => {
                     Try Different Email
                   </button>
                   
-                  <Link to="/login" className="btn btn-outline-secondary fw-medium">
+                  <Link to="/login" className="btn btn-outline-success fw-medium">
                     <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
                     Back to Login
                   </Link>
@@ -129,7 +130,7 @@ const ForgotPassword = () => {
               {/* Footer */}
               <div className="text-center mt-4">
                 <p className="text-muted small mb-0">
-                  © 2024 BaseAdmin. All rights reserved.
+                  © 2024 Farm2Fridge Admin. All rights reserved.
                 </p>
               </div>
             </Col>
@@ -146,12 +147,12 @@ const ForgotPassword = () => {
           <Col md={6} lg={5} xl={4}>
             {/* Logo/Brand Section */}
             <div className="text-center mb-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
-                   style={{ width: '80px', height: '80px' }}>
-                <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
+              <div className="d-inline-flex align-items-center justify-content-center mb-3 p-3" 
+                   style={{ boxShadow: '0 4px 20px rgba(34, 197, 94, 0.15)' }}>
+                <img src={logoImg} alt="Farm2Fridge Logo" style={{ width: '120px', height: 'auto' }} />
               </div>
-              <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
-              <p className="text-muted mb-0">Secure Admin Dashboard</p>
+              <h2 className="text-success fw-bold mb-1">Farm2Fridge Admin</h2>
+              <p className="text-muted mb-0">Fresh Farm to Table Management</p>
             </div>
 
             <div className="auth-card">
@@ -193,7 +194,7 @@ const ForgotPassword = () => {
                 </button>
 
                 <div className="text-center">
-                  <Link to="/login" className="text-decoration-none text-primary fw-medium">
+                  <Link to="/login" className="text-decoration-none text-success fw-medium">
                     <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
                     Back to Login
                   </Link>
@@ -204,7 +205,7 @@ const ForgotPassword = () => {
             {/* Footer */}
             <div className="text-center mt-4">
               <p className="text-muted small mb-0">
-                © 2024 BaseAdmin. All rights reserved.
+                © 2024 Farm2Fridge Admin. All rights reserved.
               </p>
             </div>
           </Col>
