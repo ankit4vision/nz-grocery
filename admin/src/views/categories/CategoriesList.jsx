@@ -71,15 +71,24 @@ const CategoriesList = () => {
               rounded
               style={{ width: '50px', height: '50px', objectFit: 'cover' }}
               className="border"
+              loading="lazy"
+              onError={(e) => {
+                e.target.style.display = 'none'
+                e.target.nextSibling.style.display = 'flex'
+              }}
             />
-          ) : (
-            <div 
-              className="d-flex align-items-center justify-content-center border rounded"
-              style={{ width: '50px', height: '50px', backgroundColor: '#f8f9fa' }}
-            >
-              <FontAwesomeIcon icon={faImage} className="text-muted" />
-            </div>
-          )}
+          ) : null}
+          <div 
+            className="d-flex align-items-center justify-content-center border rounded"
+            style={{ 
+              width: '50px', 
+              height: '50px', 
+              backgroundColor: '#f8f9fa',
+              display: category.image ? 'none' : 'flex'
+            }}
+          >
+            <FontAwesomeIcon icon={faImage} className="text-muted" />
+          </div>
         </div>
       )
     },
@@ -130,7 +139,7 @@ const CategoriesList = () => {
       render: (value, category, index) => (
         <div className="d-flex gap-2">
           <Button
-            variant="info"
+            variant="outline-info"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -141,7 +150,7 @@ const CategoriesList = () => {
             <FontAwesomeIcon icon={faInfo} />
           </Button>
           <Button
-            variant="warning"
+            variant="outline-warning"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -152,7 +161,7 @@ const CategoriesList = () => {
             <FontAwesomeIcon icon={faPencil} />
           </Button>
           <Button
-            variant="danger"
+            variant="outline-danger"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
@@ -241,7 +250,7 @@ const CategoriesList = () => {
           <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
             <h2 className="mb-0 text-dark">Categories Management</h2>
             <div className="ms-auto">
-              <Button variant="success" onClick={handleAddCategory}>
+              <Button variant="primary" onClick={handleAddCategory}>
                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                 Add Category
               </Button>
@@ -368,22 +377,33 @@ const CategoriesList = () => {
           <div className="row">
             <div className="col-sm-3"><strong>Image:</strong></div>
             <div className="col-sm-9">
-              {categoryToView.image ? (
-                <Image
-                  src={categoryToView.image}
-                  alt={categoryToView.name}
-                  rounded
-                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                  className="border"
-                />
-              ) : (
+              <div className="d-flex align-items-center">
+                {categoryToView.image ? (
+                  <Image
+                    src={categoryToView.image}
+                    alt={categoryToView.name}
+                    rounded
+                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    className="border"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextSibling.style.display = 'flex'
+                    }}
+                  />
+                ) : null}
                 <div 
                   className="d-flex align-items-center justify-content-center border rounded"
-                  style={{ width: '100px', height: '100px', backgroundColor: '#f8f9fa' }}
+                  style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    backgroundColor: '#f8f9fa',
+                    display: categoryToView.image ? 'none' : 'flex'
+                  }}
                 >
                   <FontAwesomeIcon icon={faImage} className="text-muted" />
                 </div>
-              )}
+              </div>
             </div>
             <div className="col-sm-3"><strong>Name:</strong></div>
             <div className="col-sm-9">{categoryToView.name}</div>

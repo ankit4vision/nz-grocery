@@ -3,7 +3,7 @@
     "id": 1,
     "name": "Fresh Produce",
     "description": "Fresh fruits, vegetables, and herbs",
-    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 156,
     "subCategories": [
@@ -33,7 +33,7 @@
     "id": 2,
     "name": "Dairy & Eggs",
     "description": "Fresh dairy products and eggs",
-    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 89,
     "subCategories": [
@@ -63,7 +63,7 @@
     "id": 3,
     "name": "Meat & Seafood",
     "description": "Fresh meat, poultry, and seafood",
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 234,
     "subCategories": [
@@ -93,7 +93,7 @@
     "id": 4,
     "name": "Pantry Essentials",
     "description": "Dry goods, grains, and cooking essentials",
-    "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 167,
     "subCategories": [
@@ -117,7 +117,7 @@
     "id": 5,
     "name": "Beverages",
     "description": "Drinks, juices, and beverages",
-    "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 145,
     "subCategories": [
@@ -147,7 +147,7 @@
     "id": 6,
     "name": "Frozen Foods",
     "description": "Frozen vegetables, meals, and desserts",
-    "image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 98,
     "subCategories": [
@@ -177,7 +177,7 @@
     "id": 7,
     "name": "Health & Wellness",
     "description": "Health supplements, vitamins, and wellness products",
-    "image": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": true,
     "productCount": 78,
     "subCategories": [
@@ -201,7 +201,7 @@
     "id": 8,
     "name": "Household & Cleaning",
     "description": "Cleaning supplies and household essentials",
-    "image": "https://images.unsplash.com/photo-1581578731548-c6a0c3f2f2c0?w=300&h=200&fit=crop",
+    "image": "",
     "isActive": false,
     "productCount": 45,
     "subCategories": [
