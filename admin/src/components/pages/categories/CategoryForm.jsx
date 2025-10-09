@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { Col, FormCheck } from 'react-bootstrap'
 import { TextField, FormRow } from '../../common/FormFields'
+import ImageUpload from '../../common/ImageUpload'
 
 const CategoryForm = forwardRef(({
   mode = 'create',
@@ -12,6 +13,7 @@ const CategoryForm = forwardRef(({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    image: '',
     isActive: true
   })
   const [errors, setErrors] = useState({})
@@ -22,6 +24,7 @@ const CategoryForm = forwardRef(({
       setFormData({
         name: categoryData.name || '',
         description: categoryData.description || '',
+        image: categoryData.image || '',
         isActive: categoryData.isActive !== undefined ? categoryData.isActive : true
       })
     }
@@ -53,6 +56,11 @@ const CategoryForm = forwardRef(({
       newErrors.description = 'Description must be at least 5 characters if provided'
     }
 
+    // Image validation (optional)
+    if (formData.image && !formData.image.startsWith('data:image/') && !formData.image.startsWith('http')) {
+      newErrors.image = 'Please select a valid image'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -65,6 +73,7 @@ const CategoryForm = forwardRef(({
     const submitData = {
       name: formData.name.trim(),
       description: formData.description.trim(),
+      image: formData.image,
       isActive: formData.isActive
     }
 
@@ -103,6 +112,19 @@ const CategoryForm = forwardRef(({
           invalid={!!errors.description}
           feedback={errors.description}
         />
+      </FormRow>
+
+      <FormRow>
+        <Col md={12}>
+          <ImageUpload
+            label="Category Image"
+            value={formData.image}
+            onChange={(value) => handleChange('image', value)}
+            previewSize={{ width: 200, height: 150 }}
+            error={errors.image}
+            disabled={loading}
+          />
+        </Col>
       </FormRow>
 
       <FormRow>

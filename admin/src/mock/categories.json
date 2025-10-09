@@ -3,7 +3,9 @@
     "id": 1,
     "name": "Electronics",
     "description": "Electronic devices and gadgets",
+    "image": "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=200&fit=crop",
     "isActive": true,
+    "productCount": 156,
     "subCategories": [
       {
         "id": 1,
@@ -31,7 +33,9 @@
     "id": 2,
     "name": "Clothing",
     "description": "Apparel and fashion items",
+    "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop",
     "isActive": true,
+    "productCount": 89,
     "subCategories": [
       {
         "id": 4,
@@ -59,7 +63,9 @@
     "id": 3,
     "name": "Home & Garden",
     "description": "Home improvement and garden supplies",
+    "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop",
     "isActive": true,
+    "productCount": 234,
     "subCategories": [
       {
         "id": 7,
@@ -87,7 +93,9 @@
     "id": 4,
     "name": "Sports & Outdoors",
     "description": "Sports equipment and outdoor gear",
+    "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop",
     "isActive": true,
+    "productCount": 67,
     "subCategories": [
       {
         "id": 10,
@@ -109,7 +117,9 @@
     "id": 5,
     "name": "Books & Media",
     "description": "Books, movies, and digital media",
+    "image": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop",
     "isActive": false,
+    "productCount": 45,
     "subCategories": [
       {
         "id": 12,
@@ -126,5 +136,65 @@
     ],
     "createdAt": "2024-01-19T16:30:00.000Z",
     "updatedAt": "2024-01-19T16:30:00.000Z"
+  },
+  {
+    "id": 6,
+    "name": "Food & Beverages",
+    "description": "Fresh groceries, beverages, and food items",
+    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=200&fit=crop",
+    "isActive": true,
+    "productCount": 312,
+    "subCategories": [
+      {
+        "id": 14,
+        "name": "Fresh Produce",
+        "description": "Fruits, vegetables, and fresh herbs",
+        "isActive": true
+      },
+      {
+        "id": 15,
+        "name": "Dairy & Eggs",
+        "description": "Milk, cheese, yogurt, and eggs",
+        "isActive": true
+      },
+      {
+        "id": 16,
+        "name": "Beverages",
+        "description": "Soft drinks, juices, and water",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-20T08:15:00.000Z",
+    "updatedAt": "2024-01-20T08:15:00.000Z"
+  },
+  {
+    "id": 7,
+    "name": "Health & Beauty",
+    "description": "Health products, cosmetics, and personal care",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop",
+    "isActive": true,
+    "productCount": 178,
+    "subCategories": [
+      {
+        "id": 17,
+        "name": "Skincare",
+        "description": "Face creams, cleansers, and treatments",
+        "isActive": true
+      },
+      {
+        "id": 18,
+        "name": "Makeup",
+        "description": "Cosmetics and beauty products",
+        "isActive": true
+      },
+      {
+        "id": 19,
+        "name": "Personal Care",
+        "description": "Shampoo, soap, and hygiene products",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-21T12:30:00.000Z",
+    "updatedAt": "2024-01-21T12:30:00.000Z"
   }
 ]

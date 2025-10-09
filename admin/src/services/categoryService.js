@@ -42,7 +42,11 @@ export const categoryService = {
     
     const newCategory = {
       id: newId,
-      ...categoryData,
+      name: categoryData.name,
+      description: categoryData.description || '',
+      image: categoryData.image || '',
+      isActive: categoryData.isActive !== undefined ? categoryData.isActive : true,
+      productCount: 0, // New categories start with 0 products
       subCategories: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -63,9 +67,14 @@ export const categoryService = {
     
     const categoryIndex = categoriesData.findIndex(cat => cat.id === parseInt(id))
     if (categoryIndex !== -1) {
+      const existingCategory = categoriesData[categoryIndex]
+      
       categoriesData[categoryIndex] = {
-        ...categoriesData[categoryIndex],
-        ...categoryData,
+        ...existingCategory,
+        name: categoryData.name || existingCategory.name,
+        description: categoryData.description !== undefined ? categoryData.description : existingCategory.description,
+        image: categoryData.image !== undefined ? categoryData.image : existingCategory.image,
+        isActive: categoryData.isActive !== undefined ? categoryData.isActive : existingCategory.isActive,
         updatedAt: new Date().toISOString()
       }
       
@@ -101,5 +110,49 @@ export const categoryService = {
         message: 'Category not found'
       }
     }
+  },
+
+  // Update product count for a category (simulated)
+  async updateProductCount(categoryId, productCount) {
+    await delay(300)
+    
+    const categoryIndex = categoriesData.findIndex(cat => cat.id === parseInt(categoryId))
+    if (categoryIndex !== -1) {
+      categoriesData[categoryIndex].productCount = productCount
+      categoriesData[categoryIndex].updatedAt = new Date().toISOString()
+      
+      return {
+        success: true,
+        data: categoriesData[categoryIndex],
+        message: 'Product count updated successfully'
+      }
+    } else {
+      return {
+        success: false,
+        message: 'Category not found'
+      }
+    }
+  },
+
+  // Upload category image (simulated - in real app, this would upload to cloud storage)
+  async uploadCategoryImage(imageFile) {
+    await delay(1000)
+    
+    // Simulate image upload - return a data URL or cloud URL
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        resolve({
+          success: true,
+          data: {
+            imageUrl: e.target.result, // In real app, this would be a cloud URL
+            fileName: imageFile.name,
+            fileSize: imageFile.size
+          },
+          message: 'Image uploaded successfully'
+        })
+      }
+      reader.readAsDataURL(imageFile)
+    })
   }
 }
