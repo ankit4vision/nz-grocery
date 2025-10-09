@@ -17,6 +17,9 @@ const Settings = React.lazy(() => import('../../views/settings/Settings'))
 const CategoriesList = React.lazy(() => import('../../views/categories/CategoriesList'))
 const SubCategoriesList = React.lazy(() => import('../../views/subcategories/SubCategoriesList'))
 
+// Product Management Components
+const ProductsList = React.lazy(() => import('../../views/products/ProductsList'))
+
 const AppContent = () => {
   return (
     <div className="app-content">
@@ -36,6 +39,10 @@ const AppContent = () => {
           {/* Masters Routes */}
           <Route path="/categories" element={<CategoriesList />} />
           <Route path="/subcategories" element={<SubCategoriesList />} />
+          
+          {/* Product Management Routes */}
+          <Route path="/products" element={<ProductsList />} />
+          <Route path="/add-product" element={<ProductsList />} />
           
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
