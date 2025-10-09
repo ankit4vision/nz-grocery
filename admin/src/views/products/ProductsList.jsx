@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Container, Row, Col, Button, FormControl, FormSelect, Image, Badge } from 'react-bootstrap'
+import { Container, Row, Col, Button, FormControl, FormSelect, Image, Badge, Card } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faPlus, 
@@ -449,42 +449,74 @@ const ProductsList = () => {
           </div>
 
           {/* Stats Cards */}
-          <Row className="mb-4">
+          <Row className="mb-5">
             <Col md={3}>
-              <div className="stat-card stat-card-primary">
-                <div className="stat-icon stat-icon-primary">
-                  <FontAwesomeIcon icon={faBox} />
-                </div>
-                <div className="stat-value">{stats.totalProducts}</div>
-                <div className="stat-label">Total Products</div>
-              </div>
+              <Card className="h-100 border-0 shadow-sm">
+                <Card.Body className="p-4">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0">
+                      <div className="p-3 rounded-3 bg-gradient-primary text-white">
+                        <FontAwesomeIcon icon={faBox} size="lg" />
+                      </div>
+                    </div>
+                    <div className="flex-grow-1 ms-4">
+                      <div className="text-muted small fw-semibold mb-1">Total Products</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.totalProducts}</div>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </Col>
             <Col md={3}>
-              <div className="stat-card stat-card-info">
-                <div className="stat-icon stat-icon-info">
-                  <FontAwesomeIcon icon={faBox} />
-                </div>
-                <div className="stat-value">{stats.activeProducts}</div>
-                <div className="stat-label">Active Products</div>
-              </div>
+              <Card className="h-100 border-0 shadow-sm">
+                <Card.Body className="p-4">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0">
+                      <div className="p-3 rounded-3 bg-gradient-info text-white">
+                        <FontAwesomeIcon icon={faBox} size="lg" />
+                      </div>
+                    </div>
+                    <div className="flex-grow-1 ms-4">
+                      <div className="text-muted small fw-semibold mb-1">Active Products</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.activeProducts}</div>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </Col>
             <Col md={3}>
-              <div className="stat-card stat-card-warning">
-                <div className="stat-icon stat-icon-warning">
-                  <FontAwesomeIcon icon={faBox} />
-                </div>
-                <div className="stat-value">{stats.lowStockProducts}</div>
-                <div className="stat-label">Low Stock</div>
-              </div>
+              <Card className="h-100 border-0 shadow-sm">
+                <Card.Body className="p-4">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0">
+                      <div className="p-3 rounded-3 bg-gradient-warning text-white">
+                        <FontAwesomeIcon icon={faBox} size="lg" />
+                      </div>
+                    </div>
+                    <div className="flex-grow-1 ms-4">
+                      <div className="text-muted small fw-semibold mb-1">Low Stock</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.lowStockProducts}</div>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </Col>
             <Col md={3}>
-              <div className="stat-card stat-card-success">
-                <div className="stat-icon stat-icon-success">
-                  <FontAwesomeIcon icon={faStar} />
-                </div>
-                <div className="stat-value">{stats.averageRating}</div>
-                <div className="stat-label">Avg Rating</div>
-              </div>
+              <Card className="h-100 border-0 shadow-sm">
+                <Card.Body className="p-4">
+                  <div className="d-flex align-items-center">
+                    <div className="flex-shrink-0">
+                      <div className="p-3 rounded-3 bg-gradient-success text-white">
+                        <FontAwesomeIcon icon={faStar} size="lg" />
+                      </div>
+                    </div>
+                    <div className="flex-grow-1 ms-4">
+                      <div className="text-muted small fw-semibold mb-1">Avg Rating</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.averageRating}</div>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
 
