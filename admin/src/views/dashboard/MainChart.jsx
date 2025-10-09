@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { CChartLine } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
 
-const MainChart = () => {
+const MainChart = ({ dateRange }) => {
   const chartRef = useRef(null)
 
   useEffect(() => {
@@ -38,18 +38,53 @@ const MainChart = () => {
     return data
   }
 
-  const usersData = generateData()
-  const revenueData = generateData().map(val => val * 45) // Revenue in dollars
-  const ordersData = generateData().map(val => Math.round(val * 0.8)) // Orders count
+  // Generate labels based on date range
+  const generateLabels = () => {
+    if (!dateRange?.startDate || !dateRange?.endDate) {
+      // Default to last 30 days if no date range
+      const labels = []
+      const today = new Date()
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(today)
+        date.setDate(date.getDate() - i)
+        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+      }
+      return labels
+    }
 
-  // Generate labels for last 30 days
-  const labels = []
-  const today = new Date()
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(today)
-    date.setDate(date.getDate() - i)
-    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+    const labels = []
+    const startDate = new Date(dateRange.startDate)
+    const endDate = new Date(dateRange.endDate)
+    const diffTime = Math.abs(endDate - startDate)
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    // Limit to reasonable number of data points for performance
+    const maxPoints = 90
+    const step = Math.max(1, Math.floor(diffDays / maxPoints))
+    
+    for (let i = 0; i <= diffDays; i += step) {
+      const date = new Date(startDate)
+      date.setDate(startDate.getDate() + i)
+      labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+    }
+    
+    return labels
   }
+
+  const labels = generateLabels()
+
+  // Generate revenue data based on labels length
+  const generateRevenueData = () => {
+    const data = []
+    let baseValue = 100
+    for (let i = 0; i < labels.length; i++) {
+      baseValue += random(-10, 15)
+      data.push(Math.max(50, baseValue * 45)) // Revenue in dollars
+    }
+    return data
+  }
+
+  const revenueData = generateRevenueData()
 
   return (
     <>
@@ -60,32 +95,13 @@ const MainChart = () => {
           labels: labels,
           datasets: [
             {
-              label: 'Users',
-              backgroundColor: `rgba(${getStyle('--cui-primary-rgb')}, .1)`,
-              borderColor: getStyle('--cui-primary'),
-              pointHoverBackgroundColor: getStyle('--cui-primary'),
-              borderWidth: 2,
-              data: usersData,
-              fill: true,
-              tension: 0.4,
-            },
-            {
               label: 'Revenue ($)',
-              backgroundColor: 'transparent',
+              backgroundColor: `rgba(${getStyle('--cui-success-rgb')}, .1)`,
               borderColor: getStyle('--cui-success'),
               pointHoverBackgroundColor: getStyle('--cui-success'),
-              borderWidth: 2,
+              borderWidth: 3,
               data: revenueData,
-              tension: 0.4,
-            },
-            {
-              label: 'Orders',
-              backgroundColor: 'transparent',
-              borderColor: getStyle('--cui-info'),
-              pointHoverBackgroundColor: getStyle('--cui-info'),
-              borderWidth: 2,
-              borderDash: [5, 5],
-              data: ordersData,
+              fill: true,
               tension: 0.4,
             },
           ],
@@ -134,6 +150,9 @@ const MainChart = () => {
               ticks: {
                 color: getStyle('--cui-body-color'),
                 maxTicksLimit: 6,
+                callback: function(value) {
+                  return '$' + value.toLocaleString();
+                }
               },
             },
           },
