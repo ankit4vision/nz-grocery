@@ -261,15 +261,10 @@ const CategoriesList = () => {
           <div className="bg-white rounded-3 shadow-sm p-4">
             {/* Filters Section */}
             <div className="mb-4">
-              <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
-                <FontAwesomeIcon icon={faSearch} className="me-3 text-success fs-4" />
-                <h4 className="mb-0 text-success">Search & Filter</h4>
-              </div>
-              
               <Row>
                 <Col md={4}>
                   <div className="mb-3">
-                    <label className="fw-semibold">Search Categories</label>
+                    <label className="form-label fw-semibold">Search Categories</label>
                     <FormControl
                       placeholder="Search by name or description..."
                       value={searchTerm}
@@ -280,7 +275,7 @@ const CategoriesList = () => {
                 </Col>
                 <Col md={3}>
                   <div className="mb-3">
-                    <label className="fw-semibold">Status Filter</label>
+                    <label className="form-label fw-semibold">Status Filter</label>
                     <FormSelect
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
