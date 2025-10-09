@@ -8,7 +8,7 @@ const AppFooter = () => {
     <CFooter className="px-4 py-3">
       <div>
         <span className="text-muted small">
-          &copy; {currentYear} Codexaa Software Solutions. All rights reserved.
+          &copy; {currentYear} Farm2Fridge. All rights reserved.
         </span>
       </div>
     </CFooter>
