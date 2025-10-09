@@ -201,30 +201,41 @@ admin/
 
 #### 2. **Component Structure Rules**
 ```jsx
-// Standard Page Structure with React Bootstrap
+// Standard Page Structure with React Bootstrap (Clean Layout - No Nested Cards)
 <Container fluid>
   <Row>
     <Col xs={12}>
-      <Card>
-        <Card.Header>
-          <div className="d-flex justify-content-between align-items-center w-100">
-            <Card.Title className="mb-0">Page Title</Card.Title>
-            <Button variant="primary" onClick={handleAdd}>
-              <FontAwesomeIcon icon={faPlus} className="me-2" />
-              Add Item
-            </Button>
+      {/* Page Header */}
+      <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
+        <h2 className="mb-0 text-dark">Page Title</h2>
+        <div className="ms-auto">
+          <Button variant="primary" onClick={handleAdd}>
+            <FontAwesomeIcon icon={faPlus} className="me-2" />
+            Add Item
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content Container */}
+      <div className="bg-white rounded-3 shadow-sm p-4">
+        {/* Section with Clean Header */}
+        <div className="mb-5">
+          <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+            <FontAwesomeIcon icon={faIcon} className="me-3 text-success fs-4" />
+            <h4 className="mb-0 text-success">Section Title</h4>
           </div>
-        </Card.Header>
-        <Card.Body>
-          <div className="d-flex gap-2 align-items-center mb-3">
-            <FormControl placeholder="Search..." />
-            <FormSelect>
-              <option value="">All Status</option>
-            </FormSelect>
-          </div>
-          <Table data={data} columns={columns} />
-        </Card.Body>
-      </Card>
+          
+          {/* Content */}
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">Field Label</Form.Label>
+                <FormControl className="border-2" />
+              </Form.Group>
+            </Col>
+          </Row>
+        </div>
+      </div>
     </Col>
   </Row>
 </Container>
@@ -232,12 +243,12 @@ admin/
 
 #### 3. **Form Structure Rules**
 ```jsx
-// Standard Form Structure with React Bootstrap
+// Standard Form Structure with React Bootstrap (Enhanced Styling)
 <Form>
   <Row>
     <Col xs={12} md={6}>
       <Form.Group className="mb-3">
-        <Form.Label htmlFor="field">Field Label</Form.Label>
+        <Form.Label htmlFor="field" className="fw-semibold">Field Label</Form.Label>
         <Form.Control
           id="field"
           type="text"
@@ -245,10 +256,12 @@ admin/
           onChange={handleChange}
           required
           isInvalid={!!errors.field}
+          className="border-2"
         />
         <Form.Control.Feedback type="invalid">
           {errors.field}
         </Form.Control.Feedback>
+        <FormText className="text-muted">Helper text for the field.</FormText>
       </Form.Group>
     </Col>
   </Row>
@@ -318,6 +331,56 @@ const _nav = [
 - **Colors**: Green primary color (#16a34a) with proper contrast
 - **Typography**: Clean, readable fonts with proper hierarchy
 - **Spacing**: Consistent padding and margins throughout
+
+#### 7. **Gradient System & CSS Variables**
+```css
+/* Theme-based Gradient Variables - Light & Subtle */
+--gradient-primary: linear-gradient(135deg, #86efac 0%, #4ade80 100%) !important;
+--gradient-success: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%) !important;
+--gradient-info: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%) !important;
+--gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+--gradient-danger: linear-gradient(135deg, #fca5a5 0%, #f87171 100%) !important;
+
+/* Card Gradient Backgrounds - Light & Subtle */
+--card-gradient-primary: linear-gradient(135deg, #86efac 0%, #4ade80 100%) !important;
+--card-gradient-success: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%) !important;
+--card-gradient-info: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%) !important;
+--card-gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+
+/* Logo-Inspired Green-Blue Gradient */
+--card-gradient-logo: linear-gradient(135deg, #86efac 0%, #b8d7fd 100%) !important;
+--card-gradient-logo-alt: linear-gradient(135deg, #4ade80 0%, #fbffbb 100%) !important;
+```
+
+#### 8. **Gradient Utility Classes**
+```css
+/* Gradient Utility Classes */
+.bg-gradient-primary { background: var(--card-gradient-primary) !important; }
+.bg-gradient-success { background: var(--card-gradient-success) !important; }
+.bg-gradient-info { background: var(--card-gradient-info) !important; }
+.bg-gradient-warning { background: var(--card-gradient-warning) !important; }
+.bg-gradient-logo { background: var(--card-gradient-logo) !important; }
+.bg-gradient-logo-alt { background: var(--card-gradient-logo-alt) !important; }
+.bg-gradient-light { background: var(--bg-gradient-light) !important; }
+.bg-gradient-primary-subtle { background: var(--bg-gradient-primary-subtle) !important; }
+```
+
+#### 9. **Section Header Design Pattern**
+```jsx
+// Standard Section Header with Green Theme
+<div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+  <FontAwesomeIcon icon={faIcon} className="me-3 text-success fs-4" />
+  <h4 className="mb-0 text-success">Section Title</h4>
+</div>
+```
+
+#### 10. **Clean Layout Guidelines**
+- **Avoid Nested Cards**: Use single container with subtle shadow instead of card-in-card
+- **Section Separation**: Use border-bottom dividers with green theme
+- **Visual Hierarchy**: Clear typography hierarchy with proper font weights
+- **Consistent Spacing**: Use `mb-5` for section spacing, `mb-4` for internal spacing
+- **Enhanced Inputs**: Use `border-2` class for better input visibility
+- **Theme Consistency**: Apply green color (`text-success`, `border-success`) consistently
 
 ### 🔧 State Management Rules
 
@@ -530,6 +593,11 @@ const userService = {
 - **Theme Styling**: Custom CSS overrides for CoreUI components
 - **Responsive Design**: Mobile-friendly sidebar with close button
 - **Icon System**: CoreUI icons with proper contrast on white background
+- **Settings Page Design**: Clean layout without nested cards, green-themed section headers
+- **Form Enhancement**: Enhanced form styling with better visual hierarchy
+- **Theme Consistency**: Green color scheme (#16a34a) applied consistently across components
+- **Gradient System**: Theme-based CSS variables and utility classes for beautiful gradients
+- **Logo-Inspired Gradients**: Green-blue gradient variants matching brand colors
 
 ### 🎯 Current Navigation Structure
 - **Main Section**: Dashboard groups with multiple dashboard options
@@ -543,6 +611,11 @@ const userService = {
 - **State Management**: Redux for sidebar state (unfoldable, visible)
 - **Routing**: React Router with lazy loading for performance
 - **Authentication**: JWT-based auth with role-based access control
+- **Clean Layout Pattern**: Single container with shadow, no nested cards
+- **Green Theme System**: Consistent use of Bootstrap success color (#16a34a)
+- **Enhanced Forms**: Better input styling with border-2 and fw-semibold labels
+- **Gradient System**: CSS variables and utility classes for theme-based gradients
+- **Logo-Inspired Gradients**: Green-blue gradient variants matching brand colors
 
 ### 📋 Next Development Priorities
 1. **Dashboard Implementation**: Create main dashboard with charts and stats

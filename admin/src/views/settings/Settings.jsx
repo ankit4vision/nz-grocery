@@ -128,287 +128,301 @@ const Settings = () => {
   }
 
   const renderTaxPricingSettings = () => (
-    <Card className="mb-4">
-      <Card.Header className="bg-success text-white d-flex align-items-center">
-        <FontAwesomeIcon icon={faPercentage} className="me-2" />
-        <h5 className="mb-0">Tax & Pricing Settings</h5>
-      </Card.Header>
-      <Card.Body>
-        {/* Summary Cards */}
-        <Row className="mb-4">
-          <Col md={6}>
-            <Card className="border-0" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-              <Card.Body className="text-center">
-                <h3 className="mb-1">{settingsData.taxPricing.defaultGstRate}%</h3>
-                <p className="mb-0">Default GST Rate</p>
-                <small>Default GST rate applied to all products unless specified individually.</small>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={6}>
-            <Card className="border-0" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-              <Card.Body className="text-center">
-                <h3 className="mb-1">{settingsData.taxPricing.defaultProfitMargin}%</h3>
-                <p className="mb-0">Default Profit Margin</p>
-                <small>Default profit margin applied to all products unless specified individually.</small>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+    <div className="mb-5">
+      {/* Section Header */}
+      <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+        <FontAwesomeIcon icon={faPercentage} className="me-3 text-success fs-4" />
+        <h4 className="mb-0 text-success">Tax & Pricing Settings</h4>
+      </div>
 
-        {/* Input Fields */}
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Default GST Rate (%)</Form.Label>
-              <FormControl
-                type="number"
-                min="0"
-                max="100"
-                value={settingsData.taxPricing.defaultGstRate}
-                onChange={(e) => handleChange('taxPricing', 'defaultGstRate', parseInt(e.target.value) || 0)}
-                isInvalid={!!errors['taxPricing.defaultGstRate']}
-              />
-              <FormText>This will be used for products that don't have a specific GST rate set.</FormText>
-              {errors['taxPricing.defaultGstRate'] && (
-                <FormText className="text-danger">{errors['taxPricing.defaultGstRate']}</FormText>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Default Profit Margin (%)</Form.Label>
-              <FormControl
-                type="number"
-                min="0"
-                max="100"
-                value={settingsData.taxPricing.defaultProfitMargin}
-                onChange={(e) => handleChange('taxPricing', 'defaultProfitMargin', parseInt(e.target.value) || 0)}
-                isInvalid={!!errors['taxPricing.defaultProfitMargin']}
-              />
-              <FormText>This will be used for products that don't have a specific margin set.</FormText>
-              {errors['taxPricing.defaultProfitMargin'] && (
-                <FormText className="text-danger">{errors['taxPricing.defaultProfitMargin']}</FormText>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+      {/* Summary Stats */}
+      <Row className="mb-4">
+        <Col md={6}>
+            <div className="p-4 rounded-3 bg-gradient-logo text-dark mb-3 shadow-sm">
+            <div className="text-center">
+              <h3 className="mb-1 text-dark">{settingsData.taxPricing.defaultGstRate}%</h3>
+              <p className="mb-0 fw-semibold text-dark">Default GST Rate</p>
+              <small className="text-muted">Default GST rate applied to all products unless specified individually.</small>
+            </div>
+          </div>
+        </Col>
+        <Col md={6}>
+          <div className="p-4 rounded-3 bg-gradient-logo-alt text-dark mb-3 shadow-sm">
+            <div className="text-center">
+              <h3 className="mb-1 text-dark">{settingsData.taxPricing.defaultProfitMargin}%</h3>
+              <p className="mb-0 fw-semibold text-dark">Default Profit Margin</p>
+              <small className="text-muted">Default profit margin applied to all products unless specified individually.</small>
+            </div>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Input Fields */}
+      <Row>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Default GST Rate (%)</Form.Label>
+            <FormControl
+              type="number"
+              min="0"
+              max="100"
+              value={settingsData.taxPricing.defaultGstRate}
+              onChange={(e) => handleChange('taxPricing', 'defaultGstRate', parseInt(e.target.value) || 0)}
+              isInvalid={!!errors['taxPricing.defaultGstRate']}
+              className="border-2"
+            />
+            <FormText className="text-muted">This will be used for products that don't have a specific GST rate set.</FormText>
+            {errors['taxPricing.defaultGstRate'] && (
+              <FormText className="text-danger">{errors['taxPricing.defaultGstRate']}</FormText>
+            )}
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Default Profit Margin (%)</Form.Label>
+            <FormControl
+              type="number"
+              min="0"
+              max="100"
+              value={settingsData.taxPricing.defaultProfitMargin}
+              onChange={(e) => handleChange('taxPricing', 'defaultProfitMargin', parseInt(e.target.value) || 0)}
+              isInvalid={!!errors['taxPricing.defaultProfitMargin']}
+              className="border-2"
+            />
+            <FormText className="text-muted">This will be used for products that don't have a specific margin set.</FormText>
+            {errors['taxPricing.defaultProfitMargin'] && (
+              <FormText className="text-danger">{errors['taxPricing.defaultProfitMargin']}</FormText>
+            )}
+          </Form.Group>
+        </Col>
+      </Row>
+    </div>
   )
 
   const renderBusinessInfo = () => (
-    <Card className="mb-4">
-      <Card.Header className="bg-success text-white d-flex align-items-center">
-        <FontAwesomeIcon icon={faBuilding} className="me-2" />
-        <h5 className="mb-0">Business Information</h5>
-      </Card.Header>
-      <Card.Body>
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Business Name</Form.Label>
-              <FormControl
-                value={settingsData.businessInfo.businessName}
-                onChange={(e) => handleChange('businessInfo', 'businessName', e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>GST Number</Form.Label>
-              <FormControl
-                placeholder="Enter GST registration number"
-                value={settingsData.businessInfo.gstNumber}
-                onChange={(e) => handleChange('businessInfo', 'gstNumber', e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
-            <Form.Group className="mb-3">
-              <Form.Label>Business Address</Form.Label>
-              <FormControl
-                as="textarea"
-                rows={3}
-                value={settingsData.businessInfo.businessAddress}
-                onChange={(e) => handleChange('businessInfo', 'businessAddress', e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+    <div className="mb-5">
+      {/* Section Header */}
+      <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+        <FontAwesomeIcon icon={faBuilding} className="me-3 text-success fs-4" />
+        <h4 className="mb-0 text-success">Business Information</h4>
+      </div>
+
+      <Row>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Business Name</Form.Label>
+            <FormControl
+              value={settingsData.businessInfo.businessName}
+              onChange={(e) => handleChange('businessInfo', 'businessName', e.target.value)}
+              className="border-2"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">GST Number</Form.Label>
+            <FormControl
+              placeholder="Enter GST registration number"
+              value={settingsData.businessInfo.gstNumber}
+              onChange={(e) => handleChange('businessInfo', 'gstNumber', e.target.value)}
+              className="border-2"
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Business Address</Form.Label>
+            <FormControl
+              as="textarea"
+              rows={3}
+              value={settingsData.businessInfo.businessAddress}
+              onChange={(e) => handleChange('businessInfo', 'businessAddress', e.target.value)}
+              className="border-2"
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+    </div>
   )
 
   const renderEmailNotifications = () => (
-    <Card className="mb-4">
-      <Card.Header className="bg-success text-white d-flex align-items-center">
-        <FontAwesomeIcon icon={faEnvelope} className="me-2" />
-        <h5 className="mb-0">Email & Notification Settings</h5>
-      </Card.Header>
-      <Card.Body>
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Support Email</Form.Label>
-              <FormControl
-                type="email"
-                value={settingsData.emailNotifications.supportEmail}
-                onChange={(e) => handleChange('emailNotifications', 'supportEmail', e.target.value)}
-                isInvalid={!!errors['emailNotifications.supportEmail']}
-              />
-              {errors['emailNotifications.supportEmail'] && (
-                <FormText className="text-danger">{errors['emailNotifications.supportEmail']}</FormText>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Admin Email</Form.Label>
-              <FormControl
-                type="email"
-                value={settingsData.emailNotifications.adminEmail}
-                onChange={(e) => handleChange('emailNotifications', 'adminEmail', e.target.value)}
-                isInvalid={!!errors['emailNotifications.adminEmail']}
-              />
-              {errors['emailNotifications.adminEmail'] && (
-                <FormText className="text-danger">{errors['emailNotifications.adminEmail']}</FormText>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label="Enable email notifications for new orders"
-                checked={settingsData.emailNotifications.enableOrderNotifications}
-                onChange={(e) => handleChange('emailNotifications', 'enableOrderNotifications', e.target.checked)}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+    <div className="mb-5">
+      {/* Section Header */}
+      <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+        <FontAwesomeIcon icon={faEnvelope} className="me-3 text-success fs-4" />
+        <h4 className="mb-0 text-success">Email & Notification Settings</h4>
+      </div>
+
+      <Row>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Support Email</Form.Label>
+            <FormControl
+              type="email"
+              value={settingsData.emailNotifications.supportEmail}
+              onChange={(e) => handleChange('emailNotifications', 'supportEmail', e.target.value)}
+              isInvalid={!!errors['emailNotifications.supportEmail']}
+              className="border-2"
+            />
+            {errors['emailNotifications.supportEmail'] && (
+              <FormText className="text-danger">{errors['emailNotifications.supportEmail']}</FormText>
+            )}
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Admin Email</Form.Label>
+            <FormControl
+              type="email"
+              value={settingsData.emailNotifications.adminEmail}
+              onChange={(e) => handleChange('emailNotifications', 'adminEmail', e.target.value)}
+              isInvalid={!!errors['emailNotifications.adminEmail']}
+              className="border-2"
+            />
+            {errors['emailNotifications.adminEmail'] && (
+              <FormText className="text-danger">{errors['emailNotifications.adminEmail']}</FormText>
+            )}
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12}>
+          <Form.Group className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label="Enable email notifications for new orders"
+              checked={settingsData.emailNotifications.enableOrderNotifications}
+              onChange={(e) => handleChange('emailNotifications', 'enableOrderNotifications', e.target.checked)}
+              className="fs-6"
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+    </div>
   )
 
   const renderCurrencyRegional = () => (
-    <Card className="mb-4">
-      <Card.Header className="bg-success text-white d-flex align-items-center">
-        <FontAwesomeIcon icon={faGlobe} className="me-2" />
-        <h5 className="mb-0">Currency & Regional Settings</h5>
-      </Card.Header>
-      <Card.Body>
-        <Row>
-          <Col md={4}>
-            <Form.Group className="mb-3">
-              <Form.Label>Currency</Form.Label>
-              <FormSelect
-                value={settingsData.currencyRegional.currency}
-                onChange={(e) => handleChange('currencyRegional', 'currency', e.target.value)}
-              >
-                <option value="NZD">New Zealand Dollar (NZD)</option>
-                <option value="USD">US Dollar (USD)</option>
-                <option value="EUR">Euro (EUR)</option>
-                <option value="GBP">British Pound (GBP)</option>
-                <option value="AUD">Australian Dollar (AUD)</option>
-              </FormSelect>
-            </Form.Group>
-          </Col>
-          <Col md={4}>
-            <Form.Group className="mb-3">
-              <Form.Label>Date Format</Form.Label>
-              <FormSelect
-                value={settingsData.currencyRegional.dateFormat}
-                onChange={(e) => handleChange('currencyRegional', 'dateFormat', e.target.value)}
-              >
-                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                <option value="DD-MM-YYYY">DD-MM-YYYY</option>
-              </FormSelect>
-            </Form.Group>
-          </Col>
-          <Col md={4}>
-            <Form.Group className="mb-3">
-              <Form.Label>Time Zone</Form.Label>
-              <FormSelect
-                value={settingsData.currencyRegional.timeZone}
-                onChange={(e) => handleChange('currencyRegional', 'timeZone', e.target.value)}
-              >
-                <option value="Pacific/Auckland">Pacific/Auckland (NZDT/NZST)</option>
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">America/New_York (EST/EDT)</option>
-                <option value="Europe/London">Europe/London (GMT/BST)</option>
-                <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
-              </FormSelect>
-            </Form.Group>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+    <div className="mb-5">
+      {/* Section Header */}
+      <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+        <FontAwesomeIcon icon={faGlobe} className="me-3 text-success fs-4" />
+        <h4 className="mb-0 text-success">Currency & Regional Settings</h4>
+      </div>
+
+      <Row>
+        <Col md={4}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Currency</Form.Label>
+            <FormSelect
+              value={settingsData.currencyRegional.currency}
+              onChange={(e) => handleChange('currencyRegional', 'currency', e.target.value)}
+              className="border-2"  
+            >
+              <option value="NZD">New Zealand Dollar (NZD)</option>
+              <option value="USD">US Dollar (USD)</option>
+              <option value="EUR">Euro (EUR)</option>
+              <option value="GBP">British Pound (GBP)</option>
+              <option value="AUD">Australian Dollar (AUD)</option>
+            </FormSelect>
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Date Format</Form.Label>
+            <FormSelect
+              value={settingsData.currencyRegional.dateFormat}
+              onChange={(e) => handleChange('currencyRegional', 'dateFormat', e.target.value)}
+              className="border-2"
+            >
+              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+              <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+            </FormSelect>
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Time Zone</Form.Label>
+            <FormSelect
+              value={settingsData.currencyRegional.timeZone}
+              onChange={(e) => handleChange('currencyRegional', 'timeZone', e.target.value)}
+              className="border-2"
+            >
+              <option value="Pacific/Auckland">Pacific/Auckland (NZDT/NZST)</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York (EST/EDT)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+            </FormSelect>
+          </Form.Group>
+        </Col>
+      </Row>
+    </div>
   )
 
   const renderSecuritySettings = () => (
-    <Card className="mb-4">
-      <Card.Header className="bg-success text-white d-flex align-items-center">
-        <FontAwesomeIcon icon={faShieldAlt} className="me-2" />
-        <h5 className="mb-0">Security Settings</h5>
-      </Card.Header>
-      <Card.Body>
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Session Timeout (minutes)</Form.Label>
-              <FormControl
-                type="number"
-                min="5"
-                max="480"
-                value={settingsData.security.sessionTimeout}
-                onChange={(e) => handleChange('security', 'sessionTimeout', parseInt(e.target.value) || 30)}
-                isInvalid={!!errors['security.sessionTimeout']}
-              />
-              <FormText>Automatically log out inactive users after this period.</FormText>
-              {errors['security.sessionTimeout'] && (
-                <FormText className="text-danger">{errors['security.sessionTimeout']}</FormText>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Password Expiry (days)</Form.Label>
-              <FormControl
-                type="number"
-                min="30"
-                max="365"
-                value={settingsData.security.passwordExpiry}
-                onChange={(e) => handleChange('security', 'passwordExpiry', parseInt(e.target.value) || 90)}
-                isInvalid={!!errors['security.passwordExpiry']}
-              />
-              <FormText>Force password change after this period.</FormText>
-              {errors['security.passwordExpiry'] && (
-                <FormText className="text-danger">{errors['security.passwordExpiry']}</FormText>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label="Enable Two-Factor Authentication for admin accounts"
-                checked={settingsData.security.enableTwoFactor}
-                onChange={(e) => handleChange('security', 'enableTwoFactor', e.target.checked)}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+    <div className="mb-5">
+      {/* Section Header */}
+      <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+        <FontAwesomeIcon icon={faShieldAlt} className="me-3 text-success fs-4" />
+        <h4 className="mb-0 text-success">Security Settings</h4>
+      </div>
+
+      <Row>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Session Timeout (minutes)</Form.Label>
+            <FormControl
+              type="number"
+              min="5"
+              max="480"
+              value={settingsData.security.sessionTimeout}
+              onChange={(e) => handleChange('security', 'sessionTimeout', parseInt(e.target.value) || 30)}
+              isInvalid={!!errors['security.sessionTimeout']}
+              className="border-2"
+            />
+            <FormText className="text-muted">Automatically log out inactive users after this period.</FormText>
+            {errors['security.sessionTimeout'] && (
+              <FormText className="text-danger">{errors['security.sessionTimeout']}</FormText>
+            )}
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Password Expiry (days)</Form.Label>
+            <FormControl
+              type="number"
+              min="30"
+              max="365"
+              value={settingsData.security.passwordExpiry}
+              onChange={(e) => handleChange('security', 'passwordExpiry', parseInt(e.target.value) || 90)}
+              isInvalid={!!errors['security.passwordExpiry']}
+              className="border-2"
+            />
+            <FormText className="text-muted">Force password change after this period.</FormText>
+            {errors['security.passwordExpiry'] && (
+              <FormText className="text-danger">{errors['security.passwordExpiry']}</FormText>
+            )}
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12}>
+          <Form.Group className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label="Enable Two-Factor Authentication for admin accounts"
+              checked={settingsData.security.enableTwoFactor}
+              onChange={(e) => handleChange('security', 'enableTwoFactor', e.target.checked)}
+              className="fs-6"
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+    </div>
   )
 
   if (loading) {
@@ -423,41 +437,63 @@ const Settings = () => {
     <Container fluid>
       <Row>
         <Col xs={12}>
-          <Card>
-            <Card.Header>
-              <Card.Title className="mb-0">Global Settings</Card.Title>
-            </Card.Header>
-            <Card.Body>
-              {renderTaxPricingSettings()}
-              {renderBusinessInfo()}
-              {renderEmailNotifications()}
-              {renderCurrencyRegional()}
-              {renderSecuritySettings()}
-              
-              {/* Save All Settings Button */}
-              <div className="text-center mt-4">
-                <Button 
-                  variant="success" 
-                  size="lg" 
-                  onClick={handleSaveAll}
-                  disabled={saving}
-                  className="px-5"
-                >
-                  {saving ? (
-                    <>
-                      <Spinner size="sm" className="me-2" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <FontAwesomeIcon icon={faSave} className="me-2" />
-                      Save All Settings
-                    </>
-                  )}
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+          {/* Page Header */}
+          <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <h2 className="mb-0 text-dark">Global Settings</h2>
+            <div className="ms-auto">
+              <Button 
+                variant="primary" 
+                size="lg" 
+                onClick={handleSaveAll}
+                disabled={saving}
+                className="px-4"
+              >
+                {saving ? (
+                  <>
+                    <Spinner size="sm" className="me-2" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faSave} className="me-2" />
+                    Save All Settings
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Settings Sections */}
+          <div className="bg-white rounded-3 shadow-sm p-4">
+            {renderTaxPricingSettings()}
+            {renderBusinessInfo()}
+            {renderEmailNotifications()}
+            {renderCurrencyRegional()}
+            {renderSecuritySettings()}
+            
+            {/* Bottom Save Button */}
+            <div className="text-center mt-4 pt-4 border-top">
+              <Button 
+                variant="primary" 
+                size="lg" 
+                onClick={handleSaveAll}
+                disabled={saving}
+                className="px-5"
+              >
+                {saving ? (
+                  <>
+                    <Spinner size="sm" className="me-2" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faSave} className="me-2" />
+                    Save All Settings
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </Col>
       </Row>
     </Container>
