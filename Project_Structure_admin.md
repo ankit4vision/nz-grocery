@@ -55,6 +55,8 @@ admin/
 │   │   ├── 📁 pages/                  # Page-specific components
 │   │   │   ├── 📁 categories/          # Category management
 │   │   │   │   └── CategoryForm.jsx   # Category form component
+│   │   │   ├── 📁 products/           # Product management
+│   │   │   │   └── ProductForm.jsx    # Product form component
 │   │   │   ├── 📁 roles/              # Role management
 │   │   │   │   └── RoleForm.jsx       # Role form component
 │   │   │   ├── 📁 subcategories/      # Subcategory management
@@ -89,6 +91,7 @@ admin/
 │   │
 │   ├── 📁 mock/                       # Mock data for development
 │   │   ├── categories.json            # Mock category data
+│   │   ├── products.json              # Mock product data
 │   │   ├── profile.json               # Mock profile data
 │   │   ├── roles.json                 # Mock role data
 │   │   ├── settings.json              # Mock settings data
@@ -112,6 +115,7 @@ admin/
 │   │
 │   ├── 📁 services/                   # API service layer
 │   │   ├── categoryService.js         # Category API service
+│   │   ├── productService.js          # Product API service
 │   │   ├── profileService.js          # Profile API service
 │   │   ├── README.md                  # Services documentation
 │   │   ├── roleService.js             # Role API service
@@ -128,6 +132,8 @@ admin/
 │   │   ├── 📁 dashboard/              # Dashboard views
 │   │   │   ├── Dashboard.jsx          # Main dashboard
 │   │   │   └── MainChart.jsx          # Dashboard chart component
+│   │   ├── 📁 products/               # Product management views
+│   │   │   └── ProductsList.jsx       # Products list view
 │   │   ├── 📁 roles/                  # Role management views
 │   │   │   └── RolesList.jsx          # Roles list view
 │   │   ├── 📁 settings/               # Settings views
@@ -588,7 +594,7 @@ const userService = {
 
 ### 🎯 Navigation Structure
 - **Main Section**: Dashboard groups with multiple dashboard options
-- **Inventory Section**: Products, categories, subcategories, brands, units
+- **Product Management**: Products, categories, subcategories, brands, units
 - **User Management**: Users and role & permission management
 - **Account Section**: Profile and settings
 
@@ -603,6 +609,9 @@ const userService = {
 - **Enhanced Forms**: Better input styling with border-2 and fw-semibold labels
 - **Gradient System**: CSS variables and utility classes for theme-based gradients
 - **Logo-Inspired Gradients**: Green-blue gradient variants matching brand colors
+- **Product Management**: Complete CRUD operations with dashboard-style summary cards
+- **Mock Data System**: JSON-based mock data for development and testing
+- **Image Handling**: Fallback system with icon display for missing product images
 
 ---
 
