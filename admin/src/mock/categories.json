@@ -1,28 +1,28 @@
 [
   {
     "id": 1,
-    "name": "Electronics",
-    "description": "Electronic devices and gadgets",
-    "image": "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=200&fit=crop",
+    "name": "Fresh Produce",
+    "description": "Fresh fruits, vegetables, and herbs",
+    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=200&fit=crop",
     "isActive": true,
     "productCount": 156,
     "subCategories": [
       {
         "id": 1,
-        "name": "Smartphones",
-        "description": "Mobile phones and accessories",
+        "name": "Fruits",
+        "description": "Fresh seasonal fruits",
         "isActive": true
       },
       {
         "id": 2,
-        "name": "Laptops",
-        "description": "Portable computers and accessories",
+        "name": "Vegetables",
+        "description": "Fresh leafy and root vegetables",
         "isActive": true
       },
       {
         "id": 3,
-        "name": "Audio",
-        "description": "Headphones, speakers, and audio equipment",
+        "name": "Herbs & Spices",
+        "description": "Fresh herbs and aromatic spices",
         "isActive": true
       }
     ],
@@ -31,28 +31,28 @@
   },
   {
     "id": 2,
-    "name": "Clothing",
-    "description": "Apparel and fashion items",
-    "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop",
+    "name": "Dairy & Eggs",
+    "description": "Fresh dairy products and eggs",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300&h=200&fit=crop",
     "isActive": true,
     "productCount": 89,
     "subCategories": [
       {
         "id": 4,
-        "name": "Men's Clothing",
-        "description": "Clothing for men",
+        "name": "Milk & Cream",
+        "description": "Fresh milk, cream, and dairy beverages",
         "isActive": true
       },
       {
         "id": 5,
-        "name": "Women's Clothing",
-        "description": "Clothing for women",
+        "name": "Cheese",
+        "description": "Various types of cheese",
         "isActive": true
       },
       {
         "id": 6,
-        "name": "Kids' Clothing",
-        "description": "Clothing for children",
+        "name": "Yogurt & Desserts",
+        "description": "Yogurt, ice cream, and dairy desserts",
         "isActive": true
       }
     ],
@@ -61,28 +61,28 @@
   },
   {
     "id": 3,
-    "name": "Home & Garden",
-    "description": "Home improvement and garden supplies",
-    "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop",
+    "name": "Meat & Seafood",
+    "description": "Fresh meat, poultry, and seafood",
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=200&fit=crop",
     "isActive": true,
     "productCount": 234,
     "subCategories": [
       {
         "id": 7,
-        "name": "Furniture",
-        "description": "Home and office furniture",
+        "name": "Beef & Lamb",
+        "description": "Fresh beef and lamb cuts",
         "isActive": true
       },
       {
         "id": 8,
-        "name": "Kitchen & Dining",
-        "description": "Kitchen appliances and dining items",
+        "name": "Poultry",
+        "description": "Chicken, turkey, and other poultry",
         "isActive": true
       },
       {
         "id": 9,
-        "name": "Garden Tools",
-        "description": "Gardening equipment and tools",
+        "name": "Seafood",
+        "description": "Fresh fish, prawns, and shellfish",
         "isActive": true
       }
     ],
@@ -91,22 +91,22 @@
   },
   {
     "id": 4,
-    "name": "Sports & Outdoors",
-    "description": "Sports equipment and outdoor gear",
-    "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop",
+    "name": "Pantry Essentials",
+    "description": "Dry goods, grains, and cooking essentials",
+    "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=200&fit=crop",
     "isActive": true,
-    "productCount": 67,
+    "productCount": 167,
     "subCategories": [
       {
         "id": 10,
-        "name": "Fitness",
-        "description": "Exercise equipment and fitness gear",
+        "name": "Grains & Cereals",
+        "description": "Rice, pasta, bread, and breakfast cereals",
         "isActive": true
       },
       {
         "id": 11,
-        "name": "Outdoor Recreation",
-        "description": "Camping, hiking, and outdoor activities",
+        "name": "Canned Goods",
+        "description": "Canned vegetables, fruits, and ready meals",
         "isActive": true
       }
     ],
@@ -115,22 +115,28 @@
   },
   {
     "id": 5,
-    "name": "Books & Media",
-    "description": "Books, movies, and digital media",
-    "image": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop",
-    "isActive": false,
-    "productCount": 45,
+    "name": "Beverages",
+    "description": "Drinks, juices, and beverages",
+    "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&h=200&fit=crop",
+    "isActive": true,
+    "productCount": 145,
     "subCategories": [
       {
         "id": 12,
-        "name": "Fiction",
-        "description": "Fictional books and novels",
+        "name": "Soft Drinks",
+        "description": "Carbonated drinks and sodas",
         "isActive": true
       },
       {
         "id": 13,
-        "name": "Non-Fiction",
-        "description": "Educational and reference books",
+        "name": "Juices & Smoothies",
+        "description": "Fresh juices and fruit smoothies",
+        "isActive": true
+      },
+      {
+        "id": 14,
+        "name": "Water & Hydration",
+        "description": "Bottled water and sports drinks",
         "isActive": true
       }
     ],
@@ -139,28 +145,28 @@
   },
   {
     "id": 6,
-    "name": "Food & Beverages",
-    "description": "Fresh groceries, beverages, and food items",
-    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300&h=200&fit=crop",
+    "name": "Frozen Foods",
+    "description": "Frozen vegetables, meals, and desserts",
+    "image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop",
     "isActive": true,
-    "productCount": 312,
+    "productCount": 98,
     "subCategories": [
       {
-        "id": 14,
-        "name": "Fresh Produce",
-        "description": "Fruits, vegetables, and fresh herbs",
-        "isActive": true
-      },
-      {
         "id": 15,
-        "name": "Dairy & Eggs",
-        "description": "Milk, cheese, yogurt, and eggs",
+        "name": "Frozen Vegetables",
+        "description": "Frozen peas, corn, and mixed vegetables",
         "isActive": true
       },
       {
         "id": 16,
-        "name": "Beverages",
-        "description": "Soft drinks, juices, and water",
+        "name": "Frozen Meals",
+        "description": "Ready-to-eat frozen meals",
+        "isActive": true
+      },
+      {
+        "id": 17,
+        "name": "Ice Cream & Desserts",
+        "description": "Frozen desserts and ice cream",
         "isActive": true
       }
     ],
@@ -169,32 +175,50 @@
   },
   {
     "id": 7,
-    "name": "Health & Beauty",
-    "description": "Health products, cosmetics, and personal care",
-    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop",
+    "name": "Health & Wellness",
+    "description": "Health supplements, vitamins, and wellness products",
+    "image": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop",
     "isActive": true,
-    "productCount": 178,
+    "productCount": 78,
     "subCategories": [
       {
-        "id": 17,
-        "name": "Skincare",
-        "description": "Face creams, cleansers, and treatments",
-        "isActive": true
-      },
-      {
         "id": 18,
-        "name": "Makeup",
-        "description": "Cosmetics and beauty products",
+        "name": "Vitamins & Supplements",
+        "description": "Dietary supplements and vitamins",
         "isActive": true
       },
       {
         "id": 19,
-        "name": "Personal Care",
-        "description": "Shampoo, soap, and hygiene products",
+        "name": "Health Foods",
+        "description": "Organic and health-focused food products",
         "isActive": true
       }
     ],
     "createdAt": "2024-01-21T12:30:00.000Z",
     "updatedAt": "2024-01-21T12:30:00.000Z"
+  },
+  {
+    "id": 8,
+    "name": "Household & Cleaning",
+    "description": "Cleaning supplies and household essentials",
+    "image": "https://images.unsplash.com/photo-1581578731548-c6a0c3f2f2c0?w=300&h=200&fit=crop",
+    "isActive": false,
+    "productCount": 45,
+    "subCategories": [
+      {
+        "id": 20,
+        "name": "Cleaning Supplies",
+        "description": "Detergents, disinfectants, and cleaning tools",
+        "isActive": true
+      },
+      {
+        "id": 21,
+        "name": "Paper Products",
+        "description": "Toilet paper, tissues, and paper towels",
+        "isActive": true
+      }
+    ],
+    "createdAt": "2024-01-22T14:45:00.000Z",
+    "updatedAt": "2024-01-22T14:45:00.000Z"
   }
 ]

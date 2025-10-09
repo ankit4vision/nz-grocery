@@ -109,15 +109,6 @@ const CategoriesList = () => {
       )
     },
     {
-      key: 'subCategoriesCount',
-      label: 'Sub Categories',
-      render: (value, category, index) => (
-        <span className="fw-semibold text-secondary">
-          {category.subCategories?.length || 0} sub categories
-        </span>
-      )
-    },
-    {
       key: 'status',
       label: 'Status',
       render: (value, category, index) => (
