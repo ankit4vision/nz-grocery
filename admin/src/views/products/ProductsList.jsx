@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Container, Row, Col, Button, FormControl, FormSelect, Image, Badge, Card } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faPlus, 
@@ -21,6 +22,8 @@ import { productService } from '../../services/productService'
 import productsData from '../../mock/products.json'
 
 const ProductsList = () => {
+  const navigate = useNavigate()
+  
   // State management
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -343,7 +346,7 @@ const ProductsList = () => {
   }
 
   const handleAddProduct = () => {
-    setShowAddModal(true)
+    navigate('/add-product')
   }
 
   const handleOpenEditModal = (product) => {
