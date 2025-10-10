@@ -56,7 +56,15 @@ admin/
 │   │   │   ├── 📁 categories/          # Category management
 │   │   │   │   └── CategoryForm.jsx   # Category form component
 │   │   │   ├── 📁 products/           # Product management
-│   │   │   │   └── ProductForm.jsx    # Product form component
+│   │   │   │   ├── AddProductWizard.jsx # Multi-step product creation wizard
+│   │   │   │   ├── ProductForm.jsx    # Product form component
+│   │   │   │   ├── README.md          # Product components documentation
+│   │   │   │   └── 📁 steps/          # Wizard step components
+│   │   │   │       ├── BasicInfoStep.jsx    # Basic information step
+│   │   │   │       ├── AttributesStep.jsx   # Product attributes step
+│   │   │   │       ├── VariantsStep.jsx     # Product variants step
+│   │   │   │       ├── ImageStep.jsx        # Product images step
+│   │   │   │       └── ReviewStep.jsx       # Review and submit step
 │   │   │   ├── 📁 roles/              # Role management
 │   │   │   │   └── RoleForm.jsx       # Role form component
 │   │   │   ├── 📁 subcategories/      # Subcategory management
@@ -188,6 +196,8 @@ admin/
   - `List.jsx` - List/table components
   - `Modal.jsx` - Modal components
   - `Section.jsx` - Section components
+  - `Wizard.jsx` - Multi-step form components
+  - `Step.jsx` - Individual step components
 
 #### 3. **File Structure Rules**
 - **One component per file**
@@ -380,13 +390,23 @@ const _nav = [
 </div>
 ```
 
-#### 10. **Clean Layout Guidelines**
+#### 10. **Multi-Step Form Guidelines**
+- **Step Indicator**: Use `StepIndicator` component for visual progress
+- **Step Navigation**: Allow navigation to completed steps and next step only
+- **Form Validation**: Validate each step before allowing progression
+- **Data Persistence**: Maintain form data across step navigation
+- **Step Components**: Create individual step components in `steps/` folder
+- **Wizard Container**: Use main wizard component to manage step state
+- **Navigation Buttons**: Consistent Previous/Next/Save Draft/Create buttons
+
+#### 11. **Clean Layout Guidelines**
 - **Avoid Nested Cards**: Use single container with subtle shadow instead of card-in-card
 - **Section Separation**: Use border-bottom dividers with green theme
 - **Visual Hierarchy**: Clear typography hierarchy with proper font weights
 - **Consistent Spacing**: Use `mb-5` for section spacing, `mb-4` for internal spacing
 - **Enhanced Inputs**: Use `border-2` class for better input visibility
 - **Theme Consistency**: Apply green color (`text-success`, `border-success`) consistently
+- **Success Buttons**: Always use `text-white` class for better contrast
 
 ### 🔧 State Management Rules
 
@@ -576,6 +596,15 @@ const userService = {
 - **SimpleBar** - Custom scrollbars
 - **Axios** - HTTP client for API calls
 
+### 🧩 Component Library
+- **StepIndicator** - Multi-step form progress indicator
+- **ImageUpload** - Drag-and-drop image upload component
+- **AddProductWizard** - Complete multi-step product creation wizard
+- **ProductForm** - Single-step product form (legacy)
+- **FormModal** - Modal wrapper for forms
+- **Table** - Data table with sorting and pagination
+- **ToastProvider** - Global notification system
+
 ### 📊 Performance Monitoring
 - **Bundle size** monitoring
 - **Runtime performance** tracking
@@ -610,6 +639,9 @@ const userService = {
 - **Gradient System**: CSS variables and utility classes for theme-based gradients
 - **Logo-Inspired Gradients**: Green-blue gradient variants matching brand colors
 - **Product Management**: Complete CRUD operations with dashboard-style summary cards
+- **Multi-Step Forms**: StepIndicator component with wizard pattern for complex forms
+- **Image Management**: Drag-and-drop upload with primary image selection
+- **Form Validation**: Step-by-step validation with error handling
 - **Mock Data System**: JSON-based mock data for development and testing
 - **Image Handling**: Fallback system with icon display for missing product images
 

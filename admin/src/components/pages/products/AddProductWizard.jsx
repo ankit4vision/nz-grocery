@@ -380,7 +380,7 @@ const AddProductWizard = () => {
                 <Button 
                   variant="success" 
                   onClick={handleNext}
-                  className="d-flex align-items-center"
+                  className="d-flex align-items-center text-white"
                 >
                   Next
                   <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
@@ -390,7 +390,7 @@ const AddProductWizard = () => {
                   variant="success" 
                   onClick={handleCreateProduct}
                   disabled={loading}
-                  className="d-flex align-items-center"
+                  className="d-flex align-items-center text-white"
                 >
                   <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
                   Create Product

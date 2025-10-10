@@ -251,7 +251,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
               variant="success" 
               onClick={onCreateProduct}
               disabled={loading}
-              className="d-flex align-items-center"
+              className="d-flex align-items-center text-white"
             >
               <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
               Create Product
