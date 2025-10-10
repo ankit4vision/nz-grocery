@@ -55,6 +55,10 @@ admin/
 │   │   ├── 📁 pages/                  # Page-specific components
 │   │   │   ├── 📁 categories/          # Category management
 │   │   │   │   └── CategoryForm.jsx   # Category form component
+│   │   │   ├── 📁 content/             # Content management
+│   │   │   │   ├── BannerFormModal.jsx # Banner add/edit modal component
+│   │   │   │   ├── FAQFormModal.jsx    # FAQ add/edit modal component
+│   │   │   │   └── NotificationFormModal.jsx # Notification send modal component
 │   │   │   ├── 📁 customers/          # Customer management
 │   │   │   │   ├── CustomerDetailsModal.jsx # Customer details modal component
 │   │   │   │   ├── SuspendCustomerModal.jsx # Customer suspension modal
@@ -110,6 +114,7 @@ admin/
 │   │
 │   ├── 📁 mock/                       # Mock data for development
 │   │   ├── categories.json            # Mock category data
+│   │   ├── content.json               # Mock content management data
 │   │   ├── customers.json             # Mock customer data
 │   │   ├── inventory.json             # Mock inventory data
 │   │   ├── orders.json                # Mock order data
@@ -137,6 +142,7 @@ admin/
 │   │
 │   ├── 📁 services/                   # API service layer
 │   │   ├── categoryService.js         # Category API service
+│   │   ├── contentService.js          # Content management API service
 │   │   ├── customerService.js         # Customer API service
 │   │   ├── inventoryService.js        # Inventory API service
 │   │   ├── orderService.js            # Order API service
@@ -154,6 +160,11 @@ admin/
 │   ├── 📁 views/                      # Main view components
 │   │   ├── 📁 categories/             # Category management views
 │   │   │   └── CategoriesList.jsx     # Categories list view
+│   │   ├── 📁 content/                # Content management views
+│   │   │   ├── ContentManagement.jsx # Main content management with tabs
+│   │   │   ├── BannersPromotions.jsx  # Banners & promotions management
+│   │   │   ├── FAQManagement.jsx     # FAQ management with expandable cards
+│   │   │   └── Notifications.jsx     # System notifications management
 │   │   ├── 📁 customers/              # Customer management views
 │   │   │   └── CustomersList.jsx      # Customers list view
 │   │   ├── 📁 dashboard/              # Dashboard views
