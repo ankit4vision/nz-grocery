@@ -7,7 +7,6 @@ import {
   cilStorage,
   cilPlus,
   cilCart,
-  cilHistory,
   cilPeople,
   cilDescription,
   cilCog,
@@ -64,12 +63,6 @@ const _nav = [
     name: 'Orders',
     to: '/orders',
     icon: <CIcon icon={cilCart} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Order History',
-    to: '/order-history',
-    icon: <CIcon icon={cilHistory} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

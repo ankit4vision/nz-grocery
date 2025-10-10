@@ -47,12 +47,12 @@ const AppHeaderDropdown = () => {
           {user ? `${user.firstName} ${user.lastName}` : 'Admin User'}
         </CDropdownHeader>
         
-        <CDropdownItem onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
+        <CDropdownItem disabled style={{ cursor: 'not-allowed', opacity: 0.5 }}>
           <CIcon icon={cilUser} className="me-2" />
           My Profile
         </CDropdownItem>
         
-        <CDropdownItem onClick={() => navigate('/settings')} style={{ cursor: 'pointer' }}>
+        <CDropdownItem disabled style={{ cursor: 'not-allowed', opacity: 0.5 }}>
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>
