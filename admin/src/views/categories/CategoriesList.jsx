@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Container, Row, Col, Button, FormControl, FormSelect, Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faPencil, faTrash, faInfo, faSearch, faFolder, faImage, faBox } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faPencil, faTrash, faSearch, faFolder, faImage, faBox } from '@fortawesome/free-solid-svg-icons'
 import { Table, FormModal, Modal } from '../../components'
 import CategoryForm from '../../components/pages/categories/CategoryForm'
 import { categoryService } from '../../services/categoryService'
@@ -18,12 +18,10 @@ const CategoriesList = () => {
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   
   // Data states
   const [categoryToEdit, setCategoryToEdit] = useState(null)
-  const [categoryToView, setCategoryToView] = useState(null)
   const [categoryToDelete, setCategoryToDelete] = useState(null)
   
   // Form refs
@@ -139,17 +137,6 @@ const CategoriesList = () => {
       render: (value, category, index) => (
         <div className="d-flex gap-2">
           <Button
-            variant="outline-info"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleViewCategory(category)
-            }}
-            title="View Category"
-          >
-            <FontAwesomeIcon icon={faInfo} />
-          </Button>
-          <Button
             variant="outline-warning"
             size="sm"
             onClick={(e) => {
@@ -194,10 +181,6 @@ const CategoriesList = () => {
     setShowEditModal(true)
   }
 
-  const handleViewCategory = (category) => {
-    setCategoryToView(category)
-    setShowViewModal(true)
-  }
 
   const handleDeleteCategory = (category) => {
     setCategoryToDelete(category)
@@ -361,79 +344,6 @@ const CategoriesList = () => {
         />
       </FormModal>
 
-      {/* View Category Modal */}
-      <Modal
-        visible={showViewModal}
-        onClose={() => {
-          setShowViewModal(false)
-          setCategoryToView(null)
-        }}
-        title="Category Details"
-        size="lg"
-        showFooter={false}
-        type="info"
-      >
-        {categoryToView && (
-          <div className="row">
-            <div className="col-sm-3"><strong>Image:</strong></div>
-            <div className="col-sm-9">
-              <div className="d-flex align-items-center">
-                {categoryToView.image ? (
-                  <Image
-                    src={categoryToView.image}
-                    alt={categoryToView.name}
-                    rounded
-                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                    className="border"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      e.target.nextSibling.style.display = 'flex'
-                    }}
-                  />
-                ) : null}
-                <div 
-                  className="d-flex align-items-center justify-content-center border rounded"
-                  style={{ 
-                    width: '100px', 
-                    height: '100px', 
-                    backgroundColor: '#f8f9fa',
-                    display: categoryToView.image ? 'none' : 'flex'
-                  }}
-                >
-                  <FontAwesomeIcon icon={faImage} className="text-muted" />
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-3"><strong>Name:</strong></div>
-            <div className="col-sm-9">{categoryToView.name}</div>
-            <div className="col-sm-3"><strong>Description:</strong></div>
-            <div className="col-sm-9">{categoryToView.description || 'N/A'}</div>
-            <div className="col-sm-3"><strong>Status:</strong></div>
-            <div className="col-sm-9">
-              <span
-                className={`badge ${categoryToView.isActive ? 'bg-success' : 'bg-secondary'}`}
-              >
-                {categoryToView.isActive ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-            <div className="col-sm-3"><strong>Products:</strong></div>
-            <div className="col-sm-9">
-              <span className="fw-semibold text-info">
-                {categoryToView.productCount || 0} products
-              </span>
-            </div>
-            <div className="col-sm-3"><strong>Sub Categories:</strong></div>
-            <div className="col-sm-9">
-              <span className="fw-semibold text-secondary">
-                {categoryToView.subCategories?.length || 0} sub categories
-              </span>
-            </div>
-            <div className="col-sm-3"><strong>Created:</strong></div>
-            <div className="col-sm-9">{new Date(categoryToView.createdAt).toLocaleDateString()}</div>
-          </div>
-        )}
-      </Modal>
 
       {/* Delete Confirmation Modal */}
       <Modal
