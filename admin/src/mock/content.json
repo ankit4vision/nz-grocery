@@ -1,0 +1,225 @@
+{
+  "banners": [
+    {
+      "id": 1,
+      "title": "20% Off Grocery Delivery",
+      "description": "Special discount on grocery delivery service",
+      "position": "hero",
+      "status": "active",
+      "image": null,
+      "linkUrl": "/products",
+      "startDate": "2024-01-15",
+      "endDate": "2024-02-15",
+      "createdDate": "2024-01-15",
+      "updatedDate": "2024-01-15"
+    },
+    {
+      "id": 2,
+      "title": "Fresh Organic Products",
+      "description": "Promoting fresh organic produce",
+      "position": "sidebar",
+      "status": "active",
+      "image": null,
+      "linkUrl": "/categories/organic",
+      "startDate": "2024-01-14",
+      "endDate": "2024-03-14",
+      "createdDate": "2024-01-14",
+      "updatedDate": "2024-01-14"
+    },
+    {
+      "id": 3,
+      "title": "New Product Promotion",
+      "description": "Introducing new product line",
+      "position": "footer",
+      "status": "draft",
+      "image": null,
+      "linkUrl": "/products/new",
+      "startDate": "2024-01-20",
+      "endDate": "2024-02-20",
+      "createdDate": "2024-01-13",
+      "updatedDate": "2024-01-13"
+    },
+    {
+      "id": 4,
+      "title": "Seasonal Sale",
+      "description": "Seasonal discount promotion",
+      "position": "hero",
+      "status": "inactive",
+      "image": null,
+      "linkUrl": "/sale",
+      "startDate": "2024-01-12",
+      "endDate": "2024-01-25",
+      "createdDate": "2024-01-12",
+      "updatedDate": "2024-01-12"
+    },
+    {
+      "id": 5,
+      "title": "Weekend Special",
+      "description": "Weekend-only special offers",
+      "position": "popup",
+      "status": "active",
+      "image": null,
+      "linkUrl": "/weekend-offers",
+      "startDate": "2024-01-10",
+      "endDate": "2024-12-31",
+      "createdDate": "2024-01-10",
+      "updatedDate": "2024-01-10"
+    }
+  ],
+  "faqs": [
+    {
+      "id": 1,
+      "question": "How do I place an order?",
+      "answer": "To place an order, simply browse our products, add items to your cart, and proceed to checkout. You can pay using various payment methods including credit cards, PayPal, or cash on delivery.",
+      "createdDate": "2024-01-15",
+      "updatedDate": "2024-01-15"
+    },
+    {
+      "id": 2,
+      "question": "What are your delivery times?",
+      "answer": "We offer same-day delivery for orders placed before 2 PM. Standard delivery takes 1-2 business days. Express delivery is available for an additional fee.",
+      "createdDate": "2024-01-14",
+      "updatedDate": "2024-01-14"
+    },
+    {
+      "id": 3,
+      "question": "How can I track my order?",
+      "answer": "You can track your order by logging into your account and viewing the order status, or by using the tracking number sent to your email.",
+      "createdDate": "2024-01-13",
+      "updatedDate": "2024-01-13"
+    },
+    {
+      "id": 4,
+      "question": "What is your return policy?",
+      "answer": "We offer a 30-day return policy for most items. Fresh produce and perishable items have a 7-day return window. Items must be in original condition.",
+      "createdDate": "2024-01-12",
+      "updatedDate": "2024-01-12"
+    },
+    {
+      "id": 5,
+      "question": "Do you offer bulk discounts?",
+      "answer": "Yes, we offer special pricing for bulk orders. Contact our sales team for custom pricing based on your requirements.",
+      "createdDate": "2024-01-11",
+      "updatedDate": "2024-01-11"
+    },
+    {
+      "id": 6,
+      "question": "How do I contact customer support?",
+      "answer": "You can reach our customer support team via phone, email, or live chat. Our support hours are Monday to Friday, 9 AM to 6 PM.",
+      "createdDate": "2024-01-10",
+      "updatedDate": "2024-01-10"
+    },
+    {
+      "id": 7,
+      "question": "What payment methods do you accept?",
+      "answer": "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and cash on delivery for eligible areas.",
+      "createdDate": "2024-01-09",
+      "updatedDate": "2024-01-09"
+    },
+    {
+      "id": 8,
+      "question": "Is there a minimum order amount?",
+      "answer": "Yes, we have a minimum order amount of $25 for delivery. However, you can always pick up your order from our store with no minimum amount.",
+      "createdDate": "2024-01-08",
+      "updatedDate": "2024-01-08"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "title": "New Product Launch",
+      "description": "Announcing our new organic product line",
+      "type": "promotional",
+      "targetAudience": "All Customers",
+      "message": "Exciting news! We've just launched our new organic product line. Check out the fresh, locally-sourced organic vegetables and fruits now available.",
+      "status": "sent",
+      "sentDate": "2024-01-15",
+      "scheduledDate": "2024-01-15",
+      "scheduledTime": "10:00"
+    },
+    {
+      "id": 2,
+      "title": "System Maintenance Notice",
+      "description": "Scheduled maintenance window notification",
+      "type": "system",
+      "targetAudience": "All Users",
+      "message": "We will be performing scheduled maintenance on our website from 2 AM to 4 AM EST. During this time, some features may be temporarily unavailable.",
+      "status": "sent",
+      "sentDate": "2024-01-14",
+      "scheduledDate": "2024-01-14",
+      "scheduledTime": "18:00"
+    },
+    {
+      "id": 3,
+      "title": "Order Status Update",
+      "description": "Order delivery status update",
+      "type": "transactional",
+      "targetAudience": "Specific Customers",
+      "message": "Your order #12345 has been shipped and is on its way! Expected delivery: Tomorrow by 5 PM. Track your order using the link in your email.",
+      "status": "sent",
+      "sentDate": "2024-01-13",
+      "scheduledDate": "2024-01-13",
+      "scheduledTime": "14:30"
+    },
+    {
+      "id": 4,
+      "title": "Weekly Newsletter",
+      "description": "Weekly product highlights and offers",
+      "type": "promotional",
+      "targetAudience": "Subscribers",
+      "message": "This week's highlights: Fresh seasonal fruits, organic vegetables, and special discounts on dairy products. Don't miss out on our limited-time offers!",
+      "status": "sent",
+      "sentDate": "2024-01-12",
+      "scheduledDate": "2024-01-12",
+      "scheduledTime": "09:00"
+    },
+    {
+      "id": 5,
+      "title": "Payment Reminder",
+      "description": "Reminder for pending payment",
+      "type": "transactional",
+      "targetAudience": "Pending Orders",
+      "message": "Your payment for order #12340 is still pending. Please complete your payment to avoid order cancellation. Payment link: [link]",
+      "status": "sent",
+      "sentDate": "2024-01-11",
+      "scheduledDate": "2024-01-11",
+      "scheduledTime": "16:00"
+    },
+    {
+      "id": 6,
+      "title": "Holiday Special Offer",
+      "description": "Special holiday discount promotion",
+      "type": "promotional",
+      "targetAudience": "All Customers",
+      "message": "Celebrate the holidays with 25% off on all holiday-themed products! Use code HOLIDAY25 at checkout. Offer valid until December 31st.",
+      "status": "sent",
+      "sentDate": "2024-01-10",
+      "scheduledDate": "2024-01-10",
+      "scheduledTime": "11:00"
+    },
+    {
+      "id": 7,
+      "title": "Delivery Delay Notice",
+      "description": "Notification about delivery delays due to weather",
+      "type": "system",
+      "targetAudience": "Affected Customers",
+      "message": "Due to severe weather conditions, some deliveries may be delayed by 1-2 hours. We apologize for any inconvenience and appreciate your patience.",
+      "status": "sent",
+      "sentDate": "2024-01-09",
+      "scheduledDate": "2024-01-09",
+      "scheduledTime": "08:00"
+    },
+    {
+      "id": 8,
+      "title": "New Store Opening",
+      "description": "Announcement of new store location",
+      "type": "promotional",
+      "targetAudience": "Local Customers",
+      "message": "Great news! We're opening a new store in Downtown. Visit us for a grand opening celebration with special discounts and free samples!",
+      "status": "pending",
+      "sentDate": null,
+      "scheduledDate": "2024-01-20",
+      "scheduledTime": "10:00"
+    }
+  ]
+}
