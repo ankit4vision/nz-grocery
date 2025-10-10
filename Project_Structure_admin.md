@@ -408,6 +408,14 @@ const _nav = [
 - **Theme Consistency**: Apply green color (`text-success`, `border-success`) consistently
 - **Success Buttons**: Always use `text-white` class for better contrast
 
+#### 12. **Component Reusability Guidelines**
+- **Dual-Mode Components**: Create components that support both create and edit modes
+- **Mode Detection**: Use URL parameters or props to determine component mode
+- **Dynamic UI Updates**: Update titles, buttons, and descriptions based on mode
+- **Data Pre-population**: Load existing data for edit mode with proper loading states
+- **Single Source of Truth**: Reuse complex components instead of creating duplicates
+- **Consistent UX**: Maintain same user experience across create and edit flows
+
 ### 🔧 State Management Rules
 
 #### 1. **State Management Strategy**
@@ -599,7 +607,7 @@ const userService = {
 ### 🧩 Component Library
 - **StepIndicator** - Multi-step form progress indicator
 - **ImageUpload** - Drag-and-drop image upload component
-- **AddProductWizard** - Complete multi-step product creation wizard
+- **AddProductWizard** - Complete multi-step product creation wizard (supports create/edit modes)
 - **ProductForm** - Single-step product form (legacy)
 - **FormModal** - Modal wrapper for forms
 - **Table** - Data table with sorting and pagination
