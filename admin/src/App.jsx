@@ -7,7 +7,7 @@ import './scss/style.scss'
 import '../styles/theme.css'
 
 // Import Providers
-import { ToastProvider } from './components'
+import { ToastProvider, ScrollToTop } from './components'
 import { AuthProvider } from './context/AuthContext'
 
 // Import Routes
@@ -35,6 +35,7 @@ const App = () => {
     <HashRouter>
       <AuthProvider>
         <ToastProvider>
+          <ScrollToTop />
           <AppRoutes />
         </ToastProvider>
       </AuthProvider>
