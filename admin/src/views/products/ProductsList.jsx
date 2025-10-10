@@ -414,12 +414,6 @@ const ProductsList = () => {
               <h2 className="mb-0 text-dark">Product Management</h2>
             </div>
             <div className="ms-auto d-flex align-items-center gap-3">
-              <div className="position-relative">
-                <FontAwesomeIcon icon={faBell} className="text-muted fs-5" />
-                <Badge bg="danger" className="position-absolute top-0 start-100 translate-middle rounded-pill" style={{ fontSize: '0.6rem' }}>
-                  3
-                </Badge>
-              </div>
               <Button variant="success" onClick={handleAddProduct} className="text-white">
                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                 Add Product

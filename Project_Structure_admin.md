@@ -55,6 +55,10 @@ admin/
 │   │   ├── 📁 pages/                  # Page-specific components
 │   │   │   ├── 📁 categories/          # Category management
 │   │   │   │   └── CategoryForm.jsx   # Category form component
+│   │   │   ├── 📁 inventory/          # Inventory management
+│   │   │   │   ├── InventoryHistoryModal.jsx # Inventory history modal
+│   │   │   │   ├── StockAdjustmentForm.jsx # Stock adjustment form
+│   │   │   │   └── README.md          # Inventory components documentation
 │   │   │   ├── 📁 products/           # Product management
 │   │   │   │   ├── AddProductWizard.jsx # Multi-step product creation wizard
 │   │   │   │   ├── ProductForm.jsx    # Product form component
@@ -99,6 +103,7 @@ admin/
 │   │
 │   ├── 📁 mock/                       # Mock data for development
 │   │   ├── categories.json            # Mock category data
+│   │   ├── inventory.json             # Mock inventory data
 │   │   ├── products.json              # Mock product data
 │   │   ├── profile.json               # Mock profile data
 │   │   ├── roles.json                 # Mock role data
@@ -123,6 +128,7 @@ admin/
 │   │
 │   ├── 📁 services/                   # API service layer
 │   │   ├── categoryService.js         # Category API service
+│   │   ├── inventoryService.js        # Inventory API service
 │   │   ├── productService.js          # Product API service
 │   │   ├── profileService.js          # Profile API service
 │   │   ├── README.md                  # Services documentation
@@ -140,7 +146,10 @@ admin/
 │   │   ├── 📁 dashboard/              # Dashboard views
 │   │   │   ├── Dashboard.jsx          # Main dashboard
 │   │   │   └── MainChart.jsx          # Dashboard chart component
+│   │   ├── 📁 inventory/              # Inventory management views
+│   │   │   └── InventoryManagement.jsx # Inventory management main view
 │   │   ├── 📁 products/               # Product management views
+│   │   │   ├── ProductDetails.jsx     # Product details view
 │   │   │   └── ProductsList.jsx       # Products list view
 │   │   ├── 📁 roles/                  # Role management views
 │   │   │   └── RolesList.jsx          # Roles list view
@@ -416,6 +425,15 @@ const _nav = [
 - **Single Source of Truth**: Reuse complex components instead of creating duplicates
 - **Consistent UX**: Maintain same user experience across create and edit flows
 
+#### 13. **Custom Table Component Guidelines**
+- **Always Use Custom Table**: Use the project's custom Table component instead of basic Bootstrap tables
+- **Column Definitions**: Define columns with proper key, header, and render functions
+- **Sortable Columns**: Specify which columns should be sortable in sortableColumns array
+- **Pagination Integration**: Use built-in pagination with currentPage, pageSize, and totalItems
+- **Loading States**: Leverage built-in loading states and empty message handling
+- **Consistent Styling**: Inherit responsive design and proper table styling automatically
+
+
 ### 🔧 State Management Rules
 
 #### 1. **State Management Strategy**
@@ -631,7 +649,7 @@ const userService = {
 
 ### 🎯 Navigation Structure
 - **Main Section**: Dashboard groups with multiple dashboard options
-- **Product Management**: Products, categories, subcategories, brands, units
+- **Product Management**: Products, categories, subcategories, brands, units, inventory management
 - **User Management**: Users and role & permission management
 - **Account Section**: Profile and settings
 
@@ -647,6 +665,8 @@ const userService = {
 - **Gradient System**: CSS variables and utility classes for theme-based gradients
 - **Logo-Inspired Gradients**: Green-blue gradient variants matching brand colors
 - **Product Management**: Complete CRUD operations with dashboard-style summary cards
+- **Inventory Management**: Complete stock tracking with history, bulk operations, and alerts
+- **Custom Table Component**: Reusable table with sorting, pagination, and loading states
 - **Multi-Step Forms**: StepIndicator component with wizard pattern for complex forms
 - **Image Management**: Drag-and-drop upload with primary image selection
 - **Form Validation**: Step-by-step validation with error handling

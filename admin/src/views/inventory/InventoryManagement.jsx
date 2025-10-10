@@ -344,10 +344,6 @@ const InventoryManagement = () => {
             <FontAwesomeIcon icon={faWarehouse} className="me-3 text-success fs-4" />
             <h2 className="mb-0 text-dark">Inventory Management</h2>
             <div className="ms-auto">
-              <Button variant="outline-primary" className="me-2">
-                <FontAwesomeIcon icon={faBell} className="me-2" />
-                <span className="badge bg-danger ms-1">3</span>
-              </Button>
               <Button variant="success" className="me-2 text-white" onClick={() => setShowBulkUpdateModal(true)}>
                 <FontAwesomeIcon icon={faUpload} className="me-2" />
                 Bulk Update
