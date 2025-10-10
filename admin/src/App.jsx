@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import { useColorModes } from '@coreui/react'
@@ -32,13 +32,13 @@ const App = () => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AuthProvider>
         <ToastProvider>
           <AppRoutes />
         </ToastProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
