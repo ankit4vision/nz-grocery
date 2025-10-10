@@ -184,69 +184,42 @@ const InventoryHistoryModal = ({ show, onHide, product }) => {
             </div>
           ) : history.length > 0 ? (
             history.map((item, index) => (
-              <div key={item.id} className="d-flex mb-4">
-                {/* Timeline Line */}
-                <div className="flex-shrink-0 me-3">
-                  <div className="d-flex flex-column align-items-center">
-                    <div 
-                      className={`rounded-circle d-flex align-items-center justify-content-center mb-2`}
-                      style={{ 
-                        width: '40px', 
-                        height: '40px', 
-                        backgroundColor: `var(--bs-${getHistoryTypeColor(item.type)})`,
-                        color: 'white'
-                      }}
-                    >
-                      {getHistoryTypeIcon(item.type)}
-                    </div>
-                    {index < history.length - 1 && (
-                      <div 
-                        className="flex-grow-1"
-                        style={{ 
-                          width: '2px', 
-                          height: '60px', 
-                          backgroundColor: '#dee2e6' 
-                        }}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-grow-1">
-                  <Card className="border-0 shadow-sm">
-                    <Card.Body>
-                      <div className="d-flex justify-content-between align-items-start mb-2">
+              <div key={item.id} className="mb-3">
+                <Card className="border-0 shadow-sm">
+                  <Card.Body className="py-3">
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div className="d-flex align-items-center">
+                        <div 
+                          className="rounded-circle d-flex align-items-center justify-content-center me-3"
+                          style={{ 
+                            width: '32px', 
+                            height: '32px', 
+                            backgroundColor: `var(--bs-${getHistoryTypeColor(item.type)})`,
+                            color: 'white'
+                          }}
+                        >
+                          {getHistoryTypeIcon(item.type)}
+                        </div>
                         <div>
-                          <Badge bg={getHistoryTypeColor(item.type)} className="mb-2">
-                            {getHistoryTypeLabel(item.type)}
-                          </Badge>
-                          <h6 className="mb-1">
-                            <span className={`text-${getHistoryTypeColor(item.type)} fw-bold`}>
-                              {formatChange(item.change)} units
-                            </span>
-                          </h6>
-                          <p className="mb-2 text-muted">{item.description}</p>
+                          <div className="d-flex align-items-center mb-1">
+                            <Badge bg={getHistoryTypeColor(item.type)} className="me-2">
+                              {getHistoryTypeLabel(item.type)}
+                            </Badge>
+                          </div>
+                          <p className="mb-0 text-muted small">{item.description}</p>
+                        </div>
+                      </div>
+                      <div className="text-end">
+                        <div className={`text-${getHistoryTypeColor(item.type)} fw-bold mb-1`}>
+                          {formatChange(item.change)} units
                         </div>
                         <small className="text-muted">
                           {formatDate(item.timestamp)}
                         </small>
                       </div>
-                      
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-center text-muted">
-                          <FontAwesomeIcon icon={faUser} className="me-1" size="sm" />
-                          <small>{item.user}</small>
-                        </div>
-                        {item.reference && (
-                          <div className="text-muted">
-                            <small>Ref: {item.reference}</small>
-                          </div>
-                        )}
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </div>
+                    </div>
+                  </Card.Body>
+                </Card>
               </div>
             ))
           ) : (

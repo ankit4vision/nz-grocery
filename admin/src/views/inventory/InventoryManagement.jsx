@@ -16,7 +16,10 @@ import {
   faTimesCircle,
   faClock,
   faList,
-  faRefresh
+  faRefresh,
+  faFileExcel,
+  faKeyboard,
+  faPlusMinus
 } from '@fortawesome/free-solid-svg-icons'
 import { Table } from '../../components'
 import inventoryService from '../../services/inventoryService'
@@ -110,6 +113,10 @@ const InventoryManagement = () => {
   const handleViewHistory = (product) => {
     setSelectedProduct(product)
     setShowHistoryModal(true)
+  }
+
+  const handleStockAdjustment = (product) => {
+    alert(`Stock adjustment functionality would be implemented here for ${product.productName}`)
   }
 
   const handleBulkUpdate = async () => {
@@ -296,9 +303,10 @@ const InventoryManagement = () => {
           <Button
             variant="outline-success"
             size="sm"
-            title="Edit"
+            onClick={() => handleStockAdjustment(item)}
+            title="Stock Adjustment"
           >
-            <FontAwesomeIcon icon={faEdit} />
+            <FontAwesomeIcon icon={faPlusMinus} />
           </Button>
           <Button
             variant="outline-info"
@@ -596,39 +604,82 @@ const InventoryManagement = () => {
       />
 
       {/* Bulk Update Modal */}
-      <Modal show={showBulkUpdateModal} onHide={() => setShowBulkUpdateModal(false)} size="lg">
+      <Modal show={showBulkUpdateModal} onHide={() => setShowBulkUpdateModal(false)} size="lg" centered="true">
         <Modal.Header closeButton>
-          <Modal.Title>Bulk Update Inventory</Modal.Title>
+          <Modal.Title>Bulk Inventory Update</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Update {selectedItems.length} selected products:</p>
           <Row>
+            {/* Left Section - Import from Excel/CSV */}
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Low Stock Alert</Form.Label>
-                <FormControl
-                  type="number"
-                  placeholder="Enter new low stock alert"
-                  value={bulkUpdateData.lowStockAlert}
-                  onChange={(e) => setBulkUpdateData({ ...bulkUpdateData, lowStockAlert: e.target.value })}
-                  className="border-2"
-                />
-              </Form.Group>
+              <div className="border border-2 border-dashed rounded-3 p-4 text-center h-100">
+                <div className="mb-3">
+                  <FontAwesomeIcon icon={faFileExcel} className="text-success" size="3x" />
+                </div>
+                <h5 className="mb-3">Import from Excel/CSV</h5>
+                <p className="text-muted mb-4">Upload your inventory data file</p>
+                
+                <div className="mb-3">
+                  <FormControl
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    className="border-2"
+                    onChange={(e) => {
+                      // Handle file upload
+                      console.log('File selected:', e.target.files[0])
+                    }}
+                  />
+                </div>
+                
+                <Button variant="link" className="text-primary p-0">
+                  <FontAwesomeIcon icon={faDownload} className="me-2" />
+                  Download Template
+                </Button>
+              </div>
             </Col>
+
+            {/* Right Section - Manual Bulk Update */}
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Status</Form.Label>
-                <Form.Select
-                  value={bulkUpdateData.status}
-                  onChange={(e) => setBulkUpdateData({ ...bulkUpdateData, status: e.target.value })}
-                  className="border-2"
-                >
-                  <option value="">Select Status</option>
-                  <option value="in_stock">In Stock</option>
-                  <option value="low_stock">Low Stock</option>
-                  <option value="out_of_stock">Out of Stock</option>
-                </Form.Select>
-              </Form.Group>
+              <div className="border border-2 border-dashed rounded-3 p-4 text-center h-100">
+                <div className="mb-3">
+                  <FontAwesomeIcon icon={faKeyboard} className="text-primary" size="3x" />
+                </div>
+                <h5 className="mb-3">Manual Bulk Update</h5>
+                <p className="text-muted mb-4">Update multiple products at once</p>
+                
+                <div className="d-grid gap-2">
+                  <Button 
+                    variant="outline-primary" 
+                    className="border-2"
+                    onClick={() => {
+                      // Handle stock levels update
+                      console.log('Update Stock Levels')
+                    }}
+                  >
+                    Update Stock Levels
+                  </Button>
+                  <Button 
+                    variant="outline-primary" 
+                    className="border-2"
+                    onClick={() => {
+                      // Handle prices update
+                      console.log('Update Prices')
+                    }}
+                  >
+                    Update Prices
+                  </Button>
+                  <Button 
+                    variant="outline-primary" 
+                    className="border-2"
+                    onClick={() => {
+                      // Handle categories update
+                      console.log('Update Categories')
+                    }}
+                  >
+                    Update Categories
+                  </Button>
+                </div>
+              </div>
             </Col>
           </Row>
         </Modal.Body>
@@ -636,8 +687,8 @@ const InventoryManagement = () => {
           <Button variant="secondary" onClick={() => setShowBulkUpdateModal(false)}>
             Cancel
           </Button>
-          <Button variant="success" onClick={handleBulkUpdate} className="text-white">
-            Update Selected Items
+          <Button variant="success" className="text-white">
+            Process Update
           </Button>
         </Modal.Footer>
       </Modal>
