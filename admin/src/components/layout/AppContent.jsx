@@ -31,6 +31,9 @@ const OrdersList = React.lazy(() => import('../../views/orders/OrdersList'))
 // Customer Management Components
 const CustomersList = React.lazy(() => import('../../views/customers/CustomersList'))
 
+// Content Management Components
+const ContentManagement = React.lazy(() => import('../../views/content/ContentManagement'))
+
 const AppContent = () => {
   return (
     <div className="app-content">
@@ -65,6 +68,9 @@ const AppContent = () => {
           
           {/* Customer Management Routes */}
           <Route path="/customers" element={<CustomersList />} />
+          
+          {/* Content Management Routes */}
+          <Route path="/content" element={<ContentManagement />} />
           
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

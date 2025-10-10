@@ -30,6 +30,7 @@ import AddressSection from './pages/users/AddressSection'
 import RoleForm from './pages/roles/RoleForm'
 import CategoryForm from './pages/categories/CategoryForm'
 import SubCategoryForm from './pages/subcategories/SubCategoryForm'
+import ContentManagement from '../views/content/ContentManagement'
 // Settings components removed - now integrated into main Settings.jsx
 
 // Documentation Components
@@ -70,6 +71,7 @@ export {
   RoleForm,
   CategoryForm,
   SubCategoryForm,
+  ContentManagement,
   // Settings components removed - now integrated into main Settings.jsx
   ToastProvider,
   useToast,
