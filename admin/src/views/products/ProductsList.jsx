@@ -37,12 +37,10 @@ const ProductsList = () => {
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   
   // Data states
   const [productToEdit, setProductToEdit] = useState(null)
-  const [productToView, setProductToView] = useState(null)
   const [productToDelete, setProductToDelete] = useState(null)
   
   // Stats state
@@ -355,8 +353,7 @@ const ProductsList = () => {
   }
 
   const handleViewProduct = (product) => {
-    setProductToView(product)
-    setShowViewModal(true)
+    navigate(`/products/${product.id}`)
   }
 
   const handleDeleteProduct = (product) => {
@@ -679,98 +676,6 @@ const ProductsList = () => {
         />
       </FormModal>
 
-      {/* View Product Modal */}
-      <Modal
-        visible={showViewModal}
-        onClose={() => {
-          setShowViewModal(false)
-          setProductToView(null)
-        }}
-        title="Product Details"
-        size="xl"
-        showFooter={false}
-        type="info"
-      >
-        {productToView && (
-          <div className="row">
-            <div className="col-sm-3"><strong>Image:</strong></div>
-            <div className="col-sm-9">
-              <div className="d-flex align-items-center">
-                {productToView.image ? (
-                  <Image
-                    src={productToView.image}
-                    alt={productToView.name}
-                    rounded
-                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                    className="border"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div 
-                    className="d-flex align-items-center justify-content-center border rounded"
-                    style={{ 
-                      width: '100px', 
-                      height: '100px', 
-                      backgroundColor: '#f8f9fa'
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faImage} className="text-muted" />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="col-sm-3"><strong>Name:</strong></div>
-            <div className="col-sm-9">{productToView.name}</div>
-            <div className="col-sm-3"><strong>Description:</strong></div>
-            <div className="col-sm-9">{productToView.description || 'N/A'}</div>
-            <div className="col-sm-3"><strong>Category:</strong></div>
-            <div className="col-sm-9">
-              <Badge bg="success">{productToView.category}</Badge>
-            </div>
-            <div className="col-sm-3"><strong>Price:</strong></div>
-            <div className="col-sm-9">
-              <span className="fw-semibold text-success">${productToView.price}</span>
-              {productToView.oldPrice && (
-                <span className="text-muted text-decoration-line-through ms-2">${productToView.oldPrice}</span>
-              )}
-            </div>
-            <div className="col-sm-3"><strong>Stock:</strong></div>
-            <div className="col-sm-9">
-              <span className="fw-semibold">{productToView.stock} units</span>
-              <Badge bg={getStockStatusColor(productToView.stockStatus)} className="ms-2">
-                {productToView.stockStatus}
-              </Badge>
-            </div>
-            <div className="col-sm-3"><strong>Sales:</strong></div>
-            <div className="col-sm-9">
-              <Badge bg="info">{productToView.sales} sold</Badge>
-            </div>
-            <div className="col-sm-3"><strong>Rating:</strong></div>
-            <div className="col-sm-9">
-              <div className="d-flex align-items-center">
-                <div className="me-2">
-                  {renderStarRating(productToView.rating)}
-                </div>
-                <span className="fw-semibold">({productToView.reviewCount} reviews)</span>
-              </div>
-            </div>
-            <div className="col-sm-3"><strong>Status:</strong></div>
-            <div className="col-sm-9">
-              <Badge bg={getStatusColor(productToView.status)}>
-                {productToView.status === 'active' ? 'Active' : 
-                 productToView.status === 'inactive' ? 'Inactive' : 
-                 productToView.status === 'out_of_stock' ? 'Out of Stock' : productToView.status}
-              </Badge>
-            </div>
-            <div className="col-sm-3"><strong>SKU:</strong></div>
-            <div className="col-sm-9">{productToView.sku || 'N/A'}</div>
-            <div className="col-sm-3"><strong>Brand:</strong></div>
-            <div className="col-sm-9">{productToView.brand || 'N/A'}</div>
-            <div className="col-sm-3"><strong>Created:</strong></div>
-            <div className="col-sm-9">{new Date(productToView.createdAt).toLocaleDateString()}</div>
-          </div>
-        )}
-      </Modal>
 
       {/* Delete Confirmation Modal */}
       <Modal

@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Fresh Organic Apples",
-    "description": "Crisp and sweet organic apples",
+    "description": "Crisp and sweet organic apples, perfect for snacking or cooking. Grown without pesticides and harvested at peak ripeness.",
     "weight": "1 kg",
     "category": "Fruits",
     "categoryId": 1,
@@ -11,25 +11,111 @@
     "price": 2.49,
     "oldPrice": 2.99,
     "stock": 156,
-    "stockStatus": "high",
+    "stockStatus": "in_stock",
     "sales": 156,
     "rating": 4.8,
     "reviewCount": 24,
     "status": "active",
     "isActive": true,
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=400&fit=crop",
     "sku": "APP-001",
     "barcode": "1234567890123",
     "brand": "Organic Farm",
     "unit": "kg",
     "tags": ["organic", "fresh", "healthy"],
     "createdAt": "2024-01-15T10:30:00.000Z",
-    "updatedAt": "2024-01-15T10:30:00.000Z"
+    "updatedAt": "2024-01-15T10:30:00.000Z",
+    "attributes": {
+      "dietaryInfo": {
+        "organic": true,
+        "glutenFree": true,
+        "vegan": true,
+        "dairyFree": true
+      },
+      "weight": "1.0",
+      "dimensions": "8 x 8 x 12 cm",
+      "expiryDate": "2024-02-15",
+      "nutritionalInfo": {
+        "calories": "52",
+        "protein": "0.3",
+        "carbs": "14",
+        "fat": "0.2"
+      }
+    },
+    "variants": {
+      "bulkPricing": [
+        {
+          "id": 1,
+          "minQuantity": 5,
+          "maxQuantity": 10,
+          "priceType": "discount",
+          "price": "10",
+          "finalPrice": "Auto-calculated"
+        },
+        {
+          "id": 2,
+          "minQuantity": 11,
+          "maxQuantity": 20,
+          "priceType": "discount",
+          "price": "15",
+          "finalPrice": "Auto-calculated"
+        }
+      ],
+      "productVariants": [
+        {
+          "id": 1,
+          "name": "Small (6-8 pieces)",
+          "sku": "APP-001-S",
+          "basePrice": "2.49",
+          "salePrice": "2.49",
+          "stock": "156",
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "name": "Medium (8-10 pieces)",
+          "sku": "APP-001-M",
+          "basePrice": "3.99",
+          "salePrice": "3.99",
+          "stock": "89",
+          "status": "active"
+        },
+        {
+          "id": 3,
+          "name": "Large (10-12 pieces)",
+          "sku": "APP-001-L",
+          "basePrice": "5.49",
+          "salePrice": "4.99",
+          "stock": "45",
+          "status": "active"
+        }
+      ]
+    },
+    "images": {
+      "uploadedImages": [
+        {
+          "id": 1,
+          "url": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=400&fit=crop",
+          "name": "organic-apples-main.jpg"
+        },
+        {
+          "id": 2,
+          "url": "https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?w=400&h=400&fit=crop",
+          "name": "organic-apples-side.jpg"
+        },
+        {
+          "id": 3,
+          "url": "https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?w=400&h=400&fit=crop",
+          "name": "organic-apples-packaging.jpg"
+        }
+      ],
+      "primaryImageIndex": 0
+    }
   },
   {
     "id": 2,
     "name": "Organic Bananas",
-    "description": "Sweet and ripe organic bananas",
+    "description": "Sweet and ripe organic bananas, perfect for breakfast or as a healthy snack. Rich in potassium and natural sugars.",
     "weight": "1 bunch",
     "category": "Fruits",
     "categoryId": 1,
@@ -38,20 +124,84 @@
     "price": 3.99,
     "oldPrice": 4.49,
     "stock": 5,
-    "stockStatus": "low",
+    "stockStatus": "low_stock",
     "sales": 134,
     "rating": 4.6,
     "reviewCount": 18,
     "status": "active",
     "isActive": true,
-    "image": "",
+    "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop",
     "sku": "BAN-002",
     "barcode": "1234567890124",
     "brand": "Organic Farm",
     "unit": "bunch",
     "tags": ["organic", "fresh", "potassium"],
     "createdAt": "2024-01-16T09:15:00.000Z",
-    "updatedAt": "2024-01-16T09:15:00.000Z"
+    "updatedAt": "2024-01-16T09:15:00.000Z",
+    "attributes": {
+      "dietaryInfo": {
+        "organic": true,
+        "glutenFree": true,
+        "vegan": true,
+        "dairyFree": true
+      },
+      "weight": "0.8",
+      "dimensions": "15 x 8 x 6 cm",
+      "expiryDate": "2024-01-25",
+      "nutritionalInfo": {
+        "calories": "89",
+        "protein": "1.1",
+        "carbs": "23",
+        "fat": "0.3"
+      }
+    },
+    "variants": {
+      "bulkPricing": [
+        {
+          "id": 1,
+          "minQuantity": 3,
+          "maxQuantity": 6,
+          "priceType": "discount",
+          "price": "5",
+          "finalPrice": "Auto-calculated"
+        }
+      ],
+      "productVariants": [
+        {
+          "id": 1,
+          "name": "Small Bunch (4-5 bananas)",
+          "sku": "BAN-002-S",
+          "basePrice": "3.99",
+          "salePrice": "3.99",
+          "stock": "5",
+          "status": "active"
+        },
+        {
+          "id": 2,
+          "name": "Large Bunch (6-8 bananas)",
+          "sku": "BAN-002-L",
+          "basePrice": "5.99",
+          "salePrice": "5.49",
+          "stock": "12",
+          "status": "active"
+        }
+      ]
+    },
+    "images": {
+      "uploadedImages": [
+        {
+          "id": 1,
+          "url": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop",
+          "name": "organic-bananas-main.jpg"
+        },
+        {
+          "id": 2,
+          "url": "https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=400&h=400&fit=crop",
+          "name": "organic-bananas-side.jpg"
+        }
+      ],
+      "primaryImageIndex": 0
+    }
   },
   {
     "id": 3,
@@ -65,7 +215,7 @@
     "price": 1.99,
     "oldPrice": 2.29,
     "stock": 45,
-    "stockStatus": "medium",
+    "stockStatus": "in_stock",
     "sales": 98,
     "rating": 4.4,
     "reviewCount": 12,
@@ -119,7 +269,7 @@
     "price": 3.49,
     "oldPrice": 3.99,
     "stock": 78,
-    "stockStatus": "high",
+    "stockStatus": "in_stock",
     "sales": 203,
     "rating": 4.9,
     "reviewCount": 45,
@@ -146,7 +296,7 @@
     "price": 4.99,
     "oldPrice": 5.49,
     "stock": 23,
-    "stockStatus": "medium",
+    "stockStatus": "in_stock",
     "sales": 156,
     "rating": 4.5,
     "reviewCount": 32,
@@ -173,7 +323,7 @@
     "price": 12.99,
     "oldPrice": 14.99,
     "stock": 12,
-    "stockStatus": "medium",
+    "stockStatus": "in_stock",
     "sales": 89,
     "rating": 4.8,
     "reviewCount": 28,
@@ -200,7 +350,7 @@
     "price": 2.99,
     "oldPrice": 3.49,
     "stock": 34,
-    "stockStatus": "high",
+    "stockStatus": "in_stock",
     "sales": 145,
     "rating": 4.6,
     "reviewCount": 19,
@@ -227,7 +377,7 @@
     "price": 4.49,
     "oldPrice": 4.99,
     "stock": 67,
-    "stockStatus": "high",
+    "stockStatus": "in_stock",
     "sales": 178,
     "rating": 4.7,
     "reviewCount": 41,
@@ -254,7 +404,7 @@
     "price": 2.99,
     "oldPrice": 3.49,
     "stock": 89,
-    "stockStatus": "high",
+    "stockStatus": "in_stock",
     "sales": 123,
     "rating": 4.3,
     "reviewCount": 16,

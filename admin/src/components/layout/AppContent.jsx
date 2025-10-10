@@ -19,6 +19,7 @@ const SubCategoriesList = React.lazy(() => import('../../views/subcategories/Sub
 
 // Product Management Components
 const ProductsList = React.lazy(() => import('../../views/products/ProductsList'))
+const ProductDetails = React.lazy(() => import('../../views/products/ProductDetails'))
 const AddProductWizard = React.lazy(() => import('../pages/products/AddProductWizard'))
 
 const AppContent = () => {
@@ -43,6 +44,7 @@ const AppContent = () => {
           
           {/* Product Management Routes */}
           <Route path="/products" element={<ProductsList />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/add-product" element={<AddProductWizard />} />
           
           {/* Default redirect */}
