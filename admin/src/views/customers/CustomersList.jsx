@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Button, FormControl, FormSelect, Badge, Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
-  faPlus, 
-  faPencil, 
   faTrash, 
   faEye, 
   faSearch, 
@@ -15,9 +13,9 @@ import {
   faBan,
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { Table, FormModal, Modal } from '../../components'
-import CustomerForm from '../../components/pages/customers/CustomerForm'
+import { Table, Modal } from '../../components'
 import CustomerDetailsModal from '../../components/pages/customers/CustomerDetailsModal'
+import SuspendCustomerModal from '../../components/pages/customers/SuspendCustomerModal'
 import { customerService } from '../../services/customerService'
 import customersData from '../../mock/customers.json'
 
@@ -35,11 +33,10 @@ const CustomersList = () => {
   const [pageSize, setPageSize] = useState(10)
   
   // Modal states
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showSuspendModal, setShowSuspendModal] = useState(false)
+  const [showSuspendDetailsModal, setShowSuspendDetailsModal] = useState(false)
   const [showActivateModal, setShowActivateModal] = useState(false)
   
   // Data states
@@ -56,9 +53,6 @@ const CustomersList = () => {
     newThisMonth: 0
   })
   
-  // Form refs
-  const addCustomerFormRef = useRef(null)
-  const editCustomerFormRef = useRef(null)
 
   // Load customers
   useEffect(() => {
@@ -285,17 +279,6 @@ const CustomersList = () => {
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          <Button
-            variant="outline-warning"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleEditCustomer(customer)
-            }}
-            title="Edit Customer"
-          >
-            <FontAwesomeIcon icon={faPencil} />
-          </Button>
           {customer.status === 'active' ? (
             <Button
               variant="outline-danger"
@@ -347,14 +330,7 @@ const CustomersList = () => {
     setCurrentPage(1)
   }
 
-  const handleAddCustomer = () => {
-    setShowAddModal(true)
-  }
 
-  const handleEditCustomer = (customer) => {
-    setSelectedCustomer(customer)
-    setShowEditModal(true)
-  }
 
   const handleViewCustomer = (customer) => {
     setSelectedCustomer(customer)
@@ -368,7 +344,7 @@ const CustomersList = () => {
 
   const handleSuspendCustomer = (customer) => {
     setCustomerToSuspend(customer)
-    setShowSuspendModal(true)
+    setShowSuspendDetailsModal(true)
   }
 
   const handleActivateCustomer = (customer) => {
@@ -389,32 +365,7 @@ const CustomersList = () => {
     setCurrentPage(1)
   }
 
-  const handleAddCustomerSubmit = async (formData) => {
-    try {
-      const response = await customerService.createCustomer(formData)
-      if (response.success) {
-        setShowAddModal(false)
-        loadCustomers()
-        loadStats()
-      }
-    } catch (error) {
-      console.error('Error creating customer:', error)
-    }
-  }
 
-  const handleEditCustomerSubmit = async (formData) => {
-    try {
-      const response = await customerService.updateCustomer(selectedCustomer.id, formData)
-      if (response.success) {
-        setShowEditModal(false)
-        setSelectedCustomer(null)
-        loadCustomers()
-        loadStats()
-      }
-    } catch (error) {
-      console.error('Error updating customer:', error)
-    }
-  }
 
   const confirmDeleteCustomer = async () => {
     try {
@@ -430,11 +381,11 @@ const CustomersList = () => {
     }
   }
 
-  const confirmSuspendCustomer = async () => {
+  const handleSuspendCustomerSubmit = async (customerId, suspensionData) => {
     try {
-      const response = await customerService.updateCustomerStatus(customerToSuspend.id, 'suspended')
+      const response = await customerService.suspendCustomer(customerId, suspensionData)
       if (response.success) {
-        setShowSuspendModal(false)
+        setShowSuspendDetailsModal(false)
         setCustomerToSuspend(null)
         loadCustomers()
         loadStats()
@@ -446,7 +397,7 @@ const CustomersList = () => {
 
   const confirmActivateCustomer = async () => {
     try {
-      const response = await customerService.updateCustomerStatus(customerToActivate.id, 'active')
+      const response = await customerService.activateCustomer(customerToActivate.id)
       if (response.success) {
         setShowActivateModal(false)
         setCustomerToActivate(null)
@@ -469,10 +420,6 @@ const CustomersList = () => {
               <h2 className="mb-0 text-dark">Customer Management</h2>
             </div>
             <div className="ms-auto d-flex align-items-center gap-3">
-              <Button variant="success" onClick={handleAddCustomer} className="text-white">
-                <FontAwesomeIcon icon={faPlus} className="me-2" />
-                Add Customer
-              </Button>
               <Button variant="primary" onClick={handleExport}>
                 <FontAwesomeIcon icon={faDownload} className="me-2" />
                 Export
@@ -663,50 +610,7 @@ const CustomersList = () => {
         </Col>
       </Row>
 
-      {/* Add Customer Modal */}
-      <FormModal
-        visible={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Add New Customer"
-        size="xl"
-        onConfirm={() => addCustomerFormRef.current?.handleSubmit()}
-        confirmText="Create Customer"
-        cancelText="Cancel"
-        loading={false}
-      >
-        <CustomerForm
-          ref={addCustomerFormRef}
-          mode="create"
-          onSubmit={handleAddCustomerSubmit}
-          onCancel={() => setShowAddModal(false)}
-        />
-      </FormModal>
 
-      {/* Edit Customer Modal */}
-      <FormModal
-        visible={showEditModal}
-        onClose={() => {
-          setShowEditModal(false)
-          setSelectedCustomer(null)
-        }}
-        title="Edit Customer"
-        size="xl"
-        onConfirm={() => editCustomerFormRef.current?.handleSubmit()}
-        confirmText="Update Customer"
-        cancelText="Cancel"
-        loading={false}
-      >
-        <CustomerForm
-          ref={editCustomerFormRef}
-          mode="edit"
-          initialData={selectedCustomer}
-          onSubmit={handleEditCustomerSubmit}
-          onCancel={() => {
-            setShowEditModal(false)
-            setSelectedCustomer(null)
-          }}
-        />
-      </FormModal>
 
       {/* Customer Details Modal */}
       <CustomerDetailsModal
@@ -716,7 +620,6 @@ const CustomersList = () => {
           setSelectedCustomer(null)
         }}
         customer={selectedCustomer}
-        onEdit={handleEditCustomer}
         onSuspend={handleSuspendCustomer}
         onActivate={handleActivateCustomer}
       />
@@ -738,22 +641,17 @@ const CustomersList = () => {
         <p className="text-muted">This action cannot be undone.</p>
       </Modal>
 
-      {/* Suspend Confirmation Modal */}
-      <Modal
-        visible={showSuspendModal}
+      {/* Suspend Customer Details Modal */}
+      <SuspendCustomerModal
+        visible={showSuspendDetailsModal}
         onClose={() => {
-          setShowSuspendModal(false)
+          setShowSuspendDetailsModal(false)
           setCustomerToSuspend(null)
         }}
-        title="Suspend Customer"
-        onConfirm={confirmSuspendCustomer}
-        confirmText="Suspend"
-        cancelText="Cancel"
-        type="warning"
-      >
-        <p>Are you sure you want to suspend the customer <strong>"{customerToSuspend?.firstName} {customerToSuspend?.lastName}"</strong>?</p>
-        <p className="text-muted">The customer will not be able to place orders until reactivated.</p>
-      </Modal>
+        customer={customerToSuspend}
+        onSuspend={handleSuspendCustomerSubmit}
+        loading={false}
+      />
 
       {/* Activate Confirmation Modal */}
       <Modal

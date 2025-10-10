@@ -15,47 +15,57 @@ A modal component that displays detailed information about a customer.
 - Address information
 - Customer preferences
 - Notes section
-- Action buttons (Edit, Suspend/Activate)
+- Action buttons (Suspend/Activate)
 
 **Props:**
 - `visible` (boolean): Controls modal visibility
 - `onClose` (function): Callback when modal is closed
 - `customer` (object): Customer data to display
-- `onEdit` (function): Callback for edit action
 - `onSuspend` (function): Callback for suspend action
 - `onActivate` (function): Callback for activate action
 
-### CustomerForm.jsx
-A comprehensive form component for creating and editing customers.
+### SuspendCustomerModal.jsx
+A detailed modal component for suspending customer accounts with comprehensive suspension management.
 
 **Features:**
-- Personal information section (name, email, phone)
-- Address information section (street, city, state, postal code, country)
-- Preferences section (newsletter, SMS notifications, delivery time, dietary restrictions)
-- Account status management
-- Notes section
-- Form validation with error handling
-- Support for both create and edit modes
+- Customer profile display with avatar
+- Suspension reason selection
+- Duration configuration (temporary/permanent)
+- Additional notes field
+- Notification options (email, support team, support ticket)
+- Account impact information
+- Form validation
+- Preview functionality
 
 **Props:**
-- `mode` (string): 'create' or 'edit'
-- `initialData` (object): Initial data for edit mode
-- `onSubmit` (function): Callback when form is submitted
-- `onCancel` (function): Callback when form is cancelled
+- `visible` (boolean): Controls modal visibility
+- `onClose` (function): Callback when modal is closed
+- `customer` (object): Customer data to suspend
+- `onSuspend` (function): Callback when suspension is confirmed
 - `loading` (boolean): Loading state
 
-**Form Sections:**
-1. **Personal Information**: First name, last name, email, phone
-2. **Address Information**: Complete address details
-3. **Preferences**: Newsletter, SMS, delivery time, dietary restrictions
-4. **Additional Notes**: Free text notes field
+**Form Fields:**
+- **Reason for Suspension**: Dropdown with predefined reasons
+- **Duration Type**: Temporary or Permanent
+- **Duration Value/Unit**: For temporary suspensions (days, weeks, months)
+- **Additional Notes**: Free text field
+- **Notification Options**: Email, support team, support ticket checkboxes
 
-**Validation:**
-- Required fields: firstName, lastName, email, phone, street, city, postalCode
-- Email format validation
-- Real-time error clearing
 
 ## Usage
+
+### SuspendCustomerModal
+```jsx
+import SuspendCustomerModal from './components/pages/customers/SuspendCustomerModal'
+
+<SuspendCustomerModal
+  visible={showSuspendModal}
+  onClose={() => setShowSuspendModal(false)}
+  customer={selectedCustomer}
+  onSuspend={handleSuspendCustomer}
+  loading={isLoading}
+/>
+```
 
 ### CustomerDetailsModal
 ```jsx
@@ -65,29 +75,8 @@ import CustomerDetailsModal from './components/pages/customers/CustomerDetailsMo
   visible={showModal}
   onClose={() => setShowModal(false)}
   customer={selectedCustomer}
-  onEdit={handleEditCustomer}
   onSuspend={handleSuspendCustomer}
   onActivate={handleActivateCustomer}
-/>
-```
-
-### CustomerForm
-```jsx
-import CustomerForm from './components/pages/customers/CustomerForm'
-
-// Create mode
-<CustomerForm
-  mode="create"
-  onSubmit={handleCreateCustomer}
-  onCancel={handleCancel}
-/>
-
-// Edit mode
-<CustomerForm
-  mode="edit"
-  initialData={customerData}
-  onSubmit={handleUpdateCustomer}
-  onCancel={handleCancel}
 />
 ```
 
@@ -141,6 +130,23 @@ The components follow the project's design guidelines:
     smsNotifications: boolean,
     preferredDeliveryTime: 'morning' | 'afternoon' | 'evening',
     dietaryRestrictions: string[]
+  },
+  suspensionDetails?: {
+    reason: string,
+    durationType: 'temporary' | 'permanent',
+    durationValue?: string,
+    durationUnit?: 'day' | 'week' | 'month',
+    notes?: string,
+    suspendedAt: string, // ISO date string
+    suspendedBy: string,
+    suspendedUntil?: string, // ISO date string (for temporary suspensions)
+    activatedAt?: string, // ISO date string
+    activatedBy?: string,
+    notifications: {
+      emailSent: boolean,
+      supportNotified: boolean,
+      supportTicketCreated: boolean
+    }
   },
   createdAt: string, // ISO date string
   updatedAt: string // ISO date string

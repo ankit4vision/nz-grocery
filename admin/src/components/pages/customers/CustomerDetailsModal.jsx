@@ -9,7 +9,6 @@ import {
   faShoppingCart, 
   faDollarSign,
   faCalendarAlt,
-  faEdit,
   faBan,
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
@@ -18,7 +17,6 @@ const CustomerDetailsModal = ({
   visible, 
   onClose, 
   customer, 
-  onEdit, 
   onSuspend, 
   onActivate 
 }) => {
@@ -237,15 +235,42 @@ const CustomerDetailsModal = ({
             </div>
           </div>
         )}
+
+        {/* Suspension Details */}
+        {customer.suspensionDetails && (
+          <div className="mb-4">
+            <h6 className="fw-semibold mb-3 text-danger">Suspension Details</h6>
+            <div className="bg-danger bg-opacity-10 p-3 rounded border border-danger">
+              <Row className="g-2">
+                <Col md={6}>
+                  <small className="text-muted">Reason:</small>
+                  <div className="fw-semibold">{customer.suspensionDetails.reason}</div>
+                </Col>
+                <Col md={6}>
+                  <small className="text-muted">Suspended On:</small>
+                  <div className="fw-semibold">{formatDate(customer.suspensionDetails.suspendedAt)}</div>
+                </Col>
+                {customer.suspensionDetails.durationType === 'temporary' && customer.suspensionDetails.suspendedUntil && (
+                  <Col md={6}>
+                    <small className="text-muted">Suspended Until:</small>
+                    <div className="fw-semibold">{formatDate(customer.suspensionDetails.suspendedUntil)}</div>
+                  </Col>
+                )}
+                {customer.suspensionDetails.notes && (
+                  <Col md={12}>
+                    <small className="text-muted">Notes:</small>
+                    <div className="fw-semibold">{customer.suspensionDetails.notes}</div>
+                  </Col>
+                )}
+              </Row>
+            </div>
+          </div>
+        )}
       </Modal.Body>
       
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
           Close
-        </Button>
-        <Button variant="warning" onClick={() => onEdit(customer)}>
-          <FontAwesomeIcon icon={faEdit} className="me-2" />
-          Edit Customer
         </Button>
         {customer.status === 'active' ? (
           <Button variant="danger" onClick={() => onSuspend(customer)}>

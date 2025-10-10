@@ -154,6 +154,100 @@ const customerService = {
     }
   },
 
+  // Suspend customer with detailed information
+  suspendCustomer: async (id, suspensionData) => {
+    await delay(800)
+    
+    const customerIndex = customersData.findIndex(c => c.id === parseInt(id))
+    if (customerIndex !== -1) {
+      const customer = customersData[customerIndex]
+      
+      // Update customer status
+      customer.status = 'suspended'
+      customer.updatedAt = new Date().toISOString()
+      
+      // Add suspension details
+      customer.suspensionDetails = {
+        reason: suspensionData.reason,
+        durationType: suspensionData.durationType,
+        durationValue: suspensionData.durationValue,
+        durationUnit: suspensionData.durationUnit,
+        notes: suspensionData.notes,
+        suspendedAt: new Date().toISOString(),
+        suspendedBy: 'admin', // In real app, this would be the current user
+        notifications: {
+          emailSent: suspensionData.sendEmailNotification,
+          supportNotified: suspensionData.notifySupportTeam,
+          supportTicketCreated: suspensionData.createSupportTicket
+        }
+      }
+      
+      // Calculate suspension end date if temporary
+      if (suspensionData.durationType === 'temporary') {
+        const endDate = new Date()
+        const duration = parseInt(suspensionData.durationValue)
+        
+        switch (suspensionData.durationUnit) {
+          case 'day':
+            endDate.setDate(endDate.getDate() + duration)
+            break
+          case 'week':
+            endDate.setDate(endDate.getDate() + (duration * 7))
+            break
+          case 'month':
+            endDate.setMonth(endDate.getMonth() + duration)
+            break
+        }
+        
+        customer.suspensionDetails.suspendedUntil = endDate.toISOString()
+      }
+      
+      return {
+        success: true,
+        data: customer,
+        message: 'Customer suspended successfully'
+      }
+    } else {
+      return {
+        success: false,
+        data: null,
+        message: 'Customer not found'
+      }
+    }
+  },
+
+  // Activate suspended customer
+  activateCustomer: async (id) => {
+    await delay(500)
+    
+    const customerIndex = customersData.findIndex(c => c.id === parseInt(id))
+    if (customerIndex !== -1) {
+      const customer = customersData[customerIndex]
+      
+      // Update customer status
+      customer.status = 'active'
+      customer.updatedAt = new Date().toISOString()
+      
+      // Add activation details
+      if (customer.suspensionDetails) {
+        customer.suspensionDetails.activatedAt = new Date().toISOString()
+        customer.suspensionDetails.activatedBy = 'admin' // In real app, this would be the current user
+      }
+      
+      return {
+        success: true,
+        data: customer,
+        message: 'Customer activated successfully'
+      }
+    } else {
+      return {
+        success: false,
+        data: null,
+        message: 'Customer not found'
+      }
+    }
+  },
+
   // Get customer statistics
   getCustomerStats: async () => {
     await delay(300)
