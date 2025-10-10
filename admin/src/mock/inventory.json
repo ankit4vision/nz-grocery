@@ -1,0 +1,381 @@
+[
+  {
+    "id": 1,
+    "productId": 1,
+    "productName": "Fresh Organic Apples",
+    "productImage": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=400&fit=crop",
+    "sku": "APP-ORG-001",
+    "category": "Fruits",
+    "currentStock": 156,
+    "reserved": 12,
+    "available": 144,
+    "lowStockAlert": 20,
+    "expiryDate": "2024-02-15",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Organic",
+    "lastUpdated": "2024-01-15T10:30:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 50,
+        "description": "New stock received from supplier",
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-001"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -2,
+        "description": "Order #12345 - John Doe",
+        "timestamp": "2024-01-15T09:15:00.000Z",
+        "user": "System",
+        "reference": "ORD-12345"
+      },
+      {
+        "id": 3,
+        "type": "stock_adjustment",
+        "change": -3,
+        "description": "Damaged goods removed",
+        "timestamp": "2024-01-14T16:45:00.000Z",
+        "user": "Warehouse Manager",
+        "reference": "ADJ-2024-001"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "productId": 2,
+    "productName": "Organic Bananas",
+    "productImage": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop",
+    "sku": "BAN-ORG-002",
+    "category": "Fruits",
+    "currentStock": 5,
+    "reserved": 2,
+    "available": 3,
+    "lowStockAlert": 10,
+    "expiryDate": "2024-01-25",
+    "status": "low_stock",
+    "stockStatus": "Low Stock",
+    "dietaryInfo": "Organic",
+    "lastUpdated": "2024-01-16T09:15:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "order_fulfillment",
+        "change": -3,
+        "description": "Order #12346 - Jane Smith",
+        "timestamp": "2024-01-16T09:15:00.000Z",
+        "user": "System",
+        "reference": "ORD-12346"
+      },
+      {
+        "id": 2,
+        "type": "stock_increase",
+        "change": 8,
+        "description": "Restock from supplier",
+        "timestamp": "2024-01-15T14:20:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-002"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "productId": 3,
+    "productName": "Fresh Carrots",
+    "productImage": "",
+    "sku": "CAR-FRS-003",
+    "category": "Vegetables",
+    "currentStock": 45,
+    "reserved": 8,
+    "available": 37,
+    "lowStockAlert": 15,
+    "expiryDate": "2024-02-10",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Fresh",
+    "lastUpdated": "2024-01-17T14:20:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 30,
+        "description": "New stock received from supplier",
+        "timestamp": "2024-01-17T14:20:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-003"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -5,
+        "description": "Order #12347 - Mike Johnson",
+        "timestamp": "2024-01-16T11:30:00.000Z",
+        "user": "System",
+        "reference": "ORD-12347"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "productId": 4,
+    "productName": "Organic Spinach",
+    "productImage": "",
+    "sku": "SPI-ORG-004",
+    "category": "Organic",
+    "currentStock": 0,
+    "reserved": 0,
+    "available": 0,
+    "lowStockAlert": 5,
+    "expiryDate": "2024-01-20",
+    "status": "out_of_stock",
+    "stockStatus": "Out of Stock",
+    "dietaryInfo": "Organic",
+    "lastUpdated": "2024-01-18T11:45:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_adjustment",
+        "change": -15,
+        "description": "Expired goods removed",
+        "timestamp": "2024-01-18T11:45:00.000Z",
+        "user": "Warehouse Manager",
+        "reference": "ADJ-2024-002"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -5,
+        "description": "Order #12348 - Sarah Wilson",
+        "timestamp": "2024-01-17T16:20:00.000Z",
+        "user": "System",
+        "reference": "ORD-12348"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "productId": 5,
+    "productName": "Fresh Milk",
+    "productImage": "",
+    "sku": "MIL-FRS-005",
+    "category": "Dairy & Eggs",
+    "currentStock": 78,
+    "reserved": 15,
+    "available": 63,
+    "lowStockAlert": 20,
+    "expiryDate": "2024-01-28",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Fresh",
+    "lastUpdated": "2024-01-19T16:30:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 50,
+        "description": "Daily delivery from local dairy",
+        "timestamp": "2024-01-19T16:30:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-004"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -12,
+        "description": "Order #12349 - David Brown",
+        "timestamp": "2024-01-19T10:15:00.000Z",
+        "user": "System",
+        "reference": "ORD-12349"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "productId": 6,
+    "productName": "Free Range Eggs",
+    "productImage": "",
+    "sku": "EGG-FRS-006",
+    "category": "Dairy & Eggs",
+    "currentStock": 23,
+    "reserved": 5,
+    "available": 18,
+    "lowStockAlert": 10,
+    "expiryDate": "2024-02-05",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Free Range",
+    "lastUpdated": "2024-01-20T08:15:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 30,
+        "description": "Weekly delivery from free range farm",
+        "timestamp": "2024-01-20T08:15:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-005"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -7,
+        "description": "Order #12350 - Lisa Davis",
+        "timestamp": "2024-01-19T14:45:00.000Z",
+        "user": "System",
+        "reference": "ORD-12350"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "productId": 7,
+    "productName": "Fresh Salmon Fillet",
+    "productImage": "",
+    "sku": "SAL-FRS-007",
+    "category": "Meat & Seafood",
+    "currentStock": 12,
+    "reserved": 3,
+    "available": 9,
+    "lowStockAlert": 5,
+    "expiryDate": "2024-01-26",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Fresh",
+    "lastUpdated": "2024-01-21T12:30:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 15,
+        "description": "Fresh delivery from ocean fresh supplier",
+        "timestamp": "2024-01-21T12:30:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-006"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -3,
+        "description": "Order #12351 - Robert Taylor",
+        "timestamp": "2024-01-20T18:20:00.000Z",
+        "user": "System",
+        "reference": "ORD-12351"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "productId": 8,
+    "productName": "Organic Bread",
+    "productImage": "",
+    "sku": "BRD-ORG-008",
+    "category": "Pantry Essentials",
+    "currentStock": 34,
+    "reserved": 8,
+    "available": 26,
+    "lowStockAlert": 10,
+    "expiryDate": "2024-01-27",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Organic",
+    "lastUpdated": "2024-01-22T14:45:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 25,
+        "description": "Daily delivery from artisan bakery",
+        "timestamp": "2024-01-22T14:45:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-007"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -6,
+        "description": "Order #12352 - Emily White",
+        "timestamp": "2024-01-21T09:30:00.000Z",
+        "user": "System",
+        "reference": "ORD-12352"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "productId": 9,
+    "productName": "Fresh Orange Juice",
+    "productImage": "",
+    "sku": "OJU-FRS-009",
+    "category": "Beverages",
+    "currentStock": 67,
+    "reserved": 12,
+    "available": 55,
+    "lowStockAlert": 20,
+    "expiryDate": "2024-01-30",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Fresh",
+    "lastUpdated": "2024-01-23T10:20:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 40,
+        "description": "Fresh squeezed juice delivery",
+        "timestamp": "2024-01-23T10:20:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-008"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -8,
+        "description": "Order #12353 - James Anderson",
+        "timestamp": "2024-01-22T15:10:00.000Z",
+        "user": "System",
+        "reference": "ORD-12353"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "productId": 10,
+    "productName": "Frozen Mixed Vegetables",
+    "productImage": "",
+    "sku": "FRO-MIX-010",
+    "category": "Frozen Foods",
+    "currentStock": 89,
+    "reserved": 15,
+    "available": 74,
+    "lowStockAlert": 25,
+    "expiryDate": "2025-01-24",
+    "status": "in_stock",
+    "stockStatus": "In Stock",
+    "dietaryInfo": "Frozen",
+    "lastUpdated": "2024-01-24T15:10:00.000Z",
+    "history": [
+      {
+        "id": 1,
+        "type": "stock_increase",
+        "change": 60,
+        "description": "Bulk frozen vegetables delivery",
+        "timestamp": "2024-01-24T15:10:00.000Z",
+        "user": "Admin User",
+        "reference": "PO-2024-009"
+      },
+      {
+        "id": 2,
+        "type": "order_fulfillment",
+        "change": -10,
+        "description": "Order #12354 - Maria Garcia",
+        "timestamp": "2024-01-23T11:45:00.000Z",
+        "user": "System",
+        "reference": "ORD-12354"
+      }
+    ]
+  }
+]

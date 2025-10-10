@@ -22,6 +22,9 @@ const ProductsList = React.lazy(() => import('../../views/products/ProductsList'
 const ProductDetails = React.lazy(() => import('../../views/products/ProductDetails'))
 const AddProductWizard = React.lazy(() => import('../pages/products/AddProductWizard'))
 
+// Inventory Management Components
+const InventoryManagement = React.lazy(() => import('../../views/inventory/InventoryManagement'))
+
 const AppContent = () => {
   return (
     <div className="app-content">
@@ -47,6 +50,9 @@ const AppContent = () => {
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/add-product" element={<AddProductWizard />} />
           <Route path="/products/edit/:id" element={<AddProductWizard />} />
+          
+          {/* Inventory Management Routes */}
+          <Route path="/inventory" element={<InventoryManagement />} />
           
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

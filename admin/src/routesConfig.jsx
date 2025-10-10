@@ -27,6 +27,10 @@ const routesConfig = [
   { path: '/products/edit/:id', name: 'Edit Product' },
   { path: '/products/:id', name: 'Product Details' },
   
+  // Inventory Management Routes
+  { path: '/inventory', name: 'Inventory Management' },
+  { path: '/inventory/history/:id', name: 'Inventory History' },
+  
   // Order Management Routes
   { path: '/orders', name: 'Order Management' },
   { path: '/order-history', name: 'Order History' },
