@@ -10,7 +10,9 @@ import {
   faEnvelope,
   faClock,
   faCheckCircle,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faImage,
+  faUser
 } from '@fortawesome/free-solid-svg-icons'
 import orderService from '../../../services/orderService'
 import { formatCurrency, formatDate } from '../../../utils'
@@ -167,12 +169,25 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
               <Card.Body>
                 {order.items.map((item) => (
                   <div key={item.id} className="d-flex align-items-center mb-3 pb-3 border-bottom">
-                    <img 
-                      src={item.productImage} 
-                      alt={item.productName}
-                      className="rounded me-3"
-                      style={{ width: '60px', height: '60px', objectFit: 'cover' }}
-                    />
+                    {item.productImage ? (
+                      <img 
+                        src={item.productImage} 
+                        alt={item.productName}
+                        className="rounded me-3"
+                        style={{ width: '60px', height: '60px', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div 
+                        className="d-flex align-items-center justify-content-center border rounded me-3"
+                        style={{ 
+                          width: '60px', 
+                          height: '60px', 
+                          backgroundColor: '#f8f9fa'
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faImage} className="text-muted" />
+                      </div>
+                    )}
                     <div className="flex-grow-1">
                       <h6 className="mb-1">{item.productName}</h6>
                       <p className="text-muted mb-1">{item.description}</p>
@@ -236,12 +251,25 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
               </Card.Header>
               <Card.Body>
                 <div className="d-flex align-items-center mb-3">
-                  <img 
-                    src={order.customer.avatar} 
-                    alt={order.customer.firstName}
-                    className="rounded-circle me-3"
-                    style={{ width: '50px', height: '50px' }}
-                  />
+                  {order.customer.avatar ? (
+                    <img 
+                      src={order.customer.avatar} 
+                      alt={order.customer.firstName}
+                      className="rounded-circle me-3"
+                      style={{ width: '50px', height: '50px' }}
+                    />
+                  ) : (
+                    <div 
+                      className="d-flex align-items-center justify-content-center border rounded-circle me-3"
+                      style={{ 
+                        width: '50px', 
+                        height: '50px', 
+                        backgroundColor: '#f8f9fa'
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faUser} className="text-muted" />
+                    </div>
+                  )}
                   <div>
                     <h6 className="mb-0">{order.customer.firstName} {order.customer.lastName}</h6>
                     <p className="text-muted mb-0">{order.customer.email}</p>

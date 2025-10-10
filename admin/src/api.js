@@ -86,7 +86,7 @@ class ApiService {
       case '/orders':
         if (method === 'GET') {
           // Handle query parameters for filtering
-          let filteredOrders = [...this.mockData.orders]
+          let filteredOrders = [...(this.mockData.orders || [])]
           
           // Apply filters based on query parameters
           if (params) {

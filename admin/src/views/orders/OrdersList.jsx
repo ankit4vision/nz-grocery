@@ -10,7 +10,8 @@ import {
   faEye,
   faCheck,
   faTruck,
-  faPrint
+  faPrint,
+  faImage
 } from '@fortawesome/free-solid-svg-icons'
 import orderService from '../../services/orderService'
 import Table from '../../components/common/Table'
@@ -174,7 +175,7 @@ const OrdersList = () => {
     {
       key: 'orderNumber',
       header: 'Order ID',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No order data</div>
         return (
           <div>
@@ -187,7 +188,7 @@ const OrdersList = () => {
     {
       key: 'customer',
       header: 'Customer',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No customer data</div>
         return (
           <div>
@@ -202,17 +203,30 @@ const OrdersList = () => {
     {
       key: 'items',
       header: 'Items',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No items data</div>
         const firstItem = order.items?.[0]
         return (
           <div className="d-flex align-items-center">
-            <img 
-              src={firstItem?.productImage || '/placeholder-image.png'} 
-              alt={firstItem?.productName || 'Product'}
-              className="rounded me-2"
-              style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-            />
+            {firstItem?.productImage ? (
+              <img 
+                src={firstItem.productImage} 
+                alt={firstItem?.productName || 'Product'}
+                className="rounded me-2"
+                style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+              />
+            ) : (
+              <div 
+                className="d-flex align-items-center justify-content-center border rounded me-2"
+                style={{ 
+                  width: '40px', 
+                  height: '40px', 
+                  backgroundColor: '#f8f9fa'
+                }}
+              >
+                <FontAwesomeIcon icon={faImage} className="text-muted" />
+              </div>
+            )}
             <div>
               <div className="fw-bold">{firstItem?.productName || 'Unknown Product'}</div>
               <small className="text-muted">Qty: {firstItem?.quantity || 0}</small>
@@ -224,7 +238,7 @@ const OrdersList = () => {
     {
       key: 'total',
       header: 'Amount',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No amount data</div>
         return (
           <div>
@@ -237,7 +251,7 @@ const OrdersList = () => {
     {
       key: 'paymentStatus',
       header: 'Payment',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No payment data</div>
         return (
           <Badge bg={getPaymentStatusColor(order.paymentStatus || 'pending')}>
@@ -249,7 +263,7 @@ const OrdersList = () => {
     {
       key: 'status',
       header: 'Status',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No status data</div>
         return (
           <Badge bg={getStatusColor(order.status || 'pending')}>
@@ -261,7 +275,7 @@ const OrdersList = () => {
     {
       key: 'orderDate',
       header: 'Order Date',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No date data</div>
         return (
           <div>
@@ -274,7 +288,7 @@ const OrdersList = () => {
     {
       key: 'actions',
       header: 'Actions',
-      render: (order) => {
+      render: (value, order) => {
         if (!order) return <div>No actions available</div>
         
         return (
