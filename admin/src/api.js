@@ -1,12 +1,22 @@
 // Mock API Service Setup
 import config from './config'
 import usersData from './mock/users.json'
+import ordersData from './mock/orders.json'
 
 class ApiService {
   constructor() {
     this.baseURL = config.api.baseURL
     this.timeout = config.api.timeout
-    this.mockData = usersData
+    this.mockData = {
+      users: usersData.users,
+      roles: usersData.roles,
+      orders: ordersData.orders,
+      stats: ordersData.stats,
+      statusOptions: ordersData.statusOptions,
+      paymentStatusOptions: ordersData.paymentStatusOptions,
+      paymentMethodOptions: ordersData.paymentMethodOptions,
+      shippingMethodOptions: ordersData.shippingMethodOptions
+    }
   }
 
   // Get auth token from localStorage
@@ -39,8 +49,20 @@ class ApiService {
 
     const method = options.method || 'GET'
     
+    // Parse query parameters from endpoint
+    const [baseEndpoint, queryString] = endpoint.split('?')
+    const params = {}
+    if (queryString) {
+      queryString.split('&').forEach(param => {
+        const [key, value] = param.split('=')
+        if (key && value) {
+          params[key] = decodeURIComponent(value)
+        }
+      })
+    }
+    
     // Mock responses based on endpoint
-    switch (endpoint) {
+    switch (baseEndpoint) {
       case '/users':
         if (method === 'GET') {
           return {
@@ -57,6 +79,58 @@ class ApiService {
             success: true,
             data: this.mockData.roles,
             total: this.mockData.roles.length
+          }
+        }
+        break
+        
+      case '/orders':
+        if (method === 'GET') {
+          // Handle query parameters for filtering
+          let filteredOrders = [...this.mockData.orders]
+          
+          // Apply filters based on query parameters
+          if (params) {
+            const { status, paymentStatus, search, customer } = params
+            
+            if (status && status !== 'all') {
+              filteredOrders = filteredOrders.filter(order => order.status === status)
+            }
+            
+            if (paymentStatus && paymentStatus !== 'all') {
+              filteredOrders = filteredOrders.filter(order => order.paymentStatus === paymentStatus)
+            }
+            
+            if (search) {
+              filteredOrders = filteredOrders.filter(order => 
+                order.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
+                order.customer.firstName.toLowerCase().includes(search.toLowerCase()) ||
+                order.customer.lastName.toLowerCase().includes(search.toLowerCase())
+              )
+            }
+            
+            if (customer) {
+              filteredOrders = filteredOrders.filter(order => 
+                order.customer.firstName.toLowerCase().includes(customer.toLowerCase()) ||
+                order.customer.lastName.toLowerCase().includes(customer.toLowerCase())
+              )
+            }
+          }
+          
+          return {
+            success: true,
+            data: {
+              orders: filteredOrders,
+              total: filteredOrders.length
+            }
+          }
+        }
+        break
+        
+      case '/orders/stats':
+        if (method === 'GET') {
+          return {
+            success: true,
+            data: this.mockData.stats
           }
         }
         break
@@ -84,7 +158,22 @@ class ApiService {
         break
         
       default:
-        throw new Error(`Mock endpoint not implemented: ${endpoint}`)
+        // Handle dynamic order endpoints
+        if (baseEndpoint.startsWith('/orders/') && !baseEndpoint.includes('/stats')) {
+          const orderId = baseEndpoint.split('/orders/')[1]
+          if (orderId && method === 'GET') {
+            const order = this.mockData.orders.find(o => o.id === orderId)
+            if (order) {
+              return {
+                success: true,
+                data: order
+              }
+            } else {
+              throw new Error('Order not found')
+            }
+          }
+        }
+        throw new Error(`Mock endpoint not implemented: ${baseEndpoint}`)
     }
   }
 
