@@ -59,6 +59,9 @@ admin/
 │   │   │   │   ├── InventoryHistoryModal.jsx # Inventory history modal
 │   │   │   │   ├── StockAdjustmentForm.jsx # Stock adjustment form
 │   │   │   │   └── README.md          # Inventory components documentation
+│   │   │   ├── 📁 orders/             # Order management
+│   │   │   │   ├── OrderDetailsModal.jsx # Order details modal component
+│   │   │   │   └── README.md          # Order components documentation
 │   │   │   ├── 📁 products/           # Product management
 │   │   │   │   ├── AddProductWizard.jsx # Multi-step product creation wizard
 │   │   │   │   ├── ProductForm.jsx    # Product form component
@@ -104,6 +107,7 @@ admin/
 │   ├── 📁 mock/                       # Mock data for development
 │   │   ├── categories.json            # Mock category data
 │   │   ├── inventory.json             # Mock inventory data
+│   │   ├── orders.json                # Mock order data
 │   │   ├── products.json              # Mock product data
 │   │   ├── profile.json               # Mock profile data
 │   │   ├── roles.json                 # Mock role data
@@ -129,6 +133,7 @@ admin/
 │   ├── 📁 services/                   # API service layer
 │   │   ├── categoryService.js         # Category API service
 │   │   ├── inventoryService.js        # Inventory API service
+│   │   ├── orderService.js            # Order API service
 │   │   ├── productService.js          # Product API service
 │   │   ├── profileService.js          # Profile API service
 │   │   ├── README.md                  # Services documentation
@@ -148,6 +153,8 @@ admin/
 │   │   │   └── MainChart.jsx          # Dashboard chart component
 │   │   ├── 📁 inventory/              # Inventory management views
 │   │   │   └── InventoryManagement.jsx # Inventory management main view
+│   │   ├── 📁 orders/                 # Order management views
+│   │   │   └── OrdersList.jsx         # Orders list view
 │   │   ├── 📁 products/               # Product management views
 │   │   │   ├── ProductDetails.jsx     # Product details view
 │   │   │   └── ProductsList.jsx       # Products list view
@@ -650,6 +657,7 @@ const userService = {
 ### 🎯 Navigation Structure
 - **Main Section**: Dashboard groups with multiple dashboard options
 - **Product Management**: Products, categories, subcategories, brands, units, inventory management
+- **Order Management**: Orders list, order details, order history, customer management
 - **User Management**: Users and role & permission management
 - **Account Section**: Profile and settings
 
@@ -666,12 +674,14 @@ const userService = {
 - **Logo-Inspired Gradients**: Green-blue gradient variants matching brand colors
 - **Product Management**: Complete CRUD operations with dashboard-style summary cards
 - **Inventory Management**: Complete stock tracking with history, bulk operations, and alerts
+- **Order Management**: Complete order tracking with status management, customer details, and timeline
 - **Custom Table Component**: Reusable table with sorting, pagination, and loading states
 - **Multi-Step Forms**: StepIndicator component with wizard pattern for complex forms
 - **Image Management**: Drag-and-drop upload with primary image selection
 - **Form Validation**: Step-by-step validation with error handling
 - **Mock Data System**: JSON-based mock data for development and testing
 - **Image Handling**: Fallback system with icon display for missing product images
+- **Order Details Modal**: Comprehensive order view with timeline, customer info, and quick actions
 
 ---
 
