@@ -55,6 +55,10 @@ admin/
 │   │   ├── 📁 pages/                  # Page-specific components
 │   │   │   ├── 📁 categories/          # Category management
 │   │   │   │   └── CategoryForm.jsx   # Category form component
+│   │   │   ├── 📁 customers/          # Customer management
+│   │   │   │   ├── CustomerDetailsModal.jsx # Customer details modal component
+│   │   │   │   ├── SuspendCustomerModal.jsx # Customer suspension modal
+│   │   │   │   └── README.md          # Customer components documentation
 │   │   │   ├── 📁 inventory/          # Inventory management
 │   │   │   │   ├── InventoryHistoryModal.jsx # Inventory history modal
 │   │   │   │   ├── StockAdjustmentForm.jsx # Stock adjustment form
@@ -106,6 +110,7 @@ admin/
 │   │
 │   ├── 📁 mock/                       # Mock data for development
 │   │   ├── categories.json            # Mock category data
+│   │   ├── customers.json             # Mock customer data
 │   │   ├── inventory.json             # Mock inventory data
 │   │   ├── orders.json                # Mock order data
 │   │   ├── products.json              # Mock product data
@@ -132,6 +137,7 @@ admin/
 │   │
 │   ├── 📁 services/                   # API service layer
 │   │   ├── categoryService.js         # Category API service
+│   │   ├── customerService.js         # Customer API service
 │   │   ├── inventoryService.js        # Inventory API service
 │   │   ├── orderService.js            # Order API service
 │   │   ├── productService.js          # Product API service
@@ -148,6 +154,8 @@ admin/
 │   ├── 📁 views/                      # Main view components
 │   │   ├── 📁 categories/             # Category management views
 │   │   │   └── CategoriesList.jsx     # Categories list view
+│   │   ├── 📁 customers/              # Customer management views
+│   │   │   └── CustomersList.jsx      # Customers list view
 │   │   ├── 📁 dashboard/              # Dashboard views
 │   │   │   ├── Dashboard.jsx          # Main dashboard
 │   │   │   └── MainChart.jsx          # Dashboard chart component
