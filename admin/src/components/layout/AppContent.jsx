@@ -46,6 +46,7 @@ const AppContent = () => {
           <Route path="/products" element={<ProductsList />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/add-product" element={<AddProductWizard />} />
+          <Route path="/products/edit/:id" element={<AddProductWizard />} />
           
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -11,7 +11,7 @@ import {
   faImage,
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import StepIndicator from '../../common/StepIndicator'
 import BasicInfoStep from './steps/BasicInfoStep'
 import AttributesStep from './steps/AttributesStep'
@@ -19,9 +19,15 @@ import VariantsStep from './steps/VariantsStep'
 import ImageStep from './steps/ImageStep'
 import ReviewStep from './steps/ReviewStep'
 import { productService } from '../../../services/productService'
+import productsData from '../../../mock/products.json'
 
 const AddProductWizard = () => {
   const navigate = useNavigate()
+  const { id } = useParams()
+  
+  // Determine mode based on URL params
+  const mode = id ? 'edit' : 'create'
+  const productId = id ? parseInt(id) : null
   
   // Step configuration
   const steps = [
@@ -36,6 +42,7 @@ const AddProductWizard = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [initialLoading, setInitialLoading] = useState(mode === 'edit')
 
   // Form data state - organized by steps
   const [formData, setFormData] = useState({
@@ -87,6 +94,81 @@ const AddProductWizard = () => {
       primaryImageIndex: 0
     }
   })
+
+  // Load existing product data for edit mode
+  useEffect(() => {
+    if (mode === 'edit' && productId) {
+      loadProductForEdit()
+    }
+  }, [mode, productId])
+
+  const loadProductForEdit = async () => {
+    try {
+      setInitialLoading(true)
+      // For now, use mock data - replace with API call
+      const existingProduct = productsData.find(p => p.id === productId)
+      
+      if (existingProduct) {
+        setFormData({
+          // Basic Info
+          basicInfo: {
+            name: existingProduct.name || '',
+            category: existingProduct.category || '',
+            profitMargin: '', // Not in current data structure
+            description: existingProduct.description || '',
+            sku: existingProduct.sku || '',
+            gstRate: '' // Not in current data structure
+          },
+          // Attributes
+          attributes: existingProduct.attributes || {
+            dietaryInfo: {
+              organic: false,
+              glutenFree: false,
+              vegan: false,
+              dairyFree: false
+            },
+            weight: existingProduct.weight || '',
+            dimensions: '',
+            expiryDate: '',
+            nutritionalInfo: {
+              calories: '',
+              protein: '',
+              carbs: '',
+              fat: ''
+            }
+          },
+          // Variants
+          variants: existingProduct.variants || {
+            bulkPricing: [],
+            productVariants: [
+              {
+                id: 1,
+                name: '',
+                sku: '',
+                basePrice: existingProduct.price || '',
+                salePrice: existingProduct.oldPrice || '',
+                stock: existingProduct.stock || '',
+                status: 'active'
+              }
+            ]
+          },
+          // Images
+          images: existingProduct.images || {
+            uploadedImages: [],
+            primaryImageIndex: 0
+          }
+        })
+      } else {
+        console.error('Product not found for editing')
+        navigate('/products')
+      }
+    } catch (error) {
+      console.error('Error loading product for edit:', error)
+      navigate('/products')
+    } finally {
+      setInitialLoading(false)
+    }
+  }
 
   // Step validation functions
   const validateStep = (stepIndex) => {
@@ -208,7 +290,7 @@ const AddProductWizard = () => {
     }
   }
 
-  // Create product function
+  // Create/Update product function
   const handleCreateProduct = async () => {
     setLoading(true)
     try {
@@ -230,14 +312,19 @@ const AddProductWizard = () => {
         images: formData.images
       }
       
-      const response = await productService.createProduct(productData)
+      let response
+      if (mode === 'edit') {
+        response = await productService.updateProduct(productId, productData)
+      } else {
+        response = await productService.createProduct(productData)
+      }
       
       if (response.success) {
         // Navigate to products list or show success message
         navigate('/products')
       }
     } catch (error) {
-      console.error('Error creating product:', error)
+      console.error(`Error ${mode === 'edit' ? 'updating' : 'creating'} product:`, error)
     } finally {
       setLoading(false)
     }
@@ -304,9 +391,38 @@ const AddProductWizard = () => {
       'Product Attributes', 
       'Product Variants',
       'Product Images',
-      'Review Product Information'
+      mode === 'edit' ? 'Review Product Changes' : 'Review Product Information'
     ]
     return titles[currentStep]
+  }
+
+  // Get page title
+  const getPageTitle = () => {
+    return mode === 'edit' ? 'Edit Product' : 'Add New Product'
+  }
+
+  // Get page description
+  const getPageDescription = () => {
+    return mode === 'edit' ? 'Update product information' : 'Create a new product for your store'
+  }
+
+  // Get submit button text
+  const getSubmitButtonText = () => {
+    return mode === 'edit' ? 'Update Product' : 'Create Product'
+  }
+
+  // Show loading state while loading product data for edit
+  if (initialLoading) {
+    return (
+      <Container fluid className="py-4">
+        <div className="text-center py-5">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3 text-muted">Loading product data...</p>
+        </div>
+      </Container>
+    )
   }
 
   return (
@@ -316,8 +432,8 @@ const AddProductWizard = () => {
           {/* Header */}
           <div className="d-flex align-items-center justify-content-between mb-4">
             <div>
-              <h2 className="mb-1 text-dark">Add New Product</h2>
-              <p className="text-muted mb-0">Create a new product for your store</p>
+              <h2 className="mb-1 text-dark">{getPageTitle()}</h2>
+              <p className="text-muted mb-0">{getPageDescription()}</p>
             </div>
             <Button 
               variant="outline-secondary" 
@@ -393,7 +509,7 @@ const AddProductWizard = () => {
                   className="d-flex align-items-center text-white"
                 >
                   <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
-                  Create Product
+                  {getSubmitButtonText()}
                 </Button>
               )}
             </div>

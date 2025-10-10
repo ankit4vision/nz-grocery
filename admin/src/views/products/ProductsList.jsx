@@ -36,11 +36,9 @@ const ProductsList = () => {
   
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   
   // Data states
-  const [productToEdit, setProductToEdit] = useState(null)
   const [productToDelete, setProductToDelete] = useState(null)
   
   // Stats state
@@ -53,7 +51,6 @@ const ProductsList = () => {
   
   // Form refs
   const addProductFormRef = useRef(null)
-  const editProductFormRef = useRef(null)
 
   // Load products
   useEffect(() => {
@@ -348,8 +345,7 @@ const ProductsList = () => {
   }
 
   const handleOpenEditModal = (product) => {
-    setProductToEdit(product)
-    setShowEditModal(true)
+    navigate(`/products/edit/${product.id}`)
   }
 
   const handleViewProduct = (product) => {
@@ -392,19 +388,6 @@ const ProductsList = () => {
     }
   }
 
-  const handleEditProductSubmit = async (formData) => {
-    try {
-      const response = await productService.updateProduct(productToEdit.id, formData)
-      if (response.success) {
-        setShowEditModal(false)
-        setProductToEdit(null)
-        loadProducts()
-        loadStats()
-      }
-    } catch (error) {
-      console.error('Error updating product:', error)
-    }
-  }
 
   const confirmDeleteProduct = async () => {
     try {
@@ -650,31 +633,6 @@ const ProductsList = () => {
         />
       </FormModal>
 
-      {/* Edit Product Modal */}
-      <FormModal
-        visible={showEditModal}
-        onClose={() => {
-          setShowEditModal(false)
-          setProductToEdit(null)
-        }}
-        title="Edit Product"
-        size="xl"
-        onConfirm={() => editProductFormRef.current?.handleSubmit()}
-        confirmText="Update Product"
-        cancelText="Cancel"
-        loading={false}
-      >
-        <ProductForm
-          ref={editProductFormRef}
-          mode="edit"
-          productData={productToEdit}
-          onSubmit={handleEditProductSubmit}
-          onCancel={() => {
-            setShowEditModal(false)
-            setProductToEdit(null)
-          }}
-        />
-      </FormModal>
 
 
       {/* Delete Confirmation Modal */}
