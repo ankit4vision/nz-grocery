@@ -30,8 +30,12 @@ admin/
 │   │   │   ├── FormFields.jsx         # Form input components
 │   │   │   ├── FormModal.jsx          # Modal for forms
 │   │   │   ├── GlobalSpinner.jsx     # Global loading spinner
+│   │   │   ├── ImageUpload.jsx        # Drag-and-drop image upload component
 │   │   │   ├── Modal.jsx              # Reusable modal component
-│   │   │   ├── Table.jsx              # Data table component
+│   │   │   ├── ScrollToTop.jsx        # Scroll to top component
+│   │   │   ├── StepIndicator.jsx      # Multi-step form progress indicator
+│   │   │   ├── Table.jsx              # Advanced data table with sorting/pagination
+│   │   │   ├── ThemeToggle.jsx        # Theme switching component (light/dark/auto)
 │   │   │   └── ToastProvider.jsx     # Toast notifications
 │   │   │
 │   │   ├── 📁 docs/                   # Documentation components
@@ -383,6 +387,104 @@ const _nav = [
 - **Typography**: Clean, readable fonts with proper hierarchy
 - **Spacing**: Consistent padding and margins throughout
 
+#### 6.1. **Dark Theme System**
+- **Theme Toggle**: `ThemeToggle` component with light/dark/auto modes
+- **State Management**: Redux store with localStorage persistence
+- **CoreUI Integration**: Uses `useColorModes` hook for theme switching
+- **CSS Architecture**: Theme-responsive selectors using `html[data-coreui-theme="dark"]`
+- **Component Coverage**: All components support both light and dark themes
+- **Authentication Pages**: Complete dark theme support for login/forgot/reset pages
+- **Sidebar Adaptation**: Sidebar changes color scheme based on theme
+- **Form Elements**: All inputs, buttons, and modals adapt to theme
+- **Chart Components**: Dashboard charts and visualizations are theme-aware
+
+#### 6.2. **Theme Implementation Guidelines**
+
+##### **Theme Toggle Component Usage**
+```jsx
+// Import ThemeToggle component
+import { ThemeToggle } from '../components'
+
+// Use in header or any component
+<ThemeToggle />
+```
+
+##### **Theme-Aware CSS Patterns**
+```css
+/* Light Theme (Default) */
+.component {
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+
+/* Dark Theme Override */
+html[data-coreui-theme="dark"] .component {
+  background: #374151 !important;
+  color: #f9fafb !important;
+  border: 1px solid #4b5563 !important;
+}
+```
+
+##### **Theme Color Palette**
+```css
+/* Light Theme Colors */
+--light-bg-primary: #ffffff;
+--light-bg-secondary: #f8fafc;
+--light-text-primary: #1f2937;
+--light-text-secondary: #6b7280;
+--light-border: #e5e7eb;
+--light-accent: #22c55e;
+
+/* Dark Theme Colors */
+--dark-bg-primary: #1f2937;
+--dark-bg-secondary: #374151;
+--dark-text-primary: #f9fafb;
+--dark-text-secondary: #d1d5db;
+--dark-border: #4b5563;
+--dark-accent: #34d399;
+```
+
+##### **Theme File Organization**
+```
+styles/
+├── theme.css              # Main theme styles (CoreUI overrides)
+├── auth.css               # Authentication page styles
+└── components/            # Component-specific theme styles
+    ├── buttons/
+    ├── forms/
+    ├── modals/
+    └── tables/
+```
+
+##### **Theme State Management**
+```jsx
+// Redux Store Configuration
+const initialState = {
+  sidebarShow: true,
+  theme: getInitialTheme(), // 'light', 'dark', or 'auto'
+}
+
+// Theme Toggle Handler
+const handleThemeChange = (themeKey) => {
+  dispatch({ type: 'set', theme: themeKey })
+  setColorMode(themeKey)
+  localStorage.setItem('theme', themeKey)
+}
+```
+
+##### **Theme Best Practices**
+- **Always use `!important`** for dark theme overrides to ensure they take precedence
+- **Test both themes** during development to ensure proper contrast and readability
+- **Use semantic color names** instead of hardcoded hex values
+- **Maintain consistent spacing** across both themes
+- **Consider accessibility** - ensure WCAG contrast ratios are met
+- **Test with real content** to verify theme works with actual data
+- **Use CSS custom properties** for theme-specific values when possible
+- **Document theme-specific styles** with clear comments
+- **Test theme switching** during user interactions (modals, dropdowns, etc.)
+- **Validate responsive behavior** in both themes across all breakpoints
+
 #### 7. **Gradient System & CSS Variables**
 ```css
 /* Theme-based Gradient Variables - Light & Subtle */
@@ -655,6 +757,7 @@ const userService = {
 - **ProductForm** - Single-step product form (legacy)
 - **FormModal** - Modal wrapper for forms
 - **Table** - Data table with sorting and pagination
+- **ThemeToggle** - Theme switching component (light/dark/auto modes)
 - **ToastProvider** - Global notification system
 
 ### 📊 Performance Monitoring
@@ -683,9 +786,11 @@ const userService = {
 ### 🔧 Technical Implementation
 - **CoreUI Components**: Proper use of CSidebar, CSidebarHeader, CSidebarBrand
 - **Custom Styling**: theme.css with CoreUI overrides
-- **State Management**: Redux for sidebar state (unfoldable, visible)
+- **State Management**: Redux for sidebar state (unfoldable, visible) and theme management
 - **Routing**: React Router with lazy loading for performance
 - **Authentication**: JWT-based auth with role-based access control
+- **Theme System**: Complete dark/light theme support with ThemeToggle component
+- **Theme Persistence**: localStorage integration for theme preference
 - **Clean Layout Pattern**: Single container with shadow, no nested cards
 - **Green Theme System**: Consistent use of Bootstrap success color (#16a34a)
 - **Enhanced Forms**: Better input styling with border-2 and fw-semibold labels
@@ -701,6 +806,8 @@ const userService = {
 - **Mock Data System**: JSON-based mock data for development and testing
 - **Image Handling**: Fallback system with icon display for missing product images
 - **Order Details Modal**: Comprehensive order view with timeline, customer info, and quick actions
+- **Authentication Pages**: Complete dark theme support for login, forgot password, and reset password
+- **Sidebar Theme Adaptation**: Sidebar changes color scheme based on selected theme
 
 ---
 
