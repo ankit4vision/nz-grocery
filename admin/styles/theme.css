@@ -147,7 +147,7 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
   --chart-info: var(--cui-info) !important;
 }
 
-/* Enhanced Sidebar - Clean White Design */
+/* Enhanced Sidebar - Theme Responsive Design */
 .c-sidebar,
 .c-sidebar-dark,
 .c-sidebar-light,
@@ -155,26 +155,43 @@ a:hover, a:focus, .link-primary:hover { color: var(--cui-link-hover-color) !impo
 .c-sidebar[data-coreui-theme],
 html[data-coreui-theme="light"] .c-sidebar,
 body[data-coreui-theme="light"] .c-sidebar,
-html[data-coreui-theme="dark"] .c-sidebar,
-body[data-coreui-theme="dark"] .c-sidebar,
-.c-sidebar.bg-dark,
 .c-sidebar.bg-light {
-  /* Clean white background */
+  /* Clean white background for light theme */
   background: #ffffff !important;
   background-color: #ffffff !important;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08) !important;
   border-right: 1px solid #e2e8f0 !important;
 }
 
-/* Force override any CoreUI sidebar background */
-[class*="sidebar"] {
+/* Dark sidebar for dark theme */
+html[data-coreui-theme="dark"] .c-sidebar,
+body[data-coreui-theme="dark"] .c-sidebar,
+.c-sidebar.bg-dark {
+  /* Dark background for dark theme */
+  background: #1f2937 !important;
+  background-color: #1f2937 !important;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3) !important;
+  border-right: 1px solid #374151 !important;
+}
+
+/* Force override any CoreUI sidebar background - Theme Responsive */
+html[data-coreui-theme="light"] [class*="sidebar"],
+body[data-coreui-theme="light"] [class*="sidebar"] {
   background: #ffffff !important;
   background-color: #ffffff !important;
   border: none !important;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Logo styling - Clean and modern for white background */
+html[data-coreui-theme="dark"] [class*="sidebar"],
+body[data-coreui-theme="dark"] [class*="sidebar"] {
+  background: #1f2937 !important;
+  background-color: #1f2937 !important;
+  border: none !important;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Logo styling - Theme Responsive */
 .c-sidebar .c-sidebar-brand,
 .sidebar-brand-full {
   background: transparent !important;
@@ -186,6 +203,13 @@ body[data-coreui-theme="dark"] .c-sidebar,
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
+}
+
+/* Dark theme logo styling */
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-brand,
+html[data-coreui-theme="dark"] .sidebar-brand-full {
+  border: 1px solid #374151 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
 .c-sidebar .c-sidebar-brand img,
@@ -210,85 +234,158 @@ body[data-coreui-theme="dark"] .c-sidebar,
   justify-content: space-between !important;
 }
 
-/* Enhanced sidebar text and icon colors for white background */
-.c-sidebar,
-.c-sidebar *,
-.sidebar,
-.sidebar *,
-.c-sidebar .c-sidebar-brand,
-.c-sidebar .c-sidebar-brand *,
-.sidebar .sidebar-brand,
-.sidebar .sidebar-brand *,
-.c-sidebar .nav-link,
-.c-sidebar .nav-link *,
-.sidebar .nav-link,
-.sidebar .nav-link *,
-.c-sidebar .nav-title,
-.c-sidebar .nav-title *,
-.sidebar .nav-title,
-.sidebar .nav-title *,
-.c-sidebar .nav-group .nav-link,
-.c-sidebar .nav-group .nav-link *,
-.sidebar .nav-group .nav-link,
-.sidebar .nav-group .nav-link *,
-.c-sidebar .c-sidebar-nav-link,
-.c-sidebar .c-sidebar-nav-link *,
-.sidebar .sidebar-nav-link,
-.sidebar .sidebar-nav-link *,
-.c-sidebar .c-sidebar-brand-text,
-.c-sidebar .c-sidebar-nav-link-text,
-.sidebar .sidebar-brand-text,
-.sidebar .sidebar-nav-link-text,
-.c-sidebar span,
-.c-sidebar div,
-.c-sidebar p,
-.c-sidebar a,
-.sidebar span,
-.sidebar div,
-.sidebar p,
-.sidebar a {
+/* Enhanced sidebar text and icon colors - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar,
+html[data-coreui-theme="light"] .c-sidebar *,
+html[data-coreui-theme="light"] .sidebar,
+html[data-coreui-theme="light"] .sidebar *,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-brand,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-brand *,
+html[data-coreui-theme="light"] .sidebar .sidebar-brand,
+html[data-coreui-theme="light"] .sidebar .sidebar-brand *,
+html[data-coreui-theme="light"] .c-sidebar .nav-link,
+html[data-coreui-theme="light"] .c-sidebar .nav-link *,
+html[data-coreui-theme="light"] .sidebar .nav-link,
+html[data-coreui-theme="light"] .sidebar .nav-link *,
+html[data-coreui-theme="light"] .c-sidebar .nav-title,
+html[data-coreui-theme="light"] .c-sidebar .nav-title *,
+html[data-coreui-theme="light"] .sidebar .nav-title,
+html[data-coreui-theme="light"] .sidebar .nav-title *,
+html[data-coreui-theme="light"] .c-sidebar .nav-group .nav-link,
+html[data-coreui-theme="light"] .c-sidebar .nav-group .nav-link *,
+html[data-coreui-theme="light"] .sidebar .nav-group .nav-link,
+html[data-coreui-theme="light"] .sidebar .nav-group .nav-link *,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-link,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-link *,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-link,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-link *,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-brand-text,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-link-text,
+html[data-coreui-theme="light"] .sidebar .sidebar-brand-text,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-link-text,
+html[data-coreui-theme="light"] .c-sidebar span,
+html[data-coreui-theme="light"] .c-sidebar div,
+html[data-coreui-theme="light"] .c-sidebar p,
+html[data-coreui-theme="light"] .c-sidebar a,
+html[data-coreui-theme="light"] .sidebar span,
+html[data-coreui-theme="light"] .sidebar div,
+html[data-coreui-theme="light"] .sidebar p,
+html[data-coreui-theme="light"] .sidebar a {
   color: #1f2937 !important;
   text-shadow: none !important;
 }
 
-/* Sidebar icons with better colors for white background */
-.c-sidebar .nav-link .nav-icon,
-.c-sidebar .nav-title .nav-icon,
-.c-sidebar .c-sidebar-nav-icon,
-.c-sidebar .c-sidebar-brand-icon,
-.c-sidebar i,
-.c-sidebar svg,
-.c-sidebar .icon,
-.sidebar .nav-link .nav-icon,
-.sidebar .nav-title .nav-icon,
-.sidebar .sidebar-nav-icon,
-.sidebar .sidebar-brand-icon,
-.sidebar i,
-.sidebar svg,
-.sidebar .icon {
+/* Dark theme sidebar text and icon colors */
+html[data-coreui-theme="dark"] .c-sidebar,
+html[data-coreui-theme="dark"] .c-sidebar *,
+html[data-coreui-theme="dark"] .sidebar,
+html[data-coreui-theme="dark"] .sidebar *,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-brand,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-brand *,
+html[data-coreui-theme="dark"] .sidebar .sidebar-brand,
+html[data-coreui-theme="dark"] .sidebar .sidebar-brand *,
+html[data-coreui-theme="dark"] .c-sidebar .nav-link,
+html[data-coreui-theme="dark"] .c-sidebar .nav-link *,
+html[data-coreui-theme="dark"] .sidebar .nav-link,
+html[data-coreui-theme="dark"] .sidebar .nav-link *,
+html[data-coreui-theme="dark"] .c-sidebar .nav-title,
+html[data-coreui-theme="dark"] .c-sidebar .nav-title *,
+html[data-coreui-theme="dark"] .sidebar .nav-title,
+html[data-coreui-theme="dark"] .sidebar .nav-title *,
+html[data-coreui-theme="dark"] .c-sidebar .nav-group .nav-link,
+html[data-coreui-theme="dark"] .c-sidebar .nav-group .nav-link *,
+html[data-coreui-theme="dark"] .sidebar .nav-group .nav-link,
+html[data-coreui-theme="dark"] .sidebar .nav-group .nav-link *,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-link,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-link *,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-link,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-link *,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-brand-text,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-link-text,
+html[data-coreui-theme="dark"] .sidebar .sidebar-brand-text,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-link-text,
+html[data-coreui-theme="dark"] .c-sidebar span,
+html[data-coreui-theme="dark"] .c-sidebar div,
+html[data-coreui-theme="dark"] .c-sidebar p,
+html[data-coreui-theme="dark"] .c-sidebar a,
+html[data-coreui-theme="dark"] .sidebar span,
+html[data-coreui-theme="dark"] .sidebar div,
+html[data-coreui-theme="dark"] .sidebar p,
+html[data-coreui-theme="dark"] .sidebar a {
+  color: #f9fafb !important;
+  text-shadow: none !important;
+}
+
+/* Sidebar icons - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .nav-link .nav-icon,
+html[data-coreui-theme="light"] .c-sidebar .nav-title .nav-icon,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-icon,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-brand-icon,
+html[data-coreui-theme="light"] .c-sidebar i,
+html[data-coreui-theme="light"] .c-sidebar svg,
+html[data-coreui-theme="light"] .c-sidebar .icon,
+html[data-coreui-theme="light"] .sidebar .nav-link .nav-icon,
+html[data-coreui-theme="light"] .sidebar .nav-title .nav-icon,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-icon,
+html[data-coreui-theme="light"] .sidebar .sidebar-brand-icon,
+html[data-coreui-theme="light"] .sidebar i,
+html[data-coreui-theme="light"] .sidebar svg,
+html[data-coreui-theme="light"] .sidebar .icon {
   color: #4b5563 !important;
   fill: #4b5563 !important;
   filter: none !important;
   transition: all 0.3s ease !important;
 }
 
-/* Icon hover effects for white background */
-.c-sidebar .nav-link:hover .nav-icon,
-.c-sidebar .nav-link:hover i,
-.c-sidebar .nav-link:hover svg,
-.sidebar .nav-link:hover .nav-icon,
-.sidebar .nav-link:hover i,
-.sidebar .nav-link:hover svg {
+/* Dark theme sidebar icons */
+html[data-coreui-theme="dark"] .c-sidebar .nav-link .nav-icon,
+html[data-coreui-theme="dark"] .c-sidebar .nav-title .nav-icon,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-icon,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-brand-icon,
+html[data-coreui-theme="dark"] .c-sidebar i,
+html[data-coreui-theme="dark"] .c-sidebar svg,
+html[data-coreui-theme="dark"] .c-sidebar .icon,
+html[data-coreui-theme="dark"] .sidebar .nav-link .nav-icon,
+html[data-coreui-theme="dark"] .sidebar .nav-title .nav-icon,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-icon,
+html[data-coreui-theme="dark"] .sidebar .sidebar-brand-icon,
+html[data-coreui-theme="dark"] .sidebar i,
+html[data-coreui-theme="dark"] .sidebar svg,
+html[data-coreui-theme="dark"] .sidebar .icon {
+  color: #d1d5db !important;
+  fill: #d1d5db !important;
+  filter: none !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Icon hover effects - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .nav-link:hover .nav-icon,
+html[data-coreui-theme="light"] .c-sidebar .nav-link:hover i,
+html[data-coreui-theme="light"] .c-sidebar .nav-link:hover svg,
+html[data-coreui-theme="light"] .sidebar .nav-link:hover .nav-icon,
+html[data-coreui-theme="light"] .sidebar .nav-link:hover i,
+html[data-coreui-theme="light"] .sidebar .nav-link:hover svg {
   color: var(--cui-primary) !important;
   fill: var(--cui-primary) !important;
   transform: scale(1.05) !important;
 }
 
-/* Enhanced hover and active states for white background */
-.c-sidebar .nav-link,
-.c-sidebar .c-sidebar-nav-link,
-.sidebar .nav-link,
-.sidebar .sidebar-nav-link {
+html[data-coreui-theme="dark"] .c-sidebar .nav-link:hover .nav-icon,
+html[data-coreui-theme="dark"] .c-sidebar .nav-link:hover i,
+html[data-coreui-theme="dark"] .c-sidebar .nav-link:hover svg,
+html[data-coreui-theme="dark"] .sidebar .nav-link:hover .nav-icon,
+html[data-coreui-theme="dark"] .sidebar .nav-link:hover i,
+html[data-coreui-theme="dark"] .sidebar .nav-link:hover svg {
+  color: var(--cui-primary) !important;
+  fill: var(--cui-primary) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Enhanced hover and active states - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .nav-link,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-link,
+html[data-coreui-theme="light"] .sidebar .nav-link,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-link {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border-radius: 10px !important;
   margin: 3px 12px !important;
@@ -296,20 +393,20 @@ body[data-coreui-theme="dark"] .c-sidebar,
   padding: 12px 16px !important;
 }
 
-.c-sidebar .nav-link:hover,
-.c-sidebar .c-sidebar-nav-link:hover,
-.sidebar .nav-link:hover,
-.sidebar .sidebar-nav-link:hover {
+html[data-coreui-theme="light"] .c-sidebar .nav-link:hover,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-link:hover,
+html[data-coreui-theme="light"] .sidebar .nav-link:hover,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-link:hover {
   color: var(--cui-primary) !important;
   background: rgba(var(--cui-primary-rgb), 0.08) !important;
   transform: translateX(4px) !important;
   box-shadow: 0 2px 8px rgba(var(--cui-primary-rgb), 0.15) !important;
 }
 
-.c-sidebar .nav-link.active,
-.c-sidebar .c-sidebar-nav-link.active,
-.sidebar .nav-link.active,
-.sidebar .sidebar-nav-link.active {
+html[data-coreui-theme="light"] .c-sidebar .nav-link.active,
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-nav-link.active,
+html[data-coreui-theme="light"] .sidebar .nav-link.active,
+html[data-coreui-theme="light"] .sidebar .sidebar-nav-link.active {
   color: var(--cui-primary) !important;
   background: rgba(var(--cui-primary-rgb), 0.12) !important;
   box-shadow: 0 4px 12px rgba(var(--cui-primary-rgb), 0.2) !important;
@@ -317,9 +414,42 @@ body[data-coreui-theme="dark"] .c-sidebar,
   font-weight: 600 !important;
 }
 
-/* Navigation group headers with clean styling */
-.c-sidebar .nav-title,
-.sidebar .nav-title {
+/* Dark theme hover and active states */
+html[data-coreui-theme="dark"] .c-sidebar .nav-link,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-link,
+html[data-coreui-theme="dark"] .sidebar .nav-link,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-link {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 10px !important;
+  margin: 3px 12px !important;
+  position: relative !important;
+  padding: 12px 16px !important;
+}
+
+html[data-coreui-theme="dark"] .c-sidebar .nav-link:hover,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-link:hover,
+html[data-coreui-theme="dark"] .sidebar .nav-link:hover,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-link:hover {
+  color: var(--cui-primary) !important;
+  background: rgba(var(--cui-primary-rgb), 0.15) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 2px 8px rgba(var(--cui-primary-rgb), 0.25) !important;
+}
+
+html[data-coreui-theme="dark"] .c-sidebar .nav-link.active,
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-nav-link.active,
+html[data-coreui-theme="dark"] .sidebar .nav-link.active,
+html[data-coreui-theme="dark"] .sidebar .sidebar-nav-link.active {
+  color: var(--cui-primary) !important;
+  background: rgba(var(--cui-primary-rgb), 0.2) !important;
+  box-shadow: 0 4px 12px rgba(var(--cui-primary-rgb), 0.3) !important;
+  border-left: 4px solid var(--cui-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Navigation group headers - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .nav-title,
+html[data-coreui-theme="light"] .sidebar .nav-title {
   color: #374151 !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
@@ -333,18 +463,41 @@ body[data-coreui-theme="dark"] .c-sidebar,
   box-shadow: none !important;
 }
 
-/* Enhanced sidebar footer with better styling */
-.c-sidebar .c-sidebar-footer,
-.sidebar .sidebar-footer {
+html[data-coreui-theme="dark"] .c-sidebar .nav-title,
+html[data-coreui-theme="dark"] .sidebar .nav-title {
+  color: #d1d5db !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  font-size: 0.75rem !important;
+  margin: 20px 12px 12px 12px !important;
+  padding: 10px 16px !important;
+  background: none !important;
+  border: none !important;
+  border-bottom: 1px solid #4b5563 !important;
+  box-shadow: none !important;
+}
+
+/* Enhanced sidebar footer - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-footer,
+html[data-coreui-theme="light"] .sidebar .sidebar-footer {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
   border-top: 2px solid #e2e8f0 !important;
   padding: 16px !important;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Enhanced sidebar toggler for white background */
-.c-sidebar .c-sidebar-toggler,
-.sidebar .sidebar-toggler {
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-footer,
+html[data-coreui-theme="dark"] .sidebar .sidebar-footer {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+  border-top: 2px solid #4b5563 !important;
+  padding: 16px !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Enhanced sidebar toggler - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-toggler,
+html[data-coreui-theme="light"] .sidebar .sidebar-toggler {
   background: #f8fafc !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 10px !important;
@@ -353,8 +506,8 @@ body[data-coreui-theme="dark"] .c-sidebar,
   padding: 8px !important;
 }
 
-.c-sidebar .c-sidebar-toggler:hover,
-.sidebar .sidebar-toggler:hover {
+html[data-coreui-theme="light"] .c-sidebar .c-sidebar-toggler:hover,
+html[data-coreui-theme="light"] .sidebar .sidebar-toggler:hover {
   background: #e2e8f0 !important;
   border-color: #cbd5e1 !important;
   color: var(--cui-primary) !important;
@@ -362,9 +515,28 @@ body[data-coreui-theme="dark"] .c-sidebar,
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Enhanced close button for white background */
-.c-sidebar .c-close-button,
-.sidebar .close-button {
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-toggler,
+html[data-coreui-theme="dark"] .sidebar .sidebar-toggler {
+  background: #4b5563 !important;
+  border: 1px solid #6b7280 !important;
+  border-radius: 10px !important;
+  color: #d1d5db !important;
+  transition: all 0.3s ease !important;
+  padding: 8px !important;
+}
+
+html[data-coreui-theme="dark"] .c-sidebar .c-sidebar-toggler:hover,
+html[data-coreui-theme="dark"] .sidebar .sidebar-toggler:hover {
+  background: #6b7280 !important;
+  border-color: #9ca3af !important;
+  color: var(--cui-primary) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Enhanced close button - Theme Responsive */
+html[data-coreui-theme="light"] .c-sidebar .c-close-button,
+html[data-coreui-theme="light"] .sidebar .close-button {
   background: #f8fafc !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 8px !important;
@@ -372,10 +544,27 @@ body[data-coreui-theme="dark"] .c-sidebar,
   transition: all 0.3s ease !important;
 }
 
-.c-sidebar .c-close-button:hover,
-.sidebar .close-button:hover {
+html[data-coreui-theme="light"] .c-sidebar .c-close-button:hover,
+html[data-coreui-theme="light"] .sidebar .close-button:hover {
   background: #e2e8f0 !important;
   border-color: #cbd5e1 !important;
+  color: var(--cui-primary) !important;
+  transform: scale(1.1) !important;
+}
+
+html[data-coreui-theme="dark"] .c-sidebar .c-close-button,
+html[data-coreui-theme="dark"] .sidebar .close-button {
+  background: #4b5563 !important;
+  border: 1px solid #6b7280 !important;
+  border-radius: 8px !important;
+  color: #d1d5db !important;
+  transition: all 0.3s ease !important;
+}
+
+html[data-coreui-theme="dark"] .c-sidebar .c-close-button:hover,
+html[data-coreui-theme="dark"] .sidebar .close-button:hover {
+  background: #6b7280 !important;
+  border-color: #9ca3af !important;
   color: var(--cui-primary) !important;
   transform: scale(1.1) !important;
 }
