@@ -1,8 +1,14 @@
 import { legacy_createStore as createStore } from 'redux'
 
+// Get theme from localStorage or default to 'light'
+const getInitialTheme = () => {
+  const savedTheme = localStorage.getItem('theme')
+  return savedTheme || 'light'
+}
+
 const initialState = {
   sidebarShow: true,
-  theme: 'light',
+  theme: getInitialTheme(),
 }
 
 const changeState = (state = initialState, { type, ...rest }) => {

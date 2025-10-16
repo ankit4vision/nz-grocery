@@ -18,6 +18,7 @@ import GlobalSpinner from './common/GlobalSpinner'
 import ImageUpload from './common/ImageUpload'
 import StepIndicator from './common/StepIndicator'
 import ScrollToTop from './common/ScrollToTop'
+import ThemeToggle from './common/ThemeToggle'
 import { TextField, SelectField, FormRow } from './common/FormFields'
 import ToastProvider, { useToast } from './common/ToastProvider'
 
@@ -60,6 +61,7 @@ export {
   ImageUpload,
   StepIndicator,
   ScrollToTop,
+  ThemeToggle,
   TextField,
   SelectField,
   FormRow,

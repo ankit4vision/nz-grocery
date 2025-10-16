@@ -13,7 +13,7 @@ import {
 } from '@coreui/icons'
 
 import { AppBreadcrumb } from '../index'
-import { AppHeaderDropdown } from './header/index.jsx'
+import { AppHeaderDropdown, ThemeToggle } from './header/index.jsx'
 import { useAuth } from '../../context/AuthContext'
 
 const AppHeader = () => {
@@ -86,6 +86,7 @@ const AppHeader = () => {
               </div>
             </div>
           </div>
+          <ThemeToggle />
         </CHeaderNav>
         <CHeaderNav>
           <AppHeaderDropdown />
