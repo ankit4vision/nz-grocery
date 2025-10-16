@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { useAuth } from '../../context/AuthContext'
+import { ThemeToggle } from '../../components'
 import logoImg from '../../assets/logo/logo-transprant.png'
 import '../../styles/auth.css'
 
@@ -118,6 +119,11 @@ const Login = () => {
 
   return (
     <div className="auth-page">
+      {/* Theme Toggle - Top Right */}
+      <div className="position-absolute top-0 end-0 p-3" style={{ zIndex: 1000 }}>
+        <ThemeToggle />
+      </div>
+      
       <Container>
         <Row className="justify-content-center">
           <Col md={6} lg={5} xl={4}>

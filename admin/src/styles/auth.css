@@ -367,3 +367,340 @@
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
+
+/* ========================================
+   DARK THEME SUPPORT FOR AUTH PAGES
+   ======================================== */
+
+/* Dark Theme Auth Page Background */
+html[data-coreui-theme="dark"] .auth-page {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%) !important;
+}
+
+/* Dark Theme Auth Card */
+html[data-coreui-theme="dark"] .auth-card {
+  background: rgba(55, 65, 81, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(75, 85, 99, 0.4) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-card::before {
+  background: linear-gradient(90deg, #34d399, #10b981, #34d399) !important;
+}
+
+/* Dark Theme Auth Logo Section */
+html[data-coreui-theme="dark"] .auth-logo-icon {
+  background: linear-gradient(135deg, #34d399, #10b981) !important;
+  box-shadow: 0 10px 30px rgba(52, 211, 153, 0.3) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-logo-icon::before {
+  background: linear-gradient(135deg, #34d399, #10b981) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-logo-title {
+  color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .auth-logo-subtitle {
+  color: #d1d5db !important;
+}
+
+/* Dark Theme Auth Inputs */
+html[data-coreui-theme="dark"] .auth-input {
+  background: rgba(75, 85, 99, 0.8) !important;
+  border: 2px solid rgba(107, 114, 128, 0.5) !important;
+  color: #f9fafb !important;
+}
+
+html[data-coreui-theme="dark"] .auth-input:focus {
+  border-color: #34d399 !important;
+  box-shadow: 0 0 0 0.3rem rgba(52, 211, 153, 0.2) !important;
+  background: rgba(75, 85, 99, 0.95) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-input.is-invalid {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 0.3rem rgba(248, 113, 113, 0.2) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-input::placeholder {
+  color: #9ca3af !important;
+}
+
+html[data-coreui-theme="dark"] .auth-input-icon {
+  color: #9ca3af !important;
+}
+
+/* Dark Theme Auth Button */
+html[data-coreui-theme="dark"] .auth-button {
+  background: linear-gradient(135deg, #34d399, #10b981) !important;
+  color: #1f2937 !important;
+}
+
+html[data-coreui-theme="dark"] .auth-button:hover {
+  box-shadow: 0 8px 25px rgba(52, 211, 153, 0.4) !important;
+}
+
+/* Dark Theme Auth Links */
+html[data-coreui-theme="dark"] .auth-link {
+  color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .auth-link:hover {
+  color: #10b981 !important;
+}
+
+/* Dark Theme Demo Credentials */
+html[data-coreui-theme="dark"] .demo-credentials {
+  background: rgba(52, 211, 153, 0.15) !important;
+  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+}
+
+html[data-coreui-theme="dark"] .demo-credentials::before {
+  background: linear-gradient(90deg, #34d399, #10b981, #34d399) !important;
+}
+
+html[data-coreui-theme="dark"] .demo-credentials-title {
+  color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .demo-credential-label {
+  color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .demo-credential-value {
+  background: rgba(52, 211, 153, 0.2) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(52, 211, 153, 0.4) !important;
+}
+
+/* Dark Theme Auth Footer */
+html[data-coreui-theme="dark"] .auth-footer {
+  color: rgba(209, 213, 219, 0.7) !important;
+}
+
+/* Dark Theme Success State */
+html[data-coreui-theme="dark"] .auth-success-icon {
+  background: rgba(52, 211, 153, 0.15) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-success-title {
+  color: #f9fafb !important;
+}
+
+html[data-coreui-theme="dark"] .auth-success-message {
+  color: #d1d5db !important;
+}
+
+/* Dark Theme Info Alert */
+html[data-coreui-theme="dark"] .auth-info-alert {
+  background: rgba(52, 211, 153, 0.15) !important;
+  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-info-alert .alert-icon {
+  color: #34d399 !important;
+}
+
+/* Dark Theme Form Validation */
+html[data-coreui-theme="dark"] .invalid-feedback {
+  color: #f87171 !important;
+}
+
+html[data-coreui-theme="dark"] .form-control.is-invalid {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 0.2rem rgba(248, 113, 113, 0.25) !important;
+}
+
+/* Dark Theme Text Colors */
+html[data-coreui-theme="dark"] .text-dark {
+  color: #f9fafb !important;
+}
+
+html[data-coreui-theme="dark"] .text-muted {
+  color: #9ca3af !important;
+}
+
+html[data-coreui-theme="dark"] .text-success {
+  color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .text-primary {
+  color: #60a5fa !important;
+}
+
+html[data-coreui-theme="dark"] .text-info {
+  color: #60a5fa !important;
+}
+
+/* Dark Theme Alert Components */
+html[data-coreui-theme="dark"] .alert-info {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  color: #d1d5db !important;
+}
+
+html[data-coreui-theme="dark"] .alert-info .small {
+  color: #d1d5db !important;
+}
+
+/* Dark Theme Bootstrap Button Variants */
+html[data-coreui-theme="dark"] .btn-outline-success {
+  color: #34d399 !important;
+  border-color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .btn-outline-success:hover {
+  background-color: #34d399 !important;
+  border-color: #34d399 !important;
+  color: #1f2937 !important;
+}
+
+html[data-coreui-theme="dark"] .btn-success {
+  background-color: #34d399 !important;
+  border-color: #34d399 !important;
+  color: #1f2937 !important;
+}
+
+html[data-coreui-theme="dark"] .btn-success:hover {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #1f2937 !important;
+}
+
+html[data-coreui-theme="dark"] .btn-outline-primary {
+  color: #60a5fa !important;
+  border-color: #60a5fa !important;
+}
+
+html[data-coreui-theme="dark"] .btn-outline-primary:hover {
+  background-color: #60a5fa !important;
+  border-color: #60a5fa !important;
+  color: #1f2937 !important;
+}
+
+/* Dark Theme Form Check */
+html[data-coreui-theme="dark"] .form-check-input {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+html[data-coreui-theme="dark"] .form-check-input:checked {
+  background-color: #34d399 !important;
+  border-color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] .form-check-label {
+  color: #f9fafb !important;
+}
+
+/* Dark Theme Code Elements */
+html[data-coreui-theme="dark"] code {
+  background-color: rgba(52, 211, 153, 0.2) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(52, 211, 153, 0.4) !important;
+}
+
+/* Dark Theme Links */
+html[data-coreui-theme="dark"] a {
+  color: #34d399 !important;
+}
+
+html[data-coreui-theme="dark"] a:hover {
+  color: #10b981 !important;
+}
+
+/* Dark Theme Strong Elements */
+html[data-coreui-theme="dark"] strong {
+  color: #34d399 !important;
+}
+
+/* Dark Theme Small Elements */
+html[data-coreui-theme="dark"] small {
+  color: #9ca3af !important;
+}
+
+/* Dark Theme List Items */
+html[data-coreui-theme="dark"] ul li {
+  color: #d1d5db !important;
+}
+
+/* Dark Theme Responsive Adjustments */
+@media (max-width: 768px) {
+  html[data-coreui-theme="dark"] .auth-card {
+    background: rgba(55, 65, 81, 0.98) !important;
+  }
+}
+
+/* Auth Page Theme Toggle Styling */
+.auth-page .theme-toggle-container {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  padding: 0.5rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-page .theme-toggle-container {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.auth-page .theme-toggle-container .btn {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #374151 !important;
+}
+
+.auth-page .theme-toggle-container .btn:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(34, 197, 94, 0.5) !important;
+  color: #22c55e !important;
+}
+
+html[data-coreui-theme="dark"] .auth-page .theme-toggle-container .btn {
+  background: rgba(75, 85, 99, 0.8) !important;
+  border: 1px solid rgba(107, 114, 128, 0.5) !important;
+  color: #f9fafb !important;
+}
+
+html[data-coreui-theme="dark"] .auth-page .theme-toggle-container .btn:hover {
+  background: rgba(75, 85, 99, 1) !important;
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  color: #34d399 !important;
+}
+
+.auth-page .theme-toggle-container .dropdown-menu {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-coreui-theme="dark"] .auth-page .theme-toggle-container .dropdown-menu {
+  background: rgba(55, 65, 81, 0.95) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.auth-page .theme-toggle-container .dropdown-item {
+  color: #374151 !important;
+}
+
+.auth-page .theme-toggle-container .dropdown-item:hover {
+  background: rgba(34, 197, 94, 0.1) !important;
+  color: #22c55e !important;
+}
+
+html[data-coreui-theme="dark"] .auth-page .theme-toggle-container .dropdown-item {
+  color: #f9fafb !important;
+}
+
+html[data-coreui-theme="dark"] .auth-page .theme-toggle-container .dropdown-item:hover {
+  background: rgba(52, 211, 153, 0.15) !important;
+  color: #34d399 !important;
+}
