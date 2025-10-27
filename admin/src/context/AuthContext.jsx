@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import apiService from '../api'
+import authService from '../services/authService'
 
 // Auth Context
 const AuthContext = createContext()
@@ -91,7 +92,7 @@ export const AuthProvider = ({ children }) => {
   // Load user from localStorage on mount
   useEffect(() => {
     const loadUserFromStorage = () => {
-      const token = localStorage.getItem('authToken')
+      const token = localStorage.getItem('access_token')
       const user = localStorage.getItem('user')
 
       if (token && user) {
@@ -103,7 +104,7 @@ export const AuthProvider = ({ children }) => {
           })
         } catch (error) {
           console.error('Error parsing user data:', error)
-          localStorage.removeItem('authToken')
+          localStorage.removeItem('access_token')
           localStorage.removeItem('user')
         }
       }
@@ -117,84 +118,66 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START })
     
     try {
-      // For now, use mock authentication
-      // In real app, use: const response = await apiService.login(credentials)
-      const mockUsers = [
-        {
-          id: 1,
-          email: 'admin@example.com',
-          password: 'admin123',
-          firstName: 'Admin',
-          lastName: 'User',
-          role: 'admin',
-          permissions: ['user:read', 'user:write', 'user:delete', 'role:read', 'role:write', 'role:delete', 'dashboard:read', 'dashboard:write'],
-          avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=007bff&color=ffffff&size=40',
-          isActive: true,
-        },
-        {
-          id: 2,
-          email: 'user@example.com',
-          password: 'user123',
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'user',
-          permissions: ['dashboard:read'],
-          avatar: 'https://ui-avatars.com/api/?name=John+Doe&background=28a745&color=ffffff&size=40',
-          isActive: true,
-        },
-        {
-          id: 3,
-          email: 'manager@example.com',
-          password: 'manager123',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          role: 'manager',
-          permissions: ['user:read', 'user:write', 'dashboard:read', 'dashboard:write'],
-          avatar: 'https://ui-avatars.com/api/?name=Jane+Smith&background=dc3545&color=ffffff&size=40',
-          isActive: true,
-        },
-      ]
+      // Use real API authentication
+      const response = await authService.login({
+        email: credentials.email,
+        password: credentials.password,
+      })
 
-      const user = mockUsers.find(
-        u => u.email === credentials.email && u.password === credentials.password
-      )
+      if (response.success && response.data) {
+        const { user, token } = response.data
 
-      if (user) {
-        const token = btoa(JSON.stringify({
-          userId: user.id,
-          role: user.role,
-          exp: Date.now() + (1000 * 60 * 60 * 24), // 24 hours
-        }))
-
-        localStorage.setItem('authToken', token)
-        localStorage.setItem('user', JSON.stringify(user))
+        // Map API user response to app user structure
+        const mappedUser = {
+          id: user.user_id,
+          email: user.email,
+          phone: user.phone,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          role: user.user_type === 'admin' ? 'admin' : 'user',
+          permissions: user.user_type === 'admin' 
+            ? ['user:read', 'user:write', 'user:delete', 'role:read', 'role:write', 'role:delete', 'dashboard:read', 'dashboard:write']
+            : ['dashboard:read'],
+          avatar: user.profile_image_url || `https://ui-avatars.com/api/?name=${user.first_name}+${user.last_name}&background=22c55e&color=ffffff&size=40`,
+          isActive: user.is_active,
+          isVerified: user.is_verified,
+          emailVerified: user.email_verified,
+          phoneVerified: user.phone_verified,
+          dateOfBirth: user.date_of_birth,
+          gender: user.gender,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+          lastLogin: user.last_login,
+        }
 
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: { user, token },
+          payload: { user: mappedUser, token },
         })
 
-        return { success: true, user }
+        return { success: true, user: mappedUser }
       } else {
-        throw new Error('Invalid email or password')
+        throw new Error(response.message || 'Login failed')
       }
     } catch (error) {
+      const errorMessage = error.response?.data?.detail || error.message || 'Login failed'
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
-        payload: error.message,
+        payload: errorMessage,
       })
-      throw error
+      throw new Error(errorMessage)
     }
   }
 
   // Logout function
   const logout = async () => {
     try {
-      await apiService.logout()
+      await authService.logout()
     } catch (error) {
       console.warn('Logout API call failed:', error)
+      // Even if logout fails, clear local storage and dispatch logout
     } finally {
-      localStorage.removeItem('authToken')
+      localStorage.removeItem('access_token')
       localStorage.removeItem('user')
       dispatch({ type: AUTH_ACTIONS.LOGOUT })
     }
