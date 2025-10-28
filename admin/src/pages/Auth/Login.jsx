@@ -69,9 +69,6 @@ const Login = () => {
     setLoading(true)
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
       const result = await login({
         email: formData.email.trim(),
         password: formData.password.trim(),
@@ -84,10 +81,8 @@ const Login = () => {
           duration: 3000
         })
         
-        // Redirect based on role
-        setTimeout(() => {
-          navigate('/dashboard')
-        }, 1000)
+        // Redirect to dashboard immediately
+        navigate('/dashboard')
       }
     } catch (err) {
       // Handle different types of login errors with appropriate toast types
