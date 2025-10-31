@@ -10,35 +10,46 @@
 - Auto-redirect on 401
 
 ### 2. Category Management Module ✅
-- List Categories (with counts)
-- Get Category Details
-- Create Category (with image upload)
-- Update Category (with image upload)
-- Delete Category
-- Get Category Options (for dropdowns)
+- List Categories (with counts) - `GET /product-service/categories/with_counts`
+- Get Category Details - `GET /product-service/categories/{category_id}`
+- Create Category (with image upload) - `POST /product-service/categories/`
+- Update Category (with image upload) - `PUT /product-service/categories/{category_id}`
+- Delete Category - `DELETE /product-service/categories/{category_id}`
+- Get Category Options (for dropdowns) - `GET /product-service/categories/options`
+- Image upload support (base64 to File conversion)
+- Toast notifications for all operations
+- Image preview in edit form
 
 ---
 
 ## 🎯 Module Integration Order
 
-### Priority 1: Category Management Module 📁
+### Priority 1: Category Management Module 📁 ✅ **COMPLETED**
 **Why First**: Master data module - essential for organizing products. Many other modules depend on categories.
 
-**APIs Needed**:
-- `GET /categories` - List all categories
-- `GET /categories/{id}` - Get category by ID
-- `POST /categories` - Create category
-- `PUT /categories/{id}` - Update category
-- `DELETE /categories/{id}` - Delete category
-- `POST /categories/{id}/image` - Upload category image (if supported)
-- `GET /categories/{id}/subcategories` - Get subcategories for a category
+**APIs Integrated**:
+- `GET /product-service/categories/with_counts` - List all categories with product counts
+- `GET /product-service/categories/{category_id}` - Get category by ID
+- `POST /product-service/categories/` - Create category (multipart/form-data)
+- `PUT /product-service/categories/{category_id}` - Update category (multipart/form-data)
+- `DELETE /product-service/categories/{category_id}` - Delete category
+- `GET /product-service/categories/options` - Get category options for dropdowns
 
-**Files to Update**:
-- `admin/src/services/categoryService.js` ✅ Ready
-- `admin/src/views/categories/CategoriesList.jsx` ✅ Ready
-- `admin/src/components/pages/categories/CategoryForm.jsx` ✅ Ready
+**Files Updated**:
+- `admin/src/services/categoryService.js` ✅ Completed
+- `admin/src/views/categories/CategoriesList.jsx` ✅ Completed
+- `admin/src/components/pages/categories/CategoryForm.jsx` ✅ Completed
+- `admin/src/components/common/ImageUpload.jsx` ✅ Enhanced for edit mode
 
-**Estimated Time**: 2-3 hours
+**Features Implemented**:
+- Full CRUD operations with real API
+- Image upload (base64 to File conversion for multipart/form-data)
+- Toast notifications for success/error messages
+- Image preview in edit form
+- Error handling and loading states
+- Responsive table with proper image display
+
+**Time Taken**: Completed
 
 ---
 
@@ -302,12 +313,13 @@ export default moduleService
 
 ✅ **Completed**:
 - Authentication Module
+- Category Management Module
 
 ⏳ **In Progress**:
 - None
 
 📋 **Next Up**:
-- Category Management Module (Priority 1)
+- Dashboard Module (Priority 2)
 
 ---
 
@@ -321,6 +333,67 @@ export default moduleService
 
 ---
 
-**Last Updated**: [Current Date]  
-**Status**: Ready for Dashboard Module Integration
+## 🛠️ Development Guidelines
+
+### Code Structure
+- **Services**: All API calls should be in dedicated service files (`admin/src/services/`)
+- **Components**: Reusable components in `admin/src/components/common/` or `admin/src/components/pages/`
+- **Views**: Page-level components in `admin/src/views/`
+- **Utils**: Helper functions in `admin/src/utils/`
+
+### API Integration Pattern
+
+1. **Service Layer**:
+   - Use `apiClient` from `admin/src/config/apiClient.js` for all API calls
+   - Return standardized response: `{ success: boolean, data: any, message: string }`
+   - Use `handleApiError` from `admin/src/utils/errorHandler.js` for error handling
+   - Handle both JSON and multipart/form-data requests appropriately
+
+2. **Component Integration**:
+   - Use `useToast` hook for user notifications (success/error messages)
+   - Implement loading states during API calls
+   - Handle API response mapping (API field names vs component expectations)
+   - Validate form data before submission
+
+3. **Image Upload**:
+   - Use `ImageUpload` component from `admin/src/components/common/ImageUpload.jsx`
+   - Component returns base64 string, service should convert to File object for multipart/form-data
+   - Handle image preview in edit mode by syncing `value` prop with component state
+
+4. **Error Handling**:
+   - Always wrap API calls in try-catch blocks
+   - Show user-friendly error messages via toast notifications
+   - Log errors to console for debugging (use `console.error`)
+   - Handle network errors, validation errors, and server errors gracefully
+
+5. **State Management**:
+   - Use `useState` for local component state
+   - Use `useEffect` for data fetching on component mount
+   - Clear state on modal close/unmount
+   - Reset form data after successful submission
+
+6. **Best Practices**:
+   - Always check API response structure before mapping
+   - Use optional chaining (`?.`) for safe property access
+   - Provide fallback values for optional fields
+   - Test CRUD operations (Create, Read, Update, Delete) after integration
+   - Remove console.log statements before production (or use conditional logging)
+   - Update this roadmap after completing each module
+
+### File Naming Conventions
+- Services: `{module}Service.js` (e.g., `categoryService.js`)
+- Components: `{ComponentName}.jsx` (PascalCase)
+- Views: `{Module}List.jsx` or `{Module}Details.jsx`
+- Utils: `{utilName}.js` (camelCase)
+
+### Environment Configuration
+- Use `.env.local` for local development
+- Use `.env.staging` for staging environment
+- Use `.env.production` for production
+- API base URL: `VITE_API_BASE_URL` environment variable
+
+---
+
+**Last Updated**: 2025-01-28  
+**Status**: Category Module Completed - Ready for Dashboard Module Integration
 
