@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button, Form, Image, Alert } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faTrash, faImage } from '@fortawesome/free-solid-svg-icons'
@@ -16,6 +16,10 @@ const ImageUpload = ({
   error = null
 }) => {
   const [preview, setPreview] = useState(value)
+  // Keep preview in sync if parent updates value (e.g., edit form loads existing image URL)
+  useEffect(() => {
+    setPreview(value || '')
+  }, [value])
   const [dragActive, setDragActive] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef(null)

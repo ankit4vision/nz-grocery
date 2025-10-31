@@ -3,10 +3,52 @@ import { Container, Row, Col, Button, FormControl, FormSelect, Image } from 'rea
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faPencil, faTrash, faSearch, faFolder, faImage, faBox } from '@fortawesome/free-solid-svg-icons'
 import { Table, FormModal, Modal } from '../../components'
+import { useToast } from '../../components'
 import CategoryForm from '../../components/pages/categories/CategoryForm'
 import { categoryService } from '../../services/categoryService'
 
+// Component for category image cell
+const CategoryImageCell = ({ imageUrl, categoryName }) => {
+  const [imageError, setImageError] = useState(false)
+
+  useEffect(() => {
+    setImageError(false)
+  }, [imageUrl])
+
+  if (imageUrl && !imageError) {
+    return (
+      <div className="d-flex align-items-center justify-content-center">
+        <Image
+          src={imageUrl}
+          alt={categoryName}
+          rounded
+          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+          className="border"
+          loading="lazy"
+          onError={() => setImageError(true)}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div 
+      className="d-flex align-items-center justify-content-center border rounded"
+      style={{ 
+        width: '50px', 
+        height: '50px', 
+        backgroundColor: '#f8f9fa'
+      }}
+    >
+      <FontAwesomeIcon icon={faImage} className="text-muted" />
+    </div>
+  )
+}
+
 const CategoriesList = () => {
+  // Toast notifications
+  const { success, error } = useToast()
+  
   // State management
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -38,7 +80,9 @@ const CategoriesList = () => {
       setLoading(true)
       const response = await categoryService.getCategories()
       if (response.success) {
-        setCategories(response.data)
+        // Map API response to component format - with_counts returns { items: [], total_categories, active_categories, total_products_in_active_categories }
+        const mappedCategories = response.data.items || response.data.categories || response.data || []
+        setCategories(mappedCategories)
       }
     } catch (error) {
       console.error('Error loading categories:', error)
@@ -49,9 +93,14 @@ const CategoriesList = () => {
 
   // Filter categories
   const filteredCategories = categories.filter(category => {
-    const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         category.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = !statusFilter || category.isActive.toString() === statusFilter
+    // Map API field names to component field names
+    const name = category.category_name || category.name || ''
+    const description = category.category_description || category.description || ''
+    
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         description?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = !statusFilter || category.is_active?.toString() === statusFilter ||
+                         category.isActive?.toString() === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -60,48 +109,30 @@ const CategoriesList = () => {
     {
       key: 'image',
       label: 'Image',
-      render: (value, category, index) => (
-        <div className="d-flex align-items-center justify-content-center">
-          {category.image ? (
-            <Image
-              src={category.image}
-              alt={category.name}
-              rounded
-              style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-              className="border"
-              loading="lazy"
-              onError={(e) => {
-                e.target.style.display = 'none'
-                e.target.nextSibling.style.display = 'flex'
-              }}
-            />
-          ) : null}
-          <div 
-            className="d-flex align-items-center justify-content-center border rounded"
-            style={{ 
-              width: '50px', 
-              height: '50px', 
-              backgroundColor: '#f8f9fa',
-              display: category.image ? 'none' : 'flex'
-            }}
-          >
-            <FontAwesomeIcon icon={faImage} className="text-muted" />
-          </div>
-        </div>
-      )
+      render: (value, category, index) => {
+        const imageUrl = category.category_image_url || category.image
+        const categoryName = category.category_name || category.name
+        return (
+          <CategoryImageCell imageUrl={imageUrl} categoryName={categoryName} />
+        )
+      }
     },
     {
       key: 'name',
       label: 'Category Name',
-      render: (value, category, index) => (
-        <div className="d-flex align-items-center">
-          <FontAwesomeIcon icon={faFolder} className="me-2 text-success" />
-          <div>
-            <div className="fw-semibold text-dark">{category.name}</div>
-            <small className="text-muted">{category.description || 'No description'}</small>
+      render: (value, category, index) => {
+        const categoryName = category.category_name || category.name || ''
+        const description = category.category_description || category.description || ''
+        return (
+          <div className="d-flex align-items-center">
+            <FontAwesomeIcon icon={faFolder} className="me-2 text-success" />
+            <div>
+              <div className="fw-semibold text-dark">{categoryName}</div>
+              <small className="text-muted">{description || 'No description'}</small>
+            </div>
           </div>
-        </div>
-      )
+        )
+      }
     },
     {
       key: 'productCount',
@@ -110,7 +141,7 @@ const CategoriesList = () => {
         <div className="d-flex align-items-center">
           <FontAwesomeIcon icon={faBox} className="me-2 text-info" />
           <span className="fw-semibold text-info">
-            {category.productCount || 0} products
+            {category.product_count || category.productCount || 0} products
           </span>
         </div>
       )
@@ -118,18 +149,16 @@ const CategoriesList = () => {
     {
       key: 'status',
       label: 'Status',
-      render: (value, category, index) => (
-        <span
-          className={`badge ${category.isActive ? 'bg-success' : 'bg-secondary'}`}
-        >
-          {category.isActive ? 'Active' : 'Inactive'}
-        </span>
-      )
-    },
-    {
-      key: 'createdAt',
-      label: 'Created',
-      render: (value, category, index) => new Date(category.createdAt).toLocaleDateString()
+      render: (value, category, index) => {
+        const isActive = category.is_active !== undefined ? category.is_active : category.isActive
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-success' : 'bg-secondary'}`}
+          >
+            {isActive ? 'Active' : 'Inactive'}
+          </span>
+        )
+      }
     },
     {
       key: 'actions',
@@ -189,39 +218,57 @@ const CategoriesList = () => {
 
   const handleAddCategorySubmit = async (formData) => {
     try {
+      console.log('Submitting category data:', formData)
       const response = await categoryService.createCategory(formData)
+      console.log('API response:', response)
       if (response.success) {
+        success(response.message || 'Category created successfully!')
         setShowAddModal(false)
         loadCategories()
+      } else {
+        console.error('Category creation failed:', response.message || 'Unknown error')
+        error(response.message || 'Failed to create category')
       }
-    } catch (error) {
-      console.error('Error creating category:', error)
+    } catch (err) {
+      console.error('Error creating category:', err)
+      error('An error occurred while creating the category')
     }
   }
 
   const handleEditCategorySubmit = async (formData) => {
     try {
-      const response = await categoryService.updateCategory(categoryToEdit.id, formData)
+      const categoryId = categoryToEdit?.category_id || categoryToEdit?.id
+      const response = await categoryService.updateCategory(categoryId, formData)
       if (response.success) {
+        success(response.message || 'Category updated successfully!')
         setShowEditModal(false)
         setCategoryToEdit(null)
         loadCategories()
+      } else {
+        console.error('Category update failed:', response.message || 'Unknown error')
+        error(response.message || 'Failed to update category')
       }
-    } catch (error) {
-      console.error('Error updating category:', error)
+    } catch (err) {
+      console.error('Error updating category:', err)
+      error('An error occurred while updating the category')
     }
   }
 
   const confirmDeleteCategory = async () => {
     try {
-      const response = await categoryService.deleteCategory(categoryToDelete.id)
+      const categoryId = categoryToDelete?.category_id || categoryToDelete?.id
+      const response = await categoryService.deleteCategory(categoryId)
       if (response.success) {
+        success(response.message || 'Category deleted successfully!')
         setShowDeleteModal(false)
         setCategoryToDelete(null)
         loadCategories()
+      } else {
+        error(response.message || 'Failed to delete category')
       }
-    } catch (error) {
-      console.error('Error deleting category:', error)
+    } catch (err) {
+      console.error('Error deleting category:', err)
+      error('An error occurred while deleting the category')
     }
   }
 
@@ -305,8 +352,8 @@ const CategoriesList = () => {
         onClose={() => setShowAddModal(false)}
         title="Add New Category"
         size="lg"
-        onConfirm={() => addCategoryFormRef.current?.handleSubmit()}
-        confirmText="Create Category"
+        onSubmit={() => addCategoryFormRef.current?.handleSubmit()}
+        submitText="Create Category"
         cancelText="Cancel"
         loading={false}
       >
@@ -327,8 +374,8 @@ const CategoriesList = () => {
         }}
         title="Edit Category"
         size="lg"
-        onConfirm={() => editCategoryFormRef.current?.handleSubmit()}
-        confirmText="Update Category"
+        onSubmit={() => editCategoryFormRef.current?.handleSubmit()}
+        submitText="Update Category"
         cancelText="Cancel"
         loading={false}
       >

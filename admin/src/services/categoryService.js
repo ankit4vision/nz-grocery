@@ -1,158 +1,244 @@
-import categoriesData from '../mock/categories.json'
-
-// Simulate API delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+import apiClient from '../config/apiClient'
+import { handleApiError } from '../utils/errorHandler'
 
 export const categoryService = {
-  // Get all categories
+  // Get all categories (using with_counts endpoint)
   async getCategories() {
-    await delay(500)
-    return {
-      success: true,
-      data: categoriesData,
-      message: 'Categories fetched successfully'
+    try {
+      const response = await apiClient.get('/product-service/categories/with_counts')
+      return {
+        success: true,
+        data: response.data,
+        message: 'Categories fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get categories with pagination (if needed later)
+  async getCategoriesPaginated(params = {}) {
+    try {
+      const response = await apiClient.get('/product-service/categories/paginated', { params })
+      return {
+        success: true,
+        data: response.data,
+        message: 'Categories fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get category options for dropdowns
+  async getCategoryOptions(onlyActive = true) {
+    try {
+      const response = await apiClient.get('/product-service/categories/options', {
+        params: { only_active: onlyActive }
+      })
+      return {
+        success: true,
+        data: response.data,
+        message: 'Category options fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get all categories (simple list)
+  async getAllCategories(onlyActive = true) {
+    try {
+      const response = await apiClient.get('/product-service/categories/', {
+        params: { only_active: onlyActive }
+      })
+      return {
+        success: true,
+        data: response.data,
+        message: 'Categories fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
   // Get category by ID
   async getCategoryById(id) {
-    await delay(300)
-    const category = categoriesData.find(cat => cat.id === parseInt(id))
-    if (category) {
+    try {
+      const response = await apiClient.get(`/product-service/categories/${id}`)
       return {
         success: true,
-        data: category,
+        data: response.data,
         message: 'Category fetched successfully'
       }
-    } else {
-      return {
-        success: false,
-        message: 'Category not found'
-      }
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
   // Create new category
   async createCategory(categoryData) {
-    await delay(800)
-    
-    // Generate new ID
-    const existingIds = categoriesData.map(cat => parseInt(cat.id)).filter(id => !isNaN(id))
-    const newId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1
-    
-    const newCategory = {
-      id: newId,
-      name: categoryData.name,
-      description: categoryData.description || '',
-      image: categoryData.image || '',
-      isActive: categoryData.isActive !== undefined ? categoryData.isActive : true,
-      productCount: 0, // New categories start with 0 products
-      subCategories: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-    
-    categoriesData.push(newCategory)
-    
-    return {
-      success: true,
-      data: newCategory,
-      message: 'Category created successfully'
+    try {
+      console.log('Creating category with data:', categoryData)
+      
+      // Check if we have an image to upload (could be File object or base64 string)
+      let needsFormData = false
+      
+      if (categoryData.file) {
+        // If it's a File object
+        needsFormData = true
+      } else if (categoryData.image && categoryData.image.startsWith('data:image/')) {
+        // If it's a base64 data URL, we need to convert it to a File
+        const base64Data = categoryData.image
+        const [metadata, base64String] = base64Data.split(',')
+        const mimeMatch = metadata.match(/:(.*?);/)
+        const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+        
+        // Convert base64 to blob
+        const byteCharacters = atob(base64String)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        const blob = new Blob([byteArray], { type: mimeType })
+        
+        // Create File from blob
+        const file = new File([blob], 'category-image', { type: mimeType })
+        categoryData.file = file
+        needsFormData = true
+      }
+      
+      let dataToSend = categoryData
+      let config = {}
+      
+      if (needsFormData) {
+        const formData = new FormData()
+        formData.append('category_name', categoryData.category_name)
+        formData.append('category_description', categoryData.category_description || '')
+        formData.append('is_active', categoryData.is_active !== undefined ? categoryData.is_active : true)
+        formData.append('sort_order', categoryData.sort_order || 0)
+        formData.append('file', categoryData.file)
+        dataToSend = formData
+        config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      } else {
+        // No file, send JSON - make sure all required fields are included
+        const { file, image, ...jsonData } = categoryData
+        dataToSend = {
+          category_name: jsonData.category_name,
+          category_description: jsonData.category_description || '',
+          is_active: jsonData.is_active !== undefined ? jsonData.is_active : true,
+          sort_order: jsonData.sort_order || 0
+        }
+        
+        // Log for debugging
+        console.log('Sending JSON request (no image):', dataToSend)
+      }
+
+      console.log('Sending request with config:', config)
+      const response = await apiClient.post('/product-service/categories/', dataToSend, config)
+      
+      return {
+        success: true,
+        data: response.data,
+        message: 'Category created successfully'
+      }
+    } catch (error) {
+      console.error('Category creation error:', error)
+      return handleApiError(error)
     }
   },
 
   // Update category
   async updateCategory(id, categoryData) {
-    await delay(800)
-    
-    const categoryIndex = categoriesData.findIndex(cat => cat.id === parseInt(id))
-    if (categoryIndex !== -1) {
-      const existingCategory = categoriesData[categoryIndex]
+    try {
+      console.log('Updating category with data:', categoryData)
       
-      categoriesData[categoryIndex] = {
-        ...existingCategory,
-        name: categoryData.name || existingCategory.name,
-        description: categoryData.description !== undefined ? categoryData.description : existingCategory.description,
-        image: categoryData.image !== undefined ? categoryData.image : existingCategory.image,
-        isActive: categoryData.isActive !== undefined ? categoryData.isActive : existingCategory.isActive,
-        updatedAt: new Date().toISOString()
+      // Check if we have an image to upload (could be File object or base64 string)
+      let needsFormData = false
+      
+      if (categoryData.file) {
+        // If it's a File object
+        needsFormData = true
+      } else if (categoryData.image && categoryData.image.startsWith('data:image/')) {
+        // If it's a base64 data URL, we need to convert it to a File
+        const base64Data = categoryData.image
+        const [metadata, base64String] = base64Data.split(',')
+        const mimeMatch = metadata.match(/:(.*?);/)
+        const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+        
+        // Convert base64 to blob
+        const byteCharacters = atob(base64String)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        const blob = new Blob([byteArray], { type: mimeType })
+        
+        // Create File from blob
+        const file = new File([blob], 'category-image', { type: mimeType })
+        categoryData.file = file
+        needsFormData = true
       }
+      
+      let dataToSend = categoryData
+      let config = {}
+      
+      if (needsFormData) {
+        const formData = new FormData()
+        if (categoryData.category_name) formData.append('category_name', categoryData.category_name)
+        if (categoryData.category_description !== undefined) formData.append('category_description', categoryData.category_description)
+        if (categoryData.is_active !== undefined) formData.append('is_active', categoryData.is_active)
+        if (categoryData.sort_order !== undefined) formData.append('sort_order', categoryData.sort_order)
+        formData.append('file', categoryData.file)
+        dataToSend = formData
+        config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      } else {
+        // No file, send JSON
+        const { file, image, ...jsonData } = categoryData
+        dataToSend = {}
+        if (jsonData.category_name !== undefined) dataToSend.category_name = jsonData.category_name
+        if (jsonData.category_description !== undefined) dataToSend.category_description = jsonData.category_description
+        if (jsonData.is_active !== undefined) dataToSend.is_active = jsonData.is_active
+        if (jsonData.sort_order !== undefined) dataToSend.sort_order = jsonData.sort_order
+      }
+
+      console.log('Sending update request with config:', config)
+      const response = await apiClient.put(`/product-service/categories/${id}`, dataToSend, config)
       
       return {
         success: true,
-        data: categoriesData[categoryIndex],
+        data: response.data,
         message: 'Category updated successfully'
       }
-    } else {
-      return {
-        success: false,
-        message: 'Category not found'
-      }
+    } catch (error) {
+      console.error('Category update error:', error)
+      return handleApiError(error)
     }
   },
 
   // Delete category
   async deleteCategory(id) {
-    await delay(600)
-    
-    const categoryIndex = categoriesData.findIndex(cat => cat.id === parseInt(id))
-    if (categoryIndex !== -1) {
-      const deletedCategory = categoriesData.splice(categoryIndex, 1)[0]
-      
+    try {
+      await apiClient.delete(`/product-service/categories/${id}`)
       return {
         success: true,
-        data: deletedCategory,
+        data: null,
         message: 'Category deleted successfully'
       }
-    } else {
-      return {
-        success: false,
-        message: 'Category not found'
-      }
+    } catch (error) {
+      return handleApiError(error)
     }
-  },
-
-  // Update product count for a category (simulated)
-  async updateProductCount(categoryId, productCount) {
-    await delay(300)
-    
-    const categoryIndex = categoriesData.findIndex(cat => cat.id === parseInt(categoryId))
-    if (categoryIndex !== -1) {
-      categoriesData[categoryIndex].productCount = productCount
-      categoriesData[categoryIndex].updatedAt = new Date().toISOString()
-      
-      return {
-        success: true,
-        data: categoriesData[categoryIndex],
-        message: 'Product count updated successfully'
-      }
-    } else {
-      return {
-        success: false,
-        message: 'Category not found'
-      }
-    }
-  },
-
-  // Upload category image (simulated - in real app, this would upload to cloud storage)
-  async uploadCategoryImage(imageFile) {
-    await delay(1000)
-    
-    // Simulate image upload - return a data URL or cloud URL
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        resolve({
-          success: true,
-          data: {
-            imageUrl: e.target.result, // In real app, this would be a cloud URL
-            fileName: imageFile.name,
-            fileSize: imageFile.size
-          },
-          message: 'Image uploaded successfully'
-        })
-      }
-      reader.readAsDataURL(imageFile)
-    })
   }
 }
+
+export default categoryService

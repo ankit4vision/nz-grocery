@@ -22,10 +22,10 @@ const CategoryForm = forwardRef(({
   useEffect(() => {
     if (mode === 'edit' && categoryData) {
       setFormData({
-        name: categoryData.name || '',
-        description: categoryData.description || '',
-        image: categoryData.image || '',
-        isActive: categoryData.isActive !== undefined ? categoryData.isActive : true
+        name: categoryData.category_name || categoryData.name || '',
+        description: categoryData.category_description || categoryData.description || '',
+        image: categoryData.category_image_url || categoryData.image || '',
+        isActive: (categoryData.is_active !== undefined ? categoryData.is_active : categoryData.isActive) ?? true
       })
     }
   }, [mode, categoryData])
@@ -67,16 +67,30 @@ const CategoryForm = forwardRef(({
 
   const handleSubmit = () => {
     if (!validateForm()) {
+      console.log('Form validation failed')
       return
     }
 
+    console.log('Form data before submit:', formData)
+
+    // Build payload expected by API
     const submitData = {
-      name: formData.name.trim(),
-      description: formData.description.trim(),
-      image: formData.image,
-      isActive: formData.isActive
+      category_name: formData.name.trim(),
+      category_description: formData.description.trim(),
+      is_active: formData.isActive,
+      sort_order: 0 // Default sort order
     }
 
+    // If image is a base64 data URL, pass it to the service
+    // The service will handle converting it to a File object for upload
+    if (formData.image && formData.image.startsWith('data:image/')) {
+      submitData.image = formData.image
+      console.log('Image included in submit data')
+    } else {
+      console.log('No image in submit data')
+    }
+
+    console.log('Final submitData:', submitData)
     onSubmit(submitData)
   }
 
