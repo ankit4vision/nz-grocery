@@ -22,6 +22,283 @@
 
 ---
 
+## 📁 Project File Structure
+
+This section provides a comprehensive overview of the project structure and all files used during API integration.
+
+### Complete Directory Structure
+
+```
+nz-grocery/
+├── admin/                                    # Admin frontend application
+│   ├── .env.local                           # Local environment variables (gitignored)
+│   ├── .env.staging                         # Staging environment variables
+│   ├── .env.production                      # Production environment variables
+│   ├── package.json                         # Dependencies and scripts
+│   │
+│   └── src/
+│       ├── 📁 config/                       # Configuration files
+│       │   └── apiClient.js                 # ✅ Axios client configuration with interceptors
+│       │
+│       ├── 📁 constants/                    # Constants and configurations
+│       │   └── api.js                      # API endpoint constants
+│       │
+│       ├── 📁 services/                     # API service layer (CRUD operations)
+│       │   ├── authService.js              # ✅ Authentication service (login, logout)
+│       │   ├── categoryService.js         # ✅ Category management service
+│       │   ├── userService.js              # User management service (pending)
+│       │   ├── productService.js          # Product management service (pending)
+│       │   ├── orderService.js            # Order management service (pending)
+│       │   ├── customerService.js         # Customer management service (pending)
+│       │   ├── inventoryService.js        # Inventory management service (pending)
+│       │   ├── contentService.js          # Content management service (pending)
+│       │   ├── subCategoryService.js      # Subcategory management service (pending)
+│       │   ├── roleService.js             # Role management service (pending)
+│       │   └── settingsService.js         # Settings service (pending)
+│       │
+│       ├── 📁 utils/                        # Utility functions
+│       │   ├── errorHandler.js             # ✅ Centralized error handling utility
+│       │   └── responseHandler.js         # ✅ Response formatting utility
+│       │
+│       ├── 📁 components/                   # Reusable React components
+│       │   ├── index.jsx                   # Component exports
+│       │   │
+│       │   ├── 📁 common/                  # Common/shared components
+│       │   │   ├── ImageUpload.jsx         # ✅ Image upload component (enhanced for edit mode)
+│       │   │   ├── FormModal.jsx          # Modal wrapper for forms
+│       │   │   ├── Modal.jsx               # Generic modal component
+│       │   │   ├── Table.jsx               # Data table component
+│       │   │   ├── ToastProvider.jsx       # Toast notification provider
+│       │   │   └── ...                    # Other common components
+│       │   │
+│       │   └── 📁 pages/                   # Page-specific components
+│       │       └── 📁 categories/
+│       │           └── CategoryForm.jsx    # ✅ Category form component
+│       │       └── 📁 products/
+│       │           └── ProductForm.jsx     # Product form (pending)
+│       │       └── 📁 orders/
+│       │           └── OrderDetailsModal.jsx # Order details (pending)
+│       │       └── ...                     # Other page components
+│       │
+│       ├── 📁 views/                        # Page-level view components
+│       │   ├── 📁 categories/
+│       │   │   └── CategoriesList.jsx      # ✅ Categories list page
+│       │   ├── 📁 dashboard/
+│       │   │   └── Dashboard.jsx           # Dashboard page (pending)
+│       │   ├── 📁 products/
+│       │   │   └── ProductsList.jsx        # Products list (pending)
+│       │   ├── 📁 orders/
+│       │   │   └── OrdersList.jsx           # Orders list (pending)
+│       │   ├── 📁 customers/
+│       │   │   └── CustomersList.jsx      # Customers list (pending)
+│       │   └── ...                         # Other view components
+│       │
+│       ├── 📁 context/                      # React context providers
+│       │   └── AuthContext.jsx             # ✅ Authentication context (uses authService)
+│       │
+│       ├── 📁 layout/                       # Layout components
+│       │   ├── PrivateRoute.jsx             # ✅ Protected route component
+│       │   ├── AppSidebar.jsx               # Sidebar navigation
+│       │   └── AppHeader.jsx               # Header component
+│       │
+│       ├── 📁 pages/                         # Route pages
+│       │   ├── 📁 Auth/
+│       │   │   ├── Login.jsx               # ✅ Login page (uses authService)
+│       │   │   ├── Register.jsx            # Register page (pending)
+│       │   │   └── ForgotPassword.jsx       # Forgot password (pending)
+│       │   └── ...                         # Other route pages
+│       │
+│       ├── App.jsx                          # Main app component (with routing)
+│       └── main.jsx                        # Application entry point
+│
+├── openapi.json                            # ✅ OpenAPI specification for all APIs
+├── API_INTEGRATION_ROADMAP.md             # ✅ This file - API integration guide
+└── README.md                               # Project documentation
+```
+
+### Key Files for API Integration
+
+#### 🔧 Configuration Files
+
+**`admin/src/config/apiClient.js`** ✅
+- **Purpose**: Axios instance with interceptors for all API calls
+- **Features**: 
+  - Base URL configuration
+  - Request interceptors (adds auth tokens)
+  - Response interceptors (handles 401 errors)
+  - Development logging
+- **Usage**: Import in all service files
+  ```javascript
+  import apiClient from '../config/apiClient'
+  ```
+
+#### 🛠️ Utility Files
+
+**`admin/src/utils/errorHandler.js`** ✅
+- **Purpose**: Centralized error handling
+- **Returns**: Standardized error response `{ success: false, message, error }`
+- **Usage**: Use in catch blocks
+  ```javascript
+  import { handleApiError } from '../utils/errorHandler'
+  catch (error) {
+    return handleApiError(error)
+  }
+  ```
+
+**`admin/src/utils/responseHandler.js`** ✅
+- **Purpose**: Standardize success responses
+- **Returns**: Standardized response `{ success: true, data, message }`
+- **Usage**: Format API responses
+
+#### 📡 Service Files
+
+**Service File Pattern** (`admin/src/services/{module}Service.js`):
+- **Purpose**: Encapsulate all API calls for a module
+- **Structure**:
+  - `getItems()` - List/Fetch all items
+  - `getItemById(id)` - Get single item
+  - `createItem(data)` - Create new item
+  - `updateItem(id, data)` - Update existing item
+  - `deleteItem(id)` - Delete item
+- **Example**: `categoryService.js` ✅
+
+**Completed Services**:
+- ✅ `authService.js` - Authentication (login, logout)
+- ✅ `categoryService.js` - Category CRUD operations
+
+**Pending Services**:
+- ⏳ `productService.js` - Products management
+- ⏳ `orderService.js` - Orders management
+- ⏳ `customerService.js` - Customers management
+- ⏳ `inventoryService.js` - Inventory management
+- ⏳ `contentService.js` - Content management (banners, FAQs)
+- ⏳ `userService.js` - User management
+- ⏳ `settingsService.js` - Settings management
+
+#### 🎨 Component Files
+
+**Common Components** (`admin/src/components/common/`):
+- ✅ **`ImageUpload.jsx`** - Image upload with base64 conversion, edit mode support
+- ✅ **`FormModal.jsx`** - Modal wrapper for forms
+- ✅ **`Modal.jsx`** - Generic modal component
+- ✅ **`Table.jsx`** - Data table with pagination
+- ✅ **`ToastProvider.jsx`** - Toast notification system (exported as `useToast` hook)
+
+**Page Components** (`admin/src/components/pages/`):
+- ✅ **`categories/CategoryForm.jsx`** - Category form with validation
+- ⏳ `products/ProductForm.jsx` - Product form (pending)
+- ⏳ `orders/OrderDetailsModal.jsx` - Order details (pending)
+
+#### 📄 View Files
+
+**View Files** (`admin/src/views/`):
+- ✅ **`categories/CategoriesList.jsx`** - Categories list page with CRUD operations
+- ⏳ `dashboard/Dashboard.jsx` - Dashboard page (pending)
+- ⏳ `products/ProductsList.jsx` - Products list (pending)
+- ⏳ `orders/OrdersList.jsx` - Orders list (pending)
+
+#### 🔐 Authentication Files
+
+**`admin/src/context/AuthContext.jsx`** ✅
+- **Purpose**: Global authentication state management
+- **Features**: User state, login, logout, token management
+- **Usage**: Wrap app and use `useContext(AuthContext)`
+
+**`admin/src/layout/PrivateRoute.jsx`** ✅
+- **Purpose**: Protect routes that require authentication
+- **Features**: Checks token validity, redirects to login on 401
+- **Usage**: Wrap protected routes
+  ```jsx
+  <PrivateRoute>
+    <Dashboard />
+  </PrivateRoute>
+  ```
+
+**`admin/src/pages/Auth/Login.jsx`** ✅
+- **Purpose**: Login page
+- **Usage**: Uses `authService.login()` and `AuthContext`
+
+#### 📝 Documentation Files
+
+**`openapi.json`** ✅
+- **Purpose**: Complete API specification (OpenAPI 3.1.0)
+- **Contains**: All endpoints, request/response schemas, authentication
+- **Usage**: Reference for API structure and field names
+
+**`API_INTEGRATION_ROADMAP.md`** ✅
+- **Purpose**: This file - Complete API integration guide
+- **Contains**: 
+  - Module integration order
+  - Development guidelines
+  - Code templates and patterns
+  - File structure reference
+
+### Environment Files
+
+**`.env.local`** (Local Development)
+```env
+VITE_API_BASE_URL=http://13.211.171.89:8000
+```
+
+**`.env.staging`** (Staging Environment)
+```env
+VITE_API_BASE_URL=https://api-staging.example.com
+```
+
+**`.env.production`** (Production Environment)
+```env
+VITE_API_BASE_URL=https://api.example.com
+```
+
+### File Naming Conventions
+
+| File Type | Pattern | Example |
+|-----------|---------|---------|
+| Services | `{module}Service.js` | `categoryService.js` |
+| Components | `{ComponentName}.jsx` | `CategoryForm.jsx` |
+| Views | `{Module}List.jsx` | `CategoriesList.jsx` |
+| Utils | `{utilName}.js` | `errorHandler.js` |
+| Config | `{configName}.js` | `apiClient.js` |
+| Context | `{ContextName}Context.jsx` | `AuthContext.jsx` |
+
+### File Dependencies Map
+
+```
+apiClient.js
+  ├── Used by: All service files
+  └── Uses: Axios, environment variables
+
+errorHandler.js
+  ├── Used by: All service files
+  └── Used in: catch blocks
+
+authService.js
+  ├── Used by: AuthContext.jsx, Login.jsx
+  └── Uses: apiClient.js, errorHandler.js
+
+categoryService.js
+  ├── Used by: CategoriesList.jsx
+  └── Uses: apiClient.js, errorHandler.js
+
+ImageUpload.jsx
+  ├── Used by: CategoryForm.jsx, ProductForm.jsx (future)
+  └── Returns: base64 string
+
+CategoryForm.jsx
+  ├── Used by: CategoriesList.jsx (via FormModal)
+  └── Uses: ImageUpload.jsx
+
+CategoriesList.jsx
+  ├── Uses: categoryService.js, CategoryForm.jsx, useToast
+  └── Handles: CRUD operations, state management
+
+ToastProvider.jsx
+  ├── Used by: All view components
+  └── Exports: useToast hook
+```
+
+---
+
 ## 🎯 Module Integration Order
 
 ### Priority 1: Category Management Module 📁 ✅ **COMPLETED**
