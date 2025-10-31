@@ -1,0 +1,406 @@
+{
+  "description": "This file contains a comprehensive list of module and task-wise APIs that have been integrated in the admin panel. The APIs are organized by functional modules (Categories, Products, Inventory, Orders, Customers, Banners, FAQ, and Global Settings) with detailed information about endpoints, HTTP methods, and descriptions. For complete API documentation including request/response schemas, authentication details, and all available server endpoints, please refer to the swagger openapi.json file.",
+  "apis": [
+    {
+      "module": "Categories",
+      "name": "Create Category",
+      "method": "POST",
+      "endpoint": "/categories/",
+      "description": "Create a new product category.",
+      "tags": ["categories", "create"]
+    },
+    {
+      "module": "Categories",
+      "name": "List Categories",
+      "method": "GET",
+      "endpoint": "/categories/with_counts",
+      "description": "Get all categories with product count.",
+      "tags": ["categories", "list"]
+    },
+    {
+      "module": "Categories",
+      "name": "Get Category Details",
+      "method": "GET",
+      "endpoint": "/categories/{category_id}",
+      "description": "Fetch detailed information of a single category.",
+      "tags": ["categories", "details"]
+    },
+    {
+      "module": "Categories",
+      "name": "Update Category",
+      "method": "PUT",
+      "endpoint": "/categories/{category_id}",
+      "description": "Update an existing category by ID.",
+      "tags": ["categories", "update"]
+    },
+    {
+      "module": "Categories",
+      "name": "Delete Category",
+      "method": "DELETE",
+      "endpoint": "/categories/{category_id}",
+      "description": "Delete a category by ID.",
+      "tags": ["categories", "delete"]
+    },
+    {
+      "module": "Categories",
+      "name": "List Categories for Dropdown",
+      "method": "GET",
+      "endpoint": "/categories/options?only_active=true",
+      "description": "Get active categories for dropdown options.",
+      "tags": ["categories", "dropdown"]
+    },
+    {
+      "module": "Product",
+      "step": 1,
+      "name": "Create New Product",
+      "method": "POST",
+      "endpoint": "/product-service/products/",
+      "description": "Create a new product with basic details.",
+      "tags": ["product", "create", "step1"]
+    },
+    {
+      "module": "Product",
+      "step": 2,
+      "name": "Get All Attributes",
+      "method": "GET",
+      "endpoint": "/product-service/attributes/",
+      "description": "Retrieve list of all available product attributes.",
+      "tags": ["product", "attributes", "list", "step2"]
+    },
+    {
+      "module": "Product",
+      "step": 2,
+      "name": "Assign Attributes to Product",
+      "method": "POST",
+      "endpoint": "/product-service/products/{product_id}/attributes/",
+      "description": "Assign selected attributes to a specific product.",
+      "tags": ["product", "attributes", "assign", "step2"]
+    },
+    {
+      "module": "Product",
+      "step": 2,
+      "name": "List Assigned Attributes",
+      "method": "GET",
+      "endpoint": "/product-service/products/{product_id}/attributes/",
+      "description": "List attributes currently assigned to a product.",
+      "tags": ["product", "attributes", "list", "step2"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Create New Variant",
+      "method": "POST",
+      "endpoint": "/product-service/products/{product_id}/variants",
+      "description": "Add a new variant for a product.",
+      "tags": ["product", "variant", "create", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Update Existing Variant",
+      "method": "PUT",
+      "endpoint": "/product-service/products/variants/{variant_id}",
+      "description": "Update variant details by ID.",
+      "tags": ["product", "variant", "update", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "List All Variants",
+      "method": "GET",
+      "endpoint": "/product-service/products/{product_id}/variants",
+      "description": "List all variants of a specific product.",
+      "tags": ["product", "variant", "list", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Delete Variant",
+      "method": "DELETE",
+      "endpoint": "/product-service/products/variants/{variant_id}",
+      "description": "Delete an existing variant by ID.",
+      "tags": ["product", "variant", "delete", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Get Bulk Pricing List",
+      "method": "GET",
+      "endpoint": "/product-service/products/{product_id}/bulk-pricing",
+      "description": "Retrieve all bulk discount prices for a product.",
+      "tags": ["product", "bulk-pricing", "list", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Create Bulk Pricing",
+      "method": "POST",
+      "endpoint": "/product-service/products/{product_id}/bulk-pricing",
+      "description": "Add new bulk pricing rule for a product.",
+      "tags": ["product", "bulk-pricing", "create", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Update Bulk Pricing",
+      "method": "PUT",
+      "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}",
+      "description": "Update an existing bulk pricing rule.",
+      "tags": ["product", "bulk-pricing", "update", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 3,
+      "name": "Delete Bulk Pricing",
+      "method": "DELETE",
+      "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}",
+      "description": "Delete a bulk pricing entry.",
+      "tags": ["product", "bulk-pricing", "delete", "step3"]
+    },
+    {
+      "module": "Product",
+      "step": 4,
+      "name": "Upload Product Images",
+      "method": "POST",
+      "endpoint": "/product-service/products/{product_id}/images",
+      "description": "Upload images for a product.",
+      "tags": ["product", "images", "upload", "step4"]
+    },
+    {
+      "module": "Product",
+      "step": 4,
+      "name": "Update Product Images",
+      "method": "PUT",
+      "endpoint": "/product-service/products/{product_id}/images",
+      "description": "Update existing images for a product.",
+      "tags": ["product", "images", "update", "step4"]
+    },
+    {
+      "module": "Product",
+      "step": 4,
+      "name": "Get All Product Images",
+      "method": "GET",
+      "endpoint": "/product-service/products/{product_id}/images",
+      "description": "Retrieve all uploaded images for a product.",
+      "tags": ["product", "images", "list", "step4"]
+    },
+    {
+      "module": "Product",
+      "step": 5,
+      "name": "Get Full Product Details",
+      "method": "GET",
+      "endpoint": "/product-service/products/{product_id}/full",
+      "description": "Fetch full product data for review.",
+      "tags": ["product", "review", "details", "step5"]
+    },
+    {
+      "module": "Product List",
+      "name": "List Product Variants with Stock",
+      "method": "GET",
+      "endpoint": "/product-service/products/variants/filter",
+      "description": "Get list of all product variants including stock details.",
+      "tags": ["product", "list", "stock"]
+    },
+    {
+      "module": "Inventory",
+      "name": "Display Inventory Counts",
+      "method": "GET",
+      "endpoint": "pending",
+      "description": "Display different counts on top (e.g. total stock, low stock).",
+      "tags": ["inventory", "counts"]
+    },
+    {
+      "module": "Inventory",
+      "name": "List Product Variants with Stock",
+      "method": "GET",
+      "endpoint": "/product-service/products/variants/filter",
+      "description": "Get stock details for all product variants.",
+      "tags": ["inventory", "stock", "list"]
+    },
+    {
+      "module": "Inventory",
+      "name": "Update Stock",
+      "method": "PUT",
+      "endpoint": "/product-service/products/variants/stock/update",
+      "description": "Update stock quantities for a variant.",
+      "tags": ["inventory", "stock", "update"]
+    },
+    {
+      "module": "Orders Management",
+      "name": "List All Orders",
+      "method": "GET",
+      "endpoint": "/admin/orders/",
+      "description": "Get all orders with filters.",
+      "tags": ["orders", "list"]
+    },
+    {
+      "module": "Orders Management",
+      "name": "Get Order Details with Items",
+      "method": "GET",
+      "endpoint": "/admin/orders/:order_id/details",
+      "description": "Fetch full order details including items.",
+      "tags": ["orders", "details"]
+    },
+    {
+      "module": "Orders Management",
+      "name": "Get Order Details",
+      "method": "GET",
+      "endpoint": "/admin/orders/:order_id",
+      "description": "Get order summary by order ID.",
+      "tags": ["orders", "details"]
+    },
+    {
+      "module": "Orders Management",
+      "name": "Update Order Status",
+      "method": "PUT",
+      "endpoint": "/admin/orders/:order_id/status?order_status=pending",
+      "description": "Update order status.",
+      "tags": ["orders", "status", "update"]
+    },
+    {
+      "module": "Orders Management",
+      "name": "Update Payment Status",
+      "method": "PUT",
+      "endpoint": "/admin/orders/:order_id/payment-status?payment_status=paid&stripe_payment_intent_id=919191919",
+      "description": "Update payment status and stripe payment intent.",
+      "tags": ["orders", "payment", "update"]
+    },
+    {
+      "module": "Orders Management",
+      "name": "Get Order Stats",
+      "method": "GET",
+      "endpoint": "/admin/orders/stats",
+      "description": "Fetch overall order statistics.",
+      "tags": ["orders", "stats"]
+    },
+    {
+      "module": "Customer Management",
+      "name": "List Customers",
+      "method": "GET",
+      "endpoint": "/admin/customers/",
+      "description": "Get list of customers with filters.",
+      "tags": ["customers", "list"]
+    },
+    {
+      "module": "Customer Management",
+      "name": "Get Full Customer Details",
+      "method": "GET",
+      "endpoint": "/admin/customers/:user_id/details",
+      "description": "Get detailed customer information.",
+      "tags": ["customers", "details"]
+    },
+    {
+      "module": "Customer Management",
+      "name": "Suspend Customer",
+      "method": "PUT",
+      "endpoint": "/admin/customers/:user_id/suspend",
+      "description": "Suspend a customer account.",
+      "tags": ["customers", "suspend"]
+    },
+    {
+      "module": "Customer Management",
+      "name": "Activate Customer",
+      "method": "PUT",
+      "endpoint": "/admin/customers/:user_id/activate",
+      "description": "Activate a suspended customer.",
+      "tags": ["customers", "activate"]
+    },
+    {
+      "module": "Customer Management",
+      "name": "Get Customer Stats",
+      "method": "GET",
+      "endpoint": "/admin/customers/stats",
+      "description": "Fetch overall customer statistics.",
+      "tags": ["customers", "stats"]
+    },
+    {
+      "module": "Banners Management",
+      "name": "Create Banner",
+      "method": "POST",
+      "endpoint": "/banners/",
+      "description": "Create a new banner entry.",
+      "tags": ["banners", "create"]
+    },
+    {
+      "module": "Banners Management",
+      "name": "List Banners",
+      "method": "GET",
+      "endpoint": "/banners/",
+      "description": "Fetch all banners.",
+      "tags": ["banners", "list"]
+    },
+    {
+      "module": "Banners Management",
+      "name": "Get Banner Details",
+      "method": "GET",
+      "endpoint": "/banners/{banner_id}",
+      "description": "Fetch banner details by ID.",
+      "tags": ["banners", "details"]
+    },
+    {
+      "module": "Banners Management",
+      "name": "Update Banner",
+      "method": "PUT",
+      "endpoint": "/banners/{banner_id}",
+      "description": "Update banner details.",
+      "tags": ["banners", "update"]
+    },
+    {
+      "module": "Banners Management",
+      "name": "Delete Banner",
+      "method": "DELETE",
+      "endpoint": "/banners/{banner_id}",
+      "description": "Delete a banner.",
+      "tags": ["banners", "delete"]
+    },
+    {
+      "module": "FAQ Management",
+      "name": "Create FAQ Category",
+      "method": "POST",
+      "endpoint": "/faq/categories/",
+      "description": "Create a new FAQ category.",
+      "tags": ["faq", "category", "create"]
+    },
+    {
+      "module": "FAQ Management",
+      "name": "List FAQ Categories",
+      "method": "GET",
+      "endpoint": "/faq/categories/",
+      "description": "Fetch all FAQ categories.",
+      "tags": ["faq", "category", "list"]
+    },
+    {
+      "module": "FAQ Management",
+      "name": "Create FAQ Entry",
+      "method": "POST",
+      "endpoint": "/faq/entries/",
+      "description": "Create a new FAQ entry.",
+      "tags": ["faq", "create"]
+    },
+    {
+      "module": "FAQ Management",
+      "name": "List FAQs",
+      "method": "GET",
+      "endpoint": "/faq/entries/",
+      "description": "List all FAQs with optional category filter.",
+      "tags": ["faq", "list"]
+    },
+    {
+      "module": "Global Settings",
+      "name": "Create Setting",
+      "method": "POST",
+      "endpoint": "/global-settings/",
+      "description": "Create a new global setting.",
+      "tags": ["settings", "create"]
+    },
+    {
+      "module": "Global Settings",
+      "name": "List Settings",
+      "method": "GET",
+      "endpoint": "/global-settings/",
+      "description": "Fetch all global settings.",
+      "tags": ["settings", "list"]
+    }
+  ]
+}
+
