@@ -340,57 +340,514 @@ export default moduleService
 - **Components**: Reusable components in `admin/src/components/common/` or `admin/src/components/pages/`
 - **Views**: Page-level components in `admin/src/views/`
 - **Utils**: Helper functions in `admin/src/utils/`
+- **Config**: Configuration files in `admin/src/config/`
 
-### API Integration Pattern
+### Service Layer Migration Pattern
 
-1. **Service Layer**:
-   - Use `apiClient` from `admin/src/config/apiClient.js` for all API calls
-   - Return standardized response: `{ success: boolean, data: any, message: string }`
-   - Use `handleApiError` from `admin/src/utils/errorHandler.js` for error handling
-   - Handle both JSON and multipart/form-data requests appropriately
+**Before (Mock Data)**:
+```javascript
+import mockData from '../mock/data.json'
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
-2. **Component Integration**:
-   - Use `useToast` hook for user notifications (success/error messages)
-   - Implement loading states during API calls
-   - Handle API response mapping (API field names vs component expectations)
-   - Validate form data before submission
+const moduleService = {
+  getItems: async () => {
+    await delay(500)
+    return { success: true, data: mockData }
+  }
+}
+```
 
-3. **Image Upload**:
-   - Use `ImageUpload` component from `admin/src/components/common/ImageUpload.jsx`
-   - Component returns base64 string, service should convert to File object for multipart/form-data
-   - Handle image preview in edit mode by syncing `value` prop with component state
+**After (Real API)**:
+```javascript
+import apiClient from '../config/apiClient'
+import { handleApiError } from '../utils/errorHandler'
 
-4. **Error Handling**:
-   - Always wrap API calls in try-catch blocks
-   - Show user-friendly error messages via toast notifications
-   - Log errors to console for debugging (use `console.error`)
-   - Handle network errors, validation errors, and server errors gracefully
+const moduleService = {
+  async getItems(params = {}) {
+    try {
+      const response = await apiClient.get('/module', { params })
+      return {
+        success: true,
+        data: response.data,
+        message: 'Items fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
 
-5. **State Management**:
+  async getItemById(id) {
+    try {
+      const response = await apiClient.get(`/module/${id}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Item fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  async createItem(data) {
+    try {
+      const response = await apiClient.post('/module', data)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Item created successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  async updateItem(id, data) {
+    try {
+      const response = await apiClient.put(`/module/${id}`, data)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Item updated successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  async deleteItem(id) {
+    try {
+      await apiClient.delete(`/module/${id}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Item deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+}
+
+export default moduleService
+```
+
+### Error Handling Pattern
+
+**Error Handler Utility** (`admin/src/utils/errorHandler.js`):
+```javascript
+export const handleApiError = (error) => {
+  // Network error (no response from server)
+  if (!error.response) {
+    return {
+      success: false,
+      message: 'Network error. Please check your connection.',
+      error: 'network'
+    }
+  }
+
+  const { status, data } = error.response
+
+  switch (status) {
+    case 401:
+      // Unauthorized - token expired or invalid
+      return {
+        success: false,
+        message: 'Unauthorized. Please login again.',
+        error: 'unauthorized'
+      }
+    case 403:
+      return {
+        success: false,
+        message: 'You do not have permission to perform this action.',
+        error: 'forbidden'
+      }
+    case 404:
+      return {
+        success: false,
+        message: 'Resource not found.',
+        error: 'not_found'
+      }
+    case 422:
+      // Validation error
+      const errorMessage = data.detail?.[0]?.msg || 
+                          data.message || 
+                          'Validation error'
+      return {
+        success: false,
+        message: errorMessage,
+        errors: data.detail || [],
+        error: 'validation'
+      }
+    case 500:
+      return {
+        success: false,
+        message: 'Server error. Please try again later.',
+        error: 'server'
+      }
+    default:
+      return {
+        success: false,
+        message: data.message || 'An error occurred',
+        error: 'unknown'
+      }
+  }
+}
+```
+
+### Component Integration Pattern
+
+**Example: List Component with CRUD Operations**:
+```javascript
+import React, { useState, useEffect } from 'react'
+import { useToast } from '../../components'
+import moduleService from '../../services/moduleService'
+
+const ModuleList = () => {
+  const { success, error } = useToast()
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadItems()
+  }, [])
+
+  const loadItems = async () => {
+    setLoading(true)
+    try {
+      const response = await moduleService.getItems()
+      if (response.success) {
+        setItems(response.data.items || response.data || [])
+      } else {
+        error(response.message || 'Failed to load items')
+      }
+    } catch (err) {
+      error('An error occurred while loading items')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCreate = async (formData) => {
+    try {
+      const response = await moduleService.createItem(formData)
+      if (response.success) {
+        success(response.message || 'Item created successfully!')
+        loadItems() // Refresh list
+      } else {
+        error(response.message || 'Failed to create item')
+      }
+    } catch (err) {
+      error('An error occurred while creating item')
+    }
+  }
+
+  const handleUpdate = async (id, formData) => {
+    try {
+      const response = await moduleService.updateItem(id, formData)
+      if (response.success) {
+        success(response.message || 'Item updated successfully!')
+        loadItems() // Refresh list
+      } else {
+        error(response.message || 'Failed to update item')
+      }
+    } catch (err) {
+      error('An error occurred while updating item')
+    }
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await moduleService.deleteItem(id)
+      if (response.success) {
+        success(response.message || 'Item deleted successfully!')
+        loadItems() // Refresh list
+      } else {
+        error(response.message || 'Failed to delete item')
+      }
+    } catch (err) {
+      error('An error occurred while deleting item')
+    }
+  }
+
+  // Component JSX...
+}
+```
+
+### Image Upload Handling
+
+**Service Layer (multipart/form-data)**:
+```javascript
+async createItem(categoryData) {
+  try {
+    let dataToSend = categoryData
+    let config = {}
+
+    // Check if image exists (base64 string)
+    if (categoryData.image && categoryData.image.startsWith('data:image/')) {
+      // Convert base64 to File object
+      const base64Data = categoryData.image.split(',')[1]
+      const mimeType = categoryData.image.match(/data:([^;]+);/)?.[1] || 'image/jpeg'
+      const byteCharacters = atob(base64Data)
+      const byteNumbers = new Array(byteCharacters.length)
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+      }
+      const byteArray = new Uint8Array(byteNumbers)
+      const blob = new Blob([byteArray], { type: mimeType })
+      const file = new File([blob], 'item-image', { type: mimeType })
+
+      // Create FormData
+      const formData = new FormData()
+      formData.append('name', categoryData.name)
+      formData.append('description', categoryData.description || '')
+      formData.append('file', file)
+
+      dataToSend = formData
+      config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    }
+
+    const response = await apiClient.post('/module', dataToSend, config)
+    return {
+      success: true,
+      data: response.data,
+      message: 'Item created successfully'
+    }
+  } catch (error) {
+    return handleApiError(error)
+  }
+}
+```
+
+**Component Usage**:
+```javascript
+// ImageUpload component returns base64 string
+<ImageUpload
+  value={formData.image || categoryData?.image_url}
+  onChange={(base64String) => setFormData({ ...formData, image: base64String })}
+/>
+
+// On submit, pass image as base64 string
+const submitData = {
+  name: formData.name,
+  description: formData.description,
+  image: formData.image // base64 string - service will convert to File
+}
+```
+
+### Response Format Standards
+
+**Success Response**:
+```javascript
+{
+  success: true,
+  data: {
+    // Response data (object or array)
+  },
+  message: "Operation successful"
+}
+```
+
+**Error Response**:
+```javascript
+{
+  success: false,
+  message: "Error message",
+  errors: [], // Optional validation errors array
+  error: "error_type" // network, validation, unauthorized, etc.
+}
+```
+
+### Authentication Flow
+
+**Login**:
+```javascript
+// Service
+async login(credentials) {
+  try {
+    const response = await apiClient.post('/auth/login', credentials)
+    const { access_token, user } = response.data
+    
+    // Store token and user
+    localStorage.setItem('access_token', access_token)
+    localStorage.setItem('user', JSON.stringify(user))
+    
+    return {
+      success: true,
+      data: { access_token, user },
+      message: 'Login successful'
+    }
+  } catch (error) {
+    return handleApiError(error)
+  }
+}
+
+// Component
+const handleLogin = async (credentials) => {
+  const response = await authService.login(credentials)
+  if (response.success) {
+    // Update auth context
+    // Navigate to dashboard
+  } else {
+    error(response.message)
+  }
+}
+```
+
+**Token Management** (apiClient interceptor):
+```javascript
+// Request interceptor - adds token to headers
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Response interceptor - handles 401 errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+```
+
+### API Client Configuration
+
+**File**: `admin/src/config/apiClient.js`
+```javascript
+import axios from 'axios'
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://13.211.171.89:8000',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Request interceptor
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    if (import.meta.env.DEV) {
+      console.log(`[API Request] ${config.method.toUpperCase()} ${config.url}`, config.params || config.data)
+    }
+    return config
+  },
+  (error) => {
+    console.error('[API Request Error]', error)
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor
+apiClient.interceptors.response.use(
+  (response) => {
+    if (import.meta.env.DEV) {
+      console.log(`[API Response] ${response.config.method.toUpperCase()} ${response.config.url}`, response.data)
+    }
+    return response
+  },
+  async (error) => {
+    if (import.meta.env.DEV) {
+      console.error('[API Error]', {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        message: error.response?.data || error.message,
+      })
+    }
+    if (error.response?.status === 401 && !error.config._retry) {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('user')
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login'
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default apiClient
+```
+
+### Environment Configuration
+
+**File Structure**:
+```
+admin/
+├── .env.local          # Local development (gitignored)
+├── .env.staging        # Staging environment
+└── .env.production     # Production environment
+```
+
+**Example `.env.local`**:
+```env
+VITE_API_BASE_URL=http://13.211.171.89:8000
+```
+
+**Usage in Code**:
+```javascript
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  // ...
+})
+```
+
+### File Naming Conventions
+- **Services**: `{module}Service.js` (e.g., `categoryService.js`)
+- **Components**: `{ComponentName}.jsx` (PascalCase)
+- **Views**: `{Module}List.jsx` or `{Module}Details.jsx`
+- **Utils**: `{utilName}.js` (camelCase)
+- **Config**: `{configName}.js` (camelCase)
+
+### State Management Best Practices
+
+1. **Component State**:
    - Use `useState` for local component state
-   - Use `useEffect` for data fetching on component mount
+   - Use `useEffect` for data fetching on mount
    - Clear state on modal close/unmount
    - Reset form data after successful submission
 
-6. **Best Practices**:
-   - Always check API response structure before mapping
-   - Use optional chaining (`?.`) for safe property access
-   - Provide fallback values for optional fields
-   - Test CRUD operations (Create, Read, Update, Delete) after integration
-   - Remove console.log statements before production (or use conditional logging)
-   - Update this roadmap after completing each module
+2. **Loading States**:
+   - Always show loading indicator during API calls
+   - Use skeleton loaders for list views
+   - Disable buttons during submission
 
-### File Naming Conventions
-- Services: `{module}Service.js` (e.g., `categoryService.js`)
-- Components: `{ComponentName}.jsx` (PascalCase)
-- Views: `{Module}List.jsx` or `{Module}Details.jsx`
-- Utils: `{utilName}.js` (camelCase)
+3. **Error States**:
+   - Handle errors gracefully
+   - Show user-friendly error messages
+   - Log detailed errors for debugging
 
-### Environment Configuration
-- Use `.env.local` for local development
-- Use `.env.staging` for staging environment
-- Use `.env.production` for production
-- API base URL: `VITE_API_BASE_URL` environment variable
+### Testing Checklist
+
+For each module integration:
+- [ ] Test GET operations (list, by ID)
+- [ ] Test CREATE operation
+- [ ] Test UPDATE operation
+- [ ] Test DELETE operation
+- [ ] Test error handling (network, validation, server errors)
+- [ ] Test loading states
+- [ ] Test toast notifications
+- [ ] Test image upload (if applicable)
+- [ ] Test form validation
+- [ ] Test pagination (if applicable)
+- [ ] Test search/filter (if applicable)
 
 ---
 
