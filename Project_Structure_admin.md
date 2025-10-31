@@ -35,7 +35,7 @@ admin/
 │   │   │   ├── ScrollToTop.jsx        # Scroll to top component
 │   │   │   ├── StepIndicator.jsx      # Multi-step form progress indicator
 │   │   │   ├── Table.jsx              # Advanced data table with sorting/pagination
-│   │   │   ├── ThemeToggle.jsx        # Theme switching component (light/dark/auto)
+│   │   │   ├── ThemeToggle.jsx        # Theme switching component (light/dark)
 │   │   │   └── ToastProvider.jsx     # Toast notifications
 │   │   │
 │   │   ├── 📁 docs/                   # Documentation components
@@ -388,7 +388,7 @@ const _nav = [
 - **Spacing**: Consistent padding and margins throughout
 
 #### 6.1. **Dark Theme System**
-- **Theme Toggle**: `ThemeToggle` component with light/dark/auto modes
+- **Theme Toggle**: `ThemeToggle` component with light/dark modes
 - **State Management**: Redux store with localStorage persistence
 - **CoreUI Integration**: Uses `useColorModes` hook for theme switching
 - **CSS Architecture**: Theme-responsive selectors using `html[data-coreui-theme="dark"]`
@@ -462,7 +462,7 @@ styles/
 // Redux Store Configuration
 const initialState = {
   sidebarShow: true,
-  theme: getInitialTheme(), // 'light', 'dark', or 'auto'
+  theme: getInitialTheme(), // 'light' or 'dark'
 }
 
 // Theme Toggle Handler
@@ -757,7 +757,7 @@ const userService = {
 - **ProductForm** - Single-step product form (legacy)
 - **FormModal** - Modal wrapper for forms
 - **Table** - Data table with sorting and pagination
-- **ThemeToggle** - Theme switching component (light/dark/auto modes)
+- **ThemeToggle** - Theme switching component (light/dark modes)
 - **ToastProvider** - Global notification system
 
 ### 📊 Performance Monitoring

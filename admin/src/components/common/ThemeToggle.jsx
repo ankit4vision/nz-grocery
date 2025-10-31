@@ -1,9 +1,9 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useColorModes } from '@coreui/react'
-import { Button, Dropdown } from 'react-bootstrap'
+import { Dropdown } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSun, faMoon, faPalette } from '@fortawesome/free-solid-svg-icons'
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 
 const ThemeToggle = () => {
   const dispatch = useDispatch()
@@ -12,11 +12,16 @@ const ThemeToggle = () => {
 
   const themes = [
     { key: 'light', label: 'Light', icon: faSun },
-    { key: 'dark', label: 'Dark', icon: faMoon },
-    { key: 'auto', label: 'Auto', icon: faPalette }
+    { key: 'dark', label: 'Dark', icon: faMoon }
   ]
 
   const handleThemeChange = (themeKey) => {
+    // Only allow 'light' or 'dark' themes
+    if (themeKey !== 'light' && themeKey !== 'dark') {
+      console.warn(`Invalid theme: ${themeKey}. Defaulting to 'light'.`)
+      themeKey = 'light'
+    }
+    
     // Update Redux store
     dispatch({ type: 'set', theme: themeKey })
     
@@ -28,32 +33,21 @@ const ThemeToggle = () => {
   }
 
   const getCurrentThemeIcon = () => {
-    const theme = themes.find(t => t.key === currentTheme)
+    // Ensure theme is valid, fallback to light if invalid
+    const validTheme = currentTheme === 'light' || currentTheme === 'dark' ? currentTheme : 'light'
+    const theme = themes.find(t => t.key === validTheme)
     return theme ? theme.icon : faSun
   }
 
   const getCurrentThemeLabel = () => {
-    const theme = themes.find(t => t.key === currentTheme)
+    // Ensure theme is valid, fallback to light if invalid
+    const validTheme = currentTheme === 'light' || currentTheme === 'dark' ? currentTheme : 'light'
+    const theme = themes.find(t => t.key === validTheme)
     return theme ? theme.label : 'Light'
   }
 
   return (
     <div className="theme-toggle-container d-flex align-items-center">
-      {/* Quick Toggle Button */}
-      <Button
-        variant="outline-secondary"
-        size="sm"
-        className="d-flex align-items-center me-2"
-        onClick={() => handleThemeChange(currentTheme === 'light' ? 'dark' : 'light')}
-        title={`Switch to ${currentTheme === 'light' ? 'Dark' : 'Light'} theme`}
-        style={{ minWidth: '40px' }}
-      >
-        <FontAwesomeIcon 
-          icon={getCurrentThemeIcon()} 
-          style={{ fontSize: '0.875rem' }}
-        />
-      </Button>
-
       {/* Theme Options Dropdown */}
       <Dropdown>
         <Dropdown.Toggle
@@ -61,11 +55,14 @@ const ThemeToggle = () => {
           size="sm"
           className="d-flex align-items-center"
           title="Theme Options"
-          style={{ minWidth: '60px' }}
+          style={{ minWidth: '80px' }}
         >
-          <FontAwesomeIcon icon={faPalette} style={{ fontSize: '0.875rem' }} />
-          <span className="d-none d-md-inline ms-1" style={{ fontSize: '0.8rem' }}>
-            Theme
+          <FontAwesomeIcon 
+            icon={getCurrentThemeIcon()} 
+            style={{ fontSize: '0.875rem' }}
+          />
+          <span className="d-none d-md-inline ms-2" style={{ fontSize: '0.875rem' }}>
+            {getCurrentThemeLabel()}
           </span>
         </Dropdown.Toggle>
 

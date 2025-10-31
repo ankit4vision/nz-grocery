@@ -1,9 +1,16 @@
 import { legacy_createStore as createStore } from 'redux'
 
 // Get theme from localStorage or default to 'light'
+// Migrate 'auto' to 'light' if found
 const getInitialTheme = () => {
   const savedTheme = localStorage.getItem('theme')
-  return savedTheme || 'light'
+  // If theme is 'auto', migrate to 'light' and update localStorage
+  if (savedTheme === 'auto') {
+    localStorage.setItem('theme', 'light')
+    return 'light'
+  }
+  // Return saved theme if valid, otherwise default to 'light'
+  return savedTheme && (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'light'
 }
 
 const initialState = {
