@@ -72,6 +72,36 @@
 - Filtering and search functionality
 - Responsive table/grid views
 
+### 4. Global Settings Module ✅
+**Settings Management:**
+- List Settings - `GET /global-settings/` (with optional filters: section, key_search, created_by, updated_by, limit, offset)
+- Get Settings by Section - `GET /global-settings/by-section` (get all sections with settings)
+- Get Settings for Specific Section - `GET /global-settings/by-section/{section}`
+- Get Setting Details - `GET /global-settings/{setting_id}` or `GET /global-settings/key/{key}`
+- Create Setting - `POST /global-settings/` (creates new setting with key, section, value)
+- Update Setting - `PUT /global-settings/{setting_id}` or `PUT /global-settings/key/{key}` (updates existing setting)
+- Delete Setting - `DELETE /global-settings/{setting_id}` or `DELETE /global-settings/key/{key}`
+- Auto-save on blur (saves when field loses focus)
+- Smart create/update logic (creates if missing, updates if exists)
+
+**Files Updated:**
+- `admin/src/services/settingsService.js` ✅ Completed
+- `admin/src/views/settings/Settings.jsx` ✅ Completed
+
+**Features Implemented:**
+- Full CRUD operations for Global Settings
+- Auto-save on blur (when field loses focus)
+- Create or update settings automatically (creates if missing, updates if exists)
+- Section-based settings organization (Tax & Pricing, Business Information, Email & Notification, Currency & Regional, Security)
+- Default value handling when API response is empty or missing
+- Data transformation between API format (key-value pairs) and form structure
+- Toast notifications for all operations
+- Loading states and error handling
+- Visual indicators (spinner while saving, checkmark on success)
+- "Save All Settings" button for bulk updates
+- Form validation
+- All 15 settings fields mapped and functional
+
 ---
 
 ## 📁 Project File Structure
@@ -228,6 +258,7 @@ nz-grocery/
 - ✅ `authService.js` - Authentication (login, logout)
 - ✅ `categoryService.js` - Category CRUD operations
 - ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
+- ✅ `settingsService.js` - Global Settings management (create/update by key, section-based organization)
 
 **Pending Services**:
 - ⏳ `productService.js` - Products management
@@ -255,6 +286,7 @@ nz-grocery/
 
 **View Files** (`admin/src/views/`):
 - ✅ **`categories/CategoriesList.jsx`** - Categories list page with CRUD operations
+- ✅ **`settings/Settings.jsx`** - Global Settings page with auto-save on blur
 - ⏳ `dashboard/Dashboard.jsx` - Dashboard page (pending)
 - ⏳ `products/ProductsList.jsx` - Products list (pending)
 - ⏳ `orders/OrdersList.jsx` - Orders list (pending)
@@ -578,22 +610,39 @@ ToastProvider.jsx
 
 ---
 
-### Priority 9: Settings Module ⚙️
-**Why Eighth**: System configuration.
+### 4. Global Settings Module ✅ **COMPLETED**
+**Why Ninth**: System configuration and application-wide settings management.
 
-**APIs Needed**:
-- `GET /settings` - Get all settings
-- `PUT /settings/general` - Update general settings
-- `PUT /settings/email` - Update email settings
-- `PUT /settings/aws` - Update AWS settings
-- `POST /settings/test-email` - Test email
-- `POST /settings/test-aws` - Test AWS
+**APIs Integrated**:
+- `GET /global-settings/` - List all settings (with optional filters: section, key_search, created_by, updated_by, limit, offset)
+- `GET /global-settings/by-section` - Get all settings grouped by section
+- `GET /global-settings/by-section/{section}` - Get settings for a specific section
+- `GET /global-settings/{setting_id}` - Get setting by ID
+- `GET /global-settings/key/{key}` - Get setting by key
+- `POST /global-settings/` - Create new setting
+- `PUT /global-settings/{setting_id}` - Update setting by ID
+- `PUT /global-settings/key/{key}` - Update setting by key
+- `DELETE /global-settings/{setting_id}` - Delete setting by ID
+- `DELETE /global-settings/key/{key}` - Delete setting by key
 
-**Files to Update**:
-- `admin/src/services/settingsService.js`
-- `admin/src/views/settings/Settings.jsx`
+**Files Updated**:
+- `admin/src/services/settingsService.js` ✅ Completed
+- `admin/src/views/settings/Settings.jsx` ✅ Completed
 
-**Estimated Time**: 2-3 hours
+**Features Implemented**:
+- Full CRUD operations for Global Settings
+- Auto-save on blur (when field loses focus)
+- Create or update settings automatically (creates if missing, updates if exists)
+- Section-based settings organization (Tax & Pricing, Business Information, Email & Notification, Currency & Regional, Security)
+- Default value handling when API response is empty
+- Data transformation between API format (key-value pairs) and form structure
+- Toast notifications for all operations
+- Loading states and error handling
+- Visual indicators (spinner while saving, checkmark on success)
+- "Save All Settings" button for bulk updates
+- Form validation
+
+**Time Taken**: Completed
 
 ---
 
@@ -678,6 +727,7 @@ export default moduleService
 - Authentication Module
 - Category Management Module
 - Content Management Module (Banners, FAQ Categories, FAQ Entries)
+- Global Settings Module
 
 ⏳ **In Progress**:
 - None
@@ -1217,5 +1267,5 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Category and Content Management (Banners, FAQ Categories, FAQs) Modules Completed - Ready for Dashboard Module Integration
+**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), and Global Settings Modules Completed - Ready for Dashboard Module Integration
 
