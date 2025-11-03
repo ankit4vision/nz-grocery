@@ -81,12 +81,13 @@ export const categoryService = {
     try {
       console.log('Creating category with data:', categoryData)
       
-      // Check if we have an image to upload (could be File object or base64 string)
-      let needsFormData = false
+      // API always expects multipart/form-data format, even without a file
+      const formData = new FormData()
       
+      // Handle image/file if present (could be File object or base64 string)
       if (categoryData.file) {
         // If it's a File object
-        needsFormData = true
+        formData.append('file', categoryData.file)
       } else if (categoryData.image && categoryData.image.startsWith('data:image/')) {
         // If it's a base64 data URL, we need to convert it to a File
         const base64Data = categoryData.image
@@ -105,42 +106,24 @@ export const categoryService = {
         
         // Create File from blob
         const file = new File([blob], 'category-image', { type: mimeType })
-        categoryData.file = file
-        needsFormData = true
+        formData.append('file', file)
       }
       
-      let dataToSend = categoryData
-      let config = {}
-      
-      if (needsFormData) {
-        const formData = new FormData()
-        formData.append('category_name', categoryData.category_name)
-        formData.append('category_description', categoryData.category_description || '')
-        formData.append('is_active', categoryData.is_active !== undefined ? categoryData.is_active : true)
-        formData.append('sort_order', categoryData.sort_order || 0)
-        formData.append('file', categoryData.file)
-        dataToSend = formData
-        config = {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+      // Append all form fields (API expects multipart/form-data even without file)
+      // category_name is required
+      formData.append('category_name', categoryData.category_name)
+      formData.append('category_description', categoryData.category_description || '')
+      formData.append('is_active', String(categoryData.is_active !== undefined ? categoryData.is_active : true))
+      formData.append('sort_order', String(categoryData.sort_order || 0))
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      } else {
-        // No file, send JSON - make sure all required fields are included
-        const { file, image, ...jsonData } = categoryData
-        dataToSend = {
-          category_name: jsonData.category_name,
-          category_description: jsonData.category_description || '',
-          is_active: jsonData.is_active !== undefined ? jsonData.is_active : true,
-          sort_order: jsonData.sort_order || 0
-        }
-        
-        // Log for debugging
-        console.log('Sending JSON request (no image):', dataToSend)
       }
 
-      console.log('Sending request with config:', config)
-      const response = await apiClient.post('/product-service/categories/', dataToSend, config)
+      console.log('Sending create request with multipart/form-data')
+      const response = await apiClient.post('/product-service/categories/', formData, config)
       
       return {
         success: true,
@@ -158,12 +141,13 @@ export const categoryService = {
     try {
       console.log('Updating category with data:', categoryData)
       
-      // Check if we have an image to upload (could be File object or base64 string)
-      let needsFormData = false
+      // API always expects multipart/form-data format, even without a file
+      const formData = new FormData()
       
+      // Handle image/file if present (could be File object or base64 string)
       if (categoryData.file) {
         // If it's a File object
-        needsFormData = true
+        formData.append('file', categoryData.file)
       } else if (categoryData.image && categoryData.image.startsWith('data:image/')) {
         // If it's a base64 data URL, we need to convert it to a File
         const base64Data = categoryData.image
@@ -182,38 +166,32 @@ export const categoryService = {
         
         // Create File from blob
         const file = new File([blob], 'category-image', { type: mimeType })
-        categoryData.file = file
-        needsFormData = true
+        formData.append('file', file)
       }
       
-      let dataToSend = categoryData
-      let config = {}
-      
-      if (needsFormData) {
-        const formData = new FormData()
-        if (categoryData.category_name) formData.append('category_name', categoryData.category_name)
-        if (categoryData.category_description !== undefined) formData.append('category_description', categoryData.category_description)
-        if (categoryData.is_active !== undefined) formData.append('is_active', categoryData.is_active)
-        if (categoryData.sort_order !== undefined) formData.append('sort_order', categoryData.sort_order)
-        formData.append('file', categoryData.file)
-        dataToSend = formData
-        config = {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      } else {
-        // No file, send JSON
-        const { file, image, ...jsonData } = categoryData
-        dataToSend = {}
-        if (jsonData.category_name !== undefined) dataToSend.category_name = jsonData.category_name
-        if (jsonData.category_description !== undefined) dataToSend.category_description = jsonData.category_description
-        if (jsonData.is_active !== undefined) dataToSend.is_active = jsonData.is_active
-        if (jsonData.sort_order !== undefined) dataToSend.sort_order = jsonData.sort_order
+      // Append all form fields (API expects multipart/form-data even without file)
+      if (categoryData.category_name !== undefined) {
+        formData.append('category_name', categoryData.category_name)
+      }
+      if (categoryData.category_description !== undefined) {
+        formData.append('category_description', categoryData.category_description)
+      }
+      if (categoryData.is_active !== undefined) {
+        // Convert boolean to string for FormData
+        formData.append('is_active', String(categoryData.is_active))
+      }
+      if (categoryData.sort_order !== undefined) {
+        formData.append('sort_order', String(categoryData.sort_order))
       }
 
-      console.log('Sending update request with config:', config)
-      const response = await apiClient.put(`/product-service/categories/${id}`, dataToSend, config)
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+
+      console.log('Sending update request with multipart/form-data')
+      const response = await apiClient.put(`/product-service/categories/${id}`, formData, config)
       
       return {
         success: true,

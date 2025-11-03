@@ -33,14 +33,14 @@ const CategoryImageCell = ({ imageUrl, categoryName }) => {
 
   return (
     <div 
-      className="d-flex align-items-center justify-content-center border rounded"
+      className="d-flex align-items-center justify-content-center border rounded mx-auto"
       style={{ 
         width: '50px', 
         height: '50px', 
         backgroundColor: '#f8f9fa'
       }}
     >
-      <FontAwesomeIcon icon={faImage} className="text-muted" />
+      <FontAwesomeIcon icon={faImage} className="text-muted" style={{ fontSize: '20px' }} />
     </div>
   )
 }
@@ -109,11 +109,14 @@ const CategoriesList = () => {
     {
       key: 'image',
       label: 'Image',
+      className: 'text-center',
       render: (value, category, index) => {
         const imageUrl = category.category_image_url || category.image
         const categoryName = category.category_name || category.name
         return (
-          <CategoryImageCell imageUrl={imageUrl} categoryName={categoryName} />
+          <div className="text-center">
+            <CategoryImageCell imageUrl={imageUrl} categoryName={categoryName} />
+          </div>
         )
       }
     },

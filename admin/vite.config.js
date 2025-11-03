@@ -63,7 +63,7 @@ export default defineConfig(({ command, mode }) => {
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },
     server: {
-      port: 5173,
+      port: 5174,
       host: true,
       proxy: {
         // Proxy API requests to backend
