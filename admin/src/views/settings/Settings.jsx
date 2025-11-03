@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Container, Row, Col, Card, Button, Spinner, Form, FormControl, FormSelect, FormText, Alert } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPercentage, faBuilding, faEnvelope, faGlobe, faShieldAlt, faSave } from '@fortawesome/free-solid-svg-icons'
+import { faPercentage, faBuilding, faEnvelope, faGlobe, faShieldAlt, faSave, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '../../components'
 import { settingsService } from '../../services/settingsService'
 
@@ -35,25 +35,111 @@ const Settings = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})
+  const [autoSaving, setAutoSaving] = useState({}) // Track which fields are auto-saving
+  const [autoSaved, setAutoSaved] = useState({}) // Track which fields were recently saved
   const { success, error } = useToast()
+  
+  const isInitialLoadRef = useRef(true) // Track if we're still loading initial data
+  
+  // Mapping from form fields to API keys and sections
+  const fieldMapping = {
+    'taxPricing.defaultGstRate': { key: 'defaultGstRate', section: 'Tax & Pricing' },
+    'taxPricing.defaultProfitMargin': { key: 'defaultProfitMargin', section: 'Tax & Pricing' },
+    'businessInfo.businessName': { key: 'businessName', section: 'Business Information' },
+    'businessInfo.gstNumber': { key: 'gstNumber', section: 'Business Information' },
+    'businessInfo.businessAddress': { key: 'businessAddress', section: 'Business Information' },
+    'emailNotifications.supportEmail': { key: 'supportEmail', section: 'Email & Notification' },
+    'emailNotifications.adminEmail': { key: 'adminEmail', section: 'Email & Notification' },
+    'emailNotifications.enableOrderNotifications': { key: 'enableOrderNotifications', section: 'Email & Notification' },
+    'currencyRegional.currency': { key: 'currency', section: 'Currency & Regional' },
+    'currencyRegional.dateFormat': { key: 'dateFormat', section: 'Currency & Regional' },
+    'currencyRegional.timeZone': { key: 'timeZone', section: 'Currency & Regional' },
+    'security.sessionTimeout': { key: 'sessionTimeout', section: 'Security' },
+    'security.passwordExpiry': { key: 'passwordExpiry', section: 'Security' },
+    'security.enableTwoFactor': { key: 'enableTwoFactor', section: 'Security' }
+  }
 
   useEffect(() => {
     const fetchSettings = async () => {
       setLoading(true)
       try {
-        const response = await settingsService.getSettings()
+        const response = await settingsService.getAllSections()
         if (response.success) {
-          setSettingsData({ ...settingsData, ...response.data })
+          // Transform API response to form structure
+          // transformSettingsToForm handles empty/null/undefined responses and returns defaults
+          const transformedData = settingsService.transformSettingsToForm(response.data)
+          setSettingsData(transformedData)
+          // Mark initial load as complete
+          isInitialLoadRef.current = false
+        } else {
+          // If API call fails, use default values
+          error(response.message || 'Failed to load settings. Using default values.')
+          // transformSettingsToForm will return defaults when passed null/undefined
+          const defaultData = settingsService.transformSettingsToForm(null)
+          setSettingsData(defaultData)
+          isInitialLoadRef.current = false
         }
       } catch (err) {
-        console.log('Using default settings')
+        // If error occurs, use default values
+        error('Failed to load settings. Using default values.')
+        console.error('Error fetching settings:', err)
+        const defaultData = settingsService.transformSettingsToForm(null)
+        setSettingsData(defaultData)
+        isInitialLoadRef.current = false
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchSettings()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Auto-save function (triggered on blur)
+  const autoSaveSetting = useCallback(async (fieldPath, key, section, value) => {
+    const fieldId = fieldPath
+    
+    // Set auto-saving state
+    setAutoSaving(prev => ({ ...prev, [fieldId]: true }))
+    
+    // Clear auto-saved indicator
+    setAutoSaved(prev => {
+      const newState = { ...prev }
+      delete newState[fieldId]
+      return newState
+    })
+
+    try {
+      const response = await settingsService.saveSetting(key, section, value)
+      if (response.success) {
+        // Show success indicator
+        setAutoSaved(prev => ({ ...prev, [fieldId]: true }))
+        // Clear indicator after 2 seconds
+        setTimeout(() => {
+          setAutoSaved(prev => {
+            const newState = { ...prev }
+            delete newState[fieldId]
+            return newState
+          })
+        }, 2000)
+      } else {
+        error(`Failed to save ${key}: ${response.message}`)
+      }
+    } catch (err) {
+      error(`Failed to save ${key}. Please try again.`)
+      console.error('Auto-save error:', err)
+    } finally {
+      setAutoSaving(prev => {
+        const newState = { ...prev }
+        delete newState[fieldId]
+        return newState
+      })
+    }
+  }, [error])
+
   const handleChange = (section, field, value) => {
+    const fieldPath = `${section}.${field}`
+    
+    // Update form data
     setSettingsData(prev => ({
       ...prev,
       [section]: {
@@ -63,11 +149,24 @@ const Settings = () => {
     }))
     
     // Clear error if exists
-    if (errors[`${section}.${field}`]) {
+    if (errors[fieldPath]) {
       setErrors(prev => ({
         ...prev,
-        [`${section}.${field}`]: ''
+        [fieldPath]: ''
       }))
+    }
+  }
+
+  // Handle blur event (save when field loses focus)
+  const handleBlur = (section, field, value) => {
+    const fieldPath = `${section}.${field}`
+    
+    // Auto-save if field mapping exists and not during initial load
+    if (!isInitialLoadRef.current) {
+      const mapping = fieldMapping[fieldPath]
+      if (mapping) {
+        autoSaveSetting(fieldPath, mapping.key, mapping.section, value)
+      }
     }
   }
 
@@ -161,13 +260,22 @@ const Settings = () => {
       <Row>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold">Default GST Rate (%)</Form.Label>
+            <Form.Label className="fw-semibold">
+              Default GST Rate (%)
+              {autoSaving['taxPricing.defaultGstRate'] && (
+                <Spinner size="sm" className="ms-2" variant="primary" />
+              )}
+              {autoSaved['taxPricing.defaultGstRate'] && (
+                <FontAwesomeIcon icon={faCheckCircle} className="ms-2 text-success" />
+              )}
+            </Form.Label>
             <FormControl
               type="number"
               min="0"
               max="100"
               value={settingsData.taxPricing.defaultGstRate}
               onChange={(e) => handleChange('taxPricing', 'defaultGstRate', parseInt(e.target.value) || 0)}
+              onBlur={(e) => handleBlur('taxPricing', 'defaultGstRate', parseInt(e.target.value) || 0)}
               isInvalid={!!errors['taxPricing.defaultGstRate']}
               className="border-2"
             />
@@ -179,13 +287,22 @@ const Settings = () => {
         </Col>
         <Col md={6}>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold">Default Profit Margin (%)</Form.Label>
+            <Form.Label className="fw-semibold">
+              Default Profit Margin (%)
+              {autoSaving['taxPricing.defaultProfitMargin'] && (
+                <Spinner size="sm" className="ms-2" variant="primary" />
+              )}
+              {autoSaved['taxPricing.defaultProfitMargin'] && (
+                <FontAwesomeIcon icon={faCheckCircle} className="ms-2 text-success" />
+              )}
+            </Form.Label>
             <FormControl
               type="number"
               min="0"
               max="100"
               value={settingsData.taxPricing.defaultProfitMargin}
               onChange={(e) => handleChange('taxPricing', 'defaultProfitMargin', parseInt(e.target.value) || 0)}
+              onBlur={(e) => handleBlur('taxPricing', 'defaultProfitMargin', parseInt(e.target.value) || 0)}
               isInvalid={!!errors['taxPricing.defaultProfitMargin']}
               className="border-2"
             />
@@ -214,6 +331,7 @@ const Settings = () => {
             <FormControl
               value={settingsData.businessInfo.businessName}
               onChange={(e) => handleChange('businessInfo', 'businessName', e.target.value)}
+              onBlur={(e) => handleBlur('businessInfo', 'businessName', e.target.value)}
               className="border-2"
             />
           </Form.Group>
@@ -225,6 +343,7 @@ const Settings = () => {
               placeholder="Enter GST registration number"
               value={settingsData.businessInfo.gstNumber}
               onChange={(e) => handleChange('businessInfo', 'gstNumber', e.target.value)}
+              onBlur={(e) => handleBlur('businessInfo', 'gstNumber', e.target.value)}
               className="border-2"
             />
           </Form.Group>
@@ -239,6 +358,7 @@ const Settings = () => {
               rows={3}
               value={settingsData.businessInfo.businessAddress}
               onChange={(e) => handleChange('businessInfo', 'businessAddress', e.target.value)}
+              onBlur={(e) => handleBlur('businessInfo', 'businessAddress', e.target.value)}
               className="border-2"
             />
           </Form.Group>
@@ -263,6 +383,7 @@ const Settings = () => {
               type="email"
               value={settingsData.emailNotifications.supportEmail}
               onChange={(e) => handleChange('emailNotifications', 'supportEmail', e.target.value)}
+              onBlur={(e) => handleBlur('emailNotifications', 'supportEmail', e.target.value)}
               isInvalid={!!errors['emailNotifications.supportEmail']}
               className="border-2"
             />
@@ -278,6 +399,7 @@ const Settings = () => {
               type="email"
               value={settingsData.emailNotifications.adminEmail}
               onChange={(e) => handleChange('emailNotifications', 'adminEmail', e.target.value)}
+              onBlur={(e) => handleBlur('emailNotifications', 'adminEmail', e.target.value)}
               isInvalid={!!errors['emailNotifications.adminEmail']}
               className="border-2"
             />
@@ -295,6 +417,7 @@ const Settings = () => {
               label="Enable email notifications for new orders"
               checked={settingsData.emailNotifications.enableOrderNotifications}
               onChange={(e) => handleChange('emailNotifications', 'enableOrderNotifications', e.target.checked)}
+              onBlur={(e) => handleBlur('emailNotifications', 'enableOrderNotifications', e.target.checked)}
               className="fs-6"
             />
           </Form.Group>
@@ -318,6 +441,7 @@ const Settings = () => {
             <FormSelect
               value={settingsData.currencyRegional.currency}
               onChange={(e) => handleChange('currencyRegional', 'currency', e.target.value)}
+              onBlur={(e) => handleBlur('currencyRegional', 'currency', e.target.value)}
               className="border-2"  
             >
               <option value="NZD">New Zealand Dollar (NZD)</option>
@@ -334,6 +458,7 @@ const Settings = () => {
             <FormSelect
               value={settingsData.currencyRegional.dateFormat}
               onChange={(e) => handleChange('currencyRegional', 'dateFormat', e.target.value)}
+              onBlur={(e) => handleBlur('currencyRegional', 'dateFormat', e.target.value)}
               className="border-2"
             >
               <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -349,6 +474,7 @@ const Settings = () => {
             <FormSelect
               value={settingsData.currencyRegional.timeZone}
               onChange={(e) => handleChange('currencyRegional', 'timeZone', e.target.value)}
+              onBlur={(e) => handleBlur('currencyRegional', 'timeZone', e.target.value)}
               className="border-2"
             >
               <option value="Pacific/Auckland">Pacific/Auckland (NZDT/NZST)</option>
@@ -381,6 +507,7 @@ const Settings = () => {
               max="480"
               value={settingsData.security.sessionTimeout}
               onChange={(e) => handleChange('security', 'sessionTimeout', parseInt(e.target.value) || 30)}
+              onBlur={(e) => handleBlur('security', 'sessionTimeout', parseInt(e.target.value) || 30)}
               isInvalid={!!errors['security.sessionTimeout']}
               className="border-2"
             />
@@ -399,6 +526,7 @@ const Settings = () => {
               max="365"
               value={settingsData.security.passwordExpiry}
               onChange={(e) => handleChange('security', 'passwordExpiry', parseInt(e.target.value) || 90)}
+              onBlur={(e) => handleBlur('security', 'passwordExpiry', parseInt(e.target.value) || 90)}
               isInvalid={!!errors['security.passwordExpiry']}
               className="border-2"
             />
@@ -417,6 +545,7 @@ const Settings = () => {
               label="Enable Two-Factor Authentication for admin accounts"
               checked={settingsData.security.enableTwoFactor}
               onChange={(e) => handleChange('security', 'enableTwoFactor', e.target.checked)}
+              onBlur={(e) => handleBlur('security', 'enableTwoFactor', e.target.checked)}
               className="fs-6"
             />
           </Form.Group>

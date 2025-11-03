@@ -1,278 +1,438 @@
 // Settings Management Service
-import apiService from '../api'
-import { API_ENDPOINTS } from '../constants/api'
-import settingsMockData from '../mock/settings.json'
-
-// Mock delay function
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+import apiClient from '../config/apiClient'
+import { handleApiError } from '../utils/errorHandler'
 
 class SettingsService {
-  // Get all settings
-  async getSettings() {
+  // Get all settings with optional filters
+  async getSettings(params = {}) {
     try {
-      // For development, return mock data
+      const response = await apiClient.get('/global-settings/', { params })
       return {
         success: true,
-        data: settingsMockData.settings,
+        data: response.data,
         message: 'Settings fetched successfully'
       }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.get(API_ENDPOINTS.SETTINGS.BASE)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'Settings fetched successfully'
-      // }
     } catch (error) {
-      console.error('Error fetching settings:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to fetch settings'
-      }
+      return handleApiError(error)
     }
   }
 
-  // Update general settings
-  async updateGeneralSettings(generalData) {
+  // Get settings by section
+  async getSettingsBySection(section) {
     try {
-      // For development, simulate successful update
-      const updatedSettings = {
-        ...settingsMockData.settings,
-        general: {
-          ...settingsMockData.settings.general,
-          ...generalData,
-          updatedAt: new Date().toISOString()
+      const response = await apiClient.get(`/global-settings/by-section/${encodeURIComponent(section)}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Settings fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Get all sections with their settings
+  async getAllSections() {
+    try {
+      const response = await apiClient.get('/global-settings/by-section')
+      return {
+        success: true,
+        data: response.data,
+        message: 'Sections fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Get setting by ID
+  async getSettingById(id) {
+    try {
+      const response = await apiClient.get(`/global-settings/${id}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Setting fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Get setting by key
+  async getSettingByKey(key) {
+    try {
+      const response = await apiClient.get(`/global-settings/key/${encodeURIComponent(key)}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Setting fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Create new setting
+  async createSetting(settingData) {
+    try {
+      const response = await apiClient.post('/global-settings/', settingData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Setting created successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Update setting by ID
+  async updateSetting(id, settingData) {
+    try {
+      const response = await apiClient.put(`/global-settings/${id}`, settingData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Setting updated successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Update setting by key
+  async updateSettingByKey(key, settingData) {
+    try {
+      const response = await apiClient.put(`/global-settings/key/${encodeURIComponent(key)}`, settingData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Setting updated successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Save or update a single setting by key (used for auto-save on change)
+  async saveSetting(key, section, value) {
+    try {
+      // First, try to get the setting to check if it exists
+      const getResponse = await this.getSettingByKey(key)
+      
+      if (getResponse.success && getResponse.data) {
+        // Setting exists - update it
+        return await this.updateSettingByKey(key, { value: String(value) })
+      } else {
+        // Setting doesn't exist - create it
+        return await this.createSetting({
+          key: key,
+          section: section,
+          value: String(value)
+        })
+      }
+    } catch (error) {
+      // If getSettingByKey fails with 404, create the setting
+      if (error.response?.status === 404) {
+        return await this.createSetting({
+          key: key,
+          section: section,
+          value: String(value)
+        })
+      }
+      return handleApiError(error)
+    }
+  }
+
+  // Delete setting by ID
+  async deleteSetting(id) {
+    try {
+      await apiClient.delete(`/global-settings/${id}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Setting deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Delete setting by key
+  async deleteSettingByKey(key) {
+    try {
+      await apiClient.delete(`/global-settings/key/${encodeURIComponent(key)}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Setting deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  // Update multiple settings at once (helper method)
+  // This method will create settings if they don't exist, or update them if they do
+  async updateAllSettings(settingsData) {
+    try {
+      // Define all settings that should exist with their mapping
+      const settingsMapping = [
+        // Tax & Pricing
+        { key: 'defaultGstRate', section: 'Tax & Pricing', formPath: ['taxPricing', 'defaultGstRate'], type: 'number' },
+        { key: 'defaultProfitMargin', section: 'Tax & Pricing', formPath: ['taxPricing', 'defaultProfitMargin'], type: 'number' },
+        // Business Information
+        { key: 'businessName', section: 'Business Information', formPath: ['businessInfo', 'businessName'], type: 'string' },
+        { key: 'gstNumber', section: 'Business Information', formPath: ['businessInfo', 'gstNumber'], type: 'string' },
+        { key: 'businessAddress', section: 'Business Information', formPath: ['businessInfo', 'businessAddress'], type: 'string' },
+        // Email & Notification
+        { key: 'supportEmail', section: 'Email & Notification', formPath: ['emailNotifications', 'supportEmail'], type: 'string' },
+        { key: 'adminEmail', section: 'Email & Notification', formPath: ['emailNotifications', 'adminEmail'], type: 'string' },
+        { key: 'enableOrderNotifications', section: 'Email & Notification', formPath: ['emailNotifications', 'enableOrderNotifications'], type: 'boolean' },
+        // Currency & Regional
+        { key: 'currency', section: 'Currency & Regional', formPath: ['currencyRegional', 'currency'], type: 'string' },
+        { key: 'dateFormat', section: 'Currency & Regional', formPath: ['currencyRegional', 'dateFormat'], type: 'string' },
+        { key: 'timeZone', section: 'Currency & Regional', formPath: ['currencyRegional', 'timeZone'], type: 'string' },
+        // Security
+        { key: 'sessionTimeout', section: 'Security', formPath: ['security', 'sessionTimeout'], type: 'number' },
+        { key: 'passwordExpiry', section: 'Security', formPath: ['security', 'passwordExpiry'], type: 'number' },
+        { key: 'enableTwoFactor', section: 'Security', formPath: ['security', 'enableTwoFactor'], type: 'boolean' }
+      ]
+
+      // Get all current settings to check what exists
+      const currentSettingsResponse = await this.getAllSections()
+      const existingSettingsMap = new Map()
+      
+      if (currentSettingsResponse.success && currentSettingsResponse.data) {
+        currentSettingsResponse.data.forEach(section => {
+          if (section.settings && Array.isArray(section.settings)) {
+            section.settings.forEach(setting => {
+              existingSettingsMap.set(setting.key, setting)
+            })
+          }
+        })
+      }
+
+      const errors = []
+      const successes = []
+
+      // Process each setting mapping
+      for (const mapping of settingsMapping) {
+        try {
+          // Get value from form data
+          const formValue = settingsData[mapping.formPath[0]]?.[mapping.formPath[1]]
+          
+          // Convert value to string for API
+          let stringValue = ''
+          if (mapping.type === 'number') {
+            stringValue = String(formValue ?? 0)
+          } else if (mapping.type === 'boolean') {
+            stringValue = String(formValue ?? false)
+          } else {
+            stringValue = String(formValue ?? '')
+          }
+
+          // Check if setting exists
+          const existingSetting = existingSettingsMap.get(mapping.key)
+          
+          if (existingSetting) {
+            // Setting exists - update it only if value changed
+            const currentValue = existingSetting.value || ''
+            if (currentValue !== stringValue) {
+              const updateResponse = await this.updateSettingByKey(mapping.key, { value: stringValue })
+              if (updateResponse.success) {
+                successes.push(mapping.key)
+              } else {
+                errors.push({ key: mapping.key, error: updateResponse.message })
+              }
+            } else {
+              // Value unchanged, skip update
+              successes.push(mapping.key + ' (unchanged)')
+            }
+          } else {
+            // Setting doesn't exist - create it
+            const createResponse = await this.createSetting({
+              key: mapping.key,
+              section: mapping.section,
+              value: stringValue
+            })
+            if (createResponse.success) {
+              successes.push(mapping.key + ' (created)')
+            } else {
+              errors.push({ key: mapping.key, error: createResponse.message })
+            }
+          }
+        } catch (err) {
+          errors.push({ key: mapping.key, error: err.message || 'Unknown error' })
         }
       }
-      
-      return {
-        success: true,
-        data: generalData,
-        message: 'General settings updated successfully'
-      }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.put(API_ENDPOINTS.SETTINGS.GENERAL, generalData)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'General settings updated successfully'
-      // }
-    } catch (error) {
-      console.error('Error updating general settings:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to update general settings'
-      }
-    }
-  }
 
-  // Update email settings
-  async updateEmailSettings(emailData) {
-    try {
-      // For development, simulate successful update
-      return {
-        success: true,
-        data: emailData,
-        message: 'Email settings updated successfully'
-      }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.put(API_ENDPOINTS.SETTINGS.EMAIL, emailData)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'Email settings updated successfully'
-      // }
-    } catch (error) {
-      console.error('Error updating email settings:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to update email settings'
-      }
-    }
-  }
-
-  // Update AWS S3 settings
-  async updateAWSSettings(awsData) {
-    try {
-      // For development, simulate successful update
-      return {
-        success: true,
-        data: awsData,
-        message: 'AWS S3 settings updated successfully'
-      }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.put(API_ENDPOINTS.SETTINGS.AWS, awsData)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'AWS S3 settings updated successfully'
-      // }
-    } catch (error) {
-      console.error('Error updating AWS S3 settings:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to update AWS S3 settings'
-      }
-    }
-  }
-
-  // Update all settings at once
-  async updateAllSettings(allSettingsData) {
-    try {
-      // For development, simulate successful update
-      return {
-        success: true,
-        data: allSettingsData,
-        message: 'All settings updated successfully'
-      }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.put(API_ENDPOINTS.SETTINGS.BASE, allSettingsData)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'All settings updated successfully'
-      // }
-    } catch (error) {
-      console.error('Error updating all settings:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to update settings'
-      }
-    }
-  }
-
-  // Test email configuration
-  async testEmailConfiguration() {
-    try {
-      // For development, simulate successful test
-      return {
-        success: true,
-        data: { message: 'Email configuration test successful' },
-        message: 'Email configuration test successful'
-      }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.post(API_ENDPOINTS.SETTINGS.TEST_EMAIL)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'Email configuration test successful'
-      // }
-    } catch (error) {
-      console.error('Error testing email configuration:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to test email configuration'
-      }
-    }
-  }
-
-  // Test AWS S3 configuration
-  async testAWSConfiguration() {
-    try {
-      // For development, simulate successful test
-      return {
-        success: true,
-        data: { message: 'AWS S3 configuration test successful' },
-        message: 'AWS S3 configuration test successful'
-      }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.post(API_ENDPOINTS.SETTINGS.TEST_AWS)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'AWS S3 configuration test successful'
-      // }
-    } catch (error) {
-      console.error('Error testing AWS S3 configuration:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to test AWS S3 configuration'
-      }
-    }
-  }
-
-  // Validate settings data
-  validateGeneralSettings(data) {
-    const errors = {}
-
-    if (!data.appName?.trim()) {
-      errors.appName = 'App name is required'
-    }
-    if (!data.businessName?.trim()) {
-      errors.businessName = 'Business name is required'
-    }
-    if (!data.email?.trim()) {
-      errors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-      errors.email = 'Please enter a valid email address'
+      if (errors.length > 0) {
+        return {
+          success: false,
+          data: { successes, errors },
+          message: `Some settings failed: ${errors.map(e => e.key).join(', ')}`
+        }
     }
 
     return {
-      isValid: Object.keys(errors).length === 0,
-      errors
+        success: true,
+        data: { successes, errors: [] },
+        message: 'All settings saved successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
     }
   }
 
-  validateEmailSettings(data) {
-    const errors = {}
-
-    if (!data.smtpHost?.trim()) {
-      errors.smtpHost = 'SMTP Host is required'
-    }
-    if (!data.smtpPort?.trim()) {
-      errors.smtpPort = 'SMTP Port is required'
-    } else if (!/^\d+$/.test(data.smtpPort)) {
-      errors.smtpPort = 'Port must be a number'
-    }
-    if (!data.smtpUsername?.trim()) {
-      errors.smtpUsername = 'SMTP Username is required'
-    }
-    if (!data.fromEmail?.trim()) {
-      errors.fromEmail = 'From Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.fromEmail)) {
-      errors.fromEmail = 'Please enter a valid email address'
+  // Helper method to find setting value in nested structure
+  findSettingValue(settingsData, section, key) {
+    // Map section names to settingsData keys
+    const sectionMap = {
+      'Tax & Pricing': 'taxPricing',
+      'Business Information': 'businessInfo',
+      'Email & Notification': 'emailNotifications',
+      'Currency & Regional': 'currencyRegional',
+      'Security': 'security'
     }
 
-    return {
-      isValid: Object.keys(errors).length === 0,
-      errors
+    const sectionKey = sectionMap[section]
+    if (!sectionKey || !settingsData[sectionKey]) {
+      return undefined
     }
+
+    // Map API keys to form field names
+    const keyMap = {
+      'defaultGstRate': 'defaultGstRate',
+      'defaultProfitMargin': 'defaultProfitMargin',
+      'businessName': 'businessName',
+      'gstNumber': 'gstNumber',
+      'businessAddress': 'businessAddress',
+      'supportEmail': 'supportEmail',
+      'adminEmail': 'adminEmail',
+      'enableOrderNotifications': 'enableOrderNotifications',
+      'currency': 'currency',
+      'dateFormat': 'dateFormat',
+      'timeZone': 'timeZone',
+      'sessionTimeout': 'sessionTimeout',
+      'passwordExpiry': 'passwordExpiry',
+      'enableTwoFactor': 'enableTwoFactor'
+    }
+
+    const fieldName = keyMap[key] || key
+    return settingsData[sectionKey][fieldName]
   }
 
-  validateAWSSettings(data) {
-    const errors = {}
+  // Transform API settings response to form structure
+  transformSettingsToForm(apiSections) {
+    // Define default values - these will be used if API response is empty or missing fields
+    const formData = {
+      taxPricing: {
+        defaultGstRate: 15,
+        defaultProfitMargin: 25
+      },
+      businessInfo: {
+        businessName: 'Farm2Fridge',
+        gstNumber: '',
+        businessAddress: ''
+      },
+      emailNotifications: {
+        supportEmail: '',
+        adminEmail: '',
+        enableOrderNotifications: false
+      },
+      currencyRegional: {
+        currency: 'NZD',
+        dateFormat: 'DD/MM/YYYY',
+        timeZone: 'Pacific/Auckland'
+      },
+      security: {
+        sessionTimeout: 30,
+        passwordExpiry: 90,
+        enableTwoFactor: false
+      }
+    }
 
-    if (!data.accessKeyId?.trim()) {
-      errors.accessKeyId = 'Access Key ID is required'
-    }
-    if (!data.secretAccessKey?.trim()) {
-      errors.secretAccessKey = 'Secret Access Key is required'
-    }
-    if (!data.bucketName?.trim()) {
-      errors.bucketName = 'Bucket Name is required'
-    }
-    if (!data.region?.trim()) {
-      errors.region = 'Region is required'
+    // Key mapping from API keys to form structure
+    // Fields with 'useDefaultIfEmpty: true' will use default value if API returns empty string
+    const keyMapping = {
+      'defaultGstRate': { section: 'Tax & Pricing', field: 'taxPricing', prop: 'defaultGstRate', type: 'number', useDefaultIfEmpty: true },
+      'defaultProfitMargin': { section: 'Tax & Pricing', field: 'taxPricing', prop: 'defaultProfitMargin', type: 'number', useDefaultIfEmpty: true },
+      'businessName': { section: 'Business Information', field: 'businessInfo', prop: 'businessName', type: 'string', useDefaultIfEmpty: true },
+      'gstNumber': { section: 'Business Information', field: 'businessInfo', prop: 'gstNumber', type: 'string', useDefaultIfEmpty: false },
+      'businessAddress': { section: 'Business Information', field: 'businessInfo', prop: 'businessAddress', type: 'string', useDefaultIfEmpty: false },
+      'supportEmail': { section: 'Email & Notification', field: 'emailNotifications', prop: 'supportEmail', type: 'string', useDefaultIfEmpty: false },
+      'adminEmail': { section: 'Email & Notification', field: 'emailNotifications', prop: 'adminEmail', type: 'string', useDefaultIfEmpty: false },
+      'enableOrderNotifications': { section: 'Email & Notification', field: 'emailNotifications', prop: 'enableOrderNotifications', type: 'boolean', useDefaultIfEmpty: true },
+      'currency': { section: 'Currency & Regional', field: 'currencyRegional', prop: 'currency', type: 'string', useDefaultIfEmpty: true },
+      'dateFormat': { section: 'Currency & Regional', field: 'currencyRegional', prop: 'dateFormat', type: 'string', useDefaultIfEmpty: true },
+      'timeZone': { section: 'Currency & Regional', field: 'currencyRegional', prop: 'timeZone', type: 'string', useDefaultIfEmpty: true },
+      'sessionTimeout': { section: 'Security', field: 'security', prop: 'sessionTimeout', type: 'number', useDefaultIfEmpty: true },
+      'passwordExpiry': { section: 'Security', field: 'security', prop: 'passwordExpiry', type: 'number', useDefaultIfEmpty: true },
+      'enableTwoFactor': { section: 'Security', field: 'security', prop: 'enableTwoFactor', type: 'boolean', useDefaultIfEmpty: true }
     }
 
-    return {
-      isValid: Object.keys(errors).length === 0,
-      errors
+    // If API response is null, undefined, or empty array, return defaults
+    if (!apiSections || !Array.isArray(apiSections) || apiSections.length === 0) {
+      return formData
     }
+
+    // Process each section from API
+    apiSections.forEach(section => {
+      // Skip if section is invalid or has no settings
+      if (!section || !section.settings || !Array.isArray(section.settings) || section.settings.length === 0) {
+        return
+      }
+
+      // Process each setting in the section
+      section.settings.forEach(setting => {
+        // Skip if setting is invalid
+        if (!setting || !setting.key) {
+          return
+        }
+
+        const mapping = keyMapping[setting.key]
+        if (!mapping || !formData[mapping.field]) {
+          return
+        }
+
+        let value = setting.value
+        
+        // Handle null/undefined - always use default
+        if (value === null || value === undefined) {
+          return // Keep default value
+        }
+
+        // Handle empty string for fields that should use defaults
+        if (mapping.useDefaultIfEmpty && value === '') {
+          return // Keep default value
+        }
+
+        // Convert value based on type
+        if (mapping.type === 'number') {
+          const numValue = parseFloat(value)
+          // If conversion fails, keep default; otherwise use parsed value or 0
+          if (!isNaN(numValue)) {
+            formData[mapping.field][mapping.prop] = numValue
+          }
+          // If NaN, keep default (don't update)
+        } else if (mapping.type === 'boolean') {
+          // Convert various boolean representations
+          formData[mapping.field][mapping.prop] = (
+            value === 'true' || 
+            value === true || 
+            value === '1' || 
+            value === 1
+          )
+        } else {
+          // String type - use the value (even if empty string, unless useDefaultIfEmpty is true)
+          formData[mapping.field][mapping.prop] = value
+        }
+      })
+    })
+
+    return formData
   }
 }
 
