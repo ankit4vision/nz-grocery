@@ -1,324 +1,293 @@
-import api from '../api'
+import apiClient from '../config/apiClient'
+import { handleApiError } from '../utils/errorHandler'
 
 // Banner Management
 export const bannerService = {
   // Get all banners
-  getBanners: async (params = {}) => {
+  async getBanners(params = {}) {
     try {
-      const response = await api.get('/content/banners', { params })
-      return response.data
+      const response = await apiClient.get('/banners/', { params })
+      return {
+        success: true,
+        data: response.data,
+        message: 'Banners fetched successfully'
+      }
     } catch (error) {
-      console.error('Error fetching banners:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
   // Get banner by ID
-  getBannerById: async (id) => {
+  async getBannerById(id) {
     try {
-      const response = await api.get(`/content/banners/${id}`)
-      return response.data
+      const response = await apiClient.get(`/banners/${id}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Banner fetched successfully'
+      }
     } catch (error) {
-      console.error('Error fetching banner:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
-  // Create new banner
-  createBanner: async (bannerData) => {
+  // Create new banner (multipart/form-data)
+  async createBanner(bannerData) {
     try {
       const formData = new FormData()
       
-      // Append all banner data to FormData
-      Object.keys(bannerData).forEach(key => {
-        if (key === 'image' && bannerData[key]) {
-          formData.append('image', bannerData[key])
-        } else if (bannerData[key] !== null && bannerData[key] !== undefined) {
-          formData.append(key, bannerData[key])
+      // Required fields
+      formData.append('banner_title', bannerData.banner_title)
+      formData.append('banner_type', bannerData.banner_type)
+      
+      // Handle image file (could be File object or base64 string)
+      if (bannerData.image_file) {
+        // If it's a File object, use it directly
+        formData.append('image_file', bannerData.image_file)
+      } else if (bannerData.image && bannerData.image.startsWith('data:image/')) {
+        // If it's a base64 data URL, convert it to a File
+        const base64Data = bannerData.image
+        const [metadata, base64String] = base64Data.split(',')
+        const mimeMatch = metadata.match(/:(.*?);/)
+        const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+        
+        // Convert base64 to blob
+        const byteCharacters = atob(base64String)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
         }
-      })
+        const byteArray = new Uint8Array(byteNumbers)
+        const blob = new Blob([byteArray], { type: mimeType })
+        
+        // Create File from blob
+        const file = new File([blob], 'banner-image', { type: mimeType })
+        formData.append('image_file', file)
+      }
+      
+      // Optional fields
+      if (bannerData.banner_description !== undefined && bannerData.banner_description !== null) {
+        formData.append('banner_description', bannerData.banner_description)
+      }
+      if (bannerData.link_url !== undefined && bannerData.link_url !== null) {
+        formData.append('link_url', bannerData.link_url)
+      }
+      if (bannerData.position !== undefined && bannerData.position !== null) {
+        formData.append('position', bannerData.position)
+      }
+      if (bannerData.target_category_id !== undefined && bannerData.target_category_id !== null) {
+        formData.append('target_category_id', String(bannerData.target_category_id))
+      }
+      if (bannerData.target_product_id !== undefined && bannerData.target_product_id !== null) {
+        formData.append('target_product_id', String(bannerData.target_product_id))
+      }
+      if (bannerData.start_date !== undefined && bannerData.start_date !== null) {
+        formData.append('start_date', bannerData.start_date)
+      }
+      if (bannerData.end_date !== undefined && bannerData.end_date !== null) {
+        formData.append('end_date', bannerData.end_date)
+      }
+      if (bannerData.is_active !== undefined && bannerData.is_active !== null) {
+        formData.append('is_active', String(bannerData.is_active))
+      }
+      if (bannerData.sort_order !== undefined && bannerData.sort_order !== null) {
+        formData.append('sort_order', String(bannerData.sort_order))
+      }
 
-      const response = await api.post('/content/banners', formData, {
+      const config = {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
-      })
-      return response.data
+      }
+
+      const response = await apiClient.post('/banners/', formData, config)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Banner created successfully'
+      }
     } catch (error) {
-      console.error('Error creating banner:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
-  // Update banner
-  updateBanner: async (id, bannerData) => {
+  // Update banner (JSON - according to OpenAPI spec)
+  async updateBanner(id, bannerData) {
     try {
-      const formData = new FormData()
-      
-      // Append all banner data to FormData
-      Object.keys(bannerData).forEach(key => {
-        if (key === 'image' && bannerData[key]) {
-          formData.append('image', bannerData[key])
-        } else if (bannerData[key] !== null && bannerData[key] !== undefined) {
-          formData.append(key, bannerData[key])
-        }
-      })
-
-      const response = await api.put(`/content/banners/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      return response.data
+      const response = await apiClient.put(`/banners/${id}`, bannerData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Banner updated successfully'
+      }
     } catch (error) {
-      console.error('Error updating banner:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
   // Delete banner
-  deleteBanner: async (id) => {
+  async deleteBanner(id) {
     try {
-      const response = await api.delete(`/content/banners/${id}`)
-      return response.data
+      await apiClient.delete(`/banners/${id}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Banner deleted successfully'
+      }
     } catch (error) {
-      console.error('Error deleting banner:', error)
-      throw error
-    }
-  },
-
-  // Update banner status
-  updateBannerStatus: async (id, status) => {
-    try {
-      const response = await api.patch(`/content/banners/${id}/status`, { status })
-      return response.data
-    } catch (error) {
-      console.error('Error updating banner status:', error)
-      throw error
+      return handleApiError(error)
     }
   }
 }
 
-// FAQ Management
+// FAQ Category Management
+export const faqCategoryService = {
+  // Get all FAQ categories
+  async getCategories(params = {}) {
+    try {
+      const response = await apiClient.get('/faq/categories/', { params })
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ categories fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get FAQ category by ID
+  async getCategoryById(id) {
+    try {
+      const response = await apiClient.get(`/faq/categories/${id}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ category fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Create new FAQ category
+  async createCategory(categoryData) {
+    try {
+      const response = await apiClient.post('/faq/categories/', categoryData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ category created successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Update FAQ category
+  async updateCategory(id, categoryData) {
+    try {
+      const response = await apiClient.put(`/faq/categories/${id}`, categoryData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ category updated successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Delete FAQ category
+  async deleteCategory(id) {
+    try {
+      await apiClient.delete(`/faq/categories/${id}`)
+      return {
+        success: true,
+        data: null,
+        message: 'FAQ category deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+}
+
+// FAQ Entry Management
 export const faqService = {
-  // Get all FAQs
-  getFAQs: async (params = {}) => {
+  // Get all FAQ entries
+  async getFAQs(params = {}) {
     try {
-      const response = await api.get('/content/faqs', { params })
-      return response.data
+      const response = await apiClient.get('/faq/entries/', { params })
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQs fetched successfully'
+      }
     } catch (error) {
-      console.error('Error fetching FAQs:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
-  // Get FAQ by ID
-  getFAQById: async (id) => {
+  // Get FAQ entry by ID
+  async getFAQById(id) {
     try {
-      const response = await api.get(`/content/faqs/${id}`)
-      return response.data
+      const response = await apiClient.get(`/faq/entries/${id}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ fetched successfully'
+      }
     } catch (error) {
-      console.error('Error fetching FAQ:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
-  // Create new FAQ
-  createFAQ: async (faqData) => {
+  // Create new FAQ entry
+  async createFAQ(faqData) {
     try {
-      const response = await api.post('/content/faqs', faqData)
-      return response.data
+      const response = await apiClient.post('/faq/entries/', faqData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ created successfully'
+      }
     } catch (error) {
-      console.error('Error creating FAQ:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
-  // Update FAQ
-  updateFAQ: async (id, faqData) => {
+  // Update FAQ entry
+  async updateFAQ(id, faqData) {
     try {
-      const response = await api.put(`/content/faqs/${id}`, faqData)
-      return response.data
+      const response = await apiClient.put(`/faq/entries/${id}`, faqData)
+      return {
+        success: true,
+        data: response.data,
+        message: 'FAQ updated successfully'
+      }
     } catch (error) {
-      console.error('Error updating FAQ:', error)
-      throw error
+      return handleApiError(error)
     }
   },
 
-  // Delete FAQ
-  deleteFAQ: async (id) => {
+  // Delete FAQ entry
+  async deleteFAQ(id) {
     try {
-      const response = await api.delete(`/content/faqs/${id}`)
-      return response.data
+      await apiClient.delete(`/faq/entries/${id}`)
+      return {
+        success: true,
+        data: null,
+        message: 'FAQ deleted successfully'
+      }
     } catch (error) {
-      console.error('Error deleting FAQ:', error)
-      throw error
-    }
-  },
-
-  // Reorder FAQs
-  reorderFAQs: async (faqIds) => {
-    try {
-      const response = await api.post('/content/faqs/reorder', { faqIds })
-      return response.data
-    } catch (error) {
-      console.error('Error reordering FAQs:', error)
-      throw error
-    }
-  }
-}
-
-// Notification Management
-export const notificationService = {
-  // Get all notifications
-  getNotifications: async (params = {}) => {
-    try {
-      const response = await api.get('/content/notifications', { params })
-      return response.data
-    } catch (error) {
-      console.error('Error fetching notifications:', error)
-      throw error
-    }
-  },
-
-  // Get notification by ID
-  getNotificationById: async (id) => {
-    try {
-      const response = await api.get(`/content/notifications/${id}`)
-      return response.data
-    } catch (error) {
-      console.error('Error fetching notification:', error)
-      throw error
-    }
-  },
-
-  // Send new notification
-  sendNotification: async (notificationData) => {
-    try {
-      const response = await api.post('/content/notifications', notificationData)
-      return response.data
-    } catch (error) {
-      console.error('Error sending notification:', error)
-      throw error
-    }
-  },
-
-  // Update notification
-  updateNotification: async (id, notificationData) => {
-    try {
-      const response = await api.put(`/content/notifications/${id}`, notificationData)
-      return response.data
-    } catch (error) {
-      console.error('Error updating notification:', error)
-      throw error
-    }
-  },
-
-  // Delete notification
-  deleteNotification: async (id) => {
-    try {
-      const response = await api.delete(`/content/notifications/${id}`)
-      return response.data
-    } catch (error) {
-      console.error('Error deleting notification:', error)
-      throw error
-    }
-  },
-
-  // Get notification statistics
-  getNotificationStats: async () => {
-    try {
-      const response = await api.get('/content/notifications/stats')
-      return response.data
-    } catch (error) {
-      console.error('Error fetching notification stats:', error)
-      throw error
-    }
-  },
-
-  // Test notification
-  testNotification: async (notificationData) => {
-    try {
-      const response = await api.post('/content/notifications/test', notificationData)
-      return response.data
-    } catch (error) {
-      console.error('Error testing notification:', error)
-      throw error
-    }
-  }
-}
-
-// Content Analytics
-export const contentAnalyticsService = {
-  // Get banner performance
-  getBannerPerformance: async (bannerId, dateRange) => {
-    try {
-      const response = await api.get(`/content/analytics/banners/${bannerId}`, {
-        params: { dateRange }
-      })
-      return response.data
-    } catch (error) {
-      console.error('Error fetching banner performance:', error)
-      throw error
-    }
-  },
-
-  // Get FAQ analytics
-  getFAQAnalytics: async (dateRange) => {
-    try {
-      const response = await api.get('/content/analytics/faqs', {
-        params: { dateRange }
-      })
-      return response.data
-    } catch (error) {
-      console.error('Error fetching FAQ analytics:', error)
-      throw error
-    }
-  },
-
-  // Get notification analytics
-  getNotificationAnalytics: async (dateRange) => {
-    try {
-      const response = await api.get('/content/analytics/notifications', {
-        params: { dateRange }
-      })
-      return response.data
-    } catch (error) {
-      console.error('Error fetching notification analytics:', error)
-      throw error
-    }
-  }
-}
-
-// Content Settings
-export const contentSettingsService = {
-  // Get content settings
-  getContentSettings: async () => {
-    try {
-      const response = await api.get('/content/settings')
-      return response.data
-    } catch (error) {
-      console.error('Error fetching content settings:', error)
-      throw error
-    }
-  },
-
-  // Update content settings
-  updateContentSettings: async (settings) => {
-    try {
-      const response = await api.put('/content/settings', settings)
-      return response.data
-    } catch (error) {
-      console.error('Error updating content settings:', error)
-      throw error
+      return handleApiError(error)
     }
   }
 }
 
 export default {
   bannerService,
-  faqService,
-  notificationService,
-  contentAnalyticsService,
-  contentSettingsService
+  faqCategoryService,
+  faqService
 }
