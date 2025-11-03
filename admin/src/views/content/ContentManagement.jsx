@@ -3,6 +3,7 @@ import { Container, Row, Col, Nav, Tab } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import BannersPromotions from './BannersPromotions'
+import FAQCategoryManagement from './FAQCategoryManagement'
 import FAQManagement from './FAQManagement'
 import Notifications from './Notifications'
 
@@ -34,6 +35,14 @@ const ContentManagement = () => {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link 
+                    eventKey="faq-categories" 
+                    className={`border-0 px-4 py-3 ${activeTab === 'faq-categories' ? 'text-success border-bottom border-success border-2 bg-transparent' : 'text-muted'}`}
+                  >
+                    FAQ Categories
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link 
                     eventKey="faq" 
                     className={`border-0 px-4 py-3 ${activeTab === 'faq' ? 'text-success border-bottom border-success border-2 bg-transparent' : 'text-muted'}`}
                   >
@@ -54,6 +63,9 @@ const ContentManagement = () => {
               <Tab.Content>
                 <Tab.Pane eventKey="banners">
                   <BannersPromotions />
+                </Tab.Pane>
+                <Tab.Pane eventKey="faq-categories">
+                  <FAQCategoryManagement />
                 </Tab.Pane>
                 <Tab.Pane eventKey="faq">
                   <FAQManagement />
