@@ -20,6 +20,58 @@
 - Toast notifications for all operations
 - Image preview in edit form
 
+### 3. Content Management Module - Banners & FAQs ✅
+**Banners Management:**
+- List Banners - `GET /banners/` (with filters: is_active, position, banner_type)
+- Get Banner Details - `GET /banners/{banner_id}`
+- Create Banner (with image upload) - `POST /banners/` (multipart/form-data)
+- Update Banner - `PUT /banners/{banner_id}` (JSON)
+- Delete Banner - `DELETE /banners/{banner_id}`
+- Image upload support (base64 to File conversion for multipart/form-data)
+- Toast notifications for all operations
+- Image preview in list and form
+- Status filtering (Active/Inactive)
+- Banner type filtering (homepage, category, product)
+
+**FAQ Category Management:**
+- List FAQ Categories - `GET /faq/categories/` (with optional is_active filter)
+- Get FAQ Category Details - `GET /faq/categories/{category_id}`
+- Create FAQ Category - `POST /faq/categories/`
+- Update FAQ Category - `PUT /faq/categories/{category_id}`
+- Delete FAQ Category - `DELETE /faq/categories/{category_id}`
+- Toast notifications for all operations
+- Status filtering (All/Active/Inactive)
+- Auto-sorting by sort_order
+
+**FAQ Entry Management:**
+- List FAQ Entries - `GET /faq/entries/` (with optional category_id, is_active filters)
+- Get FAQ Entry Details - `GET /faq/entries/{faq_id}`
+- Create FAQ Entry - `POST /faq/entries/` (requires category_id)
+- Update FAQ Entry - `PUT /faq/entries/{faq_id}`
+- Delete FAQ Entry - `DELETE /faq/entries/{faq_id}`
+- Toast notifications for all operations
+- Category selection dropdown (loads from FAQ categories API)
+- Expandable FAQ cards
+
+**Files Updated:**
+- `admin/src/services/contentService.js` ✅ Completed
+- `admin/src/views/content/BannersPromotions.jsx` ✅ Completed
+- `admin/src/views/content/FAQCategoryManagement.jsx` ✅ Completed
+- `admin/src/views/content/FAQManagement.jsx` ✅ Completed
+- `admin/src/components/pages/content/BannerFormModal.jsx` ✅ Completed
+- `admin/src/components/pages/content/FAQCategoryFormModal.jsx` ✅ Completed
+- `admin/src/components/pages/content/FAQFormModal.jsx` ✅ Completed
+- `admin/src/views/content/ContentManagement.jsx` ✅ Updated with tabs
+
+**Features Implemented:**
+- Full CRUD operations for Banners, FAQ Categories, and FAQ Entries
+- Image upload for banners (base64 to File conversion)
+- Category management before FAQ creation workflow
+- Toast notifications for success/error messages
+- Loading states and error handling
+- Filtering and search functionality
+- Responsive table/grid views
+
 ---
 
 ## 📁 Project File Structure
@@ -51,7 +103,7 @@ nz-grocery/
 │       │   ├── orderService.js            # Order management service (pending)
 │       │   ├── customerService.js         # Customer management service (pending)
 │       │   ├── inventoryService.js        # Inventory management service (pending)
-│       │   ├── contentService.js          # Content management service (pending)
+│       │   ├── contentService.js          # ✅ Content management service (Banners, FAQ Categories, FAQ Entries)
 │       │   ├── subCategoryService.js      # Subcategory management service (pending)
 │       │   ├── roleService.js             # Role management service (pending)
 │       │   └── settingsService.js         # Settings service (pending)
@@ -74,6 +126,10 @@ nz-grocery/
 │       │   └── 📁 pages/                   # Page-specific components
 │       │       └── 📁 categories/
 │       │           └── CategoryForm.jsx    # ✅ Category form component
+│       │       └── 📁 content/
+│       │           ├── BannerFormModal.jsx  # ✅ Banner form component
+│       │           ├── FAQCategoryFormModal.jsx # ✅ FAQ Category form component
+│       │           └── FAQFormModal.jsx     # ✅ FAQ Entry form component
 │       │       └── 📁 products/
 │       │           └── ProductForm.jsx     # Product form (pending)
 │       │       └── 📁 orders/
@@ -83,6 +139,12 @@ nz-grocery/
 │       ├── 📁 views/                        # Page-level view components
 │       │   ├── 📁 categories/
 │       │   │   └── CategoriesList.jsx      # ✅ Categories list page
+│       │   ├── 📁 content/
+│       │   │   ├── ContentManagement.jsx   # ✅ Content management page (with tabs)
+│       │   │   ├── BannersPromotions.jsx   # ✅ Banners management page
+│       │   │   ├── FAQCategoryManagement.jsx # ✅ FAQ Categories management page
+│       │   │   ├── FAQManagement.jsx       # ✅ FAQ Entries management page
+│       │   │   └── Notifications.jsx        # Notifications page (pending)
 │       │   ├── 📁 dashboard/
 │       │   │   └── Dashboard.jsx           # Dashboard page (pending)
 │       │   ├── 📁 products/
@@ -165,13 +227,13 @@ nz-grocery/
 **Completed Services**:
 - ✅ `authService.js` - Authentication (login, logout)
 - ✅ `categoryService.js` - Category CRUD operations
+- ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
 
 **Pending Services**:
 - ⏳ `productService.js` - Products management
 - ⏳ `orderService.js` - Orders management
 - ⏳ `customerService.js` - Customers management
 - ⏳ `inventoryService.js` - Inventory management
-- ⏳ `contentService.js` - Content management (banners, FAQs)
 - ⏳ `userService.js` - User management
 - ⏳ `settingsService.js` - Settings management
 
@@ -463,32 +525,56 @@ ToastProvider.jsx
 
 ---
 
-### Priority 8: Content Management Module 📝
+### Priority 8: Content Management Module 📝 ✅ **COMPLETED**
 **Why Seventh**: Manage site content.
 
-**APIs Needed**:
-- `GET /banners` - List banners
-- `POST /banners` - Create banner
-- `PUT /banners/{id}` - Update banner
-- `DELETE /banners/{id}` - Delete banner
-- `GET /faqs` - List FAQs
-- `POST /faqs` - Create FAQ
-- `PUT /faqs/{id}` - Update FAQ
-- `DELETE /faqs/{id}` - Delete FAQ
-- `GET /notifications` - List notifications
-- `POST /notifications` - Send notification
+**APIs Integrated**:
+- **Banners:**
+  - `GET /banners/` - List banners (with filters: is_active, position, banner_type)
+  - `GET /banners/{banner_id}` - Get banner details
+  - `POST /banners/` - Create banner (multipart/form-data with image_file)
+  - `PUT /banners/{banner_id}` - Update banner (JSON)
+  - `DELETE /banners/{banner_id}` - Delete banner
 
-**Files to Update**:
-- `admin/src/services/contentService.js`
-- `admin/src/views/content/ContentManagement.jsx`
-- `admin/src/views/content/BannersPromotions.jsx`
-- `admin/src/views/content/FAQManagement.jsx`
-- `admin/src/views/content/Notifications.jsx`
-- `admin/src/components/pages/content/BannerFormModal.jsx`
-- `admin/src/components/pages/content/FAQFormModal.jsx`
-- `admin/src/components/pages/content/NotificationFormModal.jsx`
+- **FAQ Categories:**
+  - `GET /faq/categories/` - List FAQ categories (with optional is_active filter)
+  - `GET /faq/categories/{category_id}` - Get FAQ category details
+  - `POST /faq/categories/` - Create FAQ category
+  - `PUT /faq/categories/{category_id}` - Update FAQ category
+  - `DELETE /faq/categories/{category_id}` - Delete FAQ category
 
-**Estimated Time**: 4-5 hours
+- **FAQ Entries:**
+  - `GET /faq/entries/` - List FAQ entries (with optional category_id, is_active filters)
+  - `GET /faq/entries/{faq_id}` - Get FAQ entry details
+  - `POST /faq/entries/` - Create FAQ entry (requires category_id)
+  - `PUT /faq/entries/{faq_id}` - Update FAQ entry
+  - `DELETE /faq/entries/{faq_id}` - Delete FAQ entry
+
+**Files Updated**:
+- `admin/src/services/contentService.js` ✅ Completed
+- `admin/src/views/content/ContentManagement.jsx` ✅ Completed (with tabs for Banners, FAQ Categories, FAQs, Notifications)
+- `admin/src/views/content/BannersPromotions.jsx` ✅ Completed
+- `admin/src/views/content/FAQCategoryManagement.jsx` ✅ Completed
+- `admin/src/views/content/FAQManagement.jsx` ✅ Completed
+- `admin/src/components/pages/content/BannerFormModal.jsx` ✅ Completed
+- `admin/src/components/pages/content/FAQCategoryFormModal.jsx` ✅ Completed
+- `admin/src/components/pages/content/FAQFormModal.jsx` ✅ Completed
+- `admin/src/views/content/Notifications.jsx` ⏳ Pending
+
+**Features Implemented**:
+- Full CRUD operations for Banners, FAQ Categories, and FAQ Entries
+- Image upload for banners (base64 to File conversion for multipart/form-data)
+- FAQ category management UI (table view with sorting)
+- Category selection in FAQ entry form (dropdown loads from API)
+- Toast notifications for all operations
+- Loading states and error handling
+- Filtering and search functionality
+- Responsive grid/table views
+- Image preview in banner list
+- Expandable FAQ cards
+- Status badges and indicators
+
+**Time Taken**: Completed
 
 ---
 
@@ -591,12 +677,14 @@ export default moduleService
 ✅ **Completed**:
 - Authentication Module
 - Category Management Module
+- Content Management Module (Banners, FAQ Categories, FAQ Entries)
 
 ⏳ **In Progress**:
 - None
 
 📋 **Next Up**:
 - Dashboard Module (Priority 2)
+- Content Management Module - Notifications (remaining part of Priority 8)
 
 ---
 
@@ -1129,5 +1217,5 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Category Module Completed - Ready for Dashboard Module Integration
+**Status**: Category and Content Management (Banners, FAQ Categories, FAQs) Modules Completed - Ready for Dashboard Module Integration
 
