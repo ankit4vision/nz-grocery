@@ -439,6 +439,7 @@ const AddProductWizard = () => {
             formData={formData}
             onCreateProduct={handleCreateProduct}
             loading={loading}
+            productId={createdProductId || (mode === 'edit' ? productId : null)}
           />
         )
       default:
@@ -476,7 +477,7 @@ const AddProductWizard = () => {
 
   // Get submit button text
   const getSubmitButtonText = () => {
-    return mode === 'edit' ? 'Update Product' : 'Create Product'
+    return 'Submit Product'
   }
 
   // Show loading state while loading product data for edit

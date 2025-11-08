@@ -7,17 +7,25 @@ import {
   faLayerGroup, 
   faImage as faImageIcon,
   faEdit,
-  faArrowLeft,
-  faCheckCircle
+  faCheckCircle,
+  faSpinner
 } from '@fortawesome/free-solid-svg-icons'
 import { productService } from '../../../../services/productService'
+import { categoryService } from '../../../../services/categoryService'
 
-const ReviewStep = ({ formData, onCreateProduct, loading }) => {
+const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
   const [attributes, setAttributes] = useState([])
+  const [productData, setProductData] = useState(null)
+  const [categories, setCategories] = useState([])
+  const [loadingData, setLoadingData] = useState(false)
 
   useEffect(() => {
     fetchAttributes()
-  }, [])
+    if (productId) {
+      fetchFullProductDetails()
+    }
+    fetchCategories()
+  }, [productId])
 
   const fetchAttributes = async () => {
     try {
@@ -28,6 +36,38 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
     } catch (error) {
       console.error('Error fetching attributes:', error)
     }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const response = await categoryService.getCategoryOptions(true)
+      if (response.success && response.data) {
+        setCategories(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
+
+  const fetchFullProductDetails = async () => {
+    try {
+      setLoadingData(true)
+      const response = await productService.getProductFullDetails(productId)
+      if (response.success && response.data) {
+        setProductData(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching product details:', error)
+    } finally {
+      setLoadingData(false)
+    }
+  }
+
+  // Get category name from ID
+  const getCategoryName = (categoryId) => {
+    if (!categoryId) return '-'
+    const category = categories.find(c => c.category_id === parseInt(categoryId))
+    return category ? category.category_name : categoryId
   }
 
   const formatValue = (value) => {
@@ -55,21 +95,53 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
   }
 
   const getDietaryAttributes = () => {
+    // Use API data if available, otherwise use formData
+    if (productData && productData.attributes) {
+      return productData.attributes
+        .filter(attr => {
+          const attrDef = attributes.find(a => a.attribute_id === attr.attribute_id)
+          return attrDef && (attrDef.attribute_type === 'boolean' || attrDef.attribute_type === 'bool') && 
+                 (attr.custom_value === 'true' || attr.custom_value === true)
+        })
+        .map(attr => {
+          const attrDef = attributes.find(a => a.attribute_id === attr.attribute_id)
+          return formatAttributeName(attrDef ? attrDef.attribute_name : `Attribute ${attr.attribute_id}`)
+        })
+    }
+    
     const attributeValues = formData.attributes.attributeValues || {}
     return Object.entries(attributeValues)
       .filter(([id, value]) => {
         const type = getAttributeType(id)
-        return type === 'bool' && value === true
+        return (type === 'boolean' || type === 'bool') && value === true
       })
       .map(([id]) => getAttributeName(id))
   }
 
   const getProductDetailAttributes = () => {
+    // Use API data if available, otherwise use formData
+    if (productData && productData.attributes) {
+      return productData.attributes
+        .filter(attr => {
+          const attrDef = attributes.find(a => a.attribute_id === attr.attribute_id)
+          return attrDef && (attrDef.attribute_type === 'text' || attrDef.attribute_type === 'textfield' || attrDef.attribute_type === 'date') &&
+                 attr.custom_value && attr.custom_value !== '' && attr.custom_value !== null
+        })
+        .map(attr => {
+          const attrDef = attributes.find(a => a.attribute_id === attr.attribute_id)
+          return {
+            id: attr.attribute_id,
+            name: formatAttributeName(attrDef ? attrDef.attribute_name : `Attribute ${attr.attribute_id}`),
+            value: attr.custom_value
+          }
+        })
+    }
+    
     const attributeValues = formData.attributes.attributeValues || {}
     return Object.entries(attributeValues)
       .filter(([id, value]) => {
         const type = getAttributeType(id)
-        return (type === 'textfield' || type === 'date') && value !== '' && value !== null && value !== undefined
+        return (type === 'text' || type === 'textfield' || type === 'date') && value !== '' && value !== null && value !== undefined
       })
       .map(([id, value]) => ({
         id,
@@ -79,11 +151,58 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
   }
 
   const getPrimaryImage = () => {
-    if (formData.images.uploadedImages.length > 0) {
-      return formData.images.uploadedImages[formData.images.primaryImageIndex]
+    const images = productData?.images || formData.images.uploadedImages || []
+    const primaryIndex = productData?.images 
+      ? productData.images.findIndex(img => img.is_primary) 
+      : formData.images.primaryImageIndex
+    
+    if (images.length > 0 && primaryIndex >= 0) {
+      return images[primaryIndex]
     }
     return null
   }
+
+  // Get display data - prefer API data, fallback to formData
+  const getDisplayData = () => {
+    if (productData) {
+      const product = productData.product || productData
+      return {
+        name: product.product_name || formData.basicInfo.name,
+        category: getCategoryName(product.category_id) || formData.basicInfo.category,
+        profitMargin: product.margin || formData.basicInfo.profitMargin,
+        description: product.full_description || product.short_description || formData.basicInfo.description,
+        sku: product.sku || formData.basicInfo.sku,
+        gstRate: product.gst || formData.basicInfo.gstRate,
+        variants: productData.variants || formData.variants.productVariants,
+        images: productData.images || formData.images.uploadedImages,
+        primaryImageIndex: productData.images 
+          ? productData.images.findIndex(img => img.is_primary) 
+          : formData.images.primaryImageIndex
+      }
+    }
+    return {
+      name: formData.basicInfo.name,
+      category: getCategoryName(formData.basicInfo.category) || formData.basicInfo.category,
+      profitMargin: formData.basicInfo.profitMargin,
+      description: formData.basicInfo.description,
+      sku: formData.basicInfo.sku,
+      gstRate: formData.basicInfo.gstRate,
+      variants: formData.variants.productVariants,
+      images: formData.images.uploadedImages,
+      primaryImageIndex: formData.images.primaryImageIndex
+    }
+  }
+
+  if (loadingData) {
+    return (
+      <div className="text-center py-5">
+        <FontAwesomeIcon icon={faSpinner} spin className="text-success fs-1 mb-3" />
+        <p className="text-muted">Loading product details...</p>
+      </div>
+    )
+  }
+
+  const displayData = getDisplayData()
 
   return (
     <div>
@@ -104,24 +223,24 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
           <Row>
             <Col md={6}>
               <div className="mb-2">
-                <strong>Product Name:</strong> {formatValue(formData.basicInfo.name)}
+                <strong>Product Name:</strong> {formatValue(displayData.name)}
               </div>
               <div className="mb-2">
-                <strong>Category:</strong> {formatValue(formData.basicInfo.category)}
+                <strong>Category:</strong> {formatValue(displayData.category)}
               </div>
               <div className="mb-2">
-                <strong>Profit Margin:</strong> {formatValue(formData.basicInfo.profitMargin)}%
+                <strong>Profit Margin:</strong> {displayData.profitMargin ? `${formatValue(displayData.profitMargin)}%` : '-'}
               </div>
             </Col>
             <Col md={6}>
               <div className="mb-2">
-                <strong>Description:</strong> {formatValue(formData.basicInfo.description)}
+                <strong>Description:</strong> {formatValue(displayData.description)}
               </div>
               <div className="mb-2">
-                <strong>SKU Code:</strong> {formatValue(formData.basicInfo.sku)}
+                <strong>SKU Code:</strong> {formatValue(displayData.sku)}
               </div>
               <div className="mb-2">
-                <strong>GST Rate:</strong> {formatValue(formData.basicInfo.gstRate)}%
+                <strong>GST Rate:</strong> {displayData.gstRate ? `${formatValue(displayData.gstRate)}%` : '-'}
               </div>
             </Col>
           </Row>
@@ -199,39 +318,62 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
           </div>
           
           <div className="mb-3">
-            <strong>Product Variants:</strong>
+            <strong>Product Variants ({displayData.variants?.length || 0}):</strong>
           </div>
           
-          {formData.variants.productVariants.map((variant, index) => (
-            <div key={index} className="border rounded p-3 mb-2">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <strong>Variant {index + 1}:</strong>
+          {displayData.variants && displayData.variants.length > 0 ? (
+            displayData.variants.map((variant, index) => (
+              <div key={variant.variant_id || variant.id || index} className="border rounded p-3 mb-2">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{variant.variant_name || variant.name || `Variant ${index + 1}`}:</strong>
+                  </div>
+                  <Badge bg={variant.is_active !== false && variant.status !== 'inactive' ? 'success' : 'secondary'}>
+                    {variant.is_active !== false && variant.status !== 'inactive' ? 'Active' : 'Inactive'}
+                  </Badge>
                 </div>
-                <Badge bg={variant.status === 'active' ? 'success' : 'secondary'}>
-                  {variant.status}
-                </Badge>
+                <Row className="mt-2">
+                  <Col md={3}>
+                    <small className="text-muted">SKU:</small>
+                    <div>{formatValue(variant.sku)}</div>
+                  </Col>
+                  <Col md={3}>
+                    <small className="text-muted">Base Price:</small>
+                    <div>${formatValue(variant.base_price || variant.basePrice)}</div>
+                  </Col>
+                  <Col md={3}>
+                    <small className="text-muted">Sale Price:</small>
+                    <div>{variant.sale_price || variant.salePrice ? `$${formatValue(variant.sale_price || variant.salePrice)}` : '-'}</div>
+                  </Col>
+                  <Col md={3}>
+                    <small className="text-muted">Stock:</small>
+                    <div>{formatValue(variant.stock_quantity || variant.stock)}</div>
+                  </Col>
+                </Row>
               </div>
-              <Row className="mt-2">
-                <Col md={3}>
-                  <small className="text-muted">SKU:</small>
-                  <div>{formatValue(variant.sku)}</div>
-                </Col>
-                <Col md={3}>
-                  <small className="text-muted">Base:</small>
-                  <div>${formatValue(variant.basePrice)}</div>
-                </Col>
-                <Col md={3}>
-                  <small className="text-muted">Sale:</small>
-                  <div>${formatValue(variant.salePrice)}</div>
-                </Col>
-                <Col md={3}>
-                  <small className="text-muted">Stock:</small>
-                  <div>{formatValue(variant.stock)}</div>
-                </Col>
-              </Row>
+            ))
+          ) : (
+            <div className="text-muted">No variants added</div>
+          )}
+
+          {/* Bulk Pricing */}
+          {productData?.bulk_pricing && productData.bulk_pricing.length > 0 && (
+            <div className="mt-4">
+              <strong>Bulk Pricing Rules:</strong>
+              <div className="mt-2">
+                {productData.bulk_pricing.map((bp, index) => (
+                  <div key={bp.bulk_pricing_id || index} className="border rounded p-2 mb-2">
+                    <small>
+                      <strong>Quantity:</strong> {bp.minimum_quantity}
+                      {bp.maximum_quantity ? ` - ${bp.maximum_quantity}` : '+'} | 
+                      <strong> Type:</strong> {bp.discount_type === 'fixed' ? 'Fixed Price' : 'Percentage Discount'} | 
+                      <strong> Value:</strong> {bp.discount_value}
+                    </small>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          )}
         </Card.Body>
       </Card>
 
@@ -250,36 +392,44 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
           </div>
           
           <div className="mb-3">
-            <strong>Uploaded Images ({formData.images.uploadedImages.length}/4):</strong>
+            <strong>Uploaded Images ({displayData.images?.length || 0}/4):</strong>
           </div>
           
-          {formData.images.uploadedImages.length > 0 ? (
+          {displayData.images && displayData.images.length > 0 ? (
             <Row>
-              {formData.images.uploadedImages.map((image, index) => (
-                <Col md={3} key={image.id} className="mb-3">
-                  <div className="position-relative">
-                    <Image 
-                      src={image.url} 
-                      fluid 
-                      className="rounded border"
-                      style={{ height: '100px', objectFit: 'cover' }}
-                    />
-                    {index === formData.images.primaryImageIndex && (
-                      <Badge 
-                        bg="primary" 
-                        className="position-absolute top-0 end-0 m-1"
-                      >
-                        Primary
-                      </Badge>
-                    )}
-                    <div className="mt-1">
-                      <small className="text-muted text-truncate d-block">
-                        {image.name}
-                      </small>
+              {displayData.images.map((image, index) => {
+                const imageUrl = image.image_url || image.url
+                const imageName = image.image_alt_text || image.name || `Image ${index + 1}`
+                const isPrimary = image.is_primary !== undefined 
+                  ? image.is_primary 
+                  : (index === displayData.primaryImageIndex)
+                
+                return (
+                  <Col md={3} key={image.image_id || image.id || index} className="mb-3">
+                    <div className="position-relative">
+                      <Image 
+                        src={imageUrl} 
+                        fluid 
+                        className="rounded border"
+                        style={{ height: '100px', objectFit: 'cover' }}
+                      />
+                      {isPrimary && (
+                        <Badge 
+                          bg="primary" 
+                          className="position-absolute top-0 end-0 m-1"
+                        >
+                          Primary
+                        </Badge>
+                      )}
+                      <div className="mt-1">
+                        <small className="text-muted text-truncate d-block">
+                          {imageName}
+                        </small>
+                      </div>
                     </div>
-                  </div>
-                </Col>
-              ))}
+                  </Col>
+                )
+              })}
             </Row>
           ) : (
             <div className="text-muted">No images uploaded</div>
@@ -287,30 +437,28 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
         </Card.Body>
       </Card>
 
-      {/* Call to Action */}
-      <Card className="mb-4 bg-light">
-        <Card.Body className="text-center">
-          <h5 className="mb-2">Ready to create your product?</h5>
-          <p className="text-muted mb-3">
-            Review all information above and click "Create Product" to add it to your store.
-          </p>
-          <div className="d-flex justify-content-center gap-2">
-            <Button variant="outline-secondary">
-              <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
-              Back to Images
-            </Button>
-            <Button 
-              variant="success" 
-              onClick={onCreateProduct}
-              disabled={loading}
-              className="d-flex align-items-center text-white"
-            >
+      {/* Submit Button */}
+      <div className="d-flex justify-content-end mt-4">
+        <Button 
+          variant="success" 
+          onClick={onCreateProduct}
+          disabled={loading}
+          size="lg"
+          className="d-flex align-items-center text-white"
+        >
+          {loading ? (
+            <>
+              <FontAwesomeIcon icon={faSpinner} spin className="me-2" />
+              Submitting...
+            </>
+          ) : (
+            <>
               <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
-              Create Product
-            </Button>
-          </div>
-        </Card.Body>
-      </Card>
+              Submit Product
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   )
 }
