@@ -22,6 +22,7 @@ const Table = ({
   showPageSize = true,
   pageSizeOptions = [5, 10, 25, 50],
   onPageSizeChange,
+  serverSidePagination = false, // If true, skip client-side slicing (data is already paginated from server)
   // Sorting props
   sortable = true,
   sortableColumns = [], // Array of column keys that should be sortable
@@ -110,7 +111,12 @@ const Table = ({
   const totalPages = Math.ceil(totalItems / pageSize)
   const startIndex = (currentPage - 1) * pageSize
   const endIndex = Math.min(startIndex + pageSize, totalItems)
-  const paginatedData = pagination ? sortedData.slice(startIndex, startIndex + pageSize) : sortedData
+  
+  // If server-side pagination is enabled, don't slice the data (it's already paginated from server)
+  // Otherwise, do client-side pagination
+  const paginatedData = pagination && !serverSidePagination 
+    ? sortedData.slice(startIndex, startIndex + pageSize) 
+    : sortedData
 
   const handlePageChange = (page) => {
     if (onPageChange && page >= 1 && page <= totalPages) {
@@ -339,7 +345,9 @@ Table.propTypes = {
   onPageSizeChange: PropTypes.func,
   // Sorting props
   sortable: PropTypes.bool,
-  sortableColumns: PropTypes.arrayOf(PropTypes.string)
+  sortableColumns: PropTypes.arrayOf(PropTypes.string),
+  // Server-side pagination
+  serverSidePagination: PropTypes.bool
 }
 
 export default Table

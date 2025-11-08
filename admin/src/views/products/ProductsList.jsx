@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Container, Row, Col, Button, FormControl, FormSelect, Image, Badge, Card } from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { Container, Row, Col, Button, FormControl, FormSelect, Badge } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -32,13 +32,6 @@ const ProductsList = () => {
   
   // Categories for filter dropdown
   const [categories, setCategories] = useState([])
-  
-  // Stats state
-  const [stats, setStats] = useState({
-    totalVariants: 0,
-    activeVariants: 0,
-    lowStockVariants: 0
-  })
 
   // Load variants and categories
   useEffect(() => {
@@ -83,18 +76,6 @@ const ProductsList = () => {
         setVariants(response.data.items || [])
         setTotalCount(response.data.total_count || 0)
         setTotalPages(response.data.total_pages || 0)
-        
-        // Calculate stats from current page data (or we could fetch separately)
-        const activeCount = (response.data.items || []).filter(v => v.is_active).length
-        const lowStockCount = (response.data.items || []).filter(v => 
-          v.stock_quantity <= v.low_stock_quantity
-        ).length
-        
-        setStats({
-          totalVariants: response.data.total_count || 0,
-          activeVariants: activeCount, // This is just for current page, would need separate API for accurate count
-          lowStockVariants: lowStockCount // Same here
-        })
       } else {
         showError(response.message || 'Failed to load product variants')
       }
@@ -302,61 +283,6 @@ const ProductsList = () => {
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <Row className="mb-5">
-            <Col md={4}>
-              <Card className="h-100 border-0 shadow-sm">
-                <Card.Body className="p-4">
-                  <div className="d-flex align-items-center">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 rounded-3 bg-gradient-primary text-white">
-                        <FontAwesomeIcon icon={faBox} size="lg" />
-                      </div>
-                    </div>
-                    <div className="flex-grow-1 ms-4">
-                      <div className="text-muted small fw-semibold mb-1">Total Variants</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.totalVariants.toLocaleString()}</div>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={4}>
-              <Card className="h-100 border-0 shadow-sm">
-                <Card.Body className="p-4">
-                  <div className="d-flex align-items-center">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 rounded-3 bg-gradient-info text-white">
-                        <FontAwesomeIcon icon={faBox} size="lg" />
-                      </div>
-                    </div>
-                    <div className="flex-grow-1 ms-4">
-                      <div className="text-muted small fw-semibold mb-1">Active Variants</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.activeVariants}</div>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={4}>
-              <Card className="h-100 border-0 shadow-sm">
-                <Card.Body className="p-4">
-                  <div className="d-flex align-items-center">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 rounded-3 bg-gradient-warning text-white">
-                        <FontAwesomeIcon icon={faBox} size="lg" />
-                      </div>
-                    </div>
-                    <div className="flex-grow-1 ms-4">
-                      <div className="text-muted small fw-semibold mb-1">Low Stock</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.lowStockVariants}</div>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
           {/* Main Content Container */}
           <div className="bg-white rounded-3 shadow-sm p-4">
             {/* Search and Filter Section */}
@@ -439,6 +365,7 @@ const ProductsList = () => {
                 loading={loading}
                 hover
                 pagination={true}
+                serverSidePagination={true}
                 sortable={false}
                 totalItems={totalCount}
               />
