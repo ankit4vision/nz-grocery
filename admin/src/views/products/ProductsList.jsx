@@ -43,11 +43,13 @@ const ProductsList = () => {
   // Load variants and categories
   useEffect(() => {
     loadCategories()
+    loadVariants() // Initial load
   }, [])
 
+  // Reload variants when pagination or category filter changes (not on search term change)
   useEffect(() => {
     loadVariants()
-  }, [currentPage, pageSize, searchTerm, categoryFilter])
+  }, [currentPage, pageSize, categoryFilter])
 
   const loadCategories = async () => {
     try {
@@ -203,17 +205,6 @@ const ProductsList = () => {
       }
     },
     {
-      key: 'weight',
-      label: 'Weight',
-      render: (value, variant, index) => (
-        variant.weight ? (
-          <span>{variant.weight} kg</span>
-        ) : (
-          <span className="text-muted">-</span>
-        )
-      )
-    },
-    {
       key: 'status',
       label: 'Status',
       render: (value, variant, index) => (
@@ -247,9 +238,15 @@ const ProductsList = () => {
   const sortableColumns = ['product', 'category', 'price', 'stock', 'status']
 
   // Event handlers
-  const handleSearch = (e) => {
+  const handleSearchChange = (e) => {
     setSearchTerm(e.target.value)
+    // Don't trigger API call on key change
+  }
+
+  const handleSearchClick = () => {
+    // Trigger API call when search button is clicked
     setCurrentPage(1)
+    loadVariants()
   }
 
   const handleAddProduct = () => {
@@ -270,6 +267,8 @@ const ProductsList = () => {
     setSearchTerm('')
     setCategoryFilter('')
     setCurrentPage(1)
+    // Trigger reload after reset
+    loadVariants()
   }
 
   const handlePageChange = (page) => {
@@ -369,7 +368,12 @@ const ProductsList = () => {
                     <FormControl
                       placeholder="Product name"
                       value={searchTerm}
-                      onChange={handleSearch}
+                      onChange={handleSearchChange}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearchClick()
+                        }
+                      }}
                       className="border-2"
                     />
                   </div>
@@ -398,7 +402,7 @@ const ProductsList = () => {
                   <div className="mb-3">
                     <label className="form-label fw-semibold">&nbsp;</label>
                     <div className="d-flex gap-2">
-                      <Button variant="success" onClick={() => {}} className="text-white">
+                      <Button variant="success" onClick={handleSearchClick} className="text-white">
                         <FontAwesomeIcon icon={faSearch} className="me-2" />
                         Search
                       </Button>
