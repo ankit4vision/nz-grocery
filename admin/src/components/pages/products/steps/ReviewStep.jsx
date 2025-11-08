@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col, Button, Card, Badge, Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -10,8 +10,26 @@ import {
   faArrowLeft,
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
+import { productService } from '../../../../services/productService'
 
 const ReviewStep = ({ formData, onCreateProduct, loading }) => {
+  const [attributes, setAttributes] = useState([])
+
+  useEffect(() => {
+    fetchAttributes()
+  }, [])
+
+  const fetchAttributes = async () => {
+    try {
+      const response = await productService.getAttributes()
+      if (response.success && response.data) {
+        setAttributes(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching attributes:', error)
+    }
+  }
+
   const formatValue = (value) => {
     if (value === null || value === undefined || value === '') {
       return '-'
@@ -19,23 +37,45 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
     return value
   }
 
-  const getDietaryInfo = () => {
-    const dietary = formData.attributes.dietaryInfo
-    const selected = Object.entries(dietary)
-      .filter(([key, value]) => value)
-      .map(([key]) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
-    
-    return selected.length > 0 ? selected.join(', ') : 'None selected'
+  const formatAttributeName = (name) => {
+    return name
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
   }
 
-  const getNutritionalInfo = () => {
-    const nutrition = formData.attributes.nutritionalInfo
-    return {
-      calories: formatValue(nutrition.calories),
-      protein: formatValue(nutrition.protein),
-      carbs: formatValue(nutrition.carbs),
-      fat: formatValue(nutrition.fat)
-    }
+  const getAttributeName = (attributeId) => {
+    const attr = attributes.find(a => a.attribute_id === parseInt(attributeId))
+    return attr ? formatAttributeName(attr.attribute_name) : `Attribute ${attributeId}`
+  }
+
+  const getAttributeType = (attributeId) => {
+    const attr = attributes.find(a => a.attribute_id === parseInt(attributeId))
+    return attr ? attr.attribute_type : null
+  }
+
+  const getDietaryAttributes = () => {
+    const attributeValues = formData.attributes.attributeValues || {}
+    return Object.entries(attributeValues)
+      .filter(([id, value]) => {
+        const type = getAttributeType(id)
+        return type === 'bool' && value === true
+      })
+      .map(([id]) => getAttributeName(id))
+  }
+
+  const getProductDetailAttributes = () => {
+    const attributeValues = formData.attributes.attributeValues || {}
+    return Object.entries(attributeValues)
+      .filter(([id, value]) => {
+        const type = getAttributeType(id)
+        return (type === 'textfield' || type === 'date') && value !== '' && value !== null && value !== undefined
+      })
+      .map(([id, value]) => ({
+        id,
+        name: getAttributeName(id),
+        value: value
+      }))
   }
 
   const getPrimaryImage = () => {
@@ -104,28 +144,40 @@ const ReviewStep = ({ formData, onCreateProduct, loading }) => {
           
           <Row>
             <Col md={6}>
-              <div className="mb-2">
-                <strong>Dietary Information:</strong> {getDietaryInfo()}
-              </div>
-              <div className="mb-2">
-                <strong>Weight:</strong> {formatValue(formData.attributes.weight)} kg
-              </div>
-              <div className="mb-2">
-                <strong>Dimensions:</strong> {formatValue(formData.attributes.dimensions)}
-              </div>
-              <div className="mb-2">
-                <strong>Expiry Date:</strong> {formatValue(formData.attributes.expiryDate)}
+              <div className="mb-3">
+                <strong>Dietary Information:</strong>
+                <div className="mt-2">
+                  {getDietaryAttributes().length > 0 ? (
+                    <div className="d-flex flex-wrap gap-2">
+                      {getDietaryAttributes().map((name, idx) => (
+                        <Badge key={idx} bg="success">
+                          {name}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-muted">None selected</span>
+                  )}
+                </div>
               </div>
             </Col>
             <Col md={6}>
-              <div className="mb-2">
-                <strong>Nutritional Information:</strong>
-              </div>
-              <div className="ms-3">
-                <div className="mb-1">Calories: {getNutritionalInfo().calories}</div>
-                <div className="mb-1">Protein: {getNutritionalInfo().protein}g</div>
-                <div className="mb-1">Carbs: {getNutritionalInfo().carbs}g</div>
-                <div className="mb-1">Fat: {getNutritionalInfo().fat}g</div>
+              <div className="mb-3">
+                <strong>Product Details Information:</strong>
+                <div className="mt-2">
+                  {getProductDetailAttributes().length > 0 ? (
+                    <div>
+                      {getProductDetailAttributes().map((item, idx) => (
+                        <div key={idx} className="mb-2">
+                          <strong>{item.name}:</strong>{' '}
+                          <span>{formatValue(item.value)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-muted">No product details added</span>
+                  )}
+                </div>
               </div>
             </Col>
           </Row>

@@ -1,189 +1,218 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col, Form, FormControl, FormCheck } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCalendarAlt, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { productService } from '../../../../services/productService'
 
-const AttributesStep = ({ data, onChange, errors }) => {
-  const handleChange = (field, value) => {
-    onChange({ [field]: value })
+const AttributesStep = ({ data, onChange, errors, productId }) => {
+  const [attributes, setAttributes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [attributeValues, setAttributeValues] = useState(data.attributeValues || {})
+
+  // Fetch attributes from API on component mount
+  useEffect(() => {
+    fetchAttributes()
+  }, [])
+
+  // Load existing product attributes if in edit mode
+  useEffect(() => {
+    if (productId && attributes.length > 0) {
+      loadProductAttributes()
+    }
+  }, [productId, attributes.length])
+
+  // Update parent when attributeValues change
+  useEffect(() => {
+    onChange({ attributeValues })
+  }, [attributeValues])
+
+  const fetchAttributes = async () => {
+    try {
+      setLoading(true)
+      const response = await productService.getAttributes()
+      if (response.success && response.data) {
+        setAttributes(response.data)
+        // Initialize attribute values if not already set and not in edit mode
+        if (Object.keys(attributeValues).length === 0 && !productId) {
+          const initialValues = {}
+          response.data.forEach(attr => {
+            if (attr.attribute_type === 'bool') {
+              initialValues[attr.attribute_id] = false
+            } else {
+              initialValues[attr.attribute_id] = ''
+            }
+          })
+          setAttributeValues(initialValues)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching attributes:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleDietaryInfoChange = (field, checked) => {
-    onChange({
-      dietaryInfo: {
-        ...data.dietaryInfo,
-        [field]: checked
+  const loadProductAttributes = async () => {
+    try {
+      const response = await productService.getProductAttributes(productId)
+      if (response.success && response.data) {
+        // Convert API response to attributeValues format
+        const values = {}
+        response.data.forEach(item => {
+          values[item.attribute_id] = item.value
+        })
+        setAttributeValues(prev => ({ ...prev, ...values }))
+      }
+    } catch (error) {
+      console.error('Error loading product attributes:', error)
+    }
+  }
+
+  // Handle attribute value change
+  const handleAttributeChange = (attributeId, value) => {
+    setAttributeValues(prev => ({
+      ...prev,
+      [attributeId]: value
+    }))
+  }
+
+  // Get attributes by type
+  const getAttributesByType = (type) => {
+    return attributes.filter(attr => {
+      if (type === 'bool') {
+        return attr.attribute_type === 'bool'
+      } else {
+        return attr.attribute_type === 'textfield' || attr.attribute_type === 'date'
       }
     })
   }
 
-  const handleNutritionalInfoChange = (field, value) => {
-    onChange({
-      nutritionalInfo: {
-        ...data.nutritionalInfo,
-        [field]: value
-      }
-    })
+  // Format attribute name (convert snake_case to Title Case)
+  const formatAttributeName = (name) => {
+    return name
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
   }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <FontAwesomeIcon icon={faSpinner} spin className="text-success fs-1 mb-3" />
+        <p className="text-muted">Loading attributes...</p>
+      </div>
+    )
+  }
+
+  // Get dietary info attributes (bool type)
+  const dietaryAttributes = getAttributesByType('bool')
+  
+  // Get product details attributes (textfield and date types)
+  const productDetailAttributes = getAttributesByType('other')
 
   return (
     <Form>
       {/* Dietary Information Section */}
       <div className="mb-5">
-        <h5 className="mb-3 fw-semibold">Dietary Information</h5>
-        <Row>
-          <Col md={6}>
-            <FormCheck
-              id="organic"
-              type="checkbox"
-              label="Organic"
-              checked={data.dietaryInfo.organic}
-              onChange={(e) => handleDietaryInfoChange('organic', e.target.checked)}
-              className="mb-2"
-            />
-            <FormCheck
-              id="glutenFree"
-              type="checkbox"
-              label="Gluten-Free"
-              checked={data.dietaryInfo.glutenFree}
-              onChange={(e) => handleDietaryInfoChange('glutenFree', e.target.checked)}
-              className="mb-2"
-            />
-          </Col>
-          <Col md={6}>
-            <FormCheck
-              id="vegan"
-              type="checkbox"
-              label="Vegan"
-              checked={data.dietaryInfo.vegan}
-              onChange={(e) => handleDietaryInfoChange('vegan', e.target.checked)}
-              className="mb-2"
-            />
-            <FormCheck
-              id="dairyFree"
-              type="checkbox"
-              label="Dairy-Free"
-              checked={data.dietaryInfo.dairyFree}
-              onChange={(e) => handleDietaryInfoChange('dairyFree', e.target.checked)}
-              className="mb-2"
-            />
-          </Col>
-        </Row>
+        <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+          <div>
+            <h5 className="mb-0 fw-semibold text-success">Dietary Information</h5>
+            <p className="text-muted mb-0 small">Dietary attributes (bool type)</p>
+          </div>
+        </div>
+
+        {dietaryAttributes.length === 0 ? (
+          <div className="text-center py-4 text-muted">
+            <p>No dietary information attributes available.</p>
+          </div>
+        ) : (
+          <Row>
+            {dietaryAttributes.map((attr) => (
+              <Col md={6} key={attr.attribute_id} className="mb-3">
+                <FormCheck
+                  id={`dietary-${attr.attribute_id}`}
+                  type="checkbox"
+                  label={
+                    <span>
+                      {formatAttributeName(attr.attribute_name)}
+                      {attr.is_required && <span className="text-danger ms-1">*</span>}
+                    </span>
+                  }
+                  checked={attributeValues[attr.attribute_id] || false}
+                  onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.checked)}
+                  className={errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}
+                />
+                {errors[`attribute_${attr.attribute_id}`] && (
+                  <div className="text-danger small mt-1">
+                    {errors[`attribute_${attr.attribute_id}`]}
+                  </div>
+                )}
+              </Col>
+            ))}
+          </Row>
+        )}
       </div>
 
-      {/* Product Details Section */}
-      <div className="mb-5">
-        <h5 className="mb-3 fw-semibold">Product Details</h5>
-        <Row>
-          <Col md={4}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="weight" className="fw-semibold">Weight (kg)</Form.Label>
-              <FormControl
-                id="weight"
-                type="number"
-                step="0.01"
-                value={data.weight}
-                onChange={(e) => handleChange('weight', e.target.value)}
-                className="border-2"
-                placeholder="0.00"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={4}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="dimensions" className="fw-semibold">Dimensions (cm)</Form.Label>
-              <FormControl
-                id="dimensions"
-                type="text"
-                value={data.dimensions}
-                onChange={(e) => handleChange('dimensions', e.target.value)}
-                className="border-2"
-                placeholder="L x W x H"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={4}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="expiryDate" className="fw-semibold">Expiry Date</Form.Label>
-              <div className="position-relative">
-                <FormControl
-                  id="expiryDate"
-                  type="date"
-                  value={data.expiryDate}
-                  onChange={(e) => handleChange('expiryDate', e.target.value)}
-                  className="border-2"
-                />
-                <FontAwesomeIcon 
-                  icon={faCalendarAlt} 
-                  className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                  style={{ pointerEvents: 'none' }}
-                />
-              </div>
-            </Form.Group>
-          </Col>
-        </Row>
-      </div>
-
-      {/* Nutritional Information Section */}
+      {/* Product Details Information Section */}
       <div className="mb-4">
-        <h5 className="mb-3 fw-semibold">Nutritional Information (per serving)</h5>
-        <Row>
-          <Col md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="calories" className="fw-semibold">Calories</Form.Label>
-              <FormControl
-                id="calories"
-                type="number"
-                value={data.nutritionalInfo.calories}
-                onChange={(e) => handleNutritionalInfoChange('calories', e.target.value)}
-                className="border-2"
-                placeholder="0"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="protein" className="fw-semibold">Protein (g)</Form.Label>
-              <FormControl
-                id="protein"
-                type="number"
-                step="0.1"
-                value={data.nutritionalInfo.protein}
-                onChange={(e) => handleNutritionalInfoChange('protein', e.target.value)}
-                className="border-2"
-                placeholder="0"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="carbs" className="fw-semibold">Carbs (g)</Form.Label>
-              <FormControl
-                id="carbs"
-                type="number"
-                step="0.1"
-                value={data.nutritionalInfo.carbs}
-                onChange={(e) => handleNutritionalInfoChange('carbs', e.target.value)}
-                className="border-2"
-                placeholder="0"
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="fat" className="fw-semibold">Fat (g)</Form.Label>
-              <FormControl
-                id="fat"
-                type="number"
-                step="0.1"
-                value={data.nutritionalInfo.fat}
-                onChange={(e) => handleNutritionalInfoChange('fat', e.target.value)}
-                className="border-2"
-                placeholder="0"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+        <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+          <div>
+            <h5 className="mb-0 fw-semibold text-success">Product Details Information</h5>
+            <p className="text-muted mb-0 small">Product detail attributes (text and date types)</p>
+          </div>
+        </div>
+
+        {productDetailAttributes.length === 0 ? (
+          <div className="text-center py-4 text-muted">
+            <p>No product details attributes available.</p>
+          </div>
+        ) : (
+          <Row>
+            {productDetailAttributes.map((attr) => (
+              <Col md={6} key={attr.attribute_id} className="mb-3">
+                <Form.Group>
+                  <Form.Label htmlFor={`attr-${attr.attribute_id}`} className="fw-semibold">
+                    {formatAttributeName(attr.attribute_name)}
+                    {attr.is_required && <span className="text-danger ms-1">*</span>}
+                  </Form.Label>
+                  {attr.attribute_type === 'textfield' ? (
+                    <FormControl
+                      id={`attr-${attr.attribute_id}`}
+                      type="text"
+                      value={attributeValues[attr.attribute_id] || ''}
+                      onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.value)}
+                      className={`border-2 ${errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}`}
+                      placeholder={`Enter ${formatAttributeName(attr.attribute_name).toLowerCase()}`}
+                      required={attr.is_required}
+                    />
+                  ) : (
+                    <div className="position-relative">
+                      <FormControl
+                        id={`attr-${attr.attribute_id}`}
+                        type="date"
+                        value={attributeValues[attr.attribute_id] || ''}
+                        onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.value)}
+                        className={`border-2 ${errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}`}
+                        required={attr.is_required}
+                      />
+                      <FontAwesomeIcon 
+                        icon={faCalendarAlt} 
+                        className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                        style={{ pointerEvents: 'none' }}
+                      />
+                    </div>
+                  )}
+                  {errors[`attribute_${attr.attribute_id}`] && (
+                    <div className="text-danger small mt-1">
+                      {errors[`attribute_${attr.attribute_id}`]}
+                    </div>
+                  )}
+                </Form.Group>
+              </Col>
+            ))}
+          </Row>
+        )}
       </div>
     </Form>
   )

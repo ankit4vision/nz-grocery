@@ -3,7 +3,6 @@ import { Container, Row, Col, Button, Card } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faArrowLeft, 
-  faSave, 
   faArrowRight, 
   faInfoCircle,
   faTag,
@@ -57,21 +56,7 @@ const AddProductWizard = () => {
     },
     // Attributes
     attributes: {
-      dietaryInfo: {
-        organic: false,
-        glutenFree: false,
-        vegan: false,
-        dairyFree: false
-      },
-      weight: '',
-      dimensions: '',
-      expiryDate: '',
-      nutritionalInfo: {
-        calories: '',
-        protein: '',
-        carbs: '',
-        fat: ''
-      }
+      attributeValues: {} // Object with attribute_id as key and value as value
     },
     // Variants
     variants: {
@@ -119,23 +104,9 @@ const AddProductWizard = () => {
             sku: existingProduct.sku || '',
             gstRate: '' // Not in current data structure
           },
-          // Attributes
-          attributes: existingProduct.attributes || {
-            dietaryInfo: {
-              organic: false,
-              glutenFree: false,
-              vegan: false,
-              dairyFree: false
-            },
-            weight: existingProduct.weight || '',
-            dimensions: '',
-            expiryDate: '',
-            nutritionalInfo: {
-              calories: '',
-              protein: '',
-              carbs: '',
-              fat: ''
-            }
+          // Attributes - Load from API if product exists
+          attributes: {
+            attributeValues: {} // Will be loaded from API in AttributesStep
           },
           // Variants
           variants: existingProduct.variants || {
@@ -186,7 +157,9 @@ const AddProductWizard = () => {
           newErrors.sku = 'SKU is required'
         }
         break
-      case 1: // Attributes - No required fields, all optional
+      case 1: // Attributes - Validate required attributes
+        // Note: Required validation will be handled by the AttributesStep component
+        // based on is_required flag from API
         break
       case 2: // Variants
         const hasValidVariant = formData.variants.productVariants.some(variant => 
@@ -264,31 +237,6 @@ const AddProductWizard = () => {
     }))
   }
 
-  // Save draft function
-  const handleSaveDraft = async () => {
-    setLoading(true)
-    try {
-      // Prepare draft data
-      const draftData = {
-        ...formData.basicInfo,
-        attributes: formData.attributes,
-        variants: formData.variants,
-        images: formData.images,
-        status: 'draft',
-        isActive: false
-      }
-      
-      // Save as draft (you can implement this in productService)
-      console.log('Saving draft:', draftData)
-      
-      // Show success message
-      // You can use toast notification here
-    } catch (error) {
-      console.error('Error saving draft:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   // Create/Update product function
   const handleCreateProduct = async () => {
@@ -302,7 +250,6 @@ const AddProductWizard = () => {
         sku: formData.basicInfo.sku,
         price: formData.variants.productVariants[0]?.basePrice || 0,
         stock: formData.variants.productVariants[0]?.stock || 0,
-        weight: formData.attributes.weight,
         image: formData.images.uploadedImages[formData.images.primaryImageIndex]?.url || '',
         status: 'active',
         isActive: true,
@@ -312,6 +259,7 @@ const AddProductWizard = () => {
         images: formData.images
       }
       
+      // Create or update product
       let response
       if (mode === 'edit') {
         response = await productService.updateProduct(productId, productData)
@@ -320,6 +268,18 @@ const AddProductWizard = () => {
       }
       
       if (response.success) {
+        // After product is created/updated, assign attributes if any
+        const createdProductId = response.data?.id || productId
+        if (createdProductId && formData.attributes.attributeValues && Object.keys(formData.attributes.attributeValues).length > 0) {
+          // Prepare attributes for API (format: [{ attribute_id, value }])
+          const attributesToAssign = Object.entries(formData.attributes.attributeValues).map(([attributeId, value]) => ({
+            attribute_id: parseInt(attributeId),
+            value: value
+          }))
+          
+          await productService.assignProductAttributes(createdProductId, { attributes: attributesToAssign })
+        }
+        
         // Navigate to products list or show success message
         navigate('/products')
       }
@@ -347,6 +307,7 @@ const AddProductWizard = () => {
             data={formData.attributes}
             onChange={updateAttributes}
             errors={errors}
+            productId={mode === 'edit' ? productId : null}
           />
         )
       case 2:
@@ -482,23 +443,13 @@ const AddProductWizard = () => {
             </div>
             
             <div className="d-flex gap-2">
-              <Button 
-                variant="outline-primary" 
-                onClick={handleSaveDraft}
-                disabled={loading}
-                className="d-flex align-items-center"
-              >
-                <FontAwesomeIcon icon={faSave} className="me-2" />
-                Save Draft
-              </Button>
-              
               {currentStep < steps.length - 1 ? (
                 <Button 
                   variant="success" 
                   onClick={handleNext}
                   className="d-flex align-items-center text-white"
                 >
-                  Next
+                  Save & Next
                   <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
                 </Button>
               ) : (

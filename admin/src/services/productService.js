@@ -1,5 +1,6 @@
 // Product Service - API calls for product management
 import productsData from '../mock/products.json'
+import apiClient from '../config/apiClient'
 
 // Simulate API delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
@@ -257,6 +258,64 @@ const productService = {
       success: true,
       data: filteredProducts,
       message: 'Products exported successfully'
+    }
+  },
+
+  // Get all attributes
+  getAttributes: async () => {
+    try {
+      const response = await apiClient.get('/product-service/attributes/')
+      return {
+        success: true,
+        data: response.data || [],
+        message: 'Attributes fetched successfully'
+      }
+    } catch (error) {
+      console.error('Error fetching attributes:', error)
+      // Fallback to mock data for development
+      return {
+        success: false,
+        data: [],
+        message: error.response?.data?.message || 'Failed to fetch attributes'
+      }
+    }
+  },
+
+  // Get product attributes
+  getProductAttributes: async (productId) => {
+    try {
+      const response = await apiClient.get(`/product-service/products/${productId}/attributes/`)
+      return {
+        success: true,
+        data: response.data || [],
+        message: 'Product attributes fetched successfully'
+      }
+    } catch (error) {
+      console.error('Error fetching product attributes:', error)
+      return {
+        success: false,
+        data: [],
+        message: error.response?.data?.message || 'Failed to fetch product attributes'
+      }
+    }
+  },
+
+  // Assign attributes to product
+  assignProductAttributes: async (productId, attributes) => {
+    try {
+      const response = await apiClient.post(`/product-service/products/${productId}/attributes/`, attributes)
+      return {
+        success: true,
+        data: response.data || [],
+        message: 'Attributes assigned successfully'
+      }
+    } catch (error) {
+      console.error('Error assigning attributes:', error)
+      return {
+        success: false,
+        data: null,
+        message: error.response?.data?.message || 'Failed to assign attributes'
+      }
     }
   }
 }
