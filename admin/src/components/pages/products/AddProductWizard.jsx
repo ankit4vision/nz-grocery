@@ -421,6 +421,7 @@ const AddProductWizard = () => {
             data={formData.variants}
             onChange={updateVariants}
             errors={errors}
+            productId={createdProductId || (mode === 'edit' ? productId : null)}
           />
         )
       case 3:
@@ -429,6 +430,7 @@ const AddProductWizard = () => {
             data={formData.images}
             onChange={updateImages}
             errors={errors}
+            productId={createdProductId || (mode === 'edit' ? productId : null)}
           />
         )
       case 4:

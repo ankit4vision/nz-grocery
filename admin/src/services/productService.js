@@ -317,6 +317,238 @@ const productService = {
       console.error('Error assigning attributes:', error)
       return handleApiError(error)
     }
+  },
+
+  // ========== Variants API Methods ==========
+  
+  // Get product variants
+  getProductVariants: async (productId) => {
+    try {
+      const response = await apiClient.get(`/product-service/products/${productId}/variants`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Create product variant
+  createProductVariant: async (productId, variantData) => {
+    try {
+      const apiData = {
+        variant_name: variantData.variant_name || variantData.name,
+        variant_value: variantData.variant_value || variantData.name,
+        base_price: parseFloat(variantData.base_price || variantData.basePrice || 0),
+        sale_price: variantData.sale_price || variantData.salePrice ? parseFloat(variantData.sale_price || variantData.salePrice) : null,
+        stock_quantity: variantData.stock_quantity || variantData.stock ? parseInt(variantData.stock_quantity || variantData.stock) : 0,
+        is_active: variantData.is_active !== undefined ? variantData.is_active : (variantData.status === 'active'),
+        sku: variantData.sku || null
+      }
+      
+      const response = await apiClient.post(`/product-service/products/${productId}/variants`, apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Update product variant
+  updateProductVariant: async (variantId, variantData) => {
+    try {
+      const apiData = {}
+      
+      if (variantData.variant_name !== undefined || variantData.name !== undefined) {
+        apiData.variant_name = variantData.variant_name || variantData.name
+      }
+      if (variantData.variant_value !== undefined || variantData.name !== undefined) {
+        apiData.variant_value = variantData.variant_value || variantData.name
+      }
+      if (variantData.base_price !== undefined || variantData.basePrice !== undefined) {
+        apiData.base_price = parseFloat(variantData.base_price || variantData.basePrice)
+      }
+      if (variantData.sale_price !== undefined || variantData.salePrice !== undefined) {
+        apiData.sale_price = variantData.sale_price || variantData.salePrice ? parseFloat(variantData.sale_price || variantData.salePrice) : null
+      }
+      if (variantData.stock_quantity !== undefined || variantData.stock !== undefined) {
+        apiData.stock_quantity = parseInt(variantData.stock_quantity || variantData.stock)
+      }
+      if (variantData.is_active !== undefined || variantData.status !== undefined) {
+        apiData.is_active = variantData.is_active !== undefined ? variantData.is_active : (variantData.status === 'active')
+      }
+      if (variantData.sku !== undefined) {
+        apiData.sku = variantData.sku || null
+      }
+      
+      const response = await apiClient.put(`/product-service/products/variants/${variantId}`, apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Delete product variant
+  deleteProductVariant: async (variantId) => {
+    try {
+      await apiClient.delete(`/product-service/products/variants/${variantId}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Variant deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // ========== Bulk Pricing API Methods ==========
+  
+  // Get product bulk pricing
+  getProductBulkPricing: async (productId) => {
+    try {
+      const response = await apiClient.get(`/product-service/products/${productId}/bulk-pricing`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Create bulk pricing
+  createBulkPricing: async (productId, bulkPricingData) => {
+    try {
+      const apiData = {
+        minimum_quantity: parseInt(bulkPricingData.minimum_quantity || bulkPricingData.minQuantity || 1),
+        maximum_quantity: bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity ? parseInt(bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity) : null,
+        discount_type: bulkPricingData.discount_type || (bulkPricingData.priceType === 'price' ? 'fixed' : 'percentage'),
+        discount_value: parseFloat(bulkPricingData.discount_value || bulkPricingData.price || 0)
+      }
+      
+      const response = await apiClient.post(`/product-service/products/${productId}/bulk-pricing`, apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Update bulk pricing
+  updateBulkPricing: async (bulkPricingId, bulkPricingData) => {
+    try {
+      const apiData = {}
+      
+      if (bulkPricingData.minimum_quantity !== undefined || bulkPricingData.minQuantity !== undefined) {
+        apiData.minimum_quantity = parseInt(bulkPricingData.minimum_quantity || bulkPricingData.minQuantity)
+      }
+      if (bulkPricingData.maximum_quantity !== undefined || bulkPricingData.maxQuantity !== undefined) {
+        apiData.maximum_quantity = bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity ? parseInt(bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity) : null
+      }
+      if (bulkPricingData.discount_type !== undefined || bulkPricingData.priceType !== undefined) {
+        apiData.discount_type = bulkPricingData.discount_type || (bulkPricingData.priceType === 'price' ? 'fixed' : 'percentage')
+      }
+      if (bulkPricingData.discount_value !== undefined || bulkPricingData.price !== undefined) {
+        apiData.discount_value = parseFloat(bulkPricingData.discount_value || bulkPricingData.price)
+      }
+      
+      const response = await apiClient.put(`/product-service/products/bulk-pricing/${bulkPricingId}`, apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Delete bulk pricing
+  deleteBulkPricing: async (bulkPricingId) => {
+    try {
+      await apiClient.delete(`/product-service/products/bulk-pricing/${bulkPricingId}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Bulk pricing deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // ========== Product Images API Methods ==========
+  
+  // Get product images
+  getProductImages: async (productId) => {
+    try {
+      const response = await apiClient.get(`/product-service/products/${productId}/images`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Upload product images
+  // files: Array of File objects
+  // primaryFlags: Array of booleans indicating which images are primary
+  // sortOrders: Array of integers for sort order
+  uploadProductImages: async (productId, files, primaryFlags = [], sortOrders = []) => {
+    try {
+      const formData = new FormData()
+      
+      // Append files to FormData
+      files.forEach(file => {
+        formData.append('files', file)
+      })
+
+      // Build query params
+      const params = {}
+      if (primaryFlags.length > 0) {
+        params.primary_flags = primaryFlags
+      }
+      if (sortOrders.length > 0) {
+        params.sort_orders = sortOrders
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        params: Object.keys(params).length > 0 ? params : undefined
+      }
+
+      const response = await apiClient.post(`/product-service/products/${productId}/images`, formData, config)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Update product images metadata (primary flag, sort order)
+  updateProductImagesMeta: async (productId, imagesMeta) => {
+    try {
+      // imagesMeta should be array of { image_id, is_primary?, sort_order? }
+      const payload = {
+        items: imagesMeta.map(img => ({
+          image_id: parseInt(img.image_id),
+          is_primary: img.is_primary !== undefined ? img.is_primary : null,
+          sort_order: img.sort_order !== undefined ? parseInt(img.sort_order) : null
+        }))
+      }
+
+      const response = await apiClient.put(`/product-service/products/${productId}/images/meta`, payload)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Delete product images
+  deleteProductImages: async (productId, imageIds) => {
+    try {
+      // imageIds should be array of image IDs
+      // API expects array in query params
+      const imageIdsArray = Array.isArray(imageIds) ? imageIds.map(id => parseInt(id)) : [parseInt(imageIds)]
+      const response = await apiClient.put(`/product-service/products/${productId}/images`, null, {
+        params: {
+          delete_image_ids: imageIdsArray
+        }
+      })
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
   }
 }
 
