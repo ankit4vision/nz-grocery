@@ -8,7 +8,8 @@ import {
   faTag,
   faLayerGroup,
   faImage,
-  faCheckCircle
+  faCheckCircle,
+  faSpinner
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate, useParams } from 'react-router-dom'
 import StepIndicator from '../../common/StepIndicator'
@@ -18,11 +19,12 @@ import VariantsStep from './steps/VariantsStep'
 import ImageStep from './steps/ImageStep'
 import ReviewStep from './steps/ReviewStep'
 import { productService } from '../../../services/productService'
-import productsData from '../../../mock/products.json'
+import { useToast } from '../../../components'
 
 const AddProductWizard = () => {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { success, error: showError } = useToast()
   
   // Determine mode based on URL params
   const mode = id ? 'edit' : 'create'
@@ -40,8 +42,10 @@ const AddProductWizard = () => {
   // Current step state
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [savingStep, setSavingStep] = useState(false)
   const [errors, setErrors] = useState({})
   const [initialLoading, setInitialLoading] = useState(mode === 'edit')
+  const [createdProductId, setCreatedProductId] = useState(productId) // Store product ID after creation
 
   // Form data state - organized by steps
   const [formData, setFormData] = useState({
@@ -90,51 +94,43 @@ const AddProductWizard = () => {
   const loadProductForEdit = async () => {
     try {
       setInitialLoading(true)
-      // For now, use mock data - replace with API call
-      const existingProduct = productsData.find(p => p.id === productId)
+      const response = await productService.getProductFullDetails(productId)
       
-      if (existingProduct) {
+      if (response.success && response.data) {
+        const product = response.data.product || response.data
+        
         setFormData({
           // Basic Info
           basicInfo: {
-            name: existingProduct.name || '',
-            category: existingProduct.category || '',
-            profitMargin: '', // Not in current data structure
-            description: existingProduct.description || '',
-            sku: existingProduct.sku || '',
-            gstRate: '' // Not in current data structure
+            name: product.product_name || '',
+            category: product.category_id || '',
+            profitMargin: product.margin || '',
+            description: product.full_description || product.short_description || '',
+            sku: product.sku || '',
+            gstRate: product.gst || ''
           },
-          // Attributes - Load from API if product exists
+          // Attributes - Will be loaded from API in AttributesStep
           attributes: {
-            attributeValues: {} // Will be loaded from API in AttributesStep
+            attributeValues: {}
           },
-          // Variants
-          variants: existingProduct.variants || {
-            bulkPricing: [],
-            productVariants: [
-              {
-                id: 1,
-                name: '',
-                sku: '',
-                basePrice: existingProduct.price || '',
-                salePrice: existingProduct.oldPrice || '',
-                stock: existingProduct.stock || '',
-                status: 'active'
-              }
-            ]
+          // Variants - Will be loaded from API in VariantsStep
+          variants: {
+            bulkPricing: response.data.bulk_pricing || [],
+            productVariants: response.data.variants || []
           },
-          // Images
-          images: existingProduct.images || {
-            uploadedImages: [],
+          // Images - Will be loaded from API in ImageStep
+          images: {
+            uploadedImages: response.data.images || [],
             primaryImageIndex: 0
           }
         })
       } else {
-        console.error('Product not found for editing')
+        showError(response.message || 'Failed to load product')
         navigate('/products')
       }
-    } catch (error) {
-      console.error('Error loading product for edit:', error)
+    } catch (err) {
+      console.error('Error loading product for edit:', err)
+      showError('Failed to load product. Please try again.')
       navigate('/products')
     } finally {
       setInitialLoading(false)
@@ -147,13 +143,13 @@ const AddProductWizard = () => {
     
     switch (stepIndex) {
       case 0: // Basic Info
-        if (!formData.basicInfo.name.trim()) {
+        if (!formData.basicInfo.name || !formData.basicInfo.name.trim()) {
           newErrors.name = 'Product name is required'
         }
-        if (!formData.basicInfo.category) {
+        if (!formData.basicInfo.category || formData.basicInfo.category === '') {
           newErrors.category = 'Category is required'
         }
-        if (!formData.basicInfo.sku.trim()) {
+        if (!formData.basicInfo.sku || !formData.basicInfo.sku.trim()) {
           newErrors.sku = 'SKU is required'
         }
         break
@@ -182,11 +178,110 @@ const AddProductWizard = () => {
     return Object.keys(newErrors).length === 0
   }
 
+  // Save product on Step 1 (Basic Info) completion
+  const saveBasicInfo = async () => {
+    try {
+      setSavingStep(true)
+      const productData = {
+        name: formData.basicInfo.name,
+        sku: formData.basicInfo.sku,
+        category_id: parseInt(formData.basicInfo.category),
+        description: formData.basicInfo.description,
+        profitMargin: formData.basicInfo.profitMargin,
+        gstRate: formData.basicInfo.gstRate
+      }
+
+      const response = await productService.createProduct(productData)
+      
+      if (response.success) {
+        const newProductId = response.data.product_id || response.data.id
+        setCreatedProductId(newProductId)
+        success('Product basic information saved successfully!')
+        return newProductId
+      } else {
+        showError(response.message || 'Failed to save product')
+        return null
+      }
+    } catch (err) {
+      console.error('Error saving product:', err)
+      showError('Failed to save product. Please try again.')
+      return null
+    } finally {
+      setSavingStep(false)
+    }
+  }
+
+  // Save attributes on Step 2 (Attributes) completion
+  const saveAttributes = async () => {
+    try {
+      setSavingStep(true)
+      const productIdToUse = createdProductId || productId
+      
+      if (!productIdToUse) {
+        showError('Product ID is missing. Please go back to Step 1.')
+        return false
+      }
+
+      // Prepare attributes for API
+      // Convert attributeValues object to array format: [{ attribute_id, value }]
+      const attributesToSave = Object.entries(formData.attributes.attributeValues || {})
+        .filter(([_, value]) => {
+          // Only include attributes with values (skip empty strings, but include false for booleans)
+          return value !== '' && value !== null && value !== undefined
+        })
+        .map(([attributeId, value]) => ({
+          attribute_id: parseInt(attributeId),
+          value: value
+        }))
+
+      // Only save if there are attributes to save
+      if (attributesToSave.length > 0) {
+        const response = await productService.assignProductAttributes(productIdToUse, attributesToSave)
+        
+        if (response.success) {
+          success('Product attributes saved successfully!')
+          return true
+        } else {
+          showError(response.message || 'Failed to save attributes')
+          return false
+        }
+      } else {
+        // No attributes to save, just proceed
+        return true
+      }
+    } catch (err) {
+      console.error('Error saving attributes:', err)
+      showError('Failed to save attributes. Please try again.')
+      return false
+    } finally {
+      setSavingStep(false)
+    }
+  }
+
   // Navigation functions
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateStep(currentStep)) {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1)
+      // On Step 1 (Basic Info), save product first
+      if (currentStep === 0 && mode === 'create') {
+        const savedProductId = await saveBasicInfo()
+        if (savedProductId) {
+          setCurrentStep(currentStep + 1)
+        }
+      } 
+      // On Step 2 (Attributes), save attributes first
+      else if (currentStep === 1) {
+        const saved = await saveAttributes()
+        if (saved) {
+          if (currentStep < steps.length - 1) {
+            setCurrentStep(currentStep + 1)
+          }
+        }
+      } 
+      // For other steps, just move to next step
+      else {
+        if (currentStep < steps.length - 1) {
+          setCurrentStep(currentStep + 1)
+        }
       }
     }
   }
@@ -268,23 +363,33 @@ const AddProductWizard = () => {
       }
       
       if (response.success) {
-        // After product is created/updated, assign attributes if any
-        const createdProductId = response.data?.id || productId
-        if (createdProductId && formData.attributes.attributeValues && Object.keys(formData.attributes.attributeValues).length > 0) {
-          // Prepare attributes for API (format: [{ attribute_id, value }])
-          const attributesToAssign = Object.entries(formData.attributes.attributeValues).map(([attributeId, value]) => ({
-            attribute_id: parseInt(attributeId),
-            value: value
-          }))
+        // Attributes are already saved in Step 2, so no need to save again here
+        // Only save attributes if we're in edit mode and they haven't been saved yet
+        const finalProductId = response.data?.product_id || response.data?.id || createdProductId || productId
+        
+        // In edit mode, if attributes exist and haven't been saved in Step 2, save them now
+        if (mode === 'edit' && finalProductId && formData.attributes.attributeValues && Object.keys(formData.attributes.attributeValues).length > 0) {
+          const attributesToSave = Object.entries(formData.attributes.attributeValues)
+            .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+            .map(([attributeId, value]) => ({
+              attribute_id: parseInt(attributeId),
+              value: value
+            }))
           
-          await productService.assignProductAttributes(createdProductId, { attributes: attributesToAssign })
+          if (attributesToSave.length > 0) {
+            await productService.assignProductAttributes(finalProductId, attributesToSave)
+          }
         }
         
-        // Navigate to products list or show success message
+        success(mode === 'edit' ? 'Product updated successfully!' : 'Product created successfully!')
+        // Navigate to products list
         navigate('/products')
+      } else {
+        showError(response.message || `Failed to ${mode === 'edit' ? 'update' : 'create'} product`)
       }
-    } catch (error) {
-      console.error(`Error ${mode === 'edit' ? 'updating' : 'creating'} product:`, error)
+    } catch (err) {
+      console.error(`Error ${mode === 'edit' ? 'updating' : 'creating'} product:`, err)
+      showError(`Failed to ${mode === 'edit' ? 'update' : 'create'} product. Please try again.`)
     } finally {
       setLoading(false)
     }
@@ -307,7 +412,7 @@ const AddProductWizard = () => {
             data={formData.attributes}
             onChange={updateAttributes}
             errors={errors}
-            productId={mode === 'edit' ? productId : null}
+            productId={createdProductId || (mode === 'edit' ? productId : null)}
           />
         )
       case 2:
@@ -447,10 +552,20 @@ const AddProductWizard = () => {
                 <Button 
                   variant="success" 
                   onClick={handleNext}
+                  disabled={savingStep}
                   className="d-flex align-items-center text-white"
                 >
-                  Save & Next
-                  <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+                  {savingStep ? (
+                    <>
+                      <FontAwesomeIcon icon={faSpinner} spin className="me-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      Save & Next
+                      <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+                    </>
+                  )}
                 </Button>
               ) : (
                 <Button 

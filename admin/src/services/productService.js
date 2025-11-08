@@ -1,6 +1,7 @@
 // Product Service - API calls for product management
 import productsData from '../mock/products.json'
 import apiClient from '../config/apiClient'
+import { handleApiError, formatSuccessResponse } from '../utils/errorHandler'
 
 // Simulate API delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
@@ -18,63 +19,52 @@ const productService = {
 
   // Get product by ID
   getProductById: async (id) => {
-    await delay(300)
-    const product = productsData.find(p => p.id === parseInt(id))
-    if (product) {
-      return {
-        success: true,
-        data: product,
-        message: 'Product fetched successfully'
-      }
-    } else {
-      return {
-        success: false,
-        data: null,
-        message: 'Product not found'
-      }
+    try {
+      const response = await apiClient.get(`/product-service/products/${id}`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get full product details (for review step)
+  getProductFullDetails: async (id) => {
+    try {
+      const response = await apiClient.get(`/product-service/products/${id}/full`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
   // Create new product
   createProduct: async (productData) => {
-    await delay(800)
-    
-    // Generate new ID
-    const existingIds = productsData.map(p => parseInt(p.id)).filter(id => !isNaN(id))
-    const newId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1
-    
-    const newProduct = {
-      id: newId,
-      name: productData.name,
-      description: productData.description || '',
-      weight: productData.weight || '',
-      category: productData.category || '',
-      subCategory: productData.subCategory || '',
-      price: productData.price || 0,
-      oldPrice: productData.oldPrice || null,
-      stock: productData.stock || 0,
-      stockStatus: productData.stock > 50 ? 'high' : productData.stock > 10 ? 'medium' : productData.stock > 0 ? 'low' : 'out',
-      sales: 0, // New products start with 0 sales
-      rating: 0,
-      reviewCount: 0,
-      status: productData.status || 'active',
-      isActive: productData.isActive !== undefined ? productData.isActive : true,
-      image: productData.image || '',
-      sku: productData.sku || '',
-      barcode: productData.barcode || '',
-      brand: productData.brand || '',
-      unit: productData.unit || 'kg',
-      tags: productData.tags || [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-    
-    productsData.push(newProduct)
-    
-    return {
-      success: true,
-      data: newProduct,
-      message: 'Product created successfully'
+    try {
+      // Map form data to API format
+      const apiData = {
+        product_name: productData.name || productData.product_name,
+        sku: productData.sku,
+        category_id: productData.category_id || parseInt(productData.category),
+        brand: productData.brand || null,
+        short_description: productData.short_description || productData.description || null,
+        full_description: productData.full_description || productData.description || null,
+        gst: productData.gst || productData.gstRate ? parseFloat(productData.gst || productData.gstRate) : null,
+        margin: productData.margin || productData.profitMargin ? parseFloat(productData.margin || productData.profitMargin) : null
+      }
+
+      // Remove null values for optional fields if they're empty strings
+      Object.keys(apiData).forEach(key => {
+        if (apiData[key] === '' || apiData[key] === null) {
+          if (key !== 'category_id' && key !== 'product_name' && key !== 'sku') {
+            apiData[key] = null
+          }
+        }
+      })
+
+      const response = await apiClient.post('/product-service/products/', apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
@@ -301,9 +291,23 @@ const productService = {
   },
 
   // Assign attributes to product
-  assignProductAttributes: async (productId, attributes) => {
+  // API expects: array of { attribute_id, custom_value } objects
+  assignProductAttributes: async (productId, attributesArray) => {
     try {
-      const response = await apiClient.post(`/product-service/products/${productId}/attributes/`, attributes)
+      // If attributesArray is an object with 'attributes' property, extract it
+      const attributes = Array.isArray(attributesArray) 
+        ? attributesArray 
+        : (attributesArray.attributes || [])
+      
+      // Convert attribute values to API format
+      const payload = attributes.map(attr => ({
+        attribute_id: parseInt(attr.attribute_id),
+        custom_value: attr.value !== undefined && attr.value !== null 
+          ? String(attr.value) 
+          : null
+      }))
+      
+      const response = await apiClient.post(`/product-service/products/${productId}/attributes/`, payload)
       return {
         success: true,
         data: response.data || [],
@@ -311,11 +315,7 @@ const productService = {
       }
     } catch (error) {
       console.error('Error assigning attributes:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to assign attributes'
-      }
+      return handleApiError(error)
     }
   }
 }

@@ -1,17 +1,33 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col, Form, FormControl, FormSelect } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { categoryService } from '../../../../services/categoryService'
 
 const BasicInfoStep = ({ data, onChange, errors }) => {
-  // Categories (mock data - replace with API call)
-  const categories = [
-    { id: 1, name: 'Fresh Produce' },
-    { id: 2, name: 'Dairy & Eggs' },
-    { id: 3, name: 'Meat & Seafood' },
-    { id: 4, name: 'Pantry Essentials' },
-    { id: 5, name: 'Beverages' },
-    { id: 6, name: 'Frozen Foods' },
-    { id: 7, name: 'Health & Wellness' }
-  ]
+  const [categories, setCategories] = useState([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
+
+  // Fetch categories from API
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true)
+      const response = await categoryService.getCategoryOptions(true) // only_active = true
+      if (response.success) {
+        // API returns array of { category_id, category_name } objects
+        setCategories(response.data || [])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      setCategories([])
+    } finally {
+      setLoadingCategories(false)
+    }
+  }
 
   const handleChange = (field, value) => {
     onChange({ [field]: value })
@@ -40,20 +56,27 @@ const BasicInfoStep = ({ data, onChange, errors }) => {
 
           <Form.Group className="mb-3">
             <Form.Label htmlFor="category" className="fw-semibold">Category</Form.Label>
-            <FormSelect
-              id="category"
-              value={data.category}
-              onChange={(e) => handleChange('category', e.target.value)}
-              isInvalid={!!errors.category}
-              className="border-2"
-            >
-              <option value="">Select category</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.name}>
-                  {category.name}
-                </option>
-              ))}
-            </FormSelect>
+            {loadingCategories ? (
+              <div className="d-flex align-items-center text-muted">
+                <FontAwesomeIcon icon={faSpinner} spin className="me-2" />
+                <span>Loading categories...</span>
+              </div>
+            ) : (
+              <FormSelect
+                id="category"
+                value={data.category || ''}
+                onChange={(e) => handleChange('category', e.target.value)}
+                isInvalid={!!errors.category}
+                className="border-2"
+              >
+                <option value="">Select category</option>
+                {categories.map(category => (
+                  <option key={category.category_id} value={category.category_id}>
+                    {category.category_name}
+                  </option>
+                ))}
+              </FormSelect>
+            )}
             <Form.Control.Feedback type="invalid">
               {errors.category}
             </Form.Control.Feedback>

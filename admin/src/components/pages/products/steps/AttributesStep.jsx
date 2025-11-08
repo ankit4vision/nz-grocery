@@ -36,7 +36,7 @@ const AttributesStep = ({ data, onChange, errors, productId }) => {
         if (Object.keys(attributeValues).length === 0 && !productId) {
           const initialValues = {}
           response.data.forEach(attr => {
-            if (attr.attribute_type === 'bool') {
+            if (attr.attribute_type === 'boolean' || attr.attribute_type === 'bool') {
               initialValues[attr.attribute_id] = false
             } else {
               initialValues[attr.attribute_id] = ''
@@ -57,9 +57,16 @@ const AttributesStep = ({ data, onChange, errors, productId }) => {
       const response = await productService.getProductAttributes(productId)
       if (response.success && response.data) {
         // Convert API response to attributeValues format
+        // API returns: [{ attribute_id, custom_value }]
         const values = {}
         response.data.forEach(item => {
-          values[item.attribute_id] = item.value
+          // For boolean attributes, convert string to boolean
+          const attr = attributes.find(a => a.attribute_id === item.attribute_id)
+          if (attr && (attr.attribute_type === 'boolean' || attr.attribute_type === 'bool')) {
+            values[item.attribute_id] = item.custom_value === 'true' || item.custom_value === true
+          } else {
+            values[item.attribute_id] = item.custom_value || ''
+          }
         })
         setAttributeValues(prev => ({ ...prev, ...values }))
       }
@@ -79,10 +86,17 @@ const AttributesStep = ({ data, onChange, errors, productId }) => {
   // Get attributes by type
   const getAttributesByType = (type) => {
     return attributes.filter(attr => {
-      if (type === 'bool') {
-        return attr.attribute_type === 'bool'
+      if (type === 'boolean') {
+        // Handle both 'boolean' and 'bool' for backward compatibility
+        return attr.attribute_type === 'boolean' || attr.attribute_type === 'bool'
+      } else if (type === 'text') {
+        // Handle both 'text' and 'textfield' for backward compatibility
+        return attr.attribute_type === 'text' || attr.attribute_type === 'textfield'
+      } else if (type === 'date') {
+        return attr.attribute_type === 'date'
       } else {
-        return attr.attribute_type === 'textfield' || attr.attribute_type === 'date'
+        // For 'other', return text and date types
+        return attr.attribute_type === 'text' || attr.attribute_type === 'textfield' || attr.attribute_type === 'date'
       }
     })
   }
@@ -105,33 +119,32 @@ const AttributesStep = ({ data, onChange, errors, productId }) => {
     )
   }
 
-  // Get dietary info attributes (bool type)
-  const dietaryAttributes = getAttributesByType('bool')
+  // Get boolean attributes (checkbox type)
+  const booleanAttributes = getAttributesByType('boolean')
   
-  // Get product details attributes (textfield and date types)
-  const productDetailAttributes = getAttributesByType('other')
+  // Get text attributes (text input type)
+  const textAttributes = getAttributesByType('text')
+  
+  // Get date attributes (date input type)
+  const dateAttributes = getAttributesByType('date')
 
   return (
     <Form>
-      {/* Dietary Information Section */}
-      <div className="mb-5">
-        <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
-          <div>
-            <h5 className="mb-0 fw-semibold text-success">Dietary Information</h5>
-            <p className="text-muted mb-0 small">Dietary attributes (bool type)</p>
+      {/* Boolean Attributes Section (Checkboxes) */}
+      {booleanAttributes.length > 0 && (
+        <div className="mb-5">
+          <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+            <div>
+              <h5 className="mb-0 fw-semibold text-success">Boolean Attributes</h5>
+              <p className="text-muted mb-0 small">Checkbox attributes (boolean type)</p>
+            </div>
           </div>
-        </div>
 
-        {dietaryAttributes.length === 0 ? (
-          <div className="text-center py-4 text-muted">
-            <p>No dietary information attributes available.</p>
-          </div>
-        ) : (
           <Row>
-            {dietaryAttributes.map((attr) => (
+            {booleanAttributes.map((attr) => (
               <Col md={6} key={attr.attribute_id} className="mb-3">
                 <FormCheck
-                  id={`dietary-${attr.attribute_id}`}
+                  id={`boolean-${attr.attribute_id}`}
                   type="checkbox"
                   label={
                     <span>
@@ -151,58 +164,36 @@ const AttributesStep = ({ data, onChange, errors, productId }) => {
               </Col>
             ))}
           </Row>
-        )}
-      </div>
-
-      {/* Product Details Information Section */}
-      <div className="mb-4">
-        <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
-          <div>
-            <h5 className="mb-0 fw-semibold text-success">Product Details Information</h5>
-            <p className="text-muted mb-0 small">Product detail attributes (text and date types)</p>
-          </div>
         </div>
+      )}
 
-        {productDetailAttributes.length === 0 ? (
-          <div className="text-center py-4 text-muted">
-            <p>No product details attributes available.</p>
+      {/* Text Attributes Section */}
+      {textAttributes.length > 0 && (
+        <div className="mb-5">
+          <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+            <div>
+              <h5 className="mb-0 fw-semibold text-success">Text Attributes</h5>
+              <p className="text-muted mb-0 small">Text input attributes</p>
+            </div>
           </div>
-        ) : (
+
           <Row>
-            {productDetailAttributes.map((attr) => (
+            {textAttributes.map((attr) => (
               <Col md={6} key={attr.attribute_id} className="mb-3">
                 <Form.Group>
-                  <Form.Label htmlFor={`attr-${attr.attribute_id}`} className="fw-semibold">
+                  <Form.Label htmlFor={`text-${attr.attribute_id}`} className="fw-semibold">
                     {formatAttributeName(attr.attribute_name)}
                     {attr.is_required && <span className="text-danger ms-1">*</span>}
                   </Form.Label>
-                  {attr.attribute_type === 'textfield' ? (
-                    <FormControl
-                      id={`attr-${attr.attribute_id}`}
-                      type="text"
-                      value={attributeValues[attr.attribute_id] || ''}
-                      onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.value)}
-                      className={`border-2 ${errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}`}
-                      placeholder={`Enter ${formatAttributeName(attr.attribute_name).toLowerCase()}`}
-                      required={attr.is_required}
-                    />
-                  ) : (
-                    <div className="position-relative">
-                      <FormControl
-                        id={`attr-${attr.attribute_id}`}
-                        type="date"
-                        value={attributeValues[attr.attribute_id] || ''}
-                        onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.value)}
-                        className={`border-2 ${errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}`}
-                        required={attr.is_required}
-                      />
-                      <FontAwesomeIcon 
-                        icon={faCalendarAlt} 
-                        className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                        style={{ pointerEvents: 'none' }}
-                      />
-                    </div>
-                  )}
+                  <FormControl
+                    id={`text-${attr.attribute_id}`}
+                    type="text"
+                    value={attributeValues[attr.attribute_id] || ''}
+                    onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.value)}
+                    className={`border-2 ${errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}`}
+                    placeholder={`Enter ${formatAttributeName(attr.attribute_name).toLowerCase()}`}
+                    required={attr.is_required}
+                  />
                   {errors[`attribute_${attr.attribute_id}`] && (
                     <div className="text-danger small mt-1">
                       {errors[`attribute_${attr.attribute_id}`]}
@@ -212,8 +203,60 @@ const AttributesStep = ({ data, onChange, errors, productId }) => {
               </Col>
             ))}
           </Row>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Date Attributes Section */}
+      {dateAttributes.length > 0 && (
+        <div className="mb-4">
+          <div className="d-flex align-items-center mb-4 pb-3 border-bottom border-success border-2">
+            <div>
+              <h5 className="mb-0 fw-semibold text-success">Date Attributes</h5>
+              <p className="text-muted mb-0 small">Date input attributes</p>
+            </div>
+          </div>
+
+          <Row>
+            {dateAttributes.map((attr) => (
+              <Col md={6} key={attr.attribute_id} className="mb-3">
+                <Form.Group>
+                  <Form.Label htmlFor={`date-${attr.attribute_id}`} className="fw-semibold">
+                    {formatAttributeName(attr.attribute_name)}
+                    {attr.is_required && <span className="text-danger ms-1">*</span>}
+                  </Form.Label>
+                  <div className="position-relative">
+                    <FormControl
+                      id={`date-${attr.attribute_id}`}
+                      type="date"
+                      value={attributeValues[attr.attribute_id] || ''}
+                      onChange={(e) => handleAttributeChange(attr.attribute_id, e.target.value)}
+                      className={`border-2 ${errors[`attribute_${attr.attribute_id}`] ? 'is-invalid' : ''}`}
+                      required={attr.is_required}
+                    />
+                    <FontAwesomeIcon 
+                      icon={faCalendarAlt} 
+                      className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                      style={{ pointerEvents: 'none' }}
+                    />
+                  </div>
+                  {errors[`attribute_${attr.attribute_id}`] && (
+                    <div className="text-danger small mt-1">
+                      {errors[`attribute_${attr.attribute_id}`]}
+                    </div>
+                  )}
+                </Form.Group>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      )}
+
+      {/* Show message if no attributes */}
+      {booleanAttributes.length === 0 && textAttributes.length === 0 && dateAttributes.length === 0 && (
+        <div className="text-center py-5 text-muted">
+          <p>No attributes available for this product.</p>
+        </div>
+      )}
     </Form>
   )
 }
