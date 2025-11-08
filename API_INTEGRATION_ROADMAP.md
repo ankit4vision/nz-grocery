@@ -257,7 +257,7 @@ nz-grocery/
 │       │   ├── 📁 dashboard/
 │       │   │   └── Dashboard.jsx           # Dashboard page (pending)
 │       │   ├── 📁 products/
-│       │   │   └── ProductsList.jsx        # Products list (pending)
+│       │   │   └── ProductsList.jsx        # ✅ Product variants list (completed)
 │       │   ├── 📁 orders/
 │       │   │   └── OrdersList.jsx           # Orders list (pending)
 │       │   ├── 📁 customers/
@@ -338,7 +338,7 @@ nz-grocery/
 - ✅ `categoryService.js` - Category CRUD operations
 - ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
 - ✅ `settingsService.js` - Global Settings management (create/update by key, section-based organization)
-- ✅ `productService.js` - Product management (Add Product Wizard - all 5 steps with variants, bulk pricing, images, attributes)
+- ✅ `productService.js` - Product management (Add Product Wizard - all 5 steps with variants, bulk pricing, images, attributes, and Product Variants List filter)
 
 **Pending Services**:
 - ⏳ `orderService.js` - Orders management
@@ -371,8 +371,8 @@ nz-grocery/
 **View Files** (`admin/src/views/`):
 - ✅ **`categories/CategoriesList.jsx`** - Categories list page with CRUD operations
 - ✅ **`settings/Settings.jsx`** - Global Settings page with auto-save on blur
+- ✅ **`products/ProductsList.jsx`** - Product variants list page with server-side pagination
 - ⏳ `dashboard/Dashboard.jsx` - Dashboard page (pending)
-- ⏳ `products/ProductsList.jsx` - Products list (pending)
 - ⏳ `orders/OrdersList.jsx` - Orders list (pending)
 
 #### 🔐 Authentication Files
@@ -613,6 +613,41 @@ ToastProvider.jsx
 
 ---
 
+### Priority 4b: Products Management Module - Products List (Variants List) 🛍️ ✅ **COMPLETED**
+**Why**: Display and manage product variants in a list view.
+
+**APIs Integrated:**
+- `GET /product-service/products/variants/filter` - Filter and list product variants with pagination (supports product_name, category_id, attribute_id filters)
+
+**Files Updated:**
+- `admin/src/services/productService.js` ✅ Added `getProductVariantsFilter()` method
+- `admin/src/views/products/ProductsList.jsx` ✅ Completed - displays product variants instead of products
+- `admin/src/components/common/Table.jsx` ✅ Enhanced with `serverSidePagination` prop
+
+**Features Implemented:**
+- Product variants list (not products) - displays all variants with product and variant information
+- Server-side pagination with page and page_size parameters
+- Search by product name (triggers on Search button click or Enter key, not on key change)
+- Category filter dropdown (populated from categories API)
+- Table columns: Product/Variant name, Category, Price (with discount badges), Stock (with status indicators), Status, Actions
+- Edit button only (removed View button) - opens Product Wizard in edit mode using product_id
+- Removed summary/stats cards
+- Removed export button
+- Toast notifications for API errors
+- Loading states during API calls
+- Proper error handling
+
+**Key Implementation Details:**
+- List shows product variants, not products
+- Edit button navigates to `/products/edit/{product_id}` (uses product_id, not variant_id)
+- Server-side pagination: Table component uses `serverSidePagination={true}` to skip client-side data slicing
+- Search triggers API call only on button click or Enter key press
+- Category filter automatically triggers API reload when changed
+
+**Time Taken**: Completed
+
+---
+
 ### Priority 5: Orders Management Module 📦
 **Why Fourth**: Track and manage customer orders.
 
@@ -846,13 +881,14 @@ export default moduleService
 - Content Management Module (Banners, FAQ Categories, FAQ Entries)
 - Global Settings Module
 - Product Management Module - Add Product Wizard (5-step process)
+- Product Management Module - Products List (Variants List with server-side pagination)
 
 ⏳ **In Progress**:
 - None
 
 📋 **Next Up**:
 - Dashboard Module (Priority 2)
-- Product Management Module - Products List & Product Details (remaining parts)
+- Product Management Module - Product Details (if needed)
 - Content Management Module - Notifications (remaining part of Priority 8)
 
 ---
@@ -1386,5 +1422,5 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, and Product Management (Add Product Wizard - 5 steps) Modules Completed - Ready for Dashboard Module Integration
+**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 5 steps), and Product List (Variants List with server-side pagination) Modules Completed - Ready for Dashboard Module Integration
 

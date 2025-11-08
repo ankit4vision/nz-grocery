@@ -7,9 +7,7 @@ import {
   faPencil, 
   faSearch, 
   faRefresh, 
-  faBox, 
-  faImage,
-  faDownload
+  faBox
 } from '@fortawesome/free-solid-svg-icons'
 import { Table } from '../../components'
 import { productService } from '../../services/productService'
@@ -239,11 +237,6 @@ const ProductsList = () => {
     navigate(`/products/edit/${variant.product_id}`)
   }
 
-  const handleExport = () => {
-    // TODO: Implement export functionality
-    console.log('Export variants')
-  }
-
   const handleReset = () => {
     setSearchTerm('')
     setCategoryFilter('')
@@ -275,10 +268,6 @@ const ProductsList = () => {
               <Button variant="success" onClick={handleAddProduct} className="text-white">
                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                 Add Product
-              </Button>
-              <Button variant="primary" onClick={handleExport}>
-                <FontAwesomeIcon icon={faDownload} className="me-2" />
-                Export
               </Button>
             </div>
           </div>
