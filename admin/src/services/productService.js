@@ -549,6 +549,37 @@ const productService = {
     } catch (error) {
       return handleApiError(error)
     }
+  },
+
+  // Filter product variants (for Products List)
+  getProductVariantsFilter: async (params = {}) => {
+    try {
+      // Build query params
+      const queryParams = {}
+      
+      if (params.product_name) {
+        queryParams.product_name = params.product_name
+      }
+      if (params.category_id) {
+        queryParams.category_id = parseInt(params.category_id)
+      }
+      if (params.attribute_id) {
+        queryParams.attribute_id = parseInt(params.attribute_id)
+      }
+      if (params.page) {
+        queryParams.page = parseInt(params.page)
+      }
+      if (params.page_size) {
+        queryParams.page_size = parseInt(params.page_size)
+      }
+
+      const response = await apiClient.get('/product-service/products/variants/filter', {
+        params: queryParams
+      })
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
   }
 }
 

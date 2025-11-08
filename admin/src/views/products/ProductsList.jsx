@@ -5,220 +5,173 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faPlus, 
   faPencil, 
-  faTrash, 
-  faEye, 
   faSearch, 
   faRefresh, 
   faBox, 
   faImage,
-  faStar,
-  faShoppingCart,
-  faBell,
   faDownload
 } from '@fortawesome/free-solid-svg-icons'
-import { Table, FormModal, Modal } from '../../components'
-import ProductForm from '../../components/pages/products/ProductForm'
+import { Table } from '../../components'
 import { productService } from '../../services/productService'
-import productsData from '../../mock/products.json'
+import { categoryService } from '../../services/categoryService'
+import { useToast } from '../../components'
 
 const ProductsList = () => {
   const navigate = useNavigate()
+  const { success, error: showError } = useToast()
   
   // State management
-  const [products, setProducts] = useState([])
+  const [variants, setVariants] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [stockFilter, setStockFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [totalCount, setTotalCount] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
   
-  // Modal states
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  
-  // Data states
-  const [productToDelete, setProductToDelete] = useState(null)
+  // Categories for filter dropdown
+  const [categories, setCategories] = useState([])
   
   // Stats state
   const [stats, setStats] = useState({
-    totalProducts: 0,
-    activeProducts: 0,
-    lowStockProducts: 0,
-    averageRating: 0
+    totalVariants: 0,
+    activeVariants: 0,
+    lowStockVariants: 0
   })
-  
-  // Form refs
-  const addProductFormRef = useRef(null)
 
-  // Load products
+  // Load variants and categories
   useEffect(() => {
-    loadProducts()
-    loadStats()
+    loadCategories()
   }, [])
 
-  const loadProducts = async () => {
+  useEffect(() => {
+    loadVariants()
+  }, [currentPage, pageSize, searchTerm, categoryFilter])
+
+  const loadCategories = async () => {
+    try {
+      const response = await categoryService.getCategoryOptions(true)
+      if (response.success) {
+        setCategories(response.data || [])
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error)
+    }
+  }
+
+  const loadVariants = async () => {
     try {
       setLoading(true)
-      // For now, use mock data. Replace with actual API call later
-      // const response = await productService.getProducts()
-      // if (response.success) {
-      //   setProducts(response.data)
-      // }
-      setProducts(productsData)
+      const params = {
+        page: currentPage,
+        page_size: pageSize
+      }
+      
+      if (searchTerm) {
+        params.product_name = searchTerm
+      }
+      if (categoryFilter) {
+        params.category_id = parseInt(categoryFilter)
+      }
+      
+      const response = await productService.getProductVariantsFilter(params)
+      
+      if (response.success && response.data) {
+        setVariants(response.data.items || [])
+        setTotalCount(response.data.total_count || 0)
+        setTotalPages(response.data.total_pages || 0)
+        
+        // Calculate stats from current page data (or we could fetch separately)
+        const activeCount = (response.data.items || []).filter(v => v.is_active).length
+        const lowStockCount = (response.data.items || []).filter(v => 
+          v.stock_quantity <= v.low_stock_quantity
+        ).length
+        
+        setStats({
+          totalVariants: response.data.total_count || 0,
+          activeVariants: activeCount, // This is just for current page, would need separate API for accurate count
+          lowStockVariants: lowStockCount // Same here
+        })
+      } else {
+        showError(response.message || 'Failed to load product variants')
+      }
     } catch (error) {
-      console.error('Error loading products:', error)
+      console.error('Error loading variants:', error)
+      showError('Failed to load product variants. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const loadStats = async () => {
-    try {
-      // For now, calculate from mock data. Replace with actual API call later
-      // const response = await productService.getProductStats()
-      // if (response.success) {
-      //   setStats(response.data)
-      // }
-      
-      const totalProducts = productsData.length
-      const activeProducts = productsData.filter(p => p.status === 'active').length
-      const lowStockProducts = productsData.filter(p => p.stockStatus === 'low' || p.stockStatus === 'out').length
-      const averageRating = productsData.reduce((sum, p) => sum + p.rating, 0) / totalProducts
-      
-      setStats({
-        totalProducts,
-        activeProducts,
-        lowStockProducts,
-        averageRating: Math.round(averageRating * 10) / 10
-      })
-    } catch (error) {
-      console.error('Error loading stats:', error)
-    }
-  }
-
-  // Filter products
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.sku?.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = !categoryFilter || product.category === categoryFilter
-    const matchesStatus = !statusFilter || product.status === statusFilter
-    const matchesStock = !stockFilter || product.stockStatus === stockFilter
-    return matchesSearch && matchesCategory && matchesStatus && matchesStock
-  })
-
-  // Get unique categories for filter
-  const categories = [...new Set(products.map(p => p.category))]
-
-  // Stock status color mapping
-  const getStockStatusColor = (status) => {
-    switch (status) {
-      case 'high': return 'success'
-      case 'medium': return 'warning'
-      case 'low': return 'danger'
-      case 'out': return 'secondary'
-      default: return 'secondary'
-    }
+  // Stock status color mapping based on stock quantity
+  const getStockStatusColor = (stockQuantity, lowStockQuantity) => {
+    if (stockQuantity === 0) return 'secondary'
+    if (stockQuantity <= lowStockQuantity) return 'danger'
+    if (stockQuantity <= lowStockQuantity * 2) return 'warning'
+    return 'success'
   }
 
   // Status color mapping
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active': return 'success'
-      case 'inactive': return 'secondary'
-      case 'out_of_stock': return 'warning'
-      default: return 'secondary'
-    }
+  const getStatusColor = (isActive) => {
+    return isActive ? 'success' : 'secondary'
   }
 
-  // Render star rating
-  const renderStarRating = (rating) => {
-    const stars = []
-    const fullStars = Math.floor(rating)
-    const hasHalfStar = rating % 1 !== 0
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <FontAwesomeIcon key={i} icon={faStar} className="text-warning" />
-      )
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <FontAwesomeIcon key="half" icon={faStar} className="text-warning" style={{ opacity: 0.5 }} />
-      )
-    }
-
-    const emptyStars = 5 - Math.ceil(rating)
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <FontAwesomeIcon key={`empty-${i}`} icon={faStar} className="text-muted" />
-      )
-    }
-
-    return stars
+  // Get stock status text
+  const getStockStatusText = (stockQuantity, lowStockQuantity) => {
+    if (stockQuantity === 0) return 'Out of Stock'
+    if (stockQuantity <= lowStockQuantity) return 'Low Stock'
+    if (stockQuantity <= lowStockQuantity * 2) return 'Medium Stock'
+    return 'In Stock'
   }
 
   // Table columns
   const columns = [
     {
-      key: 'image',
-      label: 'Image',
-      render: (value, product, index) => (
-        <div className="d-flex align-items-center justify-content-center">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              rounded
-              style={{ width: '60px', height: '60px', objectFit: 'cover' }}
-              className="border"
-              loading="lazy"
-            />
-          ) : (
-            <div 
-              className="d-flex align-items-center justify-content-center border rounded"
-              style={{ 
-                width: '60px', 
-                height: '60px', 
-                backgroundColor: '#f8f9fa'
-              }}
-            >
-              <FontAwesomeIcon icon={faImage} className="text-muted" />
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
       key: 'product',
-      label: 'Product',
-      render: (value, product, index) => (
+      label: 'Product / Variant',
+      render: (value, variant, index) => (
         <div>
-          <div className="fw-semibold text-dark">{product.name}</div>
-          <small className="text-muted">{product.weight}</small>
+          <div className="fw-semibold text-dark">{variant.product_name}</div>
+          <small className="text-muted">{variant.variant_name}</small>
+          {variant.sku && (
+            <div className="small text-muted">SKU: {variant.sku}</div>
+          )}
         </div>
       )
     },
     {
       key: 'category',
       label: 'Category',
-      render: (value, product, index) => (
-        <Badge bg="success" className="px-2 py-1">
-          {product.category}
-        </Badge>
+      render: (value, variant, index) => (
+        variant.category_name ? (
+          <Badge bg="success" className="px-2 py-1">
+            {variant.category_name}
+          </Badge>
+        ) : (
+          <span className="text-muted">-</span>
+        )
       )
     },
     {
       key: 'price',
       label: 'Price',
-      render: (value, product, index) => (
+      render: (value, variant, index) => (
         <div>
-          <div className="fw-semibold text-success">${product.price}</div>
-          {product.oldPrice && (
-            <small className="text-muted text-decoration-line-through">${product.oldPrice}</small>
+          {variant.discounted_sale_price ? (
+            <>
+              <div className="fw-semibold text-success">${variant.discounted_sale_price.toFixed(2)}</div>
+              {variant.sale_price && variant.sale_price !== variant.discounted_sale_price && (
+                <small className="text-muted text-decoration-line-through">${variant.sale_price.toFixed(2)}</small>
+              )}
+              {variant.discount_percentage > 0 && (
+                <Badge bg="danger" className="ms-1">{variant.discount_percentage}% off</Badge>
+              )}
+            </>
+          ) : variant.sale_price ? (
+            <div className="fw-semibold text-success">${variant.sale_price.toFixed(2)}</div>
+          ) : (
+            <span className="text-muted">-</span>
           )}
         </div>
       )
@@ -226,113 +179,72 @@ const ProductsList = () => {
     {
       key: 'stock',
       label: 'Stock',
-      render: (value, product, index) => (
-        <div className="d-flex align-items-center">
-          <div 
-            className={`rounded-circle me-2`}
-            style={{ 
-              width: '8px', 
-              height: '8px', 
-              backgroundColor: getStockStatusColor(product.stockStatus) === 'success' ? '#22c55e' :
-                              getStockStatusColor(product.stockStatus) === 'warning' ? '#f59e0b' :
-                              getStockStatusColor(product.stockStatus) === 'danger' ? '#ef4444' : '#6b7280'
-            }}
-          />
-          <span className="fw-semibold">{product.stock} units</span>
-        </div>
-      )
-    },
-    {
-      key: 'sales',
-      label: 'Sales',
-      render: (value, product, index) => (
-        <Badge bg="info" className="px-2 py-1">
-          {product.sales} sold
-        </Badge>
-      )
-    },
-    {
-      key: 'rating',
-      label: 'Rating',
-      render: (value, product, index) => (
-        <div className="d-flex align-items-center">
-          <div className="me-2">
-            {renderStarRating(product.rating)}
+      render: (value, variant, index) => {
+        const stockColor = getStockStatusColor(variant.stock_quantity, variant.low_stock_quantity)
+        const stockText = getStockStatusText(variant.stock_quantity, variant.low_stock_quantity)
+        return (
+          <div className="d-flex align-items-center">
+            <div 
+              className="rounded-circle me-2"
+              style={{ 
+                width: '8px', 
+                height: '8px', 
+                backgroundColor: stockColor === 'success' ? '#22c55e' :
+                                stockColor === 'warning' ? '#f59e0b' :
+                                stockColor === 'danger' ? '#ef4444' : '#6b7280'
+              }}
+            />
+            <div>
+              <span className="fw-semibold">{variant.stock_quantity} units</span>
+              <div className="small text-muted">{stockText}</div>
+            </div>
           </div>
-          <span className="fw-semibold">({product.reviewCount})</span>
-        </div>
+        )
+      }
+    },
+    {
+      key: 'weight',
+      label: 'Weight',
+      render: (value, variant, index) => (
+        variant.weight ? (
+          <span>{variant.weight} kg</span>
+        ) : (
+          <span className="text-muted">-</span>
+        )
       )
     },
     {
       key: 'status',
       label: 'Status',
-      render: (value, product, index) => (
-        <Badge bg={getStatusColor(product.status)} className="px-2 py-1">
-          {product.status === 'active' ? 'Active' : 
-           product.status === 'inactive' ? 'Inactive' : 
-           product.status === 'out_of_stock' ? 'Out of Stock' : product.status}
+      render: (value, variant, index) => (
+        <Badge bg={getStatusColor(variant.is_active)} className="px-2 py-1">
+          {variant.is_active ? 'Active' : 'Inactive'}
         </Badge>
       )
     },
     {
       key: 'actions',
       label: 'Actions',
-      render: (value, product, index) => (
+      render: (value, variant, index) => (
         <div className="d-flex gap-2">
-          <Button
-            variant="outline-info"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleViewProduct(product)
-            }}
-            title="View Product"
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </Button>
           <Button
             variant="outline-warning"
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
-              handleOpenEditModal(product)
+              handleEditProduct(variant)
             }}
             title="Edit Product"
           >
             <FontAwesomeIcon icon={faPencil} />
           </Button>
-          {product.stockStatus === 'out' ? (
-            <Button
-              variant="outline-success"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleAddStock(product)
-              }}
-              title="Add Stock"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </Button>
-          ) : (
-            <Button
-              variant="outline-danger"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleDeleteProduct(product)
-              }}
-              title="Delete Product"
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </Button>
-          )}
         </div>
       )
     }
   ]
 
   // Sortable columns
-  const sortableColumns = ['name', 'category', 'price', 'stock', 'sales', 'rating', 'status']
+  const sortableColumns = ['product', 'category', 'price', 'stock', 'status']
 
   // Event handlers
   const handleSearch = (e) => {
@@ -344,63 +256,29 @@ const ProductsList = () => {
     navigate('/add-product')
   }
 
-  const handleOpenEditModal = (product) => {
-    navigate(`/products/edit/${product.id}`)
-  }
-
-  const handleViewProduct = (product) => {
-    navigate(`/products/${product.id}`)
-  }
-
-  const handleDeleteProduct = (product) => {
-    setProductToDelete(product)
-    setShowDeleteModal(true)
-  }
-
-  const handleAddStock = (product) => {
-    // TODO: Implement add stock functionality
-    console.log('Add stock for product:', product.name)
+  const handleEditProduct = (variant) => {
+    // Navigate to Product Wizard in edit mode using product_id (not variant_id)
+    navigate(`/products/edit/${variant.product_id}`)
   }
 
   const handleExport = () => {
     // TODO: Implement export functionality
-    console.log('Export products')
+    console.log('Export variants')
   }
 
   const handleReset = () => {
     setSearchTerm('')
     setCategoryFilter('')
-    setStatusFilter('')
-    setStockFilter('')
     setCurrentPage(1)
   }
 
-  const handleAddProductSubmit = async (formData) => {
-    try {
-      const response = await productService.createProduct(formData)
-      if (response.success) {
-        setShowAddModal(false)
-        loadProducts()
-        loadStats()
-      }
-    } catch (error) {
-      console.error('Error creating product:', error)
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
   }
 
-
-  const confirmDeleteProduct = async () => {
-    try {
-      const response = await productService.deleteProduct(productToDelete.id)
-      if (response.success) {
-        setShowDeleteModal(false)
-        setProductToDelete(null)
-        loadProducts()
-        loadStats()
-      }
-    } catch (error) {
-      console.error('Error deleting product:', error)
-    }
+  const handlePageSizeChange = (size) => {
+    setPageSize(size)
+    setCurrentPage(1)
   }
 
   return (
@@ -427,7 +305,7 @@ const ProductsList = () => {
 
           {/* Stats Cards */}
           <Row className="mb-5">
-            <Col md={3}>
+            <Col md={4}>
               <Card className="h-100 border-0 shadow-sm">
                 <Card.Body className="p-4">
                   <div className="d-flex align-items-center">
@@ -437,14 +315,14 @@ const ProductsList = () => {
                       </div>
                     </div>
                     <div className="flex-grow-1 ms-4">
-                      <div className="text-muted small fw-semibold mb-1">Total Products</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.totalProducts}</div>
+                      <div className="text-muted small fw-semibold mb-1">Total Variants</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.totalVariants.toLocaleString()}</div>
                     </div>
                   </div>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={3}>
+            <Col md={4}>
               <Card className="h-100 border-0 shadow-sm">
                 <Card.Body className="p-4">
                   <div className="d-flex align-items-center">
@@ -454,14 +332,14 @@ const ProductsList = () => {
                       </div>
                     </div>
                     <div className="flex-grow-1 ms-4">
-                      <div className="text-muted small fw-semibold mb-1">Active Products</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.activeProducts}</div>
+                      <div className="text-muted small fw-semibold mb-1">Active Variants</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.activeVariants}</div>
                     </div>
                   </div>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={3}>
+            <Col md={4}>
               <Card className="h-100 border-0 shadow-sm">
                 <Card.Body className="p-4">
                   <div className="d-flex align-items-center">
@@ -472,24 +350,7 @@ const ProductsList = () => {
                     </div>
                     <div className="flex-grow-1 ms-4">
                       <div className="text-muted small fw-semibold mb-1">Low Stock</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.lowStockProducts}</div>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="h-100 border-0 shadow-sm">
-                <Card.Body className="p-4">
-                  <div className="d-flex align-items-center">
-                    <div className="flex-shrink-0">
-                      <div className="p-3 rounded-3 bg-gradient-success text-white">
-                        <FontAwesomeIcon icon={faStar} size="lg" />
-                      </div>
-                    </div>
-                    <div className="flex-grow-1 ms-4">
-                      <div className="text-muted small fw-semibold mb-1">Avg Rating</div>
-                      <div className="h3 mb-2 fw-bold text-dark">{stats.averageRating}</div>
+                      <div className="h3 mb-2 fw-bold text-dark">{stats.lowStockVariants}</div>
                     </div>
                   </div>
                 </Card.Body>
@@ -518,48 +379,22 @@ const ProductsList = () => {
                     <label className="form-label fw-semibold">Category</label>
                     <FormSelect
                       value={categoryFilter}
-                      onChange={(e) => setCategoryFilter(e.target.value)}
+                      onChange={(e) => {
+                        setCategoryFilter(e.target.value)
+                        setCurrentPage(1)
+                      }}
                       className="border-2"
                     >
                       <option value="">All Categories</option>
                       {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                        <option key={category.id || category.category_id} value={category.id || category.category_id}>
+                          {category.name || category.category_name}
+                        </option>
                       ))}
                     </FormSelect>
                   </div>
                 </Col>
-                <Col md={2}>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Status</label>
-                    <FormSelect
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="border-2"
-                    >
-                      <option value="">All Status</option>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                      <option value="out_of_stock">Out of Stock</option>
-                    </FormSelect>
-                  </div>
-                </Col>
-                <Col md={2}>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Stock Status</label>
-                    <FormSelect
-                      value={stockFilter}
-                      onChange={(e) => setStockFilter(e.target.value)}
-                      className="border-2"
-                    >
-                      <option value="">All Stock</option>
-                      <option value="high">High Stock</option>
-                      <option value="medium">Medium Stock</option>
-                      <option value="low">Low Stock</option>
-                      <option value="out">Out of Stock</option>
-                    </FormSelect>
-                  </div>
-                </Col>
-                <Col md={3}>
+                <Col md={5}>
                   <div className="mb-3">
                     <label className="form-label fw-semibold">&nbsp;</label>
                     <div className="d-flex gap-2">
@@ -577,74 +412,37 @@ const ProductsList = () => {
               </Row>
             </div>
 
-            {/* Products Table */}
+            {/* Product Variants Table */}
             <div className="mb-4">
               <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-success border-2">
                 <div className="d-flex align-items-center">
                   <FontAwesomeIcon icon={faBox} className="me-3 text-success fs-4" />
-                  <h4 className="mb-0 text-success">Products List</h4>
+                  <h4 className="mb-0 text-success">Product Variants List</h4>
                 </div>
                 <div className="text-muted">
-                  Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredProducts.length)} of {filteredProducts.length} products
+                  Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, totalCount)} of {totalCount.toLocaleString()} variants
                 </div>
               </div>
               
               <Table
-                data={filteredProducts}
+                data={variants}
                 columns={columns}
                 sortableColumns={sortableColumns}
                 currentPage={currentPage}
                 pageSize={pageSize}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={setPageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
                 loading={loading}
                 hover
                 pagination={true}
-                sortable={true}
-                totalItems={filteredProducts.length}
+                sortable={false}
+                totalItems={totalCount}
               />
             </div>
           </div>
         </Col>
       </Row>
 
-      {/* Add Product Modal */}
-      <FormModal
-        visible={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Add New Product"
-        size="xl"
-        onConfirm={() => addProductFormRef.current?.handleSubmit()}
-        confirmText="Create Product"
-        cancelText="Cancel"
-        loading={false}
-      >
-        <ProductForm
-          ref={addProductFormRef}
-          mode="create"
-          onSubmit={handleAddProductSubmit}
-          onCancel={() => setShowAddModal(false)}
-        />
-      </FormModal>
-
-
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        visible={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false)
-          setProductToDelete(null)
-        }}
-        title="Delete Product"
-        onConfirm={confirmDeleteProduct}
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-      >
-        <p>Are you sure you want to delete the product <strong>"{productToDelete?.name}"</strong>?</p>
-        <p className="text-muted">This action cannot be undone.</p>
-      </Modal>
     </Container>
   )
 }
