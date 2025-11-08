@@ -102,6 +102,79 @@
 - Form validation
 - All 15 settings fields mapped and functional
 
+### 5. Product Management Module - Add Product Wizard ✅
+**Product Creation Wizard (5-Step Process):**
+
+**Step 1 - Basic Information:**
+- Create Product - `POST /product-service/products/` (creates product with basic info)
+- Get Product by ID - `GET /product-service/products/{product_id}`
+- Get Full Product Details - `GET /product-service/products/{product_id}/full`
+- Get Category Options - `GET /product-service/categories/options` (for dropdown)
+- Auto-save product on Step 1 completion
+- Product ID stored for subsequent steps
+
+**Step 2 - Attributes:**
+- Get All Attributes - `GET /product-service/attributes/` (returns boolean, text, date types)
+- Get Product Attributes - `GET /product-service/products/{product_id}/attributes/`
+- Assign Attributes to Product - `POST /product-service/products/{product_id}/attributes/` (array of {attribute_id, custom_value})
+- Auto-save attributes on Step 2 completion
+- Supports boolean (checkbox), text (textfield), and date attribute types
+- Loads existing product attributes in edit mode
+
+**Step 3 - Variants:**
+- Get Product Variants - `GET /product-service/products/{product_id}/variants`
+- Create Variant - `POST /product-service/products/{product_id}/variants`
+- Update Variant - `PUT /product-service/products/variants/{variant_id}`
+- Delete Variant - `DELETE /product-service/products/variants/{variant_id}`
+- Get Bulk Pricing - `GET /product-service/products/{product_id}/bulk-pricing`
+- Create Bulk Pricing - `POST /product-service/products/{product_id}/bulk-pricing`
+- Update Bulk Pricing - `PUT /product-service/products/bulk-pricing/{bulk_pricing_id}`
+- Delete Bulk Pricing - `DELETE /product-service/products/bulk-pricing/{bulk_pricing_id}`
+- Row-level save functionality (save button per row)
+- Visual indicators for new unsaved rows
+
+**Step 4 - Images:**
+- Get Product Images - `GET /product-service/products/{product_id}/images`
+- Upload Product Images - `POST /product-service/products/{product_id}/images` (multipart/form-data with files array, primary_flags, sort_orders)
+- Update Image Metadata - `PUT /product-service/products/{product_id}/images/meta` (is_primary, sort_order)
+- Delete Product Images - `PUT /product-service/products/{product_id}/images?delete_image_ids=[]`
+- Immediate upload on file selection
+- Auto-save metadata on primary image change and reorder
+- Drag & drop file upload support
+- File validation (max 4 images, 5MB each)
+
+**Step 5 - Review:**
+- Get Full Product Details - `GET /product-service/products/{product_id}/full` (for review display)
+- Displays all product information from API
+- Shows category names (fetched from categories API)
+- Displays variants, bulk pricing, images, and attributes
+- Submit button (ready for future update functionality)
+
+**Files Updated:**
+- `admin/src/services/productService.js` ✅ Completed (all product, variant, bulk pricing, and image APIs)
+- `admin/src/components/pages/products/AddProductWizard.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/BasicInfoStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/AttributesStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/VariantsStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/ImageStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/ReviewStep.jsx` ✅ Completed
+
+**Features Implemented:**
+- 5-step product creation wizard with API integration
+- Step 1: Product creation with basic info (name, category, SKU, description, GST, margin)
+- Step 2: Attribute assignment (boolean, text, date types) with auto-save
+- Step 3: Variants and bulk pricing with row-level save functionality
+- Step 4: Image upload with immediate save and metadata management
+- Step 5: Review page with full product details from API
+- Category dropdown populated from API
+- Toast notifications for all operations
+- Loading states for all API calls
+- Error handling with user-friendly messages
+- Edit mode support (loads existing product data)
+- Product ID management across steps
+- Row-level save for variants and bulk pricing
+- Auto-save for image metadata changes
+
 ---
 
 ## 📁 Project File Structure
@@ -129,7 +202,7 @@ nz-grocery/
 │       │   ├── authService.js              # ✅ Authentication service (login, logout)
 │       │   ├── categoryService.js         # ✅ Category management service
 │       │   ├── userService.js              # User management service (pending)
-│       │   ├── productService.js          # Product management service (pending)
+│       │   ├── productService.js          # ✅ Product management service (Add Product Wizard - all steps)
 │       │   ├── orderService.js            # Order management service (pending)
 │       │   ├── customerService.js         # Customer management service (pending)
 │       │   ├── inventoryService.js        # Inventory management service (pending)
@@ -161,7 +234,13 @@ nz-grocery/
 │       │           ├── FAQCategoryFormModal.jsx # ✅ FAQ Category form component
 │       │           └── FAQFormModal.jsx     # ✅ FAQ Entry form component
 │       │       └── 📁 products/
-│       │           └── ProductForm.jsx     # Product form (pending)
+│       │           ├── AddProductWizard.jsx # ✅ Product creation wizard (5 steps)
+│       │           └── 📁 steps/
+│       │               ├── BasicInfoStep.jsx # ✅ Step 1 - Basic information
+│       │               ├── AttributesStep.jsx # ✅ Step 2 - Product attributes
+│       │               ├── VariantsStep.jsx # ✅ Step 3 - Variants & bulk pricing
+│       │               ├── ImageStep.jsx # ✅ Step 4 - Product images
+│       │               └── ReviewStep.jsx # ✅ Step 5 - Review & submit
 │       │       └── 📁 orders/
 │       │           └── OrderDetailsModal.jsx # Order details (pending)
 │       │       └── ...                     # Other page components
@@ -259,14 +338,14 @@ nz-grocery/
 - ✅ `categoryService.js` - Category CRUD operations
 - ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
 - ✅ `settingsService.js` - Global Settings management (create/update by key, section-based organization)
+- ✅ `productService.js` - Product management (Add Product Wizard - all 5 steps with variants, bulk pricing, images, attributes)
 
 **Pending Services**:
-- ⏳ `productService.js` - Products management
 - ⏳ `orderService.js` - Orders management
 - ⏳ `customerService.js` - Customers management
 - ⏳ `inventoryService.js` - Inventory management
 - ⏳ `userService.js` - User management
-- ⏳ `settingsService.js` - Settings management
+- ⏳ `subCategoryService.js` - Subcategory management
 
 #### 🎨 Component Files
 
@@ -279,7 +358,12 @@ nz-grocery/
 
 **Page Components** (`admin/src/components/pages/`):
 - ✅ **`categories/CategoryForm.jsx`** - Category form with validation
-- ⏳ `products/ProductForm.jsx` - Product form (pending)
+- ✅ **`products/AddProductWizard.jsx`** - Product creation wizard (5 steps)
+- ✅ **`products/steps/BasicInfoStep.jsx`** - Step 1: Basic information
+- ✅ **`products/steps/AttributesStep.jsx`** - Step 2: Product attributes
+- ✅ **`products/steps/VariantsStep.jsx`** - Step 3: Variants & bulk pricing
+- ✅ **`products/steps/ImageStep.jsx`** - Step 4: Product images
+- ✅ **`products/steps/ReviewStep.jsx`** - Step 5: Review & submit
 - ⏳ `orders/OrderDetailsModal.jsx` - Order details (pending)
 
 #### 📄 View Files
@@ -468,31 +552,64 @@ ToastProvider.jsx
 
 ---
 
-### Priority 4: Products Management Module 🛍️
+### Priority 4: Products Management Module - Add Product Wizard 🛍️ ✅ **COMPLETED**
 **Why Third**: Core business functionality.
 
-**APIs Needed**:
-- `GET /products` - List all products
-- `GET /products/{id}` - Get product by ID
-- `POST /products` - Create product
-- `PUT /products/{id}` - Update product
-- `DELETE /products/{id}` - Delete product
-- `GET /categories` - List categories
-- `GET /subcategories` - List subcategories
-- File upload for product images
+**APIs Integrated:**
 
-**Files to Update**:
-- `admin/src/services/productService.js`
-- `admin/src/services/categoryService.js`
-- `admin/src/services/subCategoryService.js`
-- `admin/src/views/products/ProductsList.jsx`
-- `admin/src/views/products/ProductDetails.jsx`
-- `admin/src/components/pages/products/AddProductWizard.jsx`
-- `admin/src/components/pages/products/ProductForm.jsx`
-- `admin/src/views/categories/CategoriesList.jsx`
-- `admin/src/views/subcategories/SubCategoriesList.jsx`
+**Step 1 - Basic Information:**
+- `POST /product-service/products/` - Create product
+- `GET /product-service/products/{product_id}` - Get product by ID
+- `GET /product-service/products/{product_id}/full` - Get full product details
+- `GET /product-service/categories/options` - Get category options
 
-**Estimated Time**: 6-8 hours
+**Step 2 - Attributes:**
+- `GET /product-service/attributes/` - Get all attributes
+- `GET /product-service/products/{product_id}/attributes/` - Get product attributes
+- `POST /product-service/products/{product_id}/attributes/` - Assign attributes to product
+
+**Step 3 - Variants:**
+- `GET /product-service/products/{product_id}/variants` - List product variants
+- `POST /product-service/products/{product_id}/variants` - Create variant
+- `PUT /product-service/products/variants/{variant_id}` - Update variant
+- `DELETE /product-service/products/variants/{variant_id}` - Delete variant
+- `GET /product-service/products/{product_id}/bulk-pricing` - List bulk pricing
+- `POST /product-service/products/{product_id}/bulk-pricing` - Create bulk pricing
+- `PUT /product-service/products/bulk-pricing/{bulk_pricing_id}` - Update bulk pricing
+- `DELETE /product-service/products/bulk-pricing/{bulk_pricing_id}` - Delete bulk pricing
+
+**Step 4 - Images:**
+- `GET /product-service/products/{product_id}/images` - List product images
+- `POST /product-service/products/{product_id}/images` - Upload images (multipart/form-data)
+- `PUT /product-service/products/{product_id}/images/meta` - Update image metadata
+- `PUT /product-service/products/{product_id}/images?delete_image_ids=[]` - Delete images
+
+**Step 5 - Review:**
+- `GET /product-service/products/{product_id}/full` - Get full product details for review
+
+**Files Updated:**
+- `admin/src/services/productService.js` ✅ Completed
+- `admin/src/components/pages/products/AddProductWizard.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/BasicInfoStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/AttributesStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/VariantsStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/ImageStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/ReviewStep.jsx` ✅ Completed
+
+**Features Implemented:**
+- 5-step product creation wizard with full API integration
+- Step 1: Auto-save product on completion, stores product_id for subsequent steps
+- Step 2: Auto-save attributes on completion, supports boolean/text/date types
+- Step 3: Row-level save for variants and bulk pricing (save button per row)
+- Step 4: Immediate image upload, auto-save metadata on changes
+- Step 5: Review page fetches and displays full product details from API
+- Category dropdown populated from API
+- Toast notifications for all operations
+- Loading states and error handling
+- Edit mode support (loads existing product data)
+- Product ID management across all steps
+
+**Time Taken**: Completed
 
 ---
 
@@ -728,12 +845,14 @@ export default moduleService
 - Category Management Module
 - Content Management Module (Banners, FAQ Categories, FAQ Entries)
 - Global Settings Module
+- Product Management Module - Add Product Wizard (5-step process)
 
 ⏳ **In Progress**:
 - None
 
 📋 **Next Up**:
 - Dashboard Module (Priority 2)
+- Product Management Module - Products List & Product Details (remaining parts)
 - Content Management Module - Notifications (remaining part of Priority 8)
 
 ---
@@ -1267,5 +1386,5 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), and Global Settings Modules Completed - Ready for Dashboard Module Integration
+**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, and Product Management (Add Product Wizard - 5 steps) Modules Completed - Ready for Dashboard Module Integration
 
