@@ -3,15 +3,15 @@ import { Container, Row, Col, Card, Button, Form, Alert, Badge } from 'react-boo
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faShoppingCart, 
-  faBell, 
-  faDownload, 
   faSearch, 
   faSync,
   faEye,
   faCheck,
   faTruck,
   faPrint,
-  faImage
+  faImage,
+  faClock,
+  faDollarSign
 } from '@fortawesome/free-solid-svg-icons'
 import orderService from '../../services/orderService'
 import Table from '../../components/common/Table'
@@ -86,10 +86,32 @@ const OrdersList = () => {
     try {
       const response = await orderService.getOrderStats()
       if (response.success) {
-        setStats(response.data || {})
+        // Map API response to stats state
+        setStats({
+          totalOrders: response.data.totalOrders || 0,
+          pendingOrders: response.data.pendingOrders || 0,
+          processingOrders: response.data.processingOrders || 0,
+          totalRevenue: response.data.totalRevenue || 0
+        })
+      } else {
+        console.error('Failed to fetch order stats:', response.message)
+        // Set default values on error
+        setStats({
+          totalOrders: 0,
+          pendingOrders: 0,
+          processingOrders: 0,
+          totalRevenue: 0
+        })
       }
     } catch (err) {
       console.error('Error fetching order stats:', err)
+      // Set default values on error
+      setStats({
+        totalOrders: 0,
+        pendingOrders: 0,
+        processingOrders: 0,
+        totalRevenue: 0
+      })
     }
   }
 
@@ -373,18 +395,6 @@ const OrdersList = () => {
           <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
             <FontAwesomeIcon icon={faShoppingCart} className="me-3 text-success fs-4" />
             <h2 className="mb-0 text-dark">Order Management</h2>
-            <div className="ms-auto d-flex align-items-center">
-              <div className="position-relative me-3">
-                <FontAwesomeIcon icon={faBell} className="text-muted fs-5" />
-                <Badge bg="danger" className="position-absolute top-0 start-100 translate-middle rounded-pill" style={{ fontSize: '0.6rem' }}>
-                  3
-                </Badge>
-              </div>
-              <Button variant="primary">
-                <FontAwesomeIcon icon={faDownload} className="me-2" />
-                Export Orders
-              </Button>
-            </div>
           </div>
 
           {/* Stats Cards */}
@@ -394,7 +404,7 @@ const OrdersList = () => {
                 <Card.Body>
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
-                      <h4 className="mb-0">{stats.totalOrders || 234}</h4>
+                      <h4 className="mb-0">{stats.totalOrders ?? 0}</h4>
                       <p className="mb-0">Total Orders</p>
                     </div>
                     <FontAwesomeIcon icon={faShoppingCart} className="fs-1 opacity-75" />
@@ -407,10 +417,10 @@ const OrdersList = () => {
                 <Card.Body>
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
-                      <h4 className="mb-0">{stats.pendingOrders || 12}</h4>
+                      <h4 className="mb-0">{stats.pendingOrders ?? 0}</h4>
                       <p className="mb-0">Pending Orders</p>
                     </div>
-                    <FontAwesomeIcon icon={faBell} className="fs-1 opacity-75" />
+                    <FontAwesomeIcon icon={faClock} className="fs-1 opacity-75" />
                   </div>
                 </Card.Body>
               </Card>
@@ -420,7 +430,7 @@ const OrdersList = () => {
                 <Card.Body>
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
-                      <h4 className="mb-0">{stats.processingOrders || 8}</h4>
+                      <h4 className="mb-0">{stats.processingOrders ?? 0}</h4>
                       <p className="mb-0">Processing</p>
                     </div>
                     <FontAwesomeIcon icon={faTruck} className="fs-1 opacity-75" />
@@ -433,10 +443,10 @@ const OrdersList = () => {
                 <Card.Body>
                   <div className="d-flex align-items-center">
                     <div className="flex-grow-1">
-                      <h4 className="mb-0">{formatCurrency(stats.totalRevenue || 12456)}</h4>
+                      <h4 className="mb-0">{formatCurrency(stats.totalRevenue ?? 0)}</h4>
                       <p className="mb-0">Total Revenue</p>
                     </div>
-                    <FontAwesomeIcon icon={faDownload} className="fs-1 opacity-75" />
+                    <FontAwesomeIcon icon={faDollarSign} className="fs-1 opacity-75" />
                   </div>
                 </Card.Body>
               </Card>
