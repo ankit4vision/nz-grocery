@@ -17,8 +17,11 @@ import orderService from '../../services/orderService'
 import Table from '../../components/common/Table'
 import OrderDetailsModal from '../../components/pages/orders/OrderDetailsModal'
 import { formatCurrency, formatDate } from '../../utils'
+import { useToast } from '../../components'
 
 const OrdersList = () => {
+  const { success, error: showError } = useToast()
+  
   const [orders, setOrders] = useState([])
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
@@ -42,10 +45,11 @@ const OrdersList = () => {
     totalItems: 0
   })
 
+  // Initial load
   useEffect(() => {
     fetchOrders()
     fetchStats()
-  }, [pagination.currentPage, filters])
+  }, [pagination.currentPage]) // Only reload on page change
 
   const fetchOrders = async () => {
     setLoading(true)
@@ -58,13 +62,20 @@ const OrdersList = () => {
       }
       
       const response = await orderService.getOrders(params)
-      setOrders(response.data.orders || [])
-      setPagination(prev => ({
-        ...prev,
-        totalItems: response.data.total || 0
-      }))
+      if (response.success) {
+        setOrders(response.data.orders || [])
+        setPagination(prev => ({
+          ...prev,
+          totalItems: response.data.total || 0
+        }))
+      } else {
+        setError(response.message || 'Failed to load orders')
+        showError(response.message || 'Failed to load orders')
+      }
     } catch (err) {
-      setError('Failed to load orders')
+      const errorMsg = 'Failed to load orders'
+      setError(errorMsg)
+      showError(errorMsg)
       console.error('Error fetching orders:', err)
     } finally {
       setLoading(false)
@@ -74,7 +85,9 @@ const OrdersList = () => {
   const fetchStats = async () => {
     try {
       const response = await orderService.getOrderStats()
-      setStats(response.data || {})
+      if (response.success) {
+        setStats(response.data || {})
+      }
     } catch (err) {
       console.error('Error fetching order stats:', err)
     }
@@ -128,12 +141,23 @@ const OrdersList = () => {
 
   const handleQuickAction = async (orderId, action) => {
     try {
+      let response
       switch (action) {
         case 'process':
-          await orderService.updateOrderStatus(orderId, 'processing')
+          response = await orderService.updateOrderStatus(orderId, 'processing')
+          if (response.success) {
+            success('Order status updated to processing')
+          } else {
+            showError(response.message || 'Failed to update order status')
+          }
           break
         case 'ship':
-          await orderService.updateOrderStatus(orderId, 'shipped')
+          response = await orderService.updateOrderStatus(orderId, 'out_for_delivery')
+          if (response.success) {
+            success('Order status updated to out for delivery')
+          } else {
+            showError(response.message || 'Failed to update order status')
+          }
           break
         case 'print':
           // Handle print action
@@ -141,8 +165,11 @@ const OrdersList = () => {
         default:
           break
       }
-      handleOrderUpdate()
+      if (response && response.success) {
+        handleOrderUpdate()
+      }
     } catch (err) {
+      showError('An error occurred while performing the action')
       console.error('Error performing quick action:', err)
     }
   }
@@ -152,7 +179,8 @@ const OrdersList = () => {
       pending: 'warning',
       confirmed: 'info',
       processing: 'primary',
-      shipped: 'info',
+      ready_for_pickup: 'info',
+      out_for_delivery: 'info',
       delivered: 'success',
       cancelled: 'danger',
       refunded: 'secondary'
@@ -311,7 +339,7 @@ const OrdersList = () => {
                 <FontAwesomeIcon icon={faCheck} />
               </Button>
             )}
-            {(order.status || 'pending') === 'processing' && (
+            {((order.status || 'pending') === 'processing' || (order.status || 'pending') === 'confirmed') && (
               <Button
                 variant="outline-info"
                 size="sm"

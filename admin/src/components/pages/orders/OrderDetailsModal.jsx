@@ -16,19 +16,29 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import orderService from '../../../services/orderService'
 import { formatCurrency, formatDate } from '../../../utils'
+import { useToast } from '../../../components'
 
 const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
+  const { success, error: showError } = useToast()
+  
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(false)
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
   const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (show && orderId) {
       fetchOrderDetails()
+    } else {
+      // Reset state when modal closes
+      setOrder(null)
+      setError('')
+      setSuccessMsg('')
+      setSelectedStatus('')
+      setNotes('')
     }
   }, [show, orderId])
 
@@ -36,11 +46,18 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
     setLoading(true)
     setError('')
     try {
-      const response = await orderService.getOrderById(orderId)
-      setOrder(response.data)
-      setSelectedStatus(response.data.status)
+      const response = await orderService.getOrderDetails(orderId)
+      if (response.success) {
+        setOrder(response.data)
+        setSelectedStatus(response.data.status)
+      } else {
+        setError(response.message || 'Failed to load order details')
+        showError(response.message || 'Failed to load order details')
+      }
     } catch (err) {
-      setError('Failed to load order details')
+      const errorMsg = 'Failed to load order details'
+      setError(errorMsg)
+      showError(errorMsg)
       console.error('Error fetching order details:', err)
     } finally {
       setLoading(false)
@@ -52,18 +69,26 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
 
     setUpdating(true)
     setError('')
-    setSuccess('')
+    setSuccessMsg('')
 
     try {
-      await orderService.updateOrderStatus(orderId, selectedStatus, notes)
-      setSuccess('Order status updated successfully')
-      setOrder(prev => ({ ...prev, status: selectedStatus }))
-      onOrderUpdate && onOrderUpdate()
-      
-      // Clear notes after successful update
-      setNotes('')
+      const response = await orderService.updateOrderStatus(orderId, selectedStatus, notes)
+      if (response.success) {
+        setSuccessMsg('Order status updated successfully')
+        success('Order status updated successfully')
+        setOrder(prev => ({ ...prev, status: selectedStatus }))
+        onOrderUpdate && onOrderUpdate()
+        
+        // Clear notes after successful update
+        setNotes('')
+      } else {
+        setError(response.message || 'Failed to update order status')
+        showError(response.message || 'Failed to update order status')
+      }
     } catch (err) {
-      setError('Failed to update order status')
+      const errorMsg = 'Failed to update order status'
+      setError(errorMsg)
+      showError(errorMsg)
       console.error('Error updating order status:', err)
     } finally {
       setUpdating(false)
@@ -73,33 +98,48 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
   const handleQuickAction = async (action) => {
     setUpdating(true)
     setError('')
-    setSuccess('')
+    setSuccessMsg('')
 
     try {
+      let response
       switch (action) {
         case 'process':
-          await orderService.updateOrderStatus(orderId, 'processing')
-          setOrder(prev => ({ ...prev, status: 'processing' }))
-          setSuccess('Order is now being processed')
+          response = await orderService.updateOrderStatus(orderId, 'processing')
+          if (response.success) {
+            setOrder(prev => ({ ...prev, status: 'processing' }))
+            setSuccessMsg('Order is now being processed')
+            success('Order is now being processed')
+          } else {
+            setError(response.message || 'Failed to process order')
+            showError(response.message || 'Failed to process order')
+          }
           break
         case 'ship':
-          await orderService.updateShippingInfo(orderId, { 
-            shippedDate: new Date().toISOString() 
-          })
-          await orderService.updateOrderStatus(orderId, 'shipped')
-          setOrder(prev => ({ ...prev, status: 'shipped' }))
-          setSuccess('Order has been shipped')
+          response = await orderService.updateOrderStatus(orderId, 'out_for_delivery')
+          if (response.success) {
+            setOrder(prev => ({ ...prev, status: 'out_for_delivery' }))
+            setSuccessMsg('Order is out for delivery')
+            success('Order is out for delivery')
+          } else {
+            setError(response.message || 'Failed to update shipping status')
+            showError(response.message || 'Failed to update shipping status')
+          }
           break
         case 'contact':
           // This would typically open an email client or messaging system
-          setSuccess('Customer contact initiated')
+          setSuccessMsg('Customer contact initiated')
+          success('Customer contact initiated')
           break
         default:
           break
       }
-      onOrderUpdate && onOrderUpdate()
+      if (response && response.success) {
+        onOrderUpdate && onOrderUpdate()
+      }
     } catch (err) {
-      setError(`Failed to ${action} order`)
+      const errorMsg = `Failed to ${action} order`
+      setError(errorMsg)
+      showError(errorMsg)
       console.error(`Error ${action}ing order:`, err)
     } finally {
       setUpdating(false)
@@ -146,17 +186,25 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
     return <FontAwesomeIcon icon={iconMap[status] || faClock} className="text-muted" />
   }
 
-  if (!order) return null
+  if (!show) return null
 
   return (
     <Modal show={show} onHide={onHide} size="xl" centered>
       <Modal.Header closeButton>
-        <Modal.Title>Order Details - {order.orderNumber}</Modal.Title>
+        <Modal.Title>Order Details {order ? `- ${order.orderNumber}` : ''}</Modal.Title>
       </Modal.Header>
       
       <Modal.Body>
-        {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
-        {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+        {loading && (
+          <div className="text-center py-5">
+            <div className="spinner-border text-success" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        )}
+        {!loading && error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
+        {!loading && successMsg && <Alert variant="success" dismissible onClose={() => setSuccessMsg('')}>{successMsg}</Alert>}
+        {!loading && order && (
         
         <Row>
           {/* Left Column - Order Items & Timeline */}
@@ -403,18 +451,20 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
             </Card>
           </Col>
         </Row>
+        )}
       </Modal.Body>
       
       <Modal.Footer>
-        <div className="d-flex justify-content-between w-100">
-          <div>
-            <Badge bg={getStatusColor(order.status)} className="me-2">
-              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-            </Badge>
-            <Badge bg={getPaymentStatusColor(order.paymentStatus)}>
-              {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
-            </Badge>
-          </div>
+        {order && (
+          <div className="d-flex justify-content-between w-100">
+            <div>
+              <Badge bg={getStatusColor(order.status)} className="me-2">
+                {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/_/g, ' ')}
+              </Badge>
+              <Badge bg={getPaymentStatusColor(order.paymentStatus)}>
+                {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
+              </Badge>
+            </div>
           <div>
             <Button variant="outline-secondary" className="me-2">
               <FontAwesomeIcon icon={faPrint} className="me-2" />
@@ -428,7 +478,8 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
               Close
             </Button>
           </div>
-        </div>
+          </div>
+        )}
       </Modal.Footer>
     </Modal>
   )
