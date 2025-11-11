@@ -94,7 +94,7 @@ const InventoryHistoryModal = ({ show, onHide, variant }) => {
   }
 
   const handleExportHistory = () => {
-    if (!product || !history.length) return
+    if (!variant || !history.length) return
 
     // Create CSV content
     const csvContent = [
@@ -222,7 +222,7 @@ const InventoryHistoryModal = ({ show, onHide, variant }) => {
             <div className="text-center py-4">
               <FontAwesomeIcon icon={faClock} className="text-muted mb-3" size="3x" />
               <h5 className="text-muted">No History Available</h5>
-              <p className="text-muted">No inventory changes have been recorded for this variant. History tracking will be available when the API is implemented.</p>
+              <p className="text-muted">No inventory changes have been recorded for this variant.</p>
             </div>
           )}
         </div>

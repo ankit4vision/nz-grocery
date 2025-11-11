@@ -3,15 +3,12 @@ import { Container, Row, Col, Card, Button, Form, Badge, Alert, Modal, FormContr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faWarehouse, 
-  faUpload, 
-  faDownload, 
   faSearch, 
   faHistory, 
   faExclamationTriangle,
   faCheckCircle,
   faTimesCircle,
   faRefresh,
-  faFileExcel,
   faPlusMinus
 } from '@fortawesome/free-solid-svg-icons'
 import { Table } from '../../components'
@@ -180,25 +177,6 @@ const InventoryManagement = () => {
     } catch (error) {
       console.error('Error updating inventory:', error)
       showError('An error occurred while updating inventory')
-    }
-  }
-
-  const handleExportInventory = async () => {
-    try {
-      const result = await inventoryService.exportInventory(filters)
-      if (result.success) {
-        // Simulate download
-        const csvContent = result.data.map(row => Object.values(row).join(',')).join('\n')
-        const blob = new Blob([csvContent], { type: 'text/csv' })
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = result.filename
-        a.click()
-        window.URL.revokeObjectURL(url)
-      }
-    } catch (error) {
-      console.error('Error exporting inventory:', error)
     }
   }
 
@@ -387,16 +365,6 @@ const InventoryManagement = () => {
           <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
             <FontAwesomeIcon icon={faWarehouse} className="me-3 text-success fs-4" />
             <h2 className="mb-0 text-dark">Inventory Management</h2>
-            <div className="ms-auto">
-              <Button variant="success" className="me-2 text-white" onClick={() => setShowBulkUpdateModal(true)}>
-                <FontAwesomeIcon icon={faUpload} className="me-2" />
-                Bulk Update
-              </Button>
-              <Button variant="primary" onClick={handleExportInventory}>
-                <FontAwesomeIcon icon={faDownload} className="me-2" />
-                Export Inventory
-              </Button>
-            </div>
           </div>
 
           {/* Summary Cards */}
