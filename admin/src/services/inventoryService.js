@@ -1,241 +1,249 @@
-import inventoryData from '../mock/inventory.json'
-
-// Simulate API delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+// Inventory Service - API calls for inventory management
+import apiClient from '../config/apiClient'
+import { handleApiError, formatSuccessResponse } from '../utils/errorHandler'
+import { productService } from './productService'
 
 const inventoryService = {
-  // Get all inventory items
-  getInventoryItems: async (filters = {}) => {
-    await delay(500)
-    
-    let filteredData = [...inventoryData]
-    
-    // Apply filters
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase()
-      filteredData = filteredData.filter(item => 
-        item.productName.toLowerCase().includes(searchTerm) ||
-        item.sku.toLowerCase().includes(searchTerm)
-      )
-    }
-    
-    if (filters.category && filters.category !== 'All Categories') {
-      filteredData = filteredData.filter(item => item.category === filters.category)
-    }
-    
-    if (filters.status && filters.status !== 'All Status') {
-      filteredData = filteredData.filter(item => item.status === filters.status)
-    }
-    
-    if (filters.dietaryInfo && filters.dietaryInfo !== 'All Items') {
-      filteredData = filteredData.filter(item => item.dietaryInfo === filters.dietaryInfo)
-    }
-    
-    // Sort by last updated (newest first)
-    filteredData.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
-    
-    return {
-      success: true,
-      data: filteredData,
-      total: filteredData.length
-    }
-  },
-
-  // Get inventory item by ID
-  getInventoryItemById: async (id) => {
-    await delay(300)
-    
-    const item = inventoryData.find(item => item.id === parseInt(id))
-    
-    if (!item) {
-      return {
-        success: false,
-        error: 'Inventory item not found'
+  // Get all inventory items (product variants with stock)
+  // Uses the same API as ProductsList - product variants filter
+  getInventoryItems: async (filters = {}, pagination = {}) => {
+    try {
+      const params = {
+        page: pagination.page || 1,
+        page_size: pagination.pageSize || 10
       }
-    }
-    
-    return {
-      success: true,
-      data: item
+      
+      // Apply filters
+      if (filters.search) {
+        params.product_name = filters.search
+      }
+      
+      if (filters.category && filters.category !== 'All Categories' && filters.category !== '') {
+        params.category_id = parseInt(filters.category)
+      }
+      
+      // Stock status filter - map to API format if needed
+      // Note: The API doesn't directly support stock status filter, 
+      // but we can filter client-side or use inventory statistics
+      if (filters.status && filters.status !== 'All Status' && filters.status !== '') {
+        // This will be handled client-side after fetching
+        params._stock_status = filters.status
+      }
+      
+      const response = await productService.getProductVariantsFilter(params)
+      
+      if (response.success && response.data) {
+        let items = response.data.items || []
+        
+        // Apply client-side stock status filter if needed
+        if (filters.status && filters.status !== 'All Status' && filters.status !== '') {
+          items = items.filter(variant => {
+            const stockQty = variant.stock_quantity || 0
+            const lowStockQty = variant.low_stock_quantity || 0
+            
+            if (filters.status === 'out_of_stock') {
+              return stockQty === 0
+            } else if (filters.status === 'low_stock') {
+              return stockQty > 0 && stockQty <= lowStockQty
+            } else if (filters.status === 'in_stock') {
+              return stockQty > lowStockQty
+            }
+            return true
+          })
+        }
+        
+        return {
+          success: true,
+          data: items,
+          total: response.data.total_count || 0,
+          totalPages: response.data.total_pages || 0
+        }
+      }
+      
+      return handleApiError(new Error(response.message || 'Failed to fetch inventory items'))
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
   // Get inventory statistics
   getInventoryStats: async () => {
-    await delay(200)
-    
-    const totalProducts = inventoryData.length
-    const totalStock = inventoryData.reduce((sum, item) => sum + item.currentStock, 0)
-    const lowStockItems = inventoryData.filter(item => item.status === 'low_stock').length
-    const outOfStockItems = inventoryData.filter(item => item.status === 'out_of_stock').length
-    
-    // Calculate expiring items (within next 7 days)
-    const sevenDaysFromNow = new Date()
-    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
-    
-    const expiringItems = inventoryData.filter(item => {
-      const expiryDate = new Date(item.expiryDate)
-      return expiryDate <= sevenDaysFromNow && item.currentStock > 0
-    }).length
-    
-    return {
-      success: true,
-      data: {
-        totalProducts,
-        totalStock,
-        lowStockItems,
-        outOfStockItems,
-        expiringItems
-      }
-    }
-  },
-
-  // Update inventory item
-  updateInventoryItem: async (id, updateData) => {
-    await delay(800)
-    
-    const itemIndex = inventoryData.findIndex(item => item.id === parseInt(id))
-    
-    if (itemIndex === -1) {
-      return {
-        success: false,
-        error: 'Inventory item not found'
-      }
-    }
-    
-    // Update the item
-    inventoryData[itemIndex] = {
-      ...inventoryData[itemIndex],
-      ...updateData,
-      lastUpdated: new Date().toISOString()
-    }
-    
-    return {
-      success: true,
-      data: inventoryData[itemIndex]
-    }
-  },
-
-  // Bulk update inventory items
-  bulkUpdateInventory: async (itemIds, updateData) => {
-    await delay(1000)
-    
-    const updatedItems = []
-    
-    itemIds.forEach(id => {
-      const itemIndex = inventoryData.findIndex(item => item.id === parseInt(id))
-      if (itemIndex !== -1) {
-        inventoryData[itemIndex] = {
-          ...inventoryData[itemIndex],
-          ...updateData,
-          lastUpdated: new Date().toISOString()
-        }
-        updatedItems.push(inventoryData[itemIndex])
-      }
-    })
-    
-    return {
-      success: true,
-      data: updatedItems,
-      updatedCount: updatedItems.length
-    }
-  },
-
-  // Add inventory history entry
-  addInventoryHistory: async (productId, historyEntry) => {
-    await delay(500)
-    
-    const itemIndex = inventoryData.findIndex(item => item.id === parseInt(productId))
-    
-    if (itemIndex === -1) {
-      return {
-        success: false,
-        error: 'Inventory item not found'
-      }
-    }
-    
-    const newHistoryEntry = {
-      id: Date.now(),
-      ...historyEntry,
-      timestamp: new Date().toISOString()
-    }
-    
-    inventoryData[itemIndex].history.unshift(newHistoryEntry)
-    
-    // Update current stock based on history entry
-    if (historyEntry.type === 'stock_increase' || historyEntry.type === 'stock_adjustment') {
-      inventoryData[itemIndex].currentStock += historyEntry.change
-      inventoryData[itemIndex].available = inventoryData[itemIndex].currentStock - inventoryData[itemIndex].reserved
+    try {
+      const response = await apiClient.get('/product-service/products/inventory-statistics')
       
-      // Update status based on stock level
-      if (inventoryData[itemIndex].currentStock === 0) {
-        inventoryData[itemIndex].status = 'out_of_stock'
-        inventoryData[itemIndex].stockStatus = 'Out of Stock'
-      } else if (inventoryData[itemIndex].currentStock <= inventoryData[itemIndex].lowStockAlert) {
-        inventoryData[itemIndex].status = 'low_stock'
-        inventoryData[itemIndex].stockStatus = 'Low Stock'
-      } else {
-        inventoryData[itemIndex].status = 'in_stock'
-        inventoryData[itemIndex].stockStatus = 'In Stock'
+      if (response.data) {
+        const stats = response.data
+        return {
+          success: true,
+          data: {
+            totalProducts: stats.total_product_variants || 0,
+            totalStock: stats.total_stock_quantity || 0,
+            lowStockItems: stats.low_stock_variants || 0,
+            outOfStockItems: stats.out_of_stock_variants || 0,
+            inStockItems: stats.in_stock_variants || 0,
+            activeVariants: stats.active_product_variants || 0,
+            inactiveVariants: stats.inactive_product_variants || 0,
+            averageStock: stats.average_stock_per_variant || 0,
+            variantsBelowThreshold: stats.variants_below_threshold || 0
+          },
+          message: 'Inventory statistics fetched successfully'
+        }
       }
-    }
-    
-    inventoryData[itemIndex].lastUpdated = new Date().toISOString()
-    
-    return {
-      success: true,
-      data: inventoryData[itemIndex]
+      
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
-  // Get inventory history for a product
-  getInventoryHistory: async (productId) => {
-    await delay(300)
-    
-    const item = inventoryData.find(item => item.id === parseInt(productId))
-    
-    if (!item) {
+  // Update stock for a product variant
+  // API: PUT /product-service/products/variants/stock/update
+  // Request: { variant_id, stock_addition?, stock_reduction?, low_stock_quantity? }
+  updateStock: async (variantId, stockData) => {
+    try {
+      const requestData = {
+        variant_id: parseInt(variantId)
+      }
+      
+      // Add stock addition if provided
+      if (stockData.stock_addition !== undefined && stockData.stock_addition !== null) {
+        requestData.stock_addition = parseInt(stockData.stock_addition)
+      }
+      
+      // Add stock reduction if provided
+      if (stockData.stock_reduction !== undefined && stockData.stock_reduction !== null) {
+        requestData.stock_reduction = parseInt(stockData.stock_reduction)
+      }
+      
+      // Update low stock quantity if provided
+      if (stockData.low_stock_quantity !== undefined && stockData.low_stock_quantity !== null) {
+        requestData.low_stock_quantity = parseInt(stockData.low_stock_quantity)
+      }
+      
+      const response = await apiClient.put('/product-service/products/variants/stock/update', requestData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get inventory item by variant ID (uses product variants filter)
+  getInventoryItemById: async (variantId) => {
+    try {
+      // Use product variants filter to get specific variant
+      const response = await productService.getProductVariantsFilter({ 
+        page: 1, 
+        page_size: 1000 
+      })
+      
+      if (response.success && response.data) {
+        const variant = response.data.items?.find(v => v.variant_id === parseInt(variantId))
+        
+        if (!variant) {
+          return {
+            success: false,
+            message: 'Inventory item not found',
+            error: 'not_found'
+          }
+        }
+        
+        return {
+          success: true,
+          data: variant,
+          message: 'Inventory item fetched successfully'
+        }
+      }
+      
       return {
         success: false,
-        error: 'Inventory item not found'
+        message: 'Failed to fetch inventory item',
+        error: 'fetch_error'
       }
+    } catch (error) {
+      return handleApiError(error)
     }
-    
-    return {
-      success: true,
-      data: item.history
+  },
+
+  // Bulk update inventory items (update multiple variants)
+  bulkUpdateInventory: async (variantIds, updateData) => {
+    try {
+      const results = []
+      const errors = []
+      
+      // Update each variant
+      for (const variantId of variantIds) {
+        try {
+          const result = await inventoryService.updateStock(variantId, updateData)
+          if (result.success) {
+            results.push(result.data)
+          } else {
+            errors.push({ variantId, error: result.message })
+          }
+        } catch (error) {
+          errors.push({ variantId, error: error.message })
+        }
+      }
+      
+      return {
+        success: errors.length === 0,
+        data: results,
+        errors: errors.length > 0 ? errors : undefined,
+        updatedCount: results.length,
+        message: errors.length > 0 
+          ? `Updated ${results.length} of ${variantIds.length} items. ${errors.length} failed.`
+          : `Successfully updated ${results.length} items.`
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Get inventory history for a variant (placeholder - API may not exist yet)
+  getInventoryHistory: async (variantId) => {
+    try {
+      // TODO: Implement when inventory history API is available
+      // For now, return empty array
+      return {
+        success: true,
+        data: [],
+        message: 'Inventory history not available yet'
+      }
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
   // Export inventory data
   exportInventory: async (filters = {}) => {
-    await delay(1000)
-    
-    const result = await inventoryService.getInventoryItems(filters)
-    
-    if (!result.success) {
-      return result
-    }
-    
-    // Simulate CSV export
-    const csvData = result.data.map(item => ({
-      'Product Name': item.productName,
-      'SKU': item.sku,
-      'Category': item.category,
-      'Current Stock': item.currentStock,
-      'Reserved': item.reserved,
-      'Available': item.available,
-      'Low Stock Alert': item.lowStockAlert,
-      'Expiry Date': item.expiryDate,
-      'Status': item.stockStatus,
-      'Dietary Info': item.dietaryInfo,
-      'Last Updated': item.lastUpdated
-    }))
-    
-    return {
-      success: true,
-      data: csvData,
-      filename: `inventory-export-${new Date().toISOString().split('T')[0]}.csv`
+    try {
+      // Fetch all inventory items (with large page size for export)
+      const result = await inventoryService.getInventoryItems(filters, { page: 1, pageSize: 10000 })
+      
+      if (!result.success) {
+        return result
+      }
+      
+      // Format data for CSV export
+      const csvData = result.data.map(variant => ({
+        'Product Name': variant.product_name || '',
+        'Variant Name': variant.variant_name || '',
+        'SKU': variant.sku || '',
+        'Category': variant.category_name || '',
+        'Stock Quantity': variant.stock_quantity || 0,
+        'Low Stock Quantity': variant.low_stock_quantity || 0,
+        'Price': variant.sale_price || variant.discounted_sale_price || 0,
+        'Status': variant.is_active ? 'Active' : 'Inactive',
+        'Stock Status': variant.stock_quantity === 0 ? 'Out of Stock' :
+                       (variant.stock_quantity <= (variant.low_stock_quantity || 0) ? 'Low Stock' : 'In Stock')
+      }))
+      
+      return {
+        success: true,
+        data: csvData,
+        filename: `inventory-export-${new Date().toISOString().split('T')[0]}.csv`
+      }
+    } catch (error) {
+      return handleApiError(error)
     }
   }
 }

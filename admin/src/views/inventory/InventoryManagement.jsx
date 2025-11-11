@@ -1,70 +1,90 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Card, Button, Form, Badge, Alert, Modal, FormControl, InputGroup } from 'react-bootstrap'
+import { Container, Row, Col, Card, Button, Form, Badge, Alert, Modal, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faWarehouse, 
-  faBell, 
   faUpload, 
   faDownload, 
   faSearch, 
   faHistory, 
-  faEdit, 
-  faEye,
   faExclamationTriangle,
-  faCalendarTimes,
   faCheckCircle,
   faTimesCircle,
-  faClock,
-  faList,
   faRefresh,
   faFileExcel,
-  faKeyboard,
   faPlusMinus
 } from '@fortawesome/free-solid-svg-icons'
 import { Table } from '../../components'
+import { useToast } from '../../components'
 import inventoryService from '../../services/inventoryService'
+import { categoryService } from '../../services/categoryService'
+import StockAdjustmentForm from '../../components/pages/inventory/StockAdjustmentForm'
 import InventoryHistoryModal from '../../components/pages/inventory/InventoryHistoryModal'
 
 const InventoryManagement = () => {
+  const { success, error: showError } = useToast()
+  
   const [inventoryItems, setInventoryItems] = useState([])
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
   const [selectedItems, setSelectedItems] = useState([])
   const [showHistoryModal, setShowHistoryModal] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [showStockAdjustmentModal, setShowStockAdjustmentModal] = useState(false)
+  const [selectedVariant, setSelectedVariant] = useState(null)
+  const [categories, setCategories] = useState([])
   const [filters, setFilters] = useState({
     search: '',
-    category: 'All Categories',
-    status: 'All Status',
-    dietaryInfo: 'All Items'
+    category: '',
+    status: ''
   })
   const [showBulkUpdateModal, setShowBulkUpdateModal] = useState(false)
   const [bulkUpdateData, setBulkUpdateData] = useState({
-    lowStockAlert: '',
-    status: ''
+    low_stock_quantity: ''
   })
   
-  // Pagination and sorting state
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [totalItems, setTotalItems] = useState(0)
 
-  // Load inventory data
+  // Load categories and initial data
+  useEffect(() => {
+    loadCategories()
+    loadStats()
+  }, [])
+
+  // Reload inventory when filters or pagination changes
   useEffect(() => {
     loadInventoryData()
-    loadStats()
-  }, [filters])
+  }, [currentPage, pageSize, filters.category, filters.status])
+
+  const loadCategories = async () => {
+    try {
+      const response = await categoryService.getCategoryOptions(true)
+      if (response.success) {
+        setCategories(response.data || [])
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error)
+    }
+  }
 
   const loadInventoryData = async () => {
     try {
       setLoading(true)
-      const result = await inventoryService.getInventoryItems(filters)
+      const result = await inventoryService.getInventoryItems(filters, {
+        page: currentPage,
+        pageSize: pageSize
+      })
       if (result.success) {
-        setInventoryItems(result.data)
-        setTotalItems(result.total)
+        setInventoryItems(result.data || [])
+        setTotalItems(result.total || 0)
+      } else {
+        showError(result.message || 'Failed to load inventory items')
       }
     } catch (error) {
       console.error('Error loading inventory data:', error)
+      showError('Failed to load inventory items. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -74,7 +94,7 @@ const InventoryManagement = () => {
     try {
       const result = await inventoryService.getInventoryStats()
       if (result.success) {
-        setStats(result.data)
+        setStats(result.data || {})
       }
     } catch (error) {
       console.error('Error loading stats:', error)
@@ -82,65 +102,84 @@ const InventoryManagement = () => {
   }
 
   const handleSearch = () => {
+    setCurrentPage(1) // Reset to first page on search
     loadInventoryData()
   }
 
   const handleReset = () => {
     setFilters({
       search: '',
-      category: 'All Categories',
-      status: 'All Status',
-      dietaryInfo: 'All Items'
+      category: '',
+      status: ''
     })
+    setCurrentPage(1)
   }
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedItems(inventoryItems.map(item => item.id))
+      setSelectedItems(inventoryItems.map(item => item.variant_id))
     } else {
       setSelectedItems([])
     }
   }
 
-  const handleSelectItem = (itemId, checked) => {
+  const handleSelectItem = (variantId, checked) => {
     if (checked) {
-      setSelectedItems([...selectedItems, itemId])
+      setSelectedItems([...selectedItems, variantId])
     } else {
-      setSelectedItems(selectedItems.filter(id => id !== itemId))
+      setSelectedItems(selectedItems.filter(id => id !== variantId))
     }
   }
 
-  const handleViewHistory = (product) => {
-    setSelectedProduct(product)
+  const handleViewHistory = (variant) => {
+    setSelectedVariant(variant)
     setShowHistoryModal(true)
   }
 
-  const handleStockAdjustment = (product) => {
-    alert(`Stock adjustment functionality would be implemented here for ${product.productName}`)
+  const handleStockAdjustment = (variant) => {
+    setSelectedVariant(variant)
+    setShowStockAdjustmentModal(true)
+  }
+
+  const handleStockAdjustmentSuccess = () => {
+    setShowStockAdjustmentModal(false)
+    setSelectedVariant(null)
+    loadInventoryData()
+    loadStats()
+    success('Stock updated successfully!')
   }
 
   const handleBulkUpdate = async () => {
+    if (selectedItems.length === 0) {
+      showError('Please select at least one item')
+      return
+    }
+
     try {
       const updateData = {}
-      if (bulkUpdateData.lowStockAlert) {
-        updateData.lowStockAlert = parseInt(bulkUpdateData.lowStockAlert)
+      if (bulkUpdateData.low_stock_quantity) {
+        updateData.low_stock_quantity = parseInt(bulkUpdateData.low_stock_quantity)
       }
-      if (bulkUpdateData.status) {
-        updateData.status = bulkUpdateData.status
-        updateData.stockStatus = bulkUpdateData.status === 'in_stock' ? 'In Stock' : 
-                                bulkUpdateData.status === 'low_stock' ? 'Low Stock' : 'Out of Stock'
+
+      if (Object.keys(updateData).length === 0) {
+        showError('Please provide at least one field to update')
+        return
       }
 
       const result = await inventoryService.bulkUpdateInventory(selectedItems, updateData)
       if (result.success) {
+        success(result.message || 'Bulk update completed successfully')
         setShowBulkUpdateModal(false)
         setSelectedItems([])
-        setBulkUpdateData({ lowStockAlert: '', status: '' })
+        setBulkUpdateData({ low_stock_quantity: '' })
         loadInventoryData()
         loadStats()
+      } else {
+        showError(result.message || 'Failed to update inventory')
       }
     } catch (error) {
       console.error('Error updating inventory:', error)
+      showError('An error occurred while updating inventory')
     }
   }
 
@@ -163,7 +202,15 @@ const InventoryManagement = () => {
     }
   }
 
-  const getStatusBadge = (status) => {
+  // Get stock status based on stock quantity and low stock threshold
+  const getStockStatus = (stockQty, lowStockQty) => {
+    if (stockQty === 0) return 'out_of_stock'
+    if (stockQty <= lowStockQty) return 'low_stock'
+    return 'in_stock'
+  }
+
+  const getStatusBadge = (stockQty, lowStockQty) => {
+    const status = getStockStatus(stockQty, lowStockQty)
     switch (status) {
       case 'in_stock':
         return <Badge bg="success">In Stock</Badge>
@@ -172,24 +219,14 @@ const InventoryManagement = () => {
       case 'out_of_stock':
         return <Badge bg="danger">Out of Stock</Badge>
       default:
-        return <Badge bg="secondary">{status}</Badge>
+        return <Badge bg="secondary">Unknown</Badge>
     }
   }
 
-  const getStockIndicator = (currentStock, lowStockAlert) => {
-    if (currentStock === 0) return <FontAwesomeIcon icon={faTimesCircle} className="text-danger" />
-    if (currentStock <= lowStockAlert) return <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning" />
+  const getStockIndicator = (stockQty, lowStockQty) => {
+    if (stockQty === 0) return <FontAwesomeIcon icon={faTimesCircle} className="text-danger" />
+    if (stockQty <= lowStockQty) return <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning" />
     return <FontAwesomeIcon icon={faCheckCircle} className="text-success" />
-  }
-
-  const getExpiryStatus = (expiryDate) => {
-    const expiry = new Date(expiryDate)
-    const now = new Date()
-    const diffDays = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24))
-    
-    if (diffDays < 0) return 'text-danger'
-    if (diffDays <= 7) return 'text-warning'
-    return 'text-success'
   }
 
   // Column definitions for the custom Table component
@@ -206,86 +243,100 @@ const InventoryManagement = () => {
       render: (_, item) => (
         <Form.Check
           type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          onChange={(e) => handleSelectItem(item.id, e.target.checked)}
+          checked={selectedItems.includes(item.variant_id)}
+          onChange={(e) => handleSelectItem(item.variant_id, e.target.checked)}
         />
       )
     },
     {
       key: 'product',
-      header: 'Product',
+      header: 'Product / Variant',
       render: (_, item) => (
         <div className="d-flex align-items-center">
-          {item.productImage ? (
-            <img
-              src={item.productImage}
-              alt={item.productName}
-              className="rounded me-3"
-              style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-            />
-          ) : (
-            <div className="bg-light rounded me-3 d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
-              <FontAwesomeIcon icon={faWarehouse} className="text-muted" />
-            </div>
-          )}
+          <div className="bg-light rounded me-3 d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
+            <FontAwesomeIcon icon={faWarehouse} className="text-muted" />
+          </div>
           <div>
-            <div className="fw-semibold">{item.productName}</div>
-            <small className="text-muted">{item.dietaryInfo}</small>
+            <div className="fw-semibold">{item.product_name || 'N/A'}</div>
+            <small className="text-muted">{item.variant_name || 'Default Variant'}</small>
+            {item.sku && (
+              <div className="small text-muted">SKU: {item.sku}</div>
+            )}
           </div>
         </div>
       )
     },
     {
-      key: 'sku',
-      header: 'SKU',
-      render: (sku) => <code>{sku}</code>
-    },
-    {
       key: 'category',
       header: 'Category',
-      render: (category) => <Badge bg="success">{category}</Badge>
+      render: (_, item) => (
+        item.category_name ? (
+          <Badge bg="success">{item.category_name}</Badge>
+        ) : (
+          <span className="text-muted">-</span>
+        )
+      )
     },
     {
-      key: 'currentStock',
-      header: 'Current Stock',
-      render: (stock, item) => (
-        <div className="d-flex align-items-center">
-          {getStockIndicator(stock, item.lowStockAlert)}
-          <span className="ms-2 fw-semibold">{stock}</span>
+      key: 'stock',
+      header: 'Stock Quantity',
+      render: (_, item) => {
+        const stockQty = item.stock_quantity || 0
+        const lowStockQty = item.low_stock_quantity || 0
+        return (
+          <div className="d-flex align-items-center">
+            {getStockIndicator(stockQty, lowStockQty)}
+            <span className="ms-2 fw-semibold">{stockQty}</span>
+          </div>
+        )
+      }
+    },
+    {
+      key: 'low_stock_quantity',
+      header: 'Low Stock Threshold',
+      render: (_, item) => (
+        <span className="fw-semibold">{item.low_stock_quantity || 0}</span>
+      )
+    },
+    {
+      key: 'price',
+      header: 'Price',
+      render: (_, item) => (
+        <div>
+          {item.discounted_sale_price ? (
+            <>
+              <div className="fw-semibold text-success">${item.discounted_sale_price.toFixed(2)}</div>
+              {item.sale_price && item.sale_price !== item.discounted_sale_price && (
+                <small className="text-muted text-decoration-line-through">${item.sale_price.toFixed(2)}</small>
+              )}
+            </>
+          ) : item.sale_price ? (
+            <div className="fw-semibold text-success">${item.sale_price.toFixed(2)}</div>
+          ) : (
+            <span className="text-muted">-</span>
+          )}
         </div>
       )
     },
     {
-      key: 'reserved',
-      header: 'Reserved'
-    },
-    {
-      key: 'available',
-      header: 'Available',
-      render: (available, item) => (
-        <span className={available <= item.lowStockAlert ? 'text-warning' : 'text-success'}>
-          {available}
-        </span>
-      )
-    },
-    {
-      key: 'lowStockAlert',
-      header: 'Low Stock Alert',
-      render: (alert) => <span className="fw-semibold">{alert}</span>
-    },
-    {
-      key: 'expiryDate',
-      header: 'Expiry Date',
-      render: (date) => (
-        <span className={getExpiryStatus(date)}>
-          {new Date(date).toLocaleDateString()}
-        </span>
-      )
-    },
-    {
       key: 'status',
-      header: 'Status',
-      render: (status) => getStatusBadge(status)
+      header: 'Stock Status',
+      render: (_, item) => {
+        const stockQty = item.stock_quantity || 0
+        const lowStockQty = item.low_stock_quantity || 0
+        return getStatusBadge(stockQty, lowStockQty)
+      }
+    },
+    {
+      key: 'active_status',
+      header: 'Active',
+      render: (_, item) => (
+        item.is_active ? (
+          <Badge bg="success">Active</Badge>
+        ) : (
+          <Badge bg="secondary">Inactive</Badge>
+        )
+      )
     },
     {
       key: 'actions',
@@ -308,20 +359,13 @@ const InventoryManagement = () => {
           >
             <FontAwesomeIcon icon={faPlusMinus} />
           </Button>
-          <Button
-            variant="outline-info"
-            size="sm"
-            title="View Details"
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </Button>
         </div>
       )
     }
   ]
 
   // Sortable columns
-  const sortableColumns = ['sku', 'category', 'currentStock', 'reserved', 'available', 'lowStockAlert', 'expiryDate']
+  const sortableColumns = ['product', 'category', 'stock', 'low_stock_quantity', 'price']
 
   if (loading) {
     return (
@@ -363,7 +407,7 @@ const InventoryManagement = () => {
                   <div className="d-flex align-items-center">
                     <div>
                       <h4 className="mb-0">{stats.totalProducts || 0}</h4>
-                      <p className="mb-0">Total Products</p>
+                      <p className="mb-0">Total Variants</p>
                     </div>
                     <div className="ms-auto">
                       <FontAwesomeIcon icon={faWarehouse} size="2x" />
@@ -425,21 +469,39 @@ const InventoryManagement = () => {
               <div className="d-flex align-items-center justify-content-between">
                 <div>
                   <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
-                  <strong>{stats.lowStockItems} products are running low on stock.</strong> Consider restocking to avoid stockouts.
+                  <strong>{stats.lowStockItems} variants are running low on stock.</strong> Consider restocking to avoid stockouts.
                 </div>
-                <Button variant="warning" size="sm">View Low Stock Items</Button>
+                <Button 
+                  variant="warning" 
+                  size="sm"
+                  onClick={() => {
+                    setFilters({ ...filters, status: 'low_stock' })
+                    setCurrentPage(1)
+                  }}
+                >
+                  View Low Stock Items
+                </Button>
               </div>
             </Alert>
           )}
 
-          {stats.expiringItems > 0 && (
+          {stats.outOfStockItems > 0 && (
             <Alert variant="danger" className="mb-3">
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                  <FontAwesomeIcon icon={faCalendarTimes} className="me-2" />
-                  <strong>Expiry Warning:</strong> {stats.expiringItems} products are approaching their expiry dates within the next 7 days.
+                  <FontAwesomeIcon icon={faTimesCircle} className="me-2" />
+                  <strong>Out of Stock Alert:</strong> {stats.outOfStockItems} variants are currently out of stock.
                 </div>
-                <Button variant="danger" size="sm">View Expiring Items</Button>
+                <Button 
+                  variant="danger" 
+                  size="sm"
+                  onClick={() => {
+                    setFilters({ ...filters, status: 'out_of_stock' })
+                    setCurrentPage(1)
+                  }}
+                >
+                  View Out of Stock Items
+                </Button>
               </div>
             </Alert>
           )}
@@ -449,7 +511,7 @@ const InventoryManagement = () => {
             {/* Search and Filter Section */}
             <div className="mb-4">
               <Row className="g-3">
-                <Col md={3}>
+                <Col md={4}>
                   <div className="mb-3">
                     <label className="form-label fw-semibold">Product name or SKU</label>
                     <FormControl
@@ -457,39 +519,47 @@ const InventoryManagement = () => {
                       placeholder="Search products..."
                       value={filters.search}
                       onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch()
+                        }
+                      }}
                       className="border-2"
                     />
                   </div>
                 </Col>
-                <Col md={2}>
+                <Col md={3}>
                   <div className="mb-3">
                     <label className="form-label fw-semibold">Category</label>
                     <Form.Select
                       value={filters.category}
-                      onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                      onChange={(e) => {
+                        setFilters({ ...filters, category: e.target.value })
+                        setCurrentPage(1)
+                      }}
                       className="border-2"
                     >
-                      <option>All Categories</option>
-                      <option>Fruits</option>
-                      <option>Vegetables</option>
-                      <option>Dairy & Eggs</option>
-                      <option>Meat & Seafood</option>
-                      <option>Pantry Essentials</option>
-                      <option>Beverages</option>
-                      <option>Frozen Foods</option>
-                      <option>Organic</option>
+                      <option value="">All Categories</option>
+                      {categories.map(cat => (
+                        <option key={cat.category_id} value={cat.category_id}>
+                          {cat.category_name}
+                        </option>
+                      ))}
                     </Form.Select>
                   </div>
                 </Col>
-                <Col md={2}>
+                <Col md={3}>
                   <div className="mb-3">
                     <label className="form-label fw-semibold">Stock Status</label>
                     <Form.Select
                       value={filters.status}
-                      onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                      onChange={(e) => {
+                        setFilters({ ...filters, status: e.target.value })
+                        setCurrentPage(1)
+                      }}
                       className="border-2"
                     >
-                      <option>All Status</option>
+                      <option value="">All Status</option>
                       <option value="in_stock">In Stock</option>
                       <option value="low_stock">Low Stock</option>
                       <option value="out_of_stock">Out of Stock</option>
@@ -497,22 +567,6 @@ const InventoryManagement = () => {
                   </div>
                 </Col>
                 <Col md={2}>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Dietary Info</label>
-                    <Form.Select
-                      value={filters.dietaryInfo}
-                      onChange={(e) => setFilters({ ...filters, dietaryInfo: e.target.value })}
-                      className="border-2"
-                    >
-                      <option>All Items</option>
-                      <option>Organic</option>
-                      <option>Fresh</option>
-                      <option>Free Range</option>
-                      <option>Frozen</option>
-                    </Form.Select>
-                  </div>
-                </Col>
-                <Col md={3}>
                   <div className="mb-3">
                     <label className="form-label fw-semibold">&nbsp;</label>
                     <div className="d-flex gap-2">
@@ -542,22 +596,18 @@ const InventoryManagement = () => {
                         onChange={(e) => handleSelectAll(e.target.checked)}
                         className="me-3"
                       />
-                      <span className="fw-semibold">Select All Products</span>
+                      <span className="fw-semibold">{selectedItems.length} variant(s) selected</span>
                     </div>
                   </Col>
-                  <Col md={3}>
-                    <Form.Select className="border-2">
-                      <option>Bulk Actions</option>
-                      <option>Update Low Stock Alert</option>
-                      <option>Change Status</option>
-                      <option>Export Selected</option>
-                    </Form.Select>
-                  </Col>
-                  <Col md={3}>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <Button variant="success" size="sm" className="text-white">Apply to Selected</Button>
-                      <span className="text-muted">{selectedItems.length} products selected</span>
-                    </div>
+                  <Col md={6} className="text-end">
+                    <Button 
+                      variant="success" 
+                      size="sm" 
+                      className="text-white"
+                      onClick={() => setShowBulkUpdateModal(true)}
+                    >
+                      Bulk Update Low Stock Threshold
+                    </Button>
                   </Col>
                 </Row>
               </div>
@@ -584,7 +634,8 @@ const InventoryManagement = () => {
                 loading={loading}
                 hover
                 pagination={true}
-                sortable={true}
+                serverSidePagination={true}
+                sortable={false}
                 emptyMessage="No inventory items found"
               />
             </div>
@@ -592,99 +643,58 @@ const InventoryManagement = () => {
         </Col>
       </Row>
 
+      {/* Stock Adjustment Modal */}
+      <StockAdjustmentForm
+        show={showStockAdjustmentModal}
+        onHide={() => {
+          setShowStockAdjustmentModal(false)
+          setSelectedVariant(null)
+        }}
+        variant={selectedVariant}
+        onSuccess={handleStockAdjustmentSuccess}
+      />
+
       {/* Inventory History Modal */}
       <InventoryHistoryModal
         show={showHistoryModal}
-        onHide={() => setShowHistoryModal(false)}
-        product={selectedProduct}
+        onHide={() => {
+          setShowHistoryModal(false)
+          setSelectedVariant(null)
+        }}
+        variant={selectedVariant}
       />
 
       {/* Bulk Update Modal */}
-      <Modal show={showBulkUpdateModal} onHide={() => setShowBulkUpdateModal(false)} size="lg" centered="true">
+      <Modal show={showBulkUpdateModal} onHide={() => setShowBulkUpdateModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Bulk Inventory Update</Modal.Title>
+          <Modal.Title>Bulk Update Low Stock Threshold</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row>
-            {/* Left Section - Import from Excel/CSV */}
-            <Col md={6}>
-              <div className="border border-2 border-dashed rounded-3 p-4 text-center h-100">
-                <div className="mb-3">
-                  <FontAwesomeIcon icon={faFileExcel} className="text-success" size="3x" />
-                </div>
-                <h5 className="mb-3">Import from Excel/CSV</h5>
-                <p className="text-muted mb-4">Upload your inventory data file</p>
-                
-                <div className="mb-3">
-                  <FormControl
-                    type="file"
-                    accept=".xlsx,.xls,.csv"
-                    className="border-2"
-                    onChange={(e) => {
-                      // Handle file upload
-                      console.log('File selected:', e.target.files[0])
-                    }}
-                  />
-                </div>
-                
-                <Button variant="link" className="text-primary p-0">
-                  <FontAwesomeIcon icon={faDownload} className="me-2" />
-                  Download Template
-                </Button>
-              </div>
-            </Col>
-
-            {/* Right Section - Manual Bulk Update */}
-            <Col md={6}>
-              <div className="border border-2 border-dashed rounded-3 p-4 text-center h-100">
-                <div className="mb-3">
-                  <FontAwesomeIcon icon={faKeyboard} className="text-primary" size="3x" />
-                </div>
-                <h5 className="mb-3">Manual Bulk Update</h5>
-                <p className="text-muted mb-4">Update multiple products at once</p>
-                
-                <div className="d-grid gap-2">
-                  <Button 
-                    variant="outline-primary" 
-                    className="border-2"
-                    onClick={() => {
-                      // Handle stock levels update
-                      console.log('Update Stock Levels')
-                    }}
-                  >
-                    Update Stock Levels
-                  </Button>
-                  <Button 
-                    variant="outline-primary" 
-                    className="border-2"
-                    onClick={() => {
-                      // Handle prices update
-                      console.log('Update Prices')
-                    }}
-                  >
-                    Update Prices
-                  </Button>
-                  <Button 
-                    variant="outline-primary" 
-                    className="border-2"
-                    onClick={() => {
-                      // Handle categories update
-                      console.log('Update Categories')
-                    }}
-                  >
-                    Update Categories
-                  </Button>
-                </div>
-              </div>
-            </Col>
-          </Row>
+          <Alert variant="info" className="mb-3">
+            <strong>{selectedItems.length} variant(s)</strong> will be updated with the new low stock threshold.
+          </Alert>
+          
+          <Form.Group className="mb-3">
+            <Form.Label className="fw-semibold">Low Stock Threshold</Form.Label>
+            <Form.Control
+              type="number"
+              min="0"
+              value={bulkUpdateData.low_stock_quantity}
+              onChange={(e) => setBulkUpdateData({ ...bulkUpdateData, low_stock_quantity: e.target.value })}
+              placeholder="Enter low stock threshold"
+              className="border-2"
+            />
+            <Form.Text className="text-muted">
+              Set the minimum stock quantity before a variant is considered low stock
+            </Form.Text>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowBulkUpdateModal(false)}>
             Cancel
           </Button>
-          <Button variant="success" className="text-white">
-            Process Update
+          <Button variant="success" className="text-white" onClick={handleBulkUpdate}>
+            Update Selected Items
           </Button>
         </Modal.Footer>
       </Modal>

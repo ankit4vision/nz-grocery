@@ -13,24 +13,24 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import inventoryService from '../../../services/inventoryService'
 
-const InventoryHistoryModal = ({ show, onHide, product }) => {
+const InventoryHistoryModal = ({ show, onHide, variant }) => {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (show && product) {
+    if (show && variant) {
       loadHistory()
     }
-  }, [show, product])
+  }, [show, variant])
 
   const loadHistory = async () => {
-    if (!product) return
+    if (!variant) return
     
     try {
       setLoading(true)
-      const result = await inventoryService.getInventoryHistory(product.id)
+      const result = await inventoryService.getInventoryHistory(variant.variant_id)
       if (result.success) {
-        setHistory(result.data)
+        setHistory(result.data || [])
       }
     } catch (error) {
       console.error('Error loading inventory history:', error)
@@ -114,12 +114,12 @@ const InventoryHistoryModal = ({ show, onHide, product }) => {
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `inventory-history-${product.sku}-${new Date().toISOString().split('T')[0]}.csv`
+    a.download = `inventory-history-${variant.sku || variant.variant_id}-${new Date().toISOString().split('T')[0]}.csv`
     a.click()
     window.URL.revokeObjectURL(url)
   }
 
-  if (!product) return null
+  if (!variant) return null
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered="true">
@@ -127,7 +127,7 @@ const InventoryHistoryModal = ({ show, onHide, product }) => {
         <Modal.Title>
           <div className="d-flex align-items-center">
             <FontAwesomeIcon icon={faClock} className="me-2 text-success" />
-            Inventory History - {product.productName}
+            Inventory History - {variant.product_name} {variant.variant_name ? `(${variant.variant_name})` : ''}
           </div>
         </Modal.Title>
       </Modal.Header>
@@ -138,35 +138,31 @@ const InventoryHistoryModal = ({ show, onHide, product }) => {
             <Row>
               <Col md={6}>
                 <div className="d-flex align-items-center">
-                  {product.productImage ? (
-                    <img
-                      src={product.productImage}
-                      alt={product.productName}
-                      className="rounded me-3"
-                      style={{ width: '60px', height: '60px', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div className="bg-white rounded me-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
-                      <FontAwesomeIcon icon={faFileAlt} className="text-muted" size="2x" />
-                    </div>
-                  )}
+                  <div className="bg-white rounded me-3 d-flex align-items-center justify-content-center" style={{ width: '60px', height: '60px' }}>
+                    <FontAwesomeIcon icon={faFileAlt} className="text-muted" size="2x" />
+                  </div>
                   <div>
-                    <h5 className="mb-1">{product.productName}</h5>
-                    <p className="mb-1 text-muted">SKU: {product.sku}</p>
-                    <Badge bg="success">{product.category}</Badge>
+                    <h5 className="mb-1">{variant.product_name || 'N/A'}</h5>
+                    <p className="mb-1 text-muted">Variant: {variant.variant_name || 'Default'}</p>
+                    {variant.sku && (
+                      <p className="mb-1 text-muted">SKU: {variant.sku}</p>
+                    )}
+                    {variant.category_name && (
+                      <Badge bg="success">{variant.category_name}</Badge>
+                    )}
                   </div>
                 </div>
               </Col>
               <Col md={6}>
                 <div className="text-end">
                   <div className="mb-2">
-                    <strong>Current Stock:</strong> {product.currentStock} units
+                    <strong>Current Stock:</strong> {variant.stock_quantity || 0} units
                   </div>
                   <div className="mb-2">
-                    <strong>Available:</strong> {product.available} units
+                    <strong>Low Stock Threshold:</strong> {variant.low_stock_quantity || 0} units
                   </div>
                   <div>
-                    <strong>Last Updated:</strong> {formatDate(product.lastUpdated)}
+                    <strong>Variant ID:</strong> {variant.variant_id}
                   </div>
                 </div>
               </Col>
@@ -226,7 +222,7 @@ const InventoryHistoryModal = ({ show, onHide, product }) => {
             <div className="text-center py-4">
               <FontAwesomeIcon icon={faClock} className="text-muted mb-3" size="3x" />
               <h5 className="text-muted">No History Available</h5>
-              <p className="text-muted">No inventory changes have been recorded for this product.</p>
+              <p className="text-muted">No inventory changes have been recorded for this variant. History tracking will be available when the API is implemented.</p>
             </div>
           )}
         </div>
