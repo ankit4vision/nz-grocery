@@ -1,15 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Offcanvas, 
   Card, 
-  ListGroup
+  ListGroup,
+  Spinner
 } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { categoriesData, popularCardsData } from '../../data/mockData';
+import { popularCardsData } from '../../data/mockData';
+import CategoriesService from '../../services/api/categories';
 import '../../styles/components/layout-elements/browse-sidebar.css';
 
 const BrowseSidebar = ({ show, onHide }) => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load categories on mount
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const response = await CategoriesService.getCategories();
+      if (response.success && response.data) {
+        // Transform API categories to component format
+        const transformedCategories = response.data.map((cat) => ({
+          id: cat.category_id?.toString() || cat.id?.toString(),
+          name: cat.category_name || cat.name,
+          icon: cat.icon || '📦',
+          description: cat.category_description || cat.description || '',
+          image: cat.category_image_url || cat.image || null,
+          imageUrl: cat.category_image_url || cat.image_url || cat.image || null
+        }));
+        setCategories(transformedCategories);
+      }
+    } catch (err) {
+      console.error('Error loading categories:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCategoryClick = (category) => {
     // Navigate to products page with selected category
@@ -22,14 +53,14 @@ const BrowseSidebar = ({ show, onHide }) => {
   };
 
   // Create categories list with "All" option
-  const categories = [
+  const categoriesWithAll = [
     {
       id: 'all',
       name: 'All',
       icon: '🛒',
       description: 'All products'
     },
-    ...categoriesData
+    ...categories
   ];
   const popularCards = popularCardsData;
 
@@ -67,22 +98,50 @@ const BrowseSidebar = ({ show, onHide }) => {
                 {/* Shop by Category Section */}
                 <div className="category-section">
                   <h6 className="section-title">Shop by Category</h6>
-                  <ListGroup variant="flush" className="category-list">
-                    {categories.map((category) => (
-                      <ListGroup.Item 
-                        key={category.id}
-                        action
-                        className="category-item"
-                        onClick={() => handleCategoryClick(category)}
-                      >
-                        <div className="category-content">
-                          <span className="category-icon">{category.icon}</span>
-                          <span className="category-name">{category.name}</span>
-                          <span className="category-arrow">▶</span>
-                        </div>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
+                  {loading ? (
+                    <div className="text-center py-3">
+                      <Spinner animation="border" size="sm" />
+                    </div>
+                  ) : (
+                    <ListGroup variant="flush" className="category-list">
+                      {categoriesWithAll.map((category) => (
+                        <ListGroup.Item 
+                          key={category.id}
+                          action
+                          className="category-item"
+                          onClick={() => handleCategoryClick(category)}
+                        >
+                          <div className="category-content">
+                            <span className="category-icon">
+                              {category.image || category.imageUrl ? (
+                                <img 
+                                  src={category.image || category.imageUrl} 
+                                  alt={category.name}
+                                  className="category-icon-image"
+                                  onError={(e) => {
+                                    // Fallback to icon if image fails to load
+                                    e.target.style.display = 'none';
+                                    const iconSpan = e.target.parentElement.querySelector('.category-icon-emoji');
+                                    if (iconSpan) {
+                                      iconSpan.style.display = 'inline';
+                                    }
+                                  }}
+                                />
+                              ) : null}
+                              <span 
+                                className="category-icon-emoji"
+                                style={{ display: (category.image || category.imageUrl) ? 'none' : 'inline' }}
+                              >
+                                {category.icon}
+                              </span>
+                            </span>
+                            <span className="category-name">{category.name}</span>
+                            <span className="category-arrow">▶</span>
+                          </div>
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  )}
                 </div>
       </Offcanvas.Body>
     </Offcanvas>

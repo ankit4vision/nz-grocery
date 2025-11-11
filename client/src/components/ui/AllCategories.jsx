@@ -86,7 +86,27 @@ const AllCategories = ({
                       }}
                     >
                       <div className="category-card-icon">
-                        <span className="category-card-emoji">{category.icon}</span>
+                        {category.image || category.imageUrl ? (
+                          <img 
+                            src={category.image || category.imageUrl} 
+                            alt={category.name}
+                            className="category-card-image"
+                            onError={(e) => {
+                              // Fallback to icon if image fails to load
+                              e.target.style.display = 'none';
+                              const iconSpan = e.target.parentElement.querySelector('.category-card-emoji');
+                              if (iconSpan) {
+                                iconSpan.style.display = 'inline';
+                              }
+                            }}
+                          />
+                        ) : null}
+                        <span 
+                          className="category-card-emoji"
+                          style={{ display: (category.image || category.imageUrl) ? 'none' : 'inline' }}
+                        >
+                          {category.icon}
+                        </span>
                       </div>
                       <div className="category-card-content">
                         <h6 className="category-card-name">{category.name}</h6>

@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import React, { useRef, useState, useEffect } from 'react';
+import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
 import { useCartContext } from '../context';
-import { productDetailData, similarProductsData, customerReviewsData } from '../data/mockData';
+import { customerReviewsData } from '../data/mockData';
+import ProductsService from '../services/api/products';
 import './ProductDetail.css';
 
 /**
@@ -15,12 +16,104 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const reviewsRef = useRef(null);
   const { addItem, toggleCart } = useCartContext();
-
-  // In a real app, you would fetch product data based on the ID
-  // For now, we'll use the mock data
-  const product = productDetailData;
-  const similarProducts = similarProductsData;
+  
+  const [product, setProduct] = useState(null);
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const reviews = customerReviewsData;
+
+  // Load product details on mount
+  useEffect(() => {
+    if (id) {
+      loadProductDetails();
+    }
+  }, [id]);
+
+  const loadProductDetails = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await ProductsService.getProductFullDetails(id);
+      if (response.success && response.data) {
+        // Transform API response to match component expectations
+        const transformedProduct = transformProductDetails(response.data);
+        setProduct(transformedProduct);
+        
+        // Load similar products
+        loadSimilarProducts(response.data.category_id, id);
+      } else {
+        setError(response.message || 'Product not found');
+      }
+    } catch (err) {
+      setError('Failed to load product details');
+      console.error('Error loading product details:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSimilarProducts = async (categoryId, currentProductId) => {
+    try {
+      const response = await ProductsService.getRelatedProducts(currentProductId, 4);
+      if (response.success && response.data) {
+        const transformedProducts = transformProductVariants(response.data.items || []);
+        setSimilarProducts(transformedProducts);
+      }
+    } catch (err) {
+      console.error('Error loading similar products:', err);
+    }
+  };
+
+  // Transform product details from API to component format
+  const transformProductDetails = (apiProduct) => {
+    // Get the first variant or default variant
+    const defaultVariant = apiProduct.variants?.[0] || {};
+    const defaultImage = apiProduct.images?.[0]?.image_url || '/placeholder-image.jpg';
+    
+    return {
+      id: apiProduct.product_id || apiProduct.id,
+      name: apiProduct.product_name || apiProduct.name,
+      description: apiProduct.description || '',
+      category: apiProduct.category_id,
+      categoryName: apiProduct.category_name,
+      images: apiProduct.images?.map(img => img.image_url) || [defaultImage],
+      currentPrice: defaultVariant.price || defaultVariant.current_price || 0,
+      originalPrice: defaultVariant.original_price || null,
+      unit: defaultVariant.unit || 'each',
+      rating: apiProduct.rating || 0,
+      reviews: apiProduct.reviews_count || 0,
+      discount: defaultVariant.discount_percentage || 0,
+      stockQuantity: defaultVariant.stock_quantity || 0,
+      sku: defaultVariant.sku,
+      variants: apiProduct.variants || [],
+      attributes: apiProduct.attributes || [],
+      bulkPricing: apiProduct.bulk_pricing || [],
+      healthStarRating: apiProduct.health_star_rating || 0,
+    };
+  };
+
+  // Transform product variants from API to component format
+  const transformProductVariants = (variants) => {
+    return variants.map((variant) => ({
+      id: variant.variant_id || variant.id,
+      productId: variant.product_id,
+      name: variant.product_name || variant.name,
+      variantName: variant.variant_name,
+      unit: variant.unit || 'each',
+      currentPrice: variant.price || variant.current_price || 0,
+      originalPrice: variant.original_price || variant.currentPrice || null,
+      image: variant.image_url || variant.image || '/placeholder-image.jpg',
+      rating: variant.rating || 0,
+      reviews: variant.reviews_count || 0,
+      discount: variant.discount_percentage || 0,
+      category: variant.category_id,
+      categoryName: variant.category_name,
+      stockQuantity: variant.stock_quantity || 0,
+      sku: variant.sku,
+      isActive: variant.is_active !== false,
+    }));
+  };
 
   const handleAddToCart = (productId, quantity = 1) => {
     // Find the product in similar products or use main product
@@ -65,12 +158,31 @@ const ProductDetail = () => {
     }
   };
 
-  if (!product) {
+  // Show loading state
+  if (loading) {
+    return (
+      <Container className="product-detail-page">
+        <div className="text-center py-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading product details...</span>
+          </Spinner>
+        </div>
+      </Container>
+    );
+  }
+
+  // Show error state
+  if (error || !product) {
     return (
       <Container className="product-detail-page">
         <div className="product-not-found">
-          <h2>Product Not Found</h2>
-          <p>The product you're looking for doesn't exist.</p>
+          <Alert variant="danger">
+            <Alert.Heading>Product Not Found</Alert.Heading>
+            <p>{error || 'The product you\'re looking for doesn\'t exist.'}</p>
+            <button onClick={() => navigate('/products')} className="btn btn-primary">
+              Browse Products
+            </button>
+          </Alert>
         </div>
       </Container>
     );

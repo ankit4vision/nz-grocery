@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import ProductCard from './ProductCard';
-import { categoriesData } from '../../data/mockData';
 import '../../styles/components/ui-components/product-grid.css';
 
 /**
@@ -34,9 +33,17 @@ const ProductGrid = ({
   };
 
   // Helper function to get category display name
-  const getCategoryName = (categoryId) => {
-    const category = categoriesData.find(cat => cat.id === categoryId);
-    return category ? category.name : categoryId;
+  // Use categoryName from product if available, otherwise use categoryId
+  const getCategoryName = (product) => {
+    // If product has categoryName (from API), use it
+    if (product.categoryName) {
+      return product.categoryName;
+    }
+    // Otherwise, try to use category as string
+    if (product.category) {
+      return typeof product.category === 'string' ? product.category : `Category ${product.category}`;
+    }
+    return 'Uncategorized';
   };
 
   // Determine if product should show quantity selector
@@ -80,7 +87,7 @@ const ProductGrid = ({
                 reviews={product.reviews}
                 discount={product.discount}
                 isFavorite={product.isFavorite}
-                category={getCategoryName(product.category)}
+                category={getCategoryName(product)}
                 onAddToCart={handleAddToCart}
                 onToggleFavorite={handleToggleFavorite}
                 variant="listing"

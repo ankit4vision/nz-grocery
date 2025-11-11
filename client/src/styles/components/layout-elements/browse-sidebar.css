@@ -112,6 +112,25 @@
 .category-icon {
   font-size: var(--font-size-lg);
   margin-right: var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.category-icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.category-icon-emoji {
+  display: inline-block;
+  line-height: 1;
 }
 
 .category-name {
