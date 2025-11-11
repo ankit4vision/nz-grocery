@@ -25,8 +25,8 @@ const customerService = {
       if (params.customer_name) queryParams.customer_name = params.customer_name
       if (params.email) queryParams.email = params.email
       if (params.phone) queryParams.phone = params.phone
-      if (params.status && params.status !== 'all') {
-        queryParams.customer_status = params.status
+      if (params.customer_status && params.customer_status !== 'all') {
+        queryParams.customer_status = params.customer_status
       }
       if (params.city) queryParams.city = params.city
       if (params.registered_date_from) queryParams.registered_date_from = params.registered_date_from
@@ -65,8 +65,8 @@ const customerService = {
         }
       }))
       
-      return {
-        success: true,
+    return {
+      success: true,
         data: {
           customers: customers,
           total: response.data.total_count || customers.length,
@@ -76,7 +76,7 @@ const customerService = {
           hasNext: response.data.has_next || false,
           hasPrev: response.data.has_prev || false
         },
-        message: 'Customers fetched successfully'
+      message: 'Customers fetched successfully'
       }
     } catch (error) {
       return handleApiError(error)
@@ -297,8 +297,8 @@ const customerService = {
       return handleApiError(error)
     }
   },
-
-  // Update customer status
+      
+      // Update customer status
   async updateCustomerStatus(userId, status) {
     try {
       const response = await apiClient.put(`/admin/customers/${userId}/status`, null, {
@@ -343,16 +343,16 @@ const customerService = {
     try {
       const response = await apiClient.get('/admin/customers/stats')
       const stats = response.data
-      
-      return {
-        success: true,
-        data: {
+    
+    return {
+      success: true,
+      data: {
           totalCustomers: stats.total_customers || 0,
           activeCustomers: stats.active_customers || 0,
           suspendedCustomers: stats.suspended_customers || 0,
           newThisMonth: stats.new_customers_this_month || 0
-        },
-        message: 'Customer statistics fetched successfully'
+      },
+      message: 'Customer statistics fetched successfully'
       }
     } catch (error) {
       return handleApiError(error)

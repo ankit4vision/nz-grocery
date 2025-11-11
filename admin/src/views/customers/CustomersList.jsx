@@ -56,12 +56,18 @@ const CustomersList = () => {
     suspendedCustomers: 0,
     newThisMonth: 0
   })
+  
+  // Load stats on mount
+  useEffect(() => {
+    fetchStats()
+  }, [])
 
-  // Load customers and stats on mount and page change
+  // Load customers when pagination or filters change
+  // Note: searchTerm is handled separately via handleSearch button click
   useEffect(() => {
     fetchCustomers()
-    fetchStats()
-  }, [pagination.currentPage, pagination.pageSize])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.currentPage, pagination.pageSize, statusFilter, cityFilter, registrationDateFilter])
 
   const fetchCustomers = async () => {
     setLoading(true)
@@ -71,12 +77,21 @@ const CustomersList = () => {
         limit: pagination.pageSize
       }
       
-      // Add filters if set
+      // Add filters if set - map to API parameters
       if (searchTerm) {
-        params.search = searchTerm
+        // Auto-detect search type: email, phone, or name
+        if (searchTerm.includes('@')) {
+          params.email = searchTerm
+        } else if (/^[\d\s\+\-\(\)]+$/.test(searchTerm)) {
+          // Phone number pattern
+          params.phone = searchTerm
+        } else {
+          // Name search
+          params.customer_name = searchTerm
+        }
       }
       if (statusFilter && statusFilter !== 'all') {
-        params.status = statusFilter
+        params.customer_status = statusFilter
       }
       if (cityFilter) {
         params.city = cityFilter
@@ -149,7 +164,7 @@ const CustomersList = () => {
       } else {
         console.error('Failed to fetch customer stats:', response.message)
         // Set default values on error
-        setStats({
+      setStats({
           totalCustomers: 0,
           activeCustomers: 0,
           suspendedCustomers: 0,
@@ -275,7 +290,7 @@ const CustomersList = () => {
       key: 'actions',
       label: 'Actions',
       render: (value, customer, index) => (
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 align-items-center">
           <Button
             variant="outline-info"
             size="sm"
@@ -287,31 +302,33 @@ const CustomersList = () => {
           >
             <FontAwesomeIcon icon={faEye} />
           </Button>
-          {customer.status === 'active' ? (
-            <Button
-              variant="outline-danger"
+          <FormSelect
               size="sm"
-              onClick={(e) => {
+            value={customer.status}
+            onChange={(e) => {
                 e.stopPropagation()
+              const newStatus = e.target.value
+              if (newStatus !== customer.status) {
+                if (newStatus === 'suspended') {
+                  // Use suspend modal for better UX
                 handleSuspendCustomer(customer)
-              }}
-              title="Suspend Customer"
-            >
-              <FontAwesomeIcon icon={faBan} />
-            </Button>
-          ) : customer.status === 'suspended' ? (
-            <Button
-              variant="outline-success"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
+                } else if (newStatus === 'active' && customer.status === 'suspended') {
+                  // Use activate confirmation
                 handleActivateCustomer(customer)
-              }}
-              title="Activate Customer"
-            >
-              <FontAwesomeIcon icon={faCheckCircle} />
-            </Button>
-          ) : null}
+                } else {
+                  // Direct status update
+                  handleStatusUpdate(customer, newStatus)
+                }
+              }
+            }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: 'auto', minWidth: '120px' }}
+            title="Change Status"
+          >
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+            <option value="inactive">Inactive</option>
+          </FormSelect>
         </div>
       )
     }
@@ -320,6 +337,8 @@ const CustomersList = () => {
   // Event handlers
   const handleSearch = () => {
     setPagination(prev => ({ ...prev, currentPage: 1 }))
+    // Fetch will be triggered by useEffect when pagination changes
+    // But we also need to trigger it immediately for searchTerm
     fetchCustomers()
   }
 
@@ -329,7 +348,24 @@ const CustomersList = () => {
     setCityFilter('')
     setRegistrationDateFilter('all')
     setPagination(prev => ({ ...prev, currentPage: 1 }))
-    // Fetch will be triggered by useEffect when pagination changes
+    // Fetch will be triggered by useEffect when filters change
+  }
+
+  // Handle status update
+  const handleStatusUpdate = async (customer, newStatus) => {
+    try {
+      const response = await customerService.updateCustomerStatus(customer.userId || customer.id, newStatus)
+      if (response.success) {
+        success(response.message || `Customer status updated to ${newStatus} successfully`)
+        fetchCustomers()
+        fetchStats()
+      } else {
+        showError(response.message || 'Failed to update customer status')
+      }
+    } catch (error) {
+      showError('Failed to update customer status')
+      console.error('Error updating customer status:', error)
+    }
   }
 
   const handleViewCustomer = async (customer) => {
@@ -519,6 +555,7 @@ const CustomersList = () => {
                       onChange={(e) => {
                         setStatusFilter(e.target.value)
                         setPagination(prev => ({ ...prev, currentPage: 1 }))
+                        // Fetch will be triggered by useEffect
                       }}
                       className="border-2"
                     >
@@ -538,6 +575,12 @@ const CustomersList = () => {
                       onChange={(e) => {
                         setCityFilter(e.target.value)
                         setPagination(prev => ({ ...prev, currentPage: 1 }))
+                        // Fetch will be triggered by useEffect
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch()
+                        }
                       }}
                       className="border-2"
                     />
@@ -551,6 +594,7 @@ const CustomersList = () => {
                       onChange={(e) => {
                         setRegistrationDateFilter(e.target.value)
                         setPagination(prev => ({ ...prev, currentPage: 1 }))
+                        // Fetch will be triggered by useEffect
                       }}
                       className="border-2"
                     >
