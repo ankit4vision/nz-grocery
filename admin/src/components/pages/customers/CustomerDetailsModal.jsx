@@ -115,35 +115,60 @@ const CustomerDetailsModal = ({
           
           <Col md={6}>
             <div className="d-flex align-items-center mb-3">
-              <FontAwesomeIcon icon={faMapMarkerAlt} className="me-3 text-success" />
+              <FontAwesomeIcon icon={faUser} className="me-3 text-success" />
               <div>
-                <div className="fw-semibold">Location</div>
-                <div className="text-muted">
-                  {customer.location?.city}, {customer.location?.country}
+                <div className="fw-semibold">Verification Status</div>
+                <div className="d-flex gap-2 mt-1">
+                  {customer.emailVerified ? (
+                    <Badge bg="success">Email Verified</Badge>
+                  ) : (
+                    <Badge bg="secondary">Email Not Verified</Badge>
+                  )}
+                  {customer.phoneVerified ? (
+                    <Badge bg="success">Phone Verified</Badge>
+                  ) : (
+                    <Badge bg="secondary">Phone Not Verified</Badge>
+                  )}
                 </div>
               </div>
             </div>
           </Col>
           
-          <Col md={6}>
-            <div className="d-flex align-items-center mb-3">
-              <FontAwesomeIcon icon={faShoppingCart} className="me-3 text-success" />
-              <div>
-                <div className="fw-semibold">Total Orders</div>
-                <div className="text-muted">{customer.totalOrders}</div>
+          {customer.dateOfBirth && (
+            <Col md={6}>
+              <div className="d-flex align-items-center mb-3">
+                <FontAwesomeIcon icon={faCalendarAlt} className="me-3 text-success" />
+                <div>
+                  <div className="fw-semibold">Date of Birth</div>
+                  <div className="text-muted">{formatDate(customer.dateOfBirth)}</div>
+                </div>
               </div>
-            </div>
-          </Col>
+            </Col>
+          )}
           
-          <Col md={6}>
-            <div className="d-flex align-items-center mb-3">
-              <FontAwesomeIcon icon={faDollarSign} className="me-3 text-success" />
-              <div>
-                <div className="fw-semibold">Total Spent</div>
-                <div className="text-muted">{formatCurrency(customer.totalSpent)}</div>
+          {customer.gender && (
+            <Col md={6}>
+              <div className="d-flex align-items-center mb-3">
+                <FontAwesomeIcon icon={faUser} className="me-3 text-success" />
+                <div>
+                  <div className="fw-semibold">Gender</div>
+                  <div className="text-muted">{customer.gender}</div>
+                </div>
               </div>
-            </div>
-          </Col>
+            </Col>
+          )}
+          
+          {customer.lastLogin && (
+            <Col md={6}>
+              <div className="d-flex align-items-center mb-3">
+                <FontAwesomeIcon icon={faCalendarAlt} className="me-3 text-success" />
+                <div>
+                  <div className="fw-semibold">Last Login</div>
+                  <div className="text-muted">{formatDate(customer.lastLogin)}</div>
+                </div>
+              </div>
+            </Col>
+          )}
           
           <Col md={6}>
             <div className="d-flex align-items-center mb-3">
@@ -164,108 +189,62 @@ const CustomerDetailsModal = ({
         </div>
 
         {/* Address Information */}
-        {customer.address && (
+        {customer.addresses && customer.addresses.length > 0 && (
           <div className="mb-4">
             <h6 className="fw-semibold mb-3">Address Information</h6>
-            <div className="bg-light p-3 rounded">
-              <div className="text-muted">
-                {customer.address.street}<br />
-                {customer.address.city}, {customer.address.state} {customer.address.postalCode}<br />
-                {customer.address.country}
+            {customer.addresses.map((address, index) => (
+              <div key={address.id || index} className="bg-light p-3 rounded mb-2">
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <Badge bg={address.isDefault ? 'primary' : 'secondary'} className="me-2">
+                      {address.isDefault ? 'Default' : address.addressType || 'Other'}
+                    </Badge>
+                    {!address.isActive && (
+                      <Badge bg="danger">Inactive</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="text-muted">
+                  {address.addressLine1}<br />
+                  {address.addressLine2 && <>{address.addressLine2}<br /></>}
+                  {address.city}, {address.state} {address.postalCode}<br />
+                  {address.country}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         )}
 
-        {/* Preferences */}
-        {customer.preferences && Object.keys(customer.preferences).length > 0 && (
-          <div className="mb-4">
-            <h6 className="fw-semibold mb-3">Preferences</h6>
-            <div className="bg-light p-3 rounded">
-              <Row className="g-2">
-                {customer.preferences.newsletter !== undefined && (
-                  <Col md={6}>
-                    <small className="text-muted">
-                      Newsletter: {customer.preferences.newsletter ? 'Subscribed' : 'Not subscribed'}
-                    </small>
-                  </Col>
-                )}
-                {customer.preferences.smsNotifications !== undefined && (
-                  <Col md={6}>
-                    <small className="text-muted">
-                      SMS Notifications: {customer.preferences.smsNotifications ? 'Enabled' : 'Disabled'}
-                    </small>
-                  </Col>
-                )}
-                {customer.preferences.preferredDeliveryTime && (
-                  <Col md={6}>
-                    <small className="text-muted">
-                      Preferred Delivery: {customer.preferences.preferredDeliveryTime}
-                    </small>
-                  </Col>
-                )}
-                {customer.preferences.dietaryRestrictions && customer.preferences.dietaryRestrictions.length > 0 && (
-                  <Col md={12}>
-                    <small className="text-muted">
-                      Dietary Restrictions: {customer.preferences.dietaryRestrictions.join(', ')}
-                    </small>
-                  </Col>
-                )}
-              </Row>
-            </div>
-          </div>
-        )}
-
-        {/* Notes */}
-        {customer.notes && (
-          <div className="mb-4">
-            <h6 className="fw-semibold mb-3">Notes</h6>
-            <div className="bg-light p-3 rounded">
-              <div className="text-muted">{customer.notes}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Last Order Date */}
-        {customer.lastOrderDate && (
-          <div className="mb-4">
-            <h6 className="fw-semibold mb-3">Last Order</h6>
-            <div className="bg-light p-3 rounded">
-              <div className="text-muted">{formatDate(customer.lastOrderDate)}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Suspension Details */}
-        {customer.suspensionDetails && (
-          <div className="mb-4">
-            <h6 className="fw-semibold mb-3 text-danger">Suspension Details</h6>
-            <div className="bg-danger bg-opacity-10 p-3 rounded border border-danger">
-              <Row className="g-2">
+        {/* Account Information */}
+        <div className="mb-4">
+          <h6 className="fw-semibold mb-3">Account Information</h6>
+          <div className="bg-light p-3 rounded">
+            <Row className="g-2">
+              <Col md={6}>
+                <small className="text-muted">Account Status:</small>
+                <div className="fw-semibold">
+                  <Badge bg={customer.isActive ? 'success' : 'danger'}>
+                    {customer.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+              </Col>
+              <Col md={6}>
+                <small className="text-muted">Verified:</small>
+                <div className="fw-semibold">
+                  <Badge bg={customer.isVerified ? 'success' : 'warning'}>
+                    {customer.isVerified ? 'Verified' : 'Not Verified'}
+                  </Badge>
+                </div>
+              </Col>
+              {customer.totalAddresses !== undefined && (
                 <Col md={6}>
-                  <small className="text-muted">Reason:</small>
-                  <div className="fw-semibold">{customer.suspensionDetails.reason}</div>
+                  <small className="text-muted">Total Addresses:</small>
+                  <div className="fw-semibold">{customer.totalAddresses || 0}</div>
                 </Col>
-                <Col md={6}>
-                  <small className="text-muted">Suspended On:</small>
-                  <div className="fw-semibold">{formatDate(customer.suspensionDetails.suspendedAt)}</div>
-                </Col>
-                {customer.suspensionDetails.durationType === 'temporary' && customer.suspensionDetails.suspendedUntil && (
-                  <Col md={6}>
-                    <small className="text-muted">Suspended Until:</small>
-                    <div className="fw-semibold">{formatDate(customer.suspensionDetails.suspendedUntil)}</div>
-                  </Col>
-                )}
-                {customer.suspensionDetails.notes && (
-                  <Col md={12}>
-                    <small className="text-muted">Notes:</small>
-                    <div className="fw-semibold">{customer.suspensionDetails.notes}</div>
-                  </Col>
-                )}
-              </Row>
-            </div>
+              )}
+            </Row>
           </div>
-        )}
+        </div>
       </Modal.Body>
       
       <Modal.Footer>

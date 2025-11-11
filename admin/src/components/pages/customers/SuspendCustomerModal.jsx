@@ -104,7 +104,8 @@ const SuspendCustomerModal = ({
 
     setIsSubmitting(true)
     try {
-      await onSuspend(customer.id, formData)
+      // API only needs user_id, but we can keep form data for internal tracking
+      await onSuspend(customer.userId || customer.id)
     } catch (error) {
       console.error('Error suspending customer:', error)
     } finally {

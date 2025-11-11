@@ -16,26 +16,30 @@ import {
 import { Table, Modal } from '../../components'
 import CustomerDetailsModal from '../../components/pages/customers/CustomerDetailsModal'
 import SuspendCustomerModal from '../../components/pages/customers/SuspendCustomerModal'
-import { customerService } from '../../services/customerService'
-import customersData from '../../mock/customers.json'
+import customerService from '../../services/customerService'
+import { useToast } from '../../components'
 
 const CustomersList = () => {
   const navigate = useNavigate()
+  const { success, error: showError } = useToast()
   
   // State management
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [locationFilter, setLocationFilter] = useState('')
-  const [registrationDateFilter, setRegistrationDateFilter] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [cityFilter, setCityFilter] = useState('')
+  const [registrationDateFilter, setRegistrationDateFilter] = useState('all')
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 1
+  })
   
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const [showSuspendModal, setShowSuspendModal] = useState(false)
   const [showSuspendDetailsModal, setShowSuspendDetailsModal] = useState(false)
   const [showActivateModal, setShowActivateModal] = useState(false)
   
@@ -52,105 +56,117 @@ const CustomersList = () => {
     suspendedCustomers: 0,
     newThisMonth: 0
   })
-  
 
-  // Load customers
+  // Load customers and stats on mount and page change
   useEffect(() => {
-    loadCustomers()
-    loadStats()
-  }, [])
+    fetchCustomers()
+    fetchStats()
+  }, [pagination.currentPage, pagination.pageSize])
 
-  const loadCustomers = async () => {
+  const fetchCustomers = async () => {
+    setLoading(true)
     try {
-      setLoading(true)
-      // For now, use mock data. Replace with actual API call later
-      // const response = await customerService.getCustomers()
-      // if (response.success) {
-      //   setCustomers(response.data)
-      // }
-      setCustomers(customersData)
-    } catch (error) {
-      console.error('Error loading customers:', error)
+      const params = {
+        page: pagination.currentPage,
+        limit: pagination.pageSize
+      }
+      
+      // Add filters if set
+      if (searchTerm) {
+        params.search = searchTerm
+      }
+      if (statusFilter && statusFilter !== 'all') {
+        params.status = statusFilter
+      }
+      if (cityFilter) {
+        params.city = cityFilter
+      }
+      if (registrationDateFilter && registrationDateFilter !== 'all') {
+        const today = new Date()
+        let dateFrom, dateTo
+        
+        switch (registrationDateFilter) {
+          case 'today':
+            dateFrom = today.toISOString().split('T')[0]
+            dateTo = today.toISOString().split('T')[0]
+            break
+          case 'week':
+            const weekAgo = new Date(today)
+            weekAgo.setDate(today.getDate() - 7)
+            dateFrom = weekAgo.toISOString().split('T')[0]
+            dateTo = today.toISOString().split('T')[0]
+            break
+          case 'month':
+            const monthAgo = new Date(today)
+            monthAgo.setMonth(today.getMonth() - 1)
+            dateFrom = monthAgo.toISOString().split('T')[0]
+            dateTo = today.toISOString().split('T')[0]
+            break
+          case 'year':
+            const yearAgo = new Date(today)
+            yearAgo.setFullYear(today.getFullYear() - 1)
+            dateFrom = yearAgo.toISOString().split('T')[0]
+            dateTo = today.toISOString().split('T')[0]
+            break
+          default:
+            break
+        }
+        
+        if (dateFrom) params.registered_date_from = dateFrom
+        if (dateTo) params.registered_date_to = dateTo
+      }
+      
+      const response = await customerService.getCustomers(params)
+      if (response.success) {
+        setCustomers(response.data.customers || [])
+        setPagination(prev => ({
+          ...prev,
+          totalItems: response.data.total || 0,
+          totalPages: response.data.totalPages || 1
+        }))
+      } else {
+        showError(response.message || 'Failed to load customers')
+      }
+    } catch (err) {
+      const errorMsg = 'Failed to load customers'
+      showError(errorMsg)
+      console.error('Error fetching customers:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const loadStats = async () => {
+  const fetchStats = async () => {
     try {
-      // For now, calculate from mock data. Replace with actual API call later
-      // const response = await customerService.getCustomerStats()
-      // if (response.success) {
-      //   setStats(response.data)
-      // }
-      
-      const totalCustomers = customersData.length
-      const activeCustomers = customersData.filter(c => c.status === 'active').length
-      const suspendedCustomers = customersData.filter(c => c.status === 'suspended').length
-      const newThisMonth = customersData.filter(c => {
-        const joinedDate = new Date(c.joinedDate)
-        const now = new Date()
-        return joinedDate.getMonth() === now.getMonth() && joinedDate.getFullYear() === now.getFullYear()
-      }).length
-      
-      setStats({
-        totalCustomers,
-        activeCustomers,
-        suspendedCustomers,
-        newThisMonth
-      })
+      const response = await customerService.getCustomerStats()
+      if (response.success) {
+        setStats({
+          totalCustomers: response.data.totalCustomers || 0,
+          activeCustomers: response.data.activeCustomers || 0,
+          suspendedCustomers: response.data.suspendedCustomers || 0,
+          newThisMonth: response.data.newThisMonth || 0
+        })
+      } else {
+        console.error('Failed to fetch customer stats:', response.message)
+        // Set default values on error
+        setStats({
+          totalCustomers: 0,
+          activeCustomers: 0,
+          suspendedCustomers: 0,
+          newThisMonth: 0
+        })
+      }
     } catch (error) {
       console.error('Error loading stats:', error)
     }
   }
-
-  // Filter customers
-  const filteredCustomers = customers.filter(customer => {
-    const matchesSearch = `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.phone?.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = !statusFilter || customer.status === statusFilter
-    const matchesLocation = !locationFilter || 
-                           customer.location?.city?.toLowerCase().includes(locationFilter.toLowerCase()) ||
-                           customer.location?.country?.toLowerCase().includes(locationFilter.toLowerCase())
-    
-    let matchesRegistrationDate = true
-    if (registrationDateFilter) {
-      const now = new Date()
-      const filterDate = new Date()
-      
-      switch (registrationDateFilter) {
-        case 'today':
-          filterDate.setDate(now.getDate() - 1)
-          break
-        case 'week':
-          filterDate.setDate(now.getDate() - 7)
-          break
-        case 'month':
-          filterDate.setMonth(now.getMonth() - 1)
-          break
-        case 'year':
-          filterDate.setFullYear(now.getFullYear() - 1)
-          break
-        default:
-          break
-      }
-      
-      matchesRegistrationDate = new Date(customer.joinedDate) >= filterDate
-    }
-    
-    return matchesSearch && matchesStatus && matchesLocation && matchesRegistrationDate
-  })
-
-  // Get unique locations for filter
-  const locations = [...new Set(customers.map(c => c.location?.city).filter(Boolean))]
 
   // Status color mapping
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'success'
       case 'suspended': return 'danger'
-      case 'pending': return 'warning'
+      case 'inactive': return 'secondary'
       default: return 'secondary'
     }
   }
@@ -211,35 +227,7 @@ const CustomersList = () => {
       render: (value, customer, index) => (
         <div>
           <div className="fw-semibold text-dark">{customer.email}</div>
-          <small className="text-muted">{customer.phone}</small>
-        </div>
-      )
-    },
-    {
-      key: 'location',
-      label: 'Location',
-      render: (value, customer, index) => (
-        <div>
-          <div className="fw-semibold text-dark">{customer.location?.city}</div>
-          <small className="text-muted">{customer.location?.country}</small>
-        </div>
-      )
-    },
-    {
-      key: 'orders',
-      label: 'Orders',
-      render: (value, customer, index) => (
-        <Badge bg="info" className="px-2 py-1">
-          {customer.totalOrders}
-        </Badge>
-      )
-    },
-    {
-      key: 'totalSpent',
-      label: 'Total Spent',
-      render: (value, customer, index) => (
-        <div className="fw-semibold text-success">
-          {formatCurrency(customer.totalSpent)}
+          <small className="text-muted">{customer.phone || 'N/A'}</small>
         </div>
       )
     },
@@ -250,8 +238,28 @@ const CustomersList = () => {
         <Badge bg={getStatusColor(customer.status)} className="px-2 py-1">
           {customer.status === 'active' ? 'Active' : 
            customer.status === 'suspended' ? 'Suspended' : 
-           customer.status === 'pending' ? 'Pending' : customer.status}
+           customer.status === 'inactive' ? 'Inactive' : customer.status}
         </Badge>
+      )
+    },
+    {
+      key: 'verification',
+      label: 'Verification',
+      render: (value, customer, index) => (
+        <div>
+          <div className="d-flex gap-2 mb-1">
+            {customer.emailVerified ? (
+              <Badge bg="success" className="px-2 py-1">Email</Badge>
+            ) : (
+              <Badge bg="secondary" className="px-2 py-1">Email</Badge>
+            )}
+            {customer.phoneVerified ? (
+              <Badge bg="success" className="px-2 py-1">Phone</Badge>
+            ) : (
+              <Badge bg="secondary" className="px-2 py-1">Phone</Badge>
+            )}
+          </div>
+        </div>
       )
     },
     {
@@ -303,43 +311,41 @@ const CustomersList = () => {
             >
               <FontAwesomeIcon icon={faCheckCircle} />
             </Button>
-          ) : (
-            <Button
-              variant="outline-danger"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleDeleteCustomer(customer)
-              }}
-              title="Delete Customer"
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </Button>
-          )}
+          ) : null}
         </div>
       )
     }
   ]
 
-  // Sortable columns
-  const sortableColumns = ['firstName', 'email', 'totalOrders', 'totalSpent', 'status', 'joinedDate']
-
   // Event handlers
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value)
-    setCurrentPage(1)
+  const handleSearch = () => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }))
+    fetchCustomers()
   }
 
-
-
-  const handleViewCustomer = (customer) => {
-    setSelectedCustomer(customer)
-    setShowDetailsModal(true)
+  const handleReset = () => {
+    setSearchTerm('')
+    setStatusFilter('all')
+    setCityFilter('')
+    setRegistrationDateFilter('all')
+    setPagination(prev => ({ ...prev, currentPage: 1 }))
+    // Fetch will be triggered by useEffect when pagination changes
   }
 
-  const handleDeleteCustomer = (customer) => {
-    setCustomerToDelete(customer)
-    setShowDeleteModal(true)
+  const handleViewCustomer = async (customer) => {
+    try {
+      // Fetch full customer details with addresses
+      const response = await customerService.getCustomerDetails(customer.userId || customer.id)
+      if (response.success) {
+        setSelectedCustomer(response.data)
+        setShowDetailsModal(true)
+      } else {
+        showError(response.message || 'Failed to load customer details')
+      }
+    } catch (error) {
+      showError('Failed to load customer details')
+      console.error('Error fetching customer details:', error)
+    }
   }
 
   const handleSuspendCustomer = (customer) => {
@@ -355,56 +361,41 @@ const CustomersList = () => {
   const handleExport = () => {
     // TODO: Implement export functionality
     console.log('Export customers')
+    showError('Export functionality coming soon')
   }
 
-  const handleReset = () => {
-    setSearchTerm('')
-    setStatusFilter('')
-    setLocationFilter('')
-    setRegistrationDateFilter('')
-    setCurrentPage(1)
-  }
-
-
-
-  const confirmDeleteCustomer = async () => {
+  const handleSuspendCustomerSubmit = async (customerId) => {
     try {
-      const response = await customerService.deleteCustomer(customerToDelete.id)
+      const response = await customerService.suspendCustomer(customerId)
       if (response.success) {
-        setShowDeleteModal(false)
-        setCustomerToDelete(null)
-        loadCustomers()
-        loadStats()
-      }
-    } catch (error) {
-      console.error('Error deleting customer:', error)
-    }
-  }
-
-  const handleSuspendCustomerSubmit = async (customerId, suspensionData) => {
-    try {
-      const response = await customerService.suspendCustomer(customerId, suspensionData)
-      if (response.success) {
+        success(response.message || 'Customer suspended successfully')
         setShowSuspendDetailsModal(false)
         setCustomerToSuspend(null)
-        loadCustomers()
-        loadStats()
+        fetchCustomers()
+        fetchStats()
+      } else {
+        showError(response.message || 'Failed to suspend customer')
       }
     } catch (error) {
+      showError('Failed to suspend customer')
       console.error('Error suspending customer:', error)
     }
   }
 
   const confirmActivateCustomer = async () => {
     try {
-      const response = await customerService.activateCustomer(customerToActivate.id)
+      const response = await customerService.activateCustomer(customerToActivate.userId || customerToActivate.id)
       if (response.success) {
+        success(response.message || 'Customer activated successfully')
         setShowActivateModal(false)
         setCustomerToActivate(null)
-        loadCustomers()
-        loadStats()
+        fetchCustomers()
+        fetchStats()
+      } else {
+        showError(response.message || 'Failed to activate customer')
       }
     } catch (error) {
+      showError('Failed to activate customer')
       console.error('Error activating customer:', error)
     }
   }
@@ -510,7 +501,12 @@ const CustomersList = () => {
                     <FormControl
                       placeholder="Name, email, or phone"
                       value={searchTerm}
-                      onChange={handleSearch}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch()
+                        }
+                      }}
                       className="border-2"
                     />
                   </div>
@@ -520,29 +516,31 @@ const CustomersList = () => {
                     <label className="form-label fw-semibold">Status</label>
                     <FormSelect
                       value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
+                      onChange={(e) => {
+                        setStatusFilter(e.target.value)
+                        setPagination(prev => ({ ...prev, currentPage: 1 }))
+                      }}
                       className="border-2"
                     >
-                      <option value="">All Status</option>
+                      <option value="all">All Status</option>
                       <option value="active">Active</option>
                       <option value="suspended">Suspended</option>
-                      <option value="pending">Pending</option>
+                      <option value="inactive">Inactive</option>
                     </FormSelect>
                   </div>
                 </Col>
                 <Col md={2}>
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">Location</label>
-                    <FormSelect
-                      value={locationFilter}
-                      onChange={(e) => setLocationFilter(e.target.value)}
+                    <label className="form-label fw-semibold">City</label>
+                    <FormControl
+                      placeholder="Filter by city"
+                      value={cityFilter}
+                      onChange={(e) => {
+                        setCityFilter(e.target.value)
+                        setPagination(prev => ({ ...prev, currentPage: 1 }))
+                      }}
                       className="border-2"
-                    >
-                      <option value="">All Locations</option>
-                      {locations.map(location => (
-                        <option key={location} value={location}>{location}</option>
-                      ))}
-                    </FormSelect>
+                    />
                   </div>
                 </Col>
                 <Col md={2}>
@@ -550,10 +548,13 @@ const CustomersList = () => {
                     <label className="form-label fw-semibold">Registration Date</label>
                     <FormSelect
                       value={registrationDateFilter}
-                      onChange={(e) => setRegistrationDateFilter(e.target.value)}
+                      onChange={(e) => {
+                        setRegistrationDateFilter(e.target.value)
+                        setPagination(prev => ({ ...prev, currentPage: 1 }))
+                      }}
                       className="border-2"
                     >
-                      <option value="">All Time</option>
+                      <option value="all">All Time</option>
                       <option value="today">Today</option>
                       <option value="week">This Week</option>
                       <option value="month">This Month</option>
@@ -565,7 +566,7 @@ const CustomersList = () => {
                   <div className="mb-3">
                     <label className="form-label fw-semibold">&nbsp;</label>
                     <div className="d-flex gap-2">
-                      <Button variant="success" onClick={() => {}} className="text-white">
+                      <Button variant="success" onClick={handleSearch} className="text-white">
                         <FontAwesomeIcon icon={faSearch} className="me-2" />
                         Search
                       </Button>
@@ -587,30 +588,27 @@ const CustomersList = () => {
                   <h4 className="mb-0 text-success">Customer List</h4>
                 </div>
                 <div className="text-muted">
-                  Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredCustomers.length)} of {filteredCustomers.length} customers
+                  Showing {((pagination.currentPage - 1) * pagination.pageSize) + 1}-{Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)} of {pagination.totalItems} customers
                 </div>
               </div>
               
               <Table
-                data={filteredCustomers}
+                data={customers}
                 columns={columns}
-                sortableColumns={sortableColumns}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={setPageSize}
+                currentPage={pagination.currentPage}
+                pageSize={pagination.pageSize}
+                onPageChange={(page) => setPagination(prev => ({ ...prev, currentPage: page }))}
+                onPageSizeChange={(size) => setPagination(prev => ({ ...prev, pageSize: size, currentPage: 1 }))}
                 loading={loading}
                 hover
                 pagination={true}
-                sortable={true}
-                totalItems={filteredCustomers.length}
+                serverSidePagination={true}
+                totalItems={pagination.totalItems}
               />
             </div>
           </div>
         </Col>
       </Row>
-
-
 
       {/* Customer Details Modal */}
       <CustomerDetailsModal
@@ -623,23 +621,6 @@ const CustomersList = () => {
         onSuspend={handleSuspendCustomer}
         onActivate={handleActivateCustomer}
       />
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        visible={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false)
-          setCustomerToDelete(null)
-        }}
-        title="Delete Customer"
-        onConfirm={confirmDeleteCustomer}
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-      >
-        <p>Are you sure you want to delete the customer <strong>"{customerToDelete?.firstName} {customerToDelete?.lastName}"</strong>?</p>
-        <p className="text-muted">This action cannot be undone.</p>
-      </Modal>
 
       {/* Suspend Customer Details Modal */}
       <SuspendCustomerModal
