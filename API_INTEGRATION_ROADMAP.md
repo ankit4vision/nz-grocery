@@ -107,10 +107,11 @@
 
 **Step 1 - Basic Information:**
 - Create Product - `POST /product-service/products/` (creates product with basic info)
+- Update Product - `PUT /product-service/products/{product_id}` (updates product basic info in edit mode)
 - Get Product by ID - `GET /product-service/products/{product_id}`
 - Get Full Product Details - `GET /product-service/products/{product_id}/full`
 - Get Category Options - `GET /product-service/categories/options` (for dropdown)
-- Auto-save product on Step 1 completion
+- Auto-save product on Step 1 completion (create in new mode, update in edit mode)
 - Product ID stored for subsequent steps
 
 **Step 2 - Attributes:**
@@ -145,10 +146,11 @@
 
 **Step 5 - Review:**
 - Get Full Product Details - `GET /product-service/products/{product_id}/full` (for review display)
+- Activate/Submit Product - `PUT /product-service/products/{product_id}/activate` (activates the product)
 - Displays all product information from API
 - Shows category names (fetched from categories API)
 - Displays variants, bulk pricing, images, and attributes
-- Submit button (ready for future update functionality)
+- Submit button activates the product and navigates to products list
 
 **Files Updated:**
 - `admin/src/services/productService.js` ✅ Completed (all product, variant, bulk pricing, and image APIs)
@@ -161,19 +163,21 @@
 
 **Features Implemented:**
 - 5-step product creation wizard with API integration
-- Step 1: Product creation with basic info (name, category, SKU, description, GST, margin)
+- Step 1: Product creation/update with basic info (name, category, SKU, description, GST, margin) - auto-saves on completion
 - Step 2: Attribute assignment (boolean, text, date types) with auto-save
 - Step 3: Variants and bulk pricing with row-level save functionality
 - Step 4: Image upload with immediate save and metadata management
-- Step 5: Review page with full product details from API
+- Step 5: Review page with full product details from API - Submit button activates product
 - Category dropdown populated from API
 - Toast notifications for all operations
 - Loading states for all API calls
 - Error handling with user-friendly messages
-- Edit mode support (loads existing product data)
+- Edit mode support (loads existing product data, updates on Step 1)
 - Product ID management across steps
 - Row-level save for variants and bulk pricing
 - Auto-save for image metadata changes
+- Update product API integration for edit mode
+- Activate product API integration for final submission
 
 ---
 
@@ -338,7 +342,7 @@ nz-grocery/
 - ✅ `categoryService.js` - Category CRUD operations
 - ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
 - ✅ `settingsService.js` - Global Settings management (create/update by key, section-based organization)
-- ✅ `productService.js` - Product management (Add Product Wizard - all 5 steps with variants, bulk pricing, images, attributes, and Product Variants List filter)
+- ✅ `productService.js` - Product management (Add Product Wizard - all 5 steps with variants, bulk pricing, images, attributes, Product Variants List filter, Update Product API, and Activate Product API)
 
 **Pending Services**:
 - ⏳ `orderService.js` - Orders management
@@ -559,6 +563,7 @@ ToastProvider.jsx
 
 **Step 1 - Basic Information:**
 - `POST /product-service/products/` - Create product
+- `PUT /product-service/products/{product_id}` - Update product (in edit mode)
 - `GET /product-service/products/{product_id}` - Get product by ID
 - `GET /product-service/products/{product_id}/full` - Get full product details
 - `GET /product-service/categories/options` - Get category options
@@ -586,6 +591,7 @@ ToastProvider.jsx
 
 **Step 5 - Review:**
 - `GET /product-service/products/{product_id}/full` - Get full product details for review
+- `PUT /product-service/products/{product_id}/activate` - Activate/Submit product
 
 **Files Updated:**
 - `admin/src/services/productService.js` ✅ Completed
@@ -598,16 +604,18 @@ ToastProvider.jsx
 
 **Features Implemented:**
 - 5-step product creation wizard with full API integration
-- Step 1: Auto-save product on completion, stores product_id for subsequent steps
+- Step 1: Auto-save product on completion (create in new mode, update in edit mode), stores product_id for subsequent steps
 - Step 2: Auto-save attributes on completion, supports boolean/text/date types
 - Step 3: Row-level save for variants and bulk pricing (save button per row)
 - Step 4: Immediate image upload, auto-save metadata on changes
-- Step 5: Review page fetches and displays full product details from API
+- Step 5: Review page fetches and displays full product details from API, Submit button activates product
 - Category dropdown populated from API
 - Toast notifications for all operations
 - Loading states and error handling
-- Edit mode support (loads existing product data)
+- Edit mode support (loads existing product data, updates on Step 1)
 - Product ID management across all steps
+- Update product API integration for edit mode (Step 1)
+- Activate product API integration for final submission (Step 5)
 
 **Time Taken**: Completed
 
@@ -1422,5 +1430,5 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 5 steps), and Product List (Variants List with server-side pagination) Modules Completed - Ready for Dashboard Module Integration
+**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 5 steps with Update Product and Activate Product APIs), and Product List (Variants List with server-side pagination) Modules Completed - Ready for Dashboard Module Integration
 
