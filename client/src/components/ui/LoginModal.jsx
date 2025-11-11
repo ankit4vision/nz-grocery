@@ -78,9 +78,15 @@ const LoginModal = ({ show, onHide, onSwitchToSignup, onSwitchToForgotPassword }
         rememberMe: formData.rememberMe
       };
       
-      await login(credentials);
-      onHide(); // Close modal on successful login
+      const result = await login(credentials);
+      
+      // Only close modal if login was successful
+      if (result && result.success) {
+        onHide(); // Close modal on successful login
+      }
+      // Error is already handled by UserContext and displayed in the modal
     } catch (error) {
+      // Error handling is done in UserContext, but catch here to prevent unhandled promise rejection
       console.error('Login error:', error);
     }
   };

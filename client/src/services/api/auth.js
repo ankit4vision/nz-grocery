@@ -1,5 +1,6 @@
-import { apiPost, apiGet, apiPut, apiDelete } from '../../utils/api';
-import { API_ENDPOINTS } from '../../utils/constants';
+import apiClient from '../../config/apiClient'
+import { handleApiError, formatSuccessResponse } from '../../utils/errorHandler'
+import { API_ENDPOINTS } from '../../utils/constants'
 
 /**
  * Authentication API service
@@ -11,22 +12,26 @@ export class AuthService {
    * @param {object} credentials - Login credentials
    * @param {string} credentials.email - User email
    * @param {string} credentials.password - User password
-   * @param {boolean} credentials.rememberMe - Remember me option
-   * @returns {Promise} - Login response with token
+   * @returns {Promise} - Login response with token and user
    */
   static async login(credentials) {
     try {
-      const response = await apiPost(API_ENDPOINTS.AUTH.LOGIN, credentials);
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, credentials)
       
-      // Store token in localStorage if login successful
-      if (response.token) {
-        localStorage.setItem('authToken', response.token);
+      // Extract token and user from response
+      const { access_token, user } = response.data
+      
+      // Store token and user in localStorage
+      if (access_token) {
+        localStorage.setItem('access_token', access_token)
+      }
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user))
       }
       
-      return response;
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error logging in:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
@@ -36,132 +41,93 @@ export class AuthService {
    * @param {object} userData - User registration data
    * @param {string} userData.email - User email
    * @param {string} userData.password - User password
-   * @param {string} userData.firstName - User first name
-   * @param {string} userData.lastName - User last name
-   * @param {string} userData.phone - User phone number
-   * @returns {Promise} - Registration response
+   * @param {string} userData.first_name - User first name
+   * @param {string} userData.last_name - User last name
+   * @param {string} userData.phone - User phone number (optional)
+   * @returns {Promise} - Registration response with token and user
    */
   static async register(userData) {
     try {
-      const response = await apiPost(API_ENDPOINTS.AUTH.REGISTER, userData);
-      return response;
+      // Transform frontend format to API format
+      const apiData = {
+        email: userData.email,
+        password: userData.password,
+        first_name: userData.firstName || userData.first_name,
+        last_name: userData.lastName || userData.last_name,
+        phone: userData.phone || userData.mobile || null,
+      }
+      
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, apiData)
+      
+      // Extract token and user from response
+      const { access_token, user } = response.data
+      
+      // Store token and user in localStorage
+      if (access_token) {
+        localStorage.setItem('access_token', access_token)
+      }
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user))
+      }
+      
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error registering user:', error);
-      throw error;
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Get current authenticated user
+   * 
+   * @returns {Promise} - Current user profile
+   */
+  static async getCurrentUser() {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.AUTH.GET_CURRENT_USER)
+      
+      // Update user in localStorage
+      if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data))
+      }
+      
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Change password
+   * 
+   * @param {object} passwordData - Password data
+   * @param {string} passwordData.current_password - Current password
+   * @param {string} passwordData.new_password - New password
+   * @returns {Promise} - Password change response
+   */
+  static async changePassword(passwordData) {
+    try {
+      // Transform frontend format to API format
+      const apiData = {
+        current_password: passwordData.currentPassword || passwordData.current_password,
+        new_password: passwordData.newPassword || passwordData.new_password,
+      }
+      
+      const response = await apiClient.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   }
 
   /**
    * User logout
    * 
-   * @returns {Promise} - Logout response
+   * @returns {void}
    */
-  static async logout() {
-    try {
-      const response = await apiPost(API_ENDPOINTS.AUTH.LOGOUT);
-      
-      // Remove token from localStorage
-      localStorage.removeItem('authToken');
-      
-      return response;
-    } catch (error) {
-      console.error('Error logging out:', error);
-      // Still remove token even if API call fails
-      localStorage.removeItem('authToken');
-      throw error;
-    }
-  }
-
-  /**
-   * Refresh authentication token
-   * 
-   * @returns {Promise} - New token response
-   */
-  static async refreshToken() {
-    try {
-      const response = await apiPost(API_ENDPOINTS.AUTH.REFRESH);
-      
-      // Update token in localStorage
-      if (response.token) {
-        localStorage.setItem('authToken', response.token);
-      }
-      
-      return response;
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      // Remove invalid token
-      localStorage.removeItem('authToken');
-      throw error;
-    }
-  }
-
-  /**
-   * Forgot password
-   * 
-   * @param {string} email - User email
-   * @returns {Promise} - Forgot password response
-   */
-  static async forgotPassword(email) {
-    try {
-      const response = await apiPost(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
-      return response;
-    } catch (error) {
-      console.error('Error sending forgot password email:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Reset password
-   * 
-   * @param {object} resetData - Reset password data
-   * @param {string} resetData.token - Reset token
-   * @param {string} resetData.password - New password
-   * @param {string} resetData.confirmPassword - Confirm new password
-   * @returns {Promise} - Reset password response
-   */
-  static async resetPassword(resetData) {
-    try {
-      const response = await apiPost(API_ENDPOINTS.AUTH.RESET_PASSWORD, resetData);
-      return response;
-    } catch (error) {
-      console.error('Error resetting password:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Verify email
-   * 
-   * @param {string} token - Verification token
-   * @returns {Promise} - Verification response
-   */
-  static async verifyEmail(token) {
-    try {
-      const endpoint = '/auth/verify-email';
-      const response = await apiPost(endpoint, { token });
-      return response;
-    } catch (error) {
-      console.error('Error verifying email:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Resend verification email
-   * 
-   * @param {string} email - User email
-   * @returns {Promise} - Resend response
-   */
-  static async resendVerificationEmail(email) {
-    try {
-      const endpoint = '/auth/resend-verification';
-      const response = await apiPost(endpoint, { email });
-      return response;
-    } catch (error) {
-      console.error('Error resending verification email:', error);
-      throw error;
-    }
+  static logout() {
+    // Remove token and user from localStorage
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('user')
   }
 
   /**
@@ -170,8 +136,8 @@ export class AuthService {
    * @returns {boolean} - Authentication status
    */
   static isAuthenticated() {
-    const token = localStorage.getItem('authToken');
-    return !!token;
+    const token = localStorage.getItem('access_token')
+    return !!token
   }
 
   /**
@@ -180,7 +146,7 @@ export class AuthService {
    * @returns {string|null} - Current token or null
    */
   static getToken() {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem('access_token')
   }
 
   /**
@@ -189,88 +155,26 @@ export class AuthService {
    * @param {string} token - Authentication token
    */
   static setToken(token) {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem('access_token', token)
   }
 
   /**
    * Remove authentication token
    */
   static removeToken() {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('user')
   }
 
   /**
-   * Get current user profile
+   * Get stored user data
    * 
-   * @returns {Promise} - Current user profile
+   * @returns {object|null} - User data or null
    */
-  static async getCurrentUser() {
-    try {
-      const endpoint = '/auth/me';
-      const response = await apiGet(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error fetching current user:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Update user profile
-   * 
-   * @param {object} profileData - Profile data
-   * @returns {Promise} - Updated profile
-   */
-  static async updateProfile(profileData) {
-    try {
-      const endpoint = '/auth/profile';
-      const response = await apiPut(endpoint, profileData);
-      return response;
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Change password
-   * 
-   * @param {object} passwordData - Password data
-   * @param {string} passwordData.currentPassword - Current password
-   * @param {string} passwordData.newPassword - New password
-   * @returns {Promise} - Password change response
-   */
-  static async changePassword(passwordData) {
-    try {
-      const endpoint = '/auth/change-password';
-      const response = await apiPost(endpoint, passwordData);
-      return response;
-    } catch (error) {
-      console.error('Error changing password:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Delete user account
-   * 
-   * @param {object} confirmationData - Confirmation data
-   * @returns {Promise} - Account deletion response
-   */
-  static async deleteAccount(confirmationData) {
-    try {
-      const endpoint = '/auth/account';
-      const response = await apiDelete(endpoint, confirmationData);
-      
-      // Remove token after account deletion
-      localStorage.removeItem('authToken');
-      
-      return response;
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      throw error;
-    }
+  static getUser() {
+    const userStr = localStorage.getItem('user')
+    return userStr ? JSON.parse(userStr) : null
   }
 }
 
-export default AuthService;
+export default AuthService

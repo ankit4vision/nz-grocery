@@ -95,16 +95,21 @@ const SignupModal = ({ show, onHide, onSwitchToLogin }) => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        mobile: formData.mobile,
+        phone: formData.mobile, // Map mobile to phone for API
         password: formData.password
       };
       
-      await signup(userData);
+      const result = await signup(userData);
       
-      // Show success message and switch to login
-      alert('Account created successfully! Please login with your credentials.');
-      onSwitchToLogin();
+      // Only show success and switch to login if signup was successful
+      if (result && result.success) {
+        // Show success message and switch to login
+        alert('Account created successfully! Please login with your credentials.');
+        onSwitchToLogin();
+      }
+      // Error is already handled by UserContext and displayed in the modal
     } catch (error) {
+      // Error handling is done in UserContext, but catch here to prevent unhandled promise rejection
       console.error('Signup error:', error);
     }
   };

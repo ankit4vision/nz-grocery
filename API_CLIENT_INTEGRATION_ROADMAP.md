@@ -2,7 +2,48 @@
 
 ## ✅ Completed Modules
 
-*No modules completed yet - Integration starting from scratch*
+### 1. Authentication Module 🔐 ✅ **COMPLETED**
+**Why First**: Foundation for all other modules. Users must be able to register, login, and maintain session.
+
+**APIs Integrated**:
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - User login
+- `GET /auth/me` - Get current authenticated user
+- `PUT /users/change-password` - Change password
+
+**Files Updated/Created**:
+- `client/src/config/apiClient.js` ✅ Created
+- `client/src/utils/errorHandler.js` ✅ Created
+- `client/src/utils/responseHandler.js` ✅ Created
+- `client/src/utils/constants.js` ✅ Updated (API endpoints)
+- `client/src/services/api/auth.js` ✅ Updated
+- `client/src/context/UserContext.jsx` ✅ Updated
+- `client/src/components/ui/LoginModal.jsx` ✅ Updated
+- `client/src/components/ui/SignupModal.jsx` ✅ Updated
+
+**Features Implemented**:
+- User registration with validation
+- User login with token management
+- Get current user profile (auto-verifies token on app load)
+- Change password functionality
+- Token storage in localStorage (`access_token` and `user`)
+- Auto-redirect on 401 (only for authenticated requests, not login/register failures)
+- Error handling without page reload
+- Loading states during API calls
+- Form validation
+- Data transformation (frontend format ↔ API format: firstName ↔ first_name, mobile ↔ phone)
+
+**Key Implementation Details**:
+- API client configured with interceptors
+- Smart 401 handling: Only redirects if request had token AND is not login/register endpoint
+- Login/register errors display in modal without page reload
+- UserContext returns error responses instead of throwing (prevents unhandled promise rejections)
+- Auto token verification on app mount
+- Token and user data stored in localStorage
+
+**Time Taken**: Completed
+
+---
 
 ---
 
@@ -22,16 +63,16 @@ nz-grocery/
 │   │
 │   └── src/
 │       ├── 📁 config/                        # Configuration files
-│       │   └── apiClient.js                   # ⏳ Axios client configuration with interceptors (TO BE CREATED)
+│       │   └── apiClient.js                   # ✅ Axios client configuration with interceptors
 │       │
 │       ├── 📁 constants/                      # Constants and configurations
-│       │   ├── apiConstants.js                # ⏳ API endpoint constants (TO BE UPDATED)
+│       │   ├── apiConstants.js                # Application constants (API endpoints in utils/constants.js)
 │       │   ├── appConstants.js                # Application constants
 │       │   └── uiConstants.js                 # UI constants
 │       │
 │       ├── 📁 services/                       # API service layer (CRUD operations)
 │       │   ├── api/
-│       │   │   ├── auth.js                    # ⏳ Authentication service (TO BE UPDATED)
+│       │   │   ├── auth.js                    # ✅ Authentication service
 │       │   │   ├── products.js                # ⏳ Products service (TO BE UPDATED)
 │       │   │   ├── categories.js              # ⏳ Categories service (TO BE UPDATED)
 │       │   │   ├── cart.js                    # ⏳ Shopping cart service (TO BE UPDATED)
@@ -41,16 +82,16 @@ nz-grocery/
 │       │   └── index.js                        # Service exports
 │       │
 │       ├── 📁 utils/                          # Utility functions
-│       │   ├── api.js                         # ⏳ API utility functions (TO BE UPDATED)
-│       │   ├── errorHandler.js                # ⏳ Centralized error handling utility (TO BE CREATED)
-│       │   ├── responseHandler.js            # ⏳ Response formatting utility (TO BE CREATED)
+│       │   ├── api.js                         # API utility functions (legacy fetch wrapper, services use apiClient)
+│       │   ├── errorHandler.js                # ✅ Centralized error handling utility
+│       │   ├── responseHandler.js            # ✅ Response formatting utility
 │       │   ├── constants.js                   # Application constants
 │       │   ├── formatters.js                  # Data formatting utilities
 │       │   ├── helpers.js                     # Helper functions
 │       │   └── validators.js                  # Form validation utilities
 │       │
 │       ├── 📁 context/                        # React context providers
-│       │   ├── UserContext.jsx                # ⏳ User authentication context (TO BE UPDATED)
+│       │   ├── UserContext.jsx                # ✅ User authentication context
 │       │   ├── CartContext.jsx                # ⏳ Shopping cart context (TO BE UPDATED)
 │       │   ├── AppContext.jsx                 # Application context
 │       │   └── ThemeContext.jsx               # Theme context
@@ -105,7 +146,7 @@ nz-grocery/
 
 #### 🔧 Configuration Files
 
-**`client/src/config/apiClient.js`** ⏳ **TO BE CREATED**
+**`client/src/config/apiClient.js`** ✅ **COMPLETED**
 - **Purpose**: Axios instance with interceptors for all API calls
 - **Features**: 
   - Base URL configuration
@@ -119,7 +160,7 @@ nz-grocery/
 
 #### 🛠️ Utility Files
 
-**`client/src/utils/errorHandler.js`** ⏳ **TO BE CREATED**
+**`client/src/utils/errorHandler.js`** ✅ **COMPLETED**
 - **Purpose**: Centralized error handling
 - **Returns**: Standardized error response `{ success: false, message, error }`
 - **Usage**: Use in catch blocks
@@ -130,7 +171,7 @@ nz-grocery/
   }
   ```
 
-**`client/src/utils/responseHandler.js`** ⏳ **TO BE CREATED**
+**`client/src/utils/responseHandler.js`** ✅ **COMPLETED**
 - **Purpose**: Standardize success responses
 - **Returns**: Standardized response `{ success: true, data, message }`
 - **Usage**: Format API responses
@@ -153,7 +194,7 @@ nz-grocery/
 - **Example**: `authService.js` ⏳
 
 **Services to Update/Create**:
-- ⏳ `auth.js` - Authentication (register, login, get current user, change password)
+- ✅ `auth.js` - Authentication (register, login, get current user, change password)
 - ⏳ `products.js` - Product browsing and details
 - ⏳ `categories.js` - Category listing
 - ⏳ `cart.js` - Shopping cart operations
@@ -169,8 +210,8 @@ nz-grocery/
 - ⏳ Other components may need updates
 
 **UI Components** (`client/src/components/ui/`):
-- ⏳ **`LoginModal.jsx`** - Login modal (needs API integration)
-- ⏳ **`SignupModal.jsx`** - Signup modal (needs API integration)
+- ✅ **`LoginModal.jsx`** - Login modal
+- ✅ **`SignupModal.jsx`** - Signup modal
 - ⏳ **`ProductCard.jsx`** - Product card (needs API integration)
 - ⏳ **`ProductGrid.jsx`** - Product grid (needs API integration)
 - ⏳ **`CartSidebar.jsx`** - Cart sidebar (needs API integration)
@@ -190,11 +231,10 @@ nz-grocery/
 
 #### 🔐 Context Files
 
-**`client/src/context/UserContext.jsx`** ⏳ **TO BE UPDATED**
+**`client/src/context/UserContext.jsx`** ✅ **COMPLETED**
 - **Purpose**: Global user authentication state management
-- **Current**: Uses mock data
-- **Target**: Use real API services (authService)
-- **Features**: User state, login, logout, token management
+- **Status**: Uses real API services (AuthService)
+- **Features**: User state, login, logout, token management, auto token verification
 
 **`client/src/context/CartContext.jsx`** ⏳ **TO BE UPDATED**
 - **Purpose**: Global shopping cart state management
@@ -204,19 +244,19 @@ nz-grocery/
 
 ### Environment Files
 
-**`.env.local`** (Local Development)
+**`.env.local`** (Local Development) ✅ Created
 ```env
-VITE_API_BASE_URL=http://13.211.171.89:8000
+VITE_API_BASE_URL=http://3.106.58.15:8000
 ```
 
-**`.env.staging`** (Staging Environment)
+**`.env.staging`** (Staging Environment) ✅ Created
 ```env
-VITE_API_BASE_URL=https://api-staging.example.com
+VITE_API_BASE_URL=http://3.106.58.15:8000
 ```
 
-**`.env.production`** (Production Environment)
+**`.env.production`** (Production Environment) ✅ Created
 ```env
-VITE_API_BASE_URL=https://api.example.com
+VITE_API_BASE_URL=http://3.106.58.15:8000
 ```
 
 ### File Naming Conventions
@@ -243,28 +283,37 @@ VITE_API_BASE_URL=https://api.example.com
 - `GET /auth/me` - Get current authenticated user
 - `PUT /users/change-password` - Change password
 
-**Files to Update/Create**:
-- `client/src/config/apiClient.js` ⏳ Create
-- `client/src/utils/errorHandler.js` ⏳ Create
-- `client/src/utils/responseHandler.js` ⏳ Create
-- `client/src/services/api/auth.js` ⏳ Update
-- `client/src/context/UserContext.jsx` ⏳ Update
-- `client/src/components/ui/LoginModal.jsx` ⏳ Update
-- `client/src/components/ui/SignupModal.jsx` ⏳ Update
+**Files Updated/Created**:
+- `client/src/config/apiClient.js` ✅ Created
+- `client/src/utils/errorHandler.js` ✅ Created
+- `client/src/utils/responseHandler.js` ✅ Created
+- `client/src/utils/constants.js` ✅ Updated (API endpoints)
+- `client/src/services/api/auth.js` ✅ Updated
+- `client/src/context/UserContext.jsx` ✅ Updated
+- `client/src/components/ui/LoginModal.jsx` ✅ Updated
+- `client/src/components/ui/SignupModal.jsx` ✅ Updated
 
-**Features to Implement**:
-- User registration with validation
-- User login with token management
-- Get current user profile
-- Change password functionality
-- Token storage in localStorage
-- Auto-redirect on 401 (token expired)
-- Protected routes for authenticated pages
-- Toast notifications for success/error messages
-- Loading states during API calls
-- Form validation
+**Features Implemented**:
+- ✅ User registration with validation
+- ✅ User login with token management
+- ✅ Get current user profile (auto-verifies token on app load)
+- ✅ Change password functionality
+- ✅ Token storage in localStorage (`access_token` and `user`)
+- ✅ Auto-redirect on 401 (only for authenticated requests, not login/register failures)
+- ✅ Error handling without page reload
+- ✅ Loading states during API calls
+- ✅ Form validation
+- ✅ Data transformation (frontend format ↔ API format)
 
-**Estimated Time**: 4-5 hours
+**Key Implementation Details**:
+- API client configured with interceptors
+- Smart 401 handling: Only redirects if request had token AND is not login/register endpoint
+- Login/register errors display in modal without page reload
+- UserContext returns error responses instead of throwing (prevents unhandled promise rejections)
+- Auto token verification on app mount
+- Token and user data stored in localStorage
+
+**Time Taken**: Completed
 
 ---
 
@@ -556,13 +605,18 @@ export default moduleService
 ## 🎯 Current Status
 
 ✅ **Completed**:
-- None (Starting from scratch)
+- Authentication Module (Priority 1)
+  - User Registration
+  - User Login
+  - Get Current User
+  - Change Password
+  - Token Management
+  - Error Handling (no page reload on auth errors)
 
 ⏳ **In Progress**:
 - None
 
 📋 **Next Up**:
-- Priority 1: Authentication Module
 - Priority 2: Products & Categories Module
 - Priority 3: Shopping Cart Module
 - Priority 4: User Profile & Addresses Module
@@ -754,8 +808,8 @@ const ModuleComponent = () => {
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://13.211.171.89:8000',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://3.106.58.15:8000',
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -796,12 +850,27 @@ apiClient.interceptors.response.use(
         message: error.response?.data || error.message,
       })
     }
+    // Handle 401 Unauthorized - token expired or invalid
+    // Only redirect if:
+    // 1. It's a 401 error
+    // 2. The request had a token (authenticated request)
+    // 3. It's NOT a login/register endpoint (those can fail with 401 for wrong credentials)
     if (error.response?.status === 401 && !error.config._retry) {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('user')
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login'
+      const requestUrl = error.config?.url || ''
+      const isAuthEndpoint = requestUrl.includes('/auth/login') || 
+                            requestUrl.includes('/auth/register')
+      const hadToken = error.config.headers?.Authorization
+      
+      // Only redirect if it was an authenticated request (had token) and not a login/register attempt
+      if (hadToken && !isAuthEndpoint) {
+        error.config._retry = true
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('user')
+        if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
+          window.location.href = '/'
+        }
       }
+      // For login/register 401 errors, just reject the promise (don't redirect)
     }
     return Promise.reject(error)
   }
@@ -822,7 +891,7 @@ client/
 
 **Example `.env.local`**:
 ```env
-VITE_API_BASE_URL=http://13.211.171.89:8000
+VITE_API_BASE_URL=http://3.106.58.15:8000
 ```
 
 **Usage in Code**:
@@ -926,6 +995,6 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Client Portal API Integration - Ready to Start  
-**Next Step**: Create API client configuration and start with Authentication Module
+**Status**: Authentication Module Completed - Ready for Products & Categories Module  
+**Next Step**: Start Priority 2 - Products & Categories Module Integration
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useLocalStorage } from '../hooks';
 import { STORAGE_KEYS } from '../utils/constants';
-import { authMockData } from '../data/mockData';
+import AuthService from '../services/api/auth';
 
 /**
  * User Context for managing user authentication and profile state globally
@@ -112,15 +112,36 @@ export const UserProvider = ({ children }) => {
   const [storedUser, setStoredUser] = useLocalStorage(STORAGE_KEYS.USER, null);
   const [storedPreferences, setStoredPreferences] = useLocalStorage(STORAGE_KEYS.THEME, initialState.preferences);
 
-  // Load user from localStorage on mount
+  // Load user from localStorage and verify token on mount
   useEffect(() => {
-    if (storedUser) {
-      dispatch({ type: USER_ACTIONS.SET_USER, payload: storedUser });
-    } else {
-      // No stored user, set loading to false
-      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
-    }
-  }, [storedUser]);
+    const loadUser = async () => {
+      const token = AuthService.getToken();
+      const storedUserData = AuthService.getUser();
+      
+      if (token && storedUserData) {
+        // Set user from localStorage immediately
+        dispatch({ type: USER_ACTIONS.SET_USER, payload: storedUserData });
+        
+        // Verify token by fetching current user
+        try {
+          const response = await AuthService.getCurrentUser();
+          if (response.success && response.data) {
+            dispatch({ type: USER_ACTIONS.SET_USER, payload: response.data });
+            setStoredUser(response.data);
+          }
+        } catch (error) {
+          // Token invalid, clear user
+          AuthService.logout();
+          dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        }
+      } else {
+        // No stored user, set loading to false
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+      }
+    };
+    
+    loadUser();
+  }, []);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -134,45 +155,39 @@ export const UserProvider = ({ children }) => {
     login: async (credentials) => {
       dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
       try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await AuthService.login(credentials);
         
-        // Validate credentials using mock data
-        const validation = authMockData.validateCredentials(credentials.email, credentials.password);
-        
-        if (!validation.success) {
-          throw new Error(validation.error);
+        if (!response.success) {
+          const errorMessage = response.message || 'Login failed';
+          dispatch({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage });
+          dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+          return { success: false, message: errorMessage };
         }
         
-        const user = validation.user;
-        const sessionId = authMockData.createSession(user.id);
-        
-        // Remove password from user object
-        const { password, ...userWithoutPassword } = user;
+        const user = response.data.user || response.data;
         
         // Create user profile
         const userProfile = {
-          ...userWithoutPassword,
+          ...user,
           preferences: state.preferences,
         };
 
-        setStoredUser(userWithoutPassword);
-        dispatch({ type: USER_ACTIONS.LOGIN_SUCCESS, payload: { user: userWithoutPassword, profile: userProfile } });
+        setStoredUser(user);
+        dispatch({ type: USER_ACTIONS.LOGIN_SUCCESS, payload: { user, profile: userProfile } });
         
-        return { success: true, user: userWithoutPassword };
+        return { success: true, user };
       } catch (error) {
-        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
-        throw error;
+        const errorMessage = error.message || 'Login failed. Please try again.';
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage });
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        // Don't throw error, return error response instead to prevent page reload
+        return { success: false, message: errorMessage };
       }
     },
 
     logout: () => {
-      // Destroy session in mock data
-      const sessionId = localStorage.getItem('sessionId');
-      if (sessionId) {
-        authMockData.destroySession(sessionId);
-        localStorage.removeItem('sessionId');
-      }
+      // Clear auth data using AuthService
+      AuthService.logout();
       
       setStoredUser(null);
       dispatch({ type: USER_ACTIONS.LOGOUT });
@@ -212,16 +227,18 @@ export const UserProvider = ({ children }) => {
     changePassword: async (passwordData) => {
       dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
       try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await AuthService.changePassword(passwordData);
         
-        // In real app, this would validate current password and update new password
-        // For mock, we'll just simulate success
+        if (!response.success) {
+          throw new Error(response.message || 'Failed to change password');
+        }
         
         dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
-        return { success: true };
+        return { success: true, message: response.message };
       } catch (error) {
-        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
+        const errorMessage = error.message || 'Failed to change password. Please try again.';
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage });
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
         throw error;
       }
     },
@@ -230,45 +247,33 @@ export const UserProvider = ({ children }) => {
     signup: async (userData) => {
       dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
       try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        const response = await AuthService.register(userData);
         
-        // Check if user already exists
-        const existingUser = authMockData.findUserByEmail(userData.email);
-        if (existingUser) {
-          throw new Error('User with this email already exists');
+        if (!response.success) {
+          const errorMessage = response.message || 'Registration failed';
+          dispatch({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage });
+          dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+          return { success: false, message: errorMessage };
         }
         
-        // Create new user
-        const newUser = {
-          id: (authMockData.users.length + 1).toString(),
-          ...userData,
-          role: 'customer',
-          isEmailVerified: false,
-          isMobileVerified: false,
-          createdAt: new Date().toISOString(),
-          lastLogin: null,
-          profile: {
-            avatar: null,
-            dateOfBirth: null,
-            gender: null,
-            address: null,
-            preferences: {
-              newsletter: true,
-              smsNotifications: true,
-              emailNotifications: true
-            }
-          }
+        const user = response.data.user || response.data;
+        
+        // Create user profile
+        const userProfile = {
+          ...user,
+          preferences: state.preferences,
         };
+
+        setStoredUser(user);
+        dispatch({ type: USER_ACTIONS.LOGIN_SUCCESS, payload: { user, profile: userProfile } });
         
-        // Add to mock data
-        authMockData.users.push(newUser);
-        
-        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
-        return { success: true, user: newUser };
+        return { success: true, user };
       } catch (error) {
-        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: error.message });
-        throw error;
+        const errorMessage = error.message || 'Registration failed. Please try again.';
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: errorMessage });
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+        // Don't throw error, return error response instead to prevent page reload
+        return { success: false, message: errorMessage };
       }
     },
 
@@ -345,14 +350,18 @@ export const UserProvider = ({ children }) => {
 
     // Helper methods
     getFullName: () => {
-      if (!state.profile) return '';
-      return `${state.profile.firstName || ''} ${state.profile.lastName || ''}`.trim();
+      if (!state.user && !state.profile) return '';
+      const user = state.user || state.profile;
+      const firstName = user.first_name || user.firstName || '';
+      const lastName = user.last_name || user.lastName || '';
+      return `${firstName} ${lastName}`.trim();
     },
 
     getInitials: () => {
-      if (!state.profile) return '';
-      const firstName = state.profile.firstName || '';
-      const lastName = state.profile.lastName || '';
+      if (!state.user && !state.profile) return '';
+      const user = state.user || state.profile;
+      const firstName = user.first_name || user.firstName || '';
+      const lastName = user.last_name || user.lastName || '';
       return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
     },
 

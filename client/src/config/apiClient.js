@@ -54,17 +54,32 @@ apiClient.interceptors.response.use(
     }
     
     // Handle 401 Unauthorized - token expired or invalid
+    // Only redirect if:
+    // 1. It's a 401 error
+    // 2. The request had a token (authenticated request)
+    // 3. It's NOT a login/register endpoint (those can fail with 401 for wrong credentials)
+    // 4. We haven't already retried
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
+      const requestUrl = error.config?.url || ''
+      const isAuthEndpoint = requestUrl.includes('/auth/login') || 
+                            requestUrl.includes('/auth/register')
+      const hadToken = originalRequest.headers?.Authorization
       
-      // Clear auth data
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('user')
-      
-      // If not already on login page, redirect to login
-      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
-        window.location.href = '/'
+      // Only redirect if it was an authenticated request (had token) and not a login/register attempt
+      if (hadToken && !isAuthEndpoint) {
+        originalRequest._retry = true
+        
+        // Clear auth data
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('user')
+        
+        // If not already on login page, redirect to home
+        if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
+          window.location.href = '/'
+        }
       }
+      // For login/register 401 errors, just reject the promise (don't redirect)
+      // The error will be handled by the component
     }
     
     return Promise.reject(error)
