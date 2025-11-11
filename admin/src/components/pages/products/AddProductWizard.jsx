@@ -191,20 +191,29 @@ const AddProductWizard = () => {
         gstRate: formData.basicInfo.gstRate
       }
 
-      const response = await productService.createProduct(productData)
+      let response
+      if (mode === 'edit' && productId) {
+        // Update existing product in edit mode
+        response = await productService.updateProduct(productId, productData)
+      } else {
+        // Create new product in create mode
+        response = await productService.createProduct(productData)
+      }
       
       if (response.success) {
-        const newProductId = response.data.product_id || response.data.id
-        setCreatedProductId(newProductId)
-        success('Product basic information saved successfully!')
+        const newProductId = response.data?.product_id || response.data?.id || productId || createdProductId
+        if (newProductId && !createdProductId) {
+          setCreatedProductId(newProductId)
+        }
+        success(mode === 'edit' ? 'Product basic information updated successfully!' : 'Product basic information saved successfully!')
         return newProductId
       } else {
-        showError(response.message || 'Failed to save product')
+        showError(response.message || `Failed to ${mode === 'edit' ? 'update' : 'save'} product`)
         return null
       }
     } catch (err) {
       console.error('Error saving product:', err)
-      showError('Failed to save product. Please try again.')
+      showError(`Failed to ${mode === 'edit' ? 'update' : 'save'} product. Please try again.`)
       return null
     } finally {
       setSavingStep(false)
@@ -261,8 +270,8 @@ const AddProductWizard = () => {
   // Navigation functions
   const handleNext = async () => {
     if (validateStep(currentStep)) {
-      // On Step 1 (Basic Info), save product first
-      if (currentStep === 0 && mode === 'create') {
+      // On Step 1 (Basic Info), save product first (both create and edit mode)
+      if (currentStep === 0) {
         const savedProductId = await saveBasicInfo()
         if (savedProductId) {
           setCurrentStep(currentStep + 1)
@@ -333,63 +342,32 @@ const AddProductWizard = () => {
   }
 
 
-  // Create/Update product function
+  // Submit/Activate product function (called on Review Step)
   const handleCreateProduct = async () => {
     setLoading(true)
     try {
-      // Prepare final product data
-      const productData = {
-        name: formData.basicInfo.name,
-        description: formData.basicInfo.description,
-        category: formData.basicInfo.category,
-        sku: formData.basicInfo.sku,
-        price: formData.variants.productVariants[0]?.basePrice || 0,
-        stock: formData.variants.productVariants[0]?.stock || 0,
-        image: formData.images.uploadedImages[formData.images.primaryImageIndex]?.url || '',
-        status: 'active',
-        isActive: true,
-        // Additional fields from other steps
-        attributes: formData.attributes,
-        variants: formData.variants,
-        images: formData.images
-      }
+      // Get the product ID (either from created product or edit mode)
+      const finalProductId = createdProductId || productId
       
-      // Create or update product
-      let response
-      if (mode === 'edit') {
-        response = await productService.updateProduct(productId, productData)
-      } else {
-        response = await productService.createProduct(productData)
+      if (!finalProductId) {
+        showError('Product ID is missing. Please go back to Step 1 and save the product first.')
+        setLoading(false)
+        return
       }
+
+      // Activate/Submit the product (this activates the product)
+      const response = await productService.activateProduct(finalProductId)
       
       if (response.success) {
-        // Attributes are already saved in Step 2, so no need to save again here
-        // Only save attributes if we're in edit mode and they haven't been saved yet
-        const finalProductId = response.data?.product_id || response.data?.id || createdProductId || productId
-        
-        // In edit mode, if attributes exist and haven't been saved in Step 2, save them now
-        if (mode === 'edit' && finalProductId && formData.attributes.attributeValues && Object.keys(formData.attributes.attributeValues).length > 0) {
-          const attributesToSave = Object.entries(formData.attributes.attributeValues)
-            .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
-            .map(([attributeId, value]) => ({
-              attribute_id: parseInt(attributeId),
-              value: value
-            }))
-          
-          if (attributesToSave.length > 0) {
-            await productService.assignProductAttributes(finalProductId, attributesToSave)
-          }
-        }
-        
-        success(mode === 'edit' ? 'Product updated successfully!' : 'Product created successfully!')
+        success('Product submitted and activated successfully!')
         // Navigate to products list
         navigate('/products')
       } else {
-        showError(response.message || `Failed to ${mode === 'edit' ? 'update' : 'create'} product`)
+        showError(response.message || 'Failed to submit product')
       }
     } catch (err) {
-      console.error(`Error ${mode === 'edit' ? 'updating' : 'creating'} product:`, err)
-      showError(`Failed to ${mode === 'edit' ? 'update' : 'create'} product. Please try again.`)
+      console.error('Error submitting product:', err)
+      showError('Failed to submit product. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -477,7 +455,7 @@ const AddProductWizard = () => {
 
   // Get submit button text
   const getSubmitButtonText = () => {
-    return 'Submit Product'
+    return 'Submit'
   }
 
   // Show loading state while loading product data for edit

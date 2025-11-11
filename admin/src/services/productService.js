@@ -70,47 +70,49 @@ const productService = {
 
   // Update product
   updateProduct: async (id, productData) => {
-    await delay(800)
-    
-    const productIndex = productsData.findIndex(p => p.id === parseInt(id))
-    if (productIndex !== -1) {
-      const existingProduct = productsData[productIndex]
+    try {
+      // Map form data to API format
+      const apiData = {}
       
-      productsData[productIndex] = {
-        ...existingProduct,
-        name: productData.name || existingProduct.name,
-        description: productData.description !== undefined ? productData.description : existingProduct.description,
-        weight: productData.weight !== undefined ? productData.weight : existingProduct.weight,
-        category: productData.category !== undefined ? productData.category : existingProduct.category,
-        subCategory: productData.subCategory !== undefined ? productData.subCategory : existingProduct.subCategory,
-        price: productData.price !== undefined ? productData.price : existingProduct.price,
-        oldPrice: productData.oldPrice !== undefined ? productData.oldPrice : existingProduct.oldPrice,
-        stock: productData.stock !== undefined ? productData.stock : existingProduct.stock,
-        stockStatus: productData.stock !== undefined ? 
-          (productData.stock > 50 ? 'high' : productData.stock > 10 ? 'medium' : productData.stock > 0 ? 'low' : 'out') : 
-          existingProduct.stockStatus,
-        status: productData.status !== undefined ? productData.status : existingProduct.status,
-        isActive: productData.isActive !== undefined ? productData.isActive : existingProduct.isActive,
-        image: productData.image !== undefined ? productData.image : existingProduct.image,
-        sku: productData.sku !== undefined ? productData.sku : existingProduct.sku,
-        barcode: productData.barcode !== undefined ? productData.barcode : existingProduct.barcode,
-        brand: productData.brand !== undefined ? productData.brand : existingProduct.brand,
-        unit: productData.unit !== undefined ? productData.unit : existingProduct.unit,
-        tags: productData.tags !== undefined ? productData.tags : existingProduct.tags,
-        updatedAt: new Date().toISOString()
+      // Only include fields that are provided (not undefined)
+      if (productData.name !== undefined || productData.product_name !== undefined) {
+        apiData.product_name = productData.name || productData.product_name
       }
-      
-      return {
-        success: true,
-        data: productsData[productIndex],
-        message: 'Product updated successfully'
+      if (productData.category_id !== undefined || productData.category !== undefined) {
+        apiData.category_id = productData.category_id || parseInt(productData.category)
       }
-    } else {
-      return {
-        success: false,
-        data: null,
-        message: 'Product not found'
+      if (productData.sku !== undefined) {
+        apiData.sku = productData.sku
       }
+      if (productData.brand !== undefined) {
+        apiData.brand = productData.brand || null
+      }
+      if (productData.short_description !== undefined || productData.description !== undefined) {
+        apiData.short_description = productData.short_description || productData.description || null
+      }
+      if (productData.full_description !== undefined || productData.description !== undefined) {
+        apiData.full_description = productData.full_description || productData.description || null
+      }
+      if (productData.gst !== undefined || productData.gstRate !== undefined) {
+        apiData.gst = productData.gst || productData.gstRate ? parseFloat(productData.gst || productData.gstRate) : null
+      }
+      if (productData.margin !== undefined || productData.profitMargin !== undefined) {
+        apiData.margin = productData.margin || productData.profitMargin ? parseFloat(productData.margin || productData.profitMargin) : null
+      }
+
+      // Remove null values for optional fields if they're empty strings
+      Object.keys(apiData).forEach(key => {
+        if (apiData[key] === '' || apiData[key] === null) {
+          if (key !== 'category_id' && key !== 'product_name' && key !== 'sku') {
+            apiData[key] = null
+          }
+        }
+      })
+
+      const response = await apiClient.put(`/product-service/products/${id}`, apiData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   },
 
@@ -576,6 +578,18 @@ const productService = {
       const response = await apiClient.get('/product-service/products/variants/filter', {
         params: queryParams
       })
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // ========== Product Activation API Method ==========
+  
+  // Activate/Submit product (activates the product)
+  activateProduct: async (productId) => {
+    try {
+      const response = await apiClient.put(`/product-service/products/${productId}/activate`)
       return formatSuccessResponse(response)
     } catch (error) {
       return handleApiError(error)

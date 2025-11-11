@@ -7,7 +7,6 @@ import {
   faLayerGroup, 
   faImage as faImageIcon,
   faEdit,
-  faCheckCircle,
   faSpinner
 } from '@fortawesome/free-solid-svg-icons'
 import { productService } from '../../../../services/productService'
@@ -437,28 +436,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
         </Card.Body>
       </Card>
 
-      {/* Submit Button */}
-      <div className="d-flex justify-content-end mt-4">
-        <Button 
-          variant="success" 
-          onClick={onCreateProduct}
-          disabled={loading}
-          size="lg"
-          className="d-flex align-items-center text-white"
-        >
-          {loading ? (
-            <>
-              <FontAwesomeIcon icon={faSpinner} spin className="me-2" />
-              Submitting...
-            </>
-          ) : (
-            <>
-              <FontAwesomeIcon icon={faCheckCircle} className="me-2" />
-              Submit Product
-            </>
-          )}
-        </Button>
-      </div>
+      {/* Note: Submit button is handled by parent AddProductWizard component */}
     </div>
   )
 }
