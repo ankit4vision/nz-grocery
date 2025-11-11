@@ -4453,6 +4453,100 @@
         }
       }
     },
+    "/product-service/products/{product_id}": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Update Product Endpoint",
+        "operationId": "update_product_endpoint_product_service_products__product_id__put",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/{product_id}/activate": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Activate Product Endpoint",
+        "operationId": "activate_product_endpoint_product_service_products__product_id__activate_put",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/product-service/products/{product_id}/images": {
       "post": {
         "tags": [
@@ -8595,6 +8689,17 @@
             ],
             "title": "Category Description"
           },
+          "place_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Holder"
+          },
           "is_active": {
             "type": "boolean",
             "title": "Is Active",
@@ -8647,6 +8752,17 @@
               }
             ],
             "title": "Category Description"
+          },
+          "place_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Holder"
           },
           "is_active": {
             "anyOf": [
@@ -9202,6 +9318,17 @@
             ],
             "title": "Category Image Url"
           },
+          "place_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Holder"
+          },
           "is_active": {
             "type": "boolean",
             "title": "Is Active"
@@ -9271,6 +9398,17 @@
             ],
             "title": "Category Image Url"
           },
+          "place_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Holder"
+          },
           "product_count": {
             "type": "integer",
             "title": "Product Count"
@@ -9331,6 +9469,17 @@
               }
             ],
             "title": "Category Image Url"
+          },
+          "place_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Holder"
           },
           "is_active": {
             "type": "boolean",
@@ -11986,18 +12135,6 @@
       },
       "ProductCreate": {
         "properties": {
-          "product_name": {
-            "type": "string",
-            "title": "Product Name"
-          },
-          "sku": {
-            "type": "string",
-            "title": "Sku"
-          },
-          "category_id": {
-            "type": "integer",
-            "title": "Category Id"
-          },
           "brand": {
             "anyOf": [
               {
@@ -12053,13 +12190,25 @@
               }
             ],
             "title": "Margin"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "category_id": {
+            "type": "integer",
+            "title": "Category Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
           }
         },
         "type": "object",
         "required": [
           "product_name",
-          "sku",
-          "category_id"
+          "category_id",
+          "sku"
         ],
         "title": "ProductCreate"
       },
@@ -12296,6 +12445,101 @@
           "product_name"
         ],
         "title": "ProductOut"
+      },
+      "ProductUpdate": {
+        "properties": {
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "short_description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Description"
+          },
+          "full_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Description"
+          },
+          "gst": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gst"
+          },
+          "margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin"
+          },
+          "product_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Name"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          }
+        },
+        "type": "object",
+        "title": "ProductUpdate"
       },
       "ProductVariantCreate": {
         "properties": {

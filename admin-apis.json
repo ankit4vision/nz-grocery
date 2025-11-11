@@ -1,406 +1,261 @@
 {
-  "description": "This file contains a comprehensive list of module and task-wise APIs that have been integrated in the admin panel. The APIs are organized by functional modules (Categories, Products, Inventory, Orders, Customers, Banners, FAQ, and Global Settings) with detailed information about endpoints, HTTP methods, and descriptions. For complete API documentation including request/response schemas, authentication details, and all available server endpoints, please refer to the swagger openapi.json file.",
-  "apis": [
+  "description": "This file contains a comprehensive list of module and task-wise APIs that have been integrated in the admin panel and customer panel. The APIs are organized by functional modules with detailed information about endpoints, HTTP methods, and descriptions. For complete API documentation including request/response schemas, authentication details, and all available server endpoints, please refer to the swagger openapi.json file.",  
+  "systems": [
     {
-      "module": "Categories",
-      "name": "Create Category",
-      "method": "POST",
-      "endpoint": "/categories/",
-      "description": "Create a new product category.",
-      "tags": ["categories", "create"]
+      "system": "Admin",
+      "modules": [
+        {
+          "module": "Categories",
+          "screens": [
+            {
+              "screen": "Categories",
+              "functionalities": [
+                { "name": "Create Category", "method": "POST", "endpoint": "/categories/" },
+                { "name": "List of Categories", "method": "GET", "endpoint": "/categories/with_counts" },
+                { "name": "Get Category Details", "method": "GET", "endpoint": "/categories/{category_id}" },
+                { "name": "Update Category", "method": "PUT", "endpoint": "/categories/{category_id}" },
+                { "name": "Delete Category", "method": "DELETE", "endpoint": "/categories/{category_id}" },
+                { "name": "List for Dropdown", "method": "GET", "endpoint": "/categories/options?only_active=true" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Product",
+          "screens": [
+            {
+              "screen": "Product Management",
+              "functionalities": [
+                { "name": "Create New Product - Step 1", "method": "POST", "endpoint": "/product-service/products/" },
+                { "name": "Update Product - Step 1", "method": "PUT", "endpoint": "/product-service/products/{product_id}" },
+                { "name": "Upload Images - Step 4", "method": "POST", "endpoint": "/product-service/products/{product_id}/images" },
+                { "name": "Update Existing Images - Step 4", "method": "PUT", "endpoint": "/product-service/products/{product_id}/images" },
+                { "name": "Get Product Images - Step 4", "method": "GET", "endpoint": "/product-service/products/{product_id}/images" },
+                { "name": "Get Full Product Details - Step 5", "method": "GET", "endpoint": "/product-service/products/{product_id}/full" },
+                { "name": "Create Product Variant - Step 3", "method": "POST", "endpoint": "/product-service/products/{product_id}/variants" },
+                { "name": "Update Product Variant - Step 3", "method": "PUT", "endpoint": "/product-service/products/variants/{variant_id}" },
+                { "name": "List Product Variants - Step 3", "method": "GET", "endpoint": "/product-service/products/{product_id}/variants" },
+                { "name": "Delete Product Variant - Step 3", "method": "DELETE", "endpoint": "/product-service/products/variants/{variant_id}" },
+                { "name": "List Bulk Pricing Discounts", "method": "GET", "endpoint": "/product-service/products/{product_id}/bulk-pricing" },
+                { "name": "Create Bulk Pricing Discount", "method": "POST", "endpoint": "/product-service/products/{product_id}/bulk-pricing" },
+                { "name": "Update Bulk Pricing Discount", "method": "PUT", "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}" },
+                { "name": "Delete Bulk Pricing Discount", "method": "DELETE", "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}" },
+                { "name": "Get All Attributes", "method": "GET", "endpoint": "/product-service/attributes/" },
+                { "name": "Assign Attributes to Product", "method": "POST", "endpoint": "/product-service/products/{product_id}/attributes/" },
+                { "name": "List Assigned Attributes", "method": "GET", "endpoint": "/product-service/products/{product_id}/attributes/" },
+                { "name": "Submit Product (Activate)", "method": "PUT", "endpoint": "/product-service/products/{product_id}/activate" }
+              ]
+            },
+            {
+              "screen": "Product List",
+              "functionalities": [
+                { "name": "List Product Variants with Stock", "method": "GET", "endpoint": "/product-service/products/variants/filter" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Inventory",
+          "screens": [
+            {
+              "screen": "Inventory Management",
+              "functionalities": [
+                { "name": "Display Summary Counts", "method": "GET", "endpoint": "pending" },
+                { "name": "List Product Variants with Stock", "method": "GET", "endpoint": "/product-service/products/variants/filter" },
+                { "name": "Update Stock Details", "method": "PUT", "endpoint": "/product-service/products/variants/stock/update" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Orders Management",
+          "screens": [
+            {
+              "screen": "Orders",
+              "functionalities": [
+                { "name": "List All Orders", "method": "GET", "endpoint": "/admin/orders/" },
+                { "name": "Get Order Details with Items", "method": "GET", "endpoint": "/admin/orders/:order_id/details" },
+                { "name": "Get Order Details", "method": "GET", "endpoint": "/admin/orders/:order_id" },
+                { "name": "Update Order Status", "method": "PUT", "endpoint": "/admin/orders/:order_id/status?order_status=pending" },
+                { "name": "Update Payment Status", "method": "PUT", "endpoint": "/admin/orders/:order_id/payment-status?payment_status=paid&stripe_payment_intent_id=919191919" },
+                { "name": "Get Order Stats", "method": "GET", "endpoint": "/admin/orders/stats" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Customer Management",
+          "screens": [
+            {
+              "screen": "Customers",
+              "functionalities": [
+                { "name": "List Customers", "method": "GET", "endpoint": "/admin/customers/" },
+                { "name": "Get Customer Details Full", "method": "GET", "endpoint": "/admin/customers/:user_id/details" },
+                { "name": "Get Customer Details", "method": "GET", "endpoint": "/admin/customers/:user_id" },
+                { "name": "Update Verification Status", "method": "PUT", "endpoint": "/admin/customers/:user_id" },
+                { "name": "Suspend Customer", "method": "PUT", "endpoint": "/admin/customers/:user_id/suspend" },
+                { "name": "Activate Customer", "method": "PUT", "endpoint": "/admin/customers/:user_id/activate" },
+                { "name": "Update Customer Status", "method": "PUT", "endpoint": "/admin/customers/:user_id/status?customer_status=active" },
+                { "name": "Get Customer Stats", "method": "GET", "endpoint": "/admin/customers/stats" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Banners Management",
+          "screens": [
+            {
+              "screen": "Banners",
+              "functionalities": [
+                { "name": "Create Banner", "method": "POST", "endpoint": "/banners/" },
+                { "name": "Fetch All Banners", "method": "GET", "endpoint": "/banners/" },
+                { "name": "Fetch Banner Details", "method": "GET", "endpoint": "/banners/{banner_id}" },
+                { "name": "Update Banner", "method": "PUT", "endpoint": "/banners/{banner_id}" },
+                { "name": "Delete Banner", "method": "DELETE", "endpoint": "/banners/{banner_id}" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "FAQ Management",
+          "screens": [
+            {
+              "screen": "FAQs",
+              "functionalities": [
+                { "name": "Create FAQ Category", "method": "POST", "endpoint": "/faq/categories/" },
+                { "name": "Fetch FAQ Categories", "method": "GET", "endpoint": "/faq/categories/" },
+                { "name": "Fetch FAQ Category Details", "method": "GET", "endpoint": "/faq/categories/{category_id}" },
+                { "name": "Update FAQ Category", "method": "PUT", "endpoint": "/faq/categories/{category_id}" },
+                { "name": "Delete FAQ Category", "method": "DELETE", "endpoint": "/faq/categories/{category_id}" },
+                { "name": "Create FAQ Entry", "method": "POST", "endpoint": "/faq/entries/" },
+                { "name": "Fetch All FAQs", "method": "GET", "endpoint": "/faq/entries/" },
+                { "name": "Fetch FAQ Details", "method": "GET", "endpoint": "/faq/entries/{faq_id}" },
+                { "name": "Update FAQ", "method": "PUT", "endpoint": "/faq/entries/{faq_id}" },
+                { "name": "Delete FAQ", "method": "DELETE", "endpoint": "/faq/entries/{faq_id}" },
+                { "name": "Fetch FAQ with Category", "method": "GET", "endpoint": "/faq/entries/{faq_id}/with-category" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Global Settings",
+          "screens": [
+            {
+              "screen": "Global Settings",
+              "functionalities": [
+                { "name": "Create Setting", "method": "POST", "endpoint": "/global-settings/" },
+                { "name": "Fetch All Settings", "method": "GET", "endpoint": "/global-settings/" },
+                { "name": "Fetch Setting Details", "method": "GET", "endpoint": "/global-settings/{setting_id}" },
+                { "name": "Update Setting", "method": "PUT", "endpoint": "/global-settings/{setting_id}" },
+                { "name": "Delete Setting", "method": "DELETE", "endpoint": "/global-settings/{setting_id}" }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
-      "module": "Categories",
-      "name": "List Categories",
-      "method": "GET",
-      "endpoint": "/categories/with_counts",
-      "description": "Get all categories with product count.",
-      "tags": ["categories", "list"]
-    },
-    {
-      "module": "Categories",
-      "name": "Get Category Details",
-      "method": "GET",
-      "endpoint": "/categories/{category_id}",
-      "description": "Fetch detailed information of a single category.",
-      "tags": ["categories", "details"]
-    },
-    {
-      "module": "Categories",
-      "name": "Update Category",
-      "method": "PUT",
-      "endpoint": "/categories/{category_id}",
-      "description": "Update an existing category by ID.",
-      "tags": ["categories", "update"]
-    },
-    {
-      "module": "Categories",
-      "name": "Delete Category",
-      "method": "DELETE",
-      "endpoint": "/categories/{category_id}",
-      "description": "Delete a category by ID.",
-      "tags": ["categories", "delete"]
-    },
-    {
-      "module": "Categories",
-      "name": "List Categories for Dropdown",
-      "method": "GET",
-      "endpoint": "/categories/options?only_active=true",
-      "description": "Get active categories for dropdown options.",
-      "tags": ["categories", "dropdown"]
-    },
-    {
-      "module": "Product",
-      "step": 1,
-      "name": "Create New Product",
-      "method": "POST",
-      "endpoint": "/product-service/products/",
-      "description": "Create a new product with basic details.",
-      "tags": ["product", "create", "step1"]
-    },
-    {
-      "module": "Product",
-      "step": 2,
-      "name": "Get All Attributes",
-      "method": "GET",
-      "endpoint": "/product-service/attributes/",
-      "description": "Retrieve list of all available product attributes.",
-      "tags": ["product", "attributes", "list", "step2"]
-    },
-    {
-      "module": "Product",
-      "step": 2,
-      "name": "Assign Attributes to Product",
-      "method": "POST",
-      "endpoint": "/product-service/products/{product_id}/attributes/",
-      "description": "Assign selected attributes to a specific product.",
-      "tags": ["product", "attributes", "assign", "step2"]
-    },
-    {
-      "module": "Product",
-      "step": 2,
-      "name": "List Assigned Attributes",
-      "method": "GET",
-      "endpoint": "/product-service/products/{product_id}/attributes/",
-      "description": "List attributes currently assigned to a product.",
-      "tags": ["product", "attributes", "list", "step2"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Create New Variant",
-      "method": "POST",
-      "endpoint": "/product-service/products/{product_id}/variants",
-      "description": "Add a new variant for a product.",
-      "tags": ["product", "variant", "create", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Update Existing Variant",
-      "method": "PUT",
-      "endpoint": "/product-service/products/variants/{variant_id}",
-      "description": "Update variant details by ID.",
-      "tags": ["product", "variant", "update", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "List All Variants",
-      "method": "GET",
-      "endpoint": "/product-service/products/{product_id}/variants",
-      "description": "List all variants of a specific product.",
-      "tags": ["product", "variant", "list", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Delete Variant",
-      "method": "DELETE",
-      "endpoint": "/product-service/products/variants/{variant_id}",
-      "description": "Delete an existing variant by ID.",
-      "tags": ["product", "variant", "delete", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Get Bulk Pricing List",
-      "method": "GET",
-      "endpoint": "/product-service/products/{product_id}/bulk-pricing",
-      "description": "Retrieve all bulk discount prices for a product.",
-      "tags": ["product", "bulk-pricing", "list", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Create Bulk Pricing",
-      "method": "POST",
-      "endpoint": "/product-service/products/{product_id}/bulk-pricing",
-      "description": "Add new bulk pricing rule for a product.",
-      "tags": ["product", "bulk-pricing", "create", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Update Bulk Pricing",
-      "method": "PUT",
-      "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}",
-      "description": "Update an existing bulk pricing rule.",
-      "tags": ["product", "bulk-pricing", "update", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 3,
-      "name": "Delete Bulk Pricing",
-      "method": "DELETE",
-      "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}",
-      "description": "Delete a bulk pricing entry.",
-      "tags": ["product", "bulk-pricing", "delete", "step3"]
-    },
-    {
-      "module": "Product",
-      "step": 4,
-      "name": "Upload Product Images",
-      "method": "POST",
-      "endpoint": "/product-service/products/{product_id}/images",
-      "description": "Upload images for a product.",
-      "tags": ["product", "images", "upload", "step4"]
-    },
-    {
-      "module": "Product",
-      "step": 4,
-      "name": "Update Product Images",
-      "method": "PUT",
-      "endpoint": "/product-service/products/{product_id}/images",
-      "description": "Update existing images for a product.",
-      "tags": ["product", "images", "update", "step4"]
-    },
-    {
-      "module": "Product",
-      "step": 4,
-      "name": "Get All Product Images",
-      "method": "GET",
-      "endpoint": "/product-service/products/{product_id}/images",
-      "description": "Retrieve all uploaded images for a product.",
-      "tags": ["product", "images", "list", "step4"]
-    },
-    {
-      "module": "Product",
-      "step": 5,
-      "name": "Get Full Product Details",
-      "method": "GET",
-      "endpoint": "/product-service/products/{product_id}/full",
-      "description": "Fetch full product data for review.",
-      "tags": ["product", "review", "details", "step5"]
-    },
-    {
-      "module": "Product List",
-      "name": "List Product Variants with Stock",
-      "method": "GET",
-      "endpoint": "/product-service/products/variants/filter",
-      "description": "Get list of all product variants including stock details.",
-      "tags": ["product", "list", "stock"]
-    },
-    {
-      "module": "Inventory",
-      "name": "Display Inventory Counts",
-      "method": "GET",
-      "endpoint": "pending",
-      "description": "Display different counts on top (e.g. total stock, low stock).",
-      "tags": ["inventory", "counts"]
-    },
-    {
-      "module": "Inventory",
-      "name": "List Product Variants with Stock",
-      "method": "GET",
-      "endpoint": "/product-service/products/variants/filter",
-      "description": "Get stock details for all product variants.",
-      "tags": ["inventory", "stock", "list"]
-    },
-    {
-      "module": "Inventory",
-      "name": "Update Stock",
-      "method": "PUT",
-      "endpoint": "/product-service/products/variants/stock/update",
-      "description": "Update stock quantities for a variant.",
-      "tags": ["inventory", "stock", "update"]
-    },
-    {
-      "module": "Orders Management",
-      "name": "List All Orders",
-      "method": "GET",
-      "endpoint": "/admin/orders/",
-      "description": "Get all orders with filters.",
-      "tags": ["orders", "list"]
-    },
-    {
-      "module": "Orders Management",
-      "name": "Get Order Details with Items",
-      "method": "GET",
-      "endpoint": "/admin/orders/:order_id/details",
-      "description": "Fetch full order details including items.",
-      "tags": ["orders", "details"]
-    },
-    {
-      "module": "Orders Management",
-      "name": "Get Order Details",
-      "method": "GET",
-      "endpoint": "/admin/orders/:order_id",
-      "description": "Get order summary by order ID.",
-      "tags": ["orders", "details"]
-    },
-    {
-      "module": "Orders Management",
-      "name": "Update Order Status",
-      "method": "PUT",
-      "endpoint": "/admin/orders/:order_id/status?order_status=pending",
-      "description": "Update order status.",
-      "tags": ["orders", "status", "update"]
-    },
-    {
-      "module": "Orders Management",
-      "name": "Update Payment Status",
-      "method": "PUT",
-      "endpoint": "/admin/orders/:order_id/payment-status?payment_status=paid&stripe_payment_intent_id=919191919",
-      "description": "Update payment status and stripe payment intent.",
-      "tags": ["orders", "payment", "update"]
-    },
-    {
-      "module": "Orders Management",
-      "name": "Get Order Stats",
-      "method": "GET",
-      "endpoint": "/admin/orders/stats",
-      "description": "Fetch overall order statistics.",
-      "tags": ["orders", "stats"]
-    },
-    {
-      "module": "Customer Management",
-      "name": "List Customers",
-      "method": "GET",
-      "endpoint": "/admin/customers/",
-      "description": "Get list of customers with filters.",
-      "tags": ["customers", "list"]
-    },
-    {
-      "module": "Customer Management",
-      "name": "Get Full Customer Details",
-      "method": "GET",
-      "endpoint": "/admin/customers/:user_id/details",
-      "description": "Get detailed customer information.",
-      "tags": ["customers", "details"]
-    },
-    {
-      "module": "Customer Management",
-      "name": "Suspend Customer",
-      "method": "PUT",
-      "endpoint": "/admin/customers/:user_id/suspend",
-      "description": "Suspend a customer account.",
-      "tags": ["customers", "suspend"]
-    },
-    {
-      "module": "Customer Management",
-      "name": "Activate Customer",
-      "method": "PUT",
-      "endpoint": "/admin/customers/:user_id/activate",
-      "description": "Activate a suspended customer.",
-      "tags": ["customers", "activate"]
-    },
-    {
-      "module": "Customer Management",
-      "name": "Get Customer Stats",
-      "method": "GET",
-      "endpoint": "/admin/customers/stats",
-      "description": "Fetch overall customer statistics.",
-      "tags": ["customers", "stats"]
-    },
-    {
-      "module": "Banners Management",
-      "name": "Create Banner",
-      "method": "POST",
-      "endpoint": "/banners/",
-      "description": "Create a new banner entry.",
-      "tags": ["banners", "create"]
-    },
-    {
-      "module": "Banners Management",
-      "name": "List Banners",
-      "method": "GET",
-      "endpoint": "/banners/",
-      "description": "Fetch all banners.",
-      "tags": ["banners", "list"]
-    },
-    {
-      "module": "Banners Management",
-      "name": "Get Banner Details",
-      "method": "GET",
-      "endpoint": "/banners/{banner_id}",
-      "description": "Fetch banner details by ID.",
-      "tags": ["banners", "details"]
-    },
-    {
-      "module": "Banners Management",
-      "name": "Update Banner",
-      "method": "PUT",
-      "endpoint": "/banners/{banner_id}",
-      "description": "Update banner details.",
-      "tags": ["banners", "update"]
-    },
-    {
-      "module": "Banners Management",
-      "name": "Delete Banner",
-      "method": "DELETE",
-      "endpoint": "/banners/{banner_id}",
-      "description": "Delete a banner.",
-      "tags": ["banners", "delete"]
-    },
-    {
-      "module": "FAQ Management",
-      "name": "Create FAQ Category",
-      "method": "POST",
-      "endpoint": "/faq/categories/",
-      "description": "Create a new FAQ category.",
-      "tags": ["faq", "category", "create"]
-    },
-    {
-      "module": "FAQ Management",
-      "name": "List FAQ Categories",
-      "method": "GET",
-      "endpoint": "/faq/categories/",
-      "description": "Fetch all FAQ categories.",
-      "tags": ["faq", "category", "list"]
-    },
-    {
-      "module": "FAQ Management",
-      "name": "Create FAQ Entry",
-      "method": "POST",
-      "endpoint": "/faq/entries/",
-      "description": "Create a new FAQ entry.",
-      "tags": ["faq", "create"]
-    },
-    {
-      "module": "FAQ Management",
-      "name": "List FAQs",
-      "method": "GET",
-      "endpoint": "/faq/entries/",
-      "description": "List all FAQs with optional category filter.",
-      "tags": ["faq", "list"]
-    },
-    {
-      "module": "Global Settings",
-      "name": "Create Setting",
-      "method": "POST",
-      "endpoint": "/global-settings/",
-      "description": "Create a new global setting.",
-      "tags": ["settings", "create"]
-    },
-    {
-      "module": "Global Settings",
-      "name": "List Settings",
-      "method": "GET",
-      "endpoint": "/global-settings/",
-      "description": "Fetch all global settings.",
-      "tags": ["settings", "list"]
+      "system": "Customer",
+      "modules": [
+        {
+          "module": "Products & Categories",
+          "screens": [
+            {
+              "screen": "Browse Products",
+              "functionalities": [
+                { "name": "Fetch All Categories", "method": "GET", "endpoint": "/product-service/categories/" },
+                { "name": "Fetch Products by Category", "method": "GET", "endpoint": "/product-service/products/variants/filter" },
+                { "name": "Fetch Product Details", "method": "GET", "endpoint": "/product-service/products/{product_id}/full" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Shopping Cart",
+          "screens": [
+            {
+              "screen": "Cart Operations",
+              "functionalities": [
+                { "name": "Get Active Cart", "method": "GET", "endpoint": "/shopping-cart/user/{user_id}/active" },
+                { "name": "Create Active Cart", "method": "POST", "endpoint": "/shopping-cart/" },
+                { "name": "Add Item to Cart", "method": "POST", "endpoint": "/shopping-cart/items/" },
+                { "name": "Get Cart Items with Pricing", "method": "GET", "endpoint": "/shopping-cart/{cart_id}/items/with-pricing" },
+                { "name": "Update Cart Item Quantity", "method": "PUT", "endpoint": "/shopping-cart/items/{cart_item_id}" },
+                { "name": "Delete Cart Item", "method": "DELETE", "endpoint": "/shopping-cart/items/{cart_item_id}" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Authentication",
+          "screens": [
+            {
+              "screen": "User Authentication",
+              "functionalities": [
+                { "name": "Register", "method": "POST", "endpoint": "/auth/register" },
+                { "name": "Login", "method": "POST", "endpoint": "/auth/login" },
+                { "name": "Get Current User", "method": "GET", "endpoint": "/auth/me" },
+                { "name": "Change Password", "method": "PUT", "endpoint": "/users/change-password" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "User Profile & Addresses",
+          "screens": [
+            {
+              "screen": "Profile",
+              "functionalities": [
+                { "name": "Update Profile", "method": "PUT", "endpoint": "/users/profile" },
+                { "name": "Fetch Profile", "method": "GET", "endpoint": "/users/profile" }
+              ]
+            },
+            {
+              "screen": "Addresses",
+              "functionalities": [
+                { "name": "Add Address", "method": "POST", "endpoint": "/users/addresses" },
+                { "name": "Update Address", "method": "PUT", "endpoint": "/users/addresses/<ID>" },
+                { "name": "Delete Address", "method": "DELETE", "endpoint": "/users/addresses/<ID>" },
+                { "name": "Get Address Details", "method": "GET", "endpoint": "/users/addresses/<ID>" },
+                { "name": "Get All Active Addresses", "method": "GET", "endpoint": "/users/addresses?only_active=true" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Wishlist",
+          "screens": [
+            {
+              "screen": "Wishlist Management",
+              "functionalities": [
+                { "name": "Get Default Wishlist", "method": "GET", "endpoint": "/wishlists/default" },
+                { "name": "Get Wishlist Details", "method": "GET", "endpoint": "/wishlists/{wishlist_id}/details" },
+                { "name": "Get Wishlist Items", "method": "GET", "endpoint": "/wishlists/{wishlist_id}/items" },
+                { "name": "Update Wishlist Name", "method": "PUT", "endpoint": "/wishlists/{wishlist_id}" },
+                { "name": "Create New Wishlist", "method": "POST", "endpoint": "/wishlists/" },
+                { "name": "Add Item to Wishlist", "method": "POST", "endpoint": "/wishlists/items" },
+                { "name": "Remove Item from Wishlist", "method": "DELETE", "endpoint": "/wishlists/items/{item_id}" }
+              ]
+            }
+          ]
+        },
+        {
+          "module": "Orders",
+          "screens": [
+            {
+              "screen": "Customer Orders",
+              "functionalities": [
+                { "name": "Create Order", "method": "POST", "endpoint": "/orders/" },
+                { "name": "Get Order List", "method": "GET", "endpoint": "/orders/" },
+                { "name": "Get Order Details with Items", "method": "GET", "endpoint": "/orders/:order_id/details" },
+                { "name": "Get Order Details", "method": "GET", "endpoint": "/orders/:order_id" },
+                { "name": "Update Order", "method": "PUT", "endpoint": "/orders/:order_id" },
+                { "name": "Cancel Order", "method": "PUT", "endpoint": "/orders/:order_id/cancel?cancellation_reason=string" }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
-
