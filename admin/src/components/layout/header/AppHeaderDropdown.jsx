@@ -18,8 +18,6 @@ import CIcon from '@coreui/icons-react'
 import { useToast } from '../../common/ToastProvider'
 import { useAuth } from '../../../context/AuthContext'
 
-import avatar8 from '../../../assets/images/avatars/8.jpg'
-
 const AppHeaderDropdown = () => {
   const navigate = useNavigate()
   const { success } = useToast()
@@ -37,22 +35,52 @@ const AppHeaderDropdown = () => {
     }
   }
 
+  // Get user avatar or generate initials
+  const getAvatarSrc = () => {
+    if (user?.avatar) {
+      return user.avatar
+    }
+    // Generate initials avatar if no profile image
+    if (user?.firstName && user?.lastName) {
+      const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+      return `https://ui-avatars.com/api/?name=${initials}&background=22c55e&color=ffffff&size=40`
+    }
+    return `https://ui-avatars.com/api/?name=User&background=22c55e&color=ffffff&size=40`
+  }
+
+  // Get user initials for alt text
+  const getUserInitials = () => {
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+    }
+    return 'U'
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar 
+          src={getAvatarSrc()} 
+          size="md"
+          alt={user ? `${user.firstName} ${user.lastName}` : 'User'}
+          onError={(e) => {
+            // Fallback to initials if image fails to load
+            const initials = getUserInitials()
+            e.target.src = `https://ui-avatars.com/api/?name=${initials}&background=22c55e&color=ffffff&size=40`
+          }}
+        />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
           {user ? `${user.firstName} ${user.lastName}` : 'Admin User'}
         </CDropdownHeader>
         
-        <CDropdownItem disabled style={{ cursor: 'not-allowed', opacity: 0.5 }}>
+        <CDropdownItem onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <CIcon icon={cilUser} className="me-2" />
           My Profile
         </CDropdownItem>
         
-        <CDropdownItem disabled style={{ cursor: 'not-allowed', opacity: 0.5 }}>
+        <CDropdownItem onClick={() => navigate('/settings')} style={{ cursor: 'pointer' }}>
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>

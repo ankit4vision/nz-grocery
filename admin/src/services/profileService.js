@@ -1,142 +1,183 @@
 // Profile Management Service
-import apiService from '../api'
-import { API_ENDPOINTS } from '../constants/api'
-import profileMockData from '../mock/profile.json'
-
-// Mock delay function
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+import apiClient from '../config/apiClient'
+import { handleApiError } from '../utils/errorHandler'
 
 class ProfileService {
+  /**
+   * Transform API response (snake_case) to frontend format (camelCase)
+   */
+  transformApiToFrontend(apiData) {
+    if (!apiData) return null
+    
+    return {
+      userId: apiData.user_id,
+      email: apiData.email,
+      phone: apiData.phone || '',
+      firstName: apiData.first_name || '',
+      lastName: apiData.last_name || '',
+      userType: apiData.user_type,
+      isActive: apiData.is_active,
+      isVerified: apiData.is_verified,
+      emailVerified: apiData.email_verified,
+      phoneVerified: apiData.phone_verified,
+      avatar: apiData.profile_image_url || '',
+      dateOfBirth: apiData.date_of_birth || '',
+      gender: apiData.gender || '',
+      createdAt: apiData.created_at,
+      updatedAt: apiData.updated_at,
+      lastLogin: apiData.last_login,
+      // Address fields (if available in API response)
+      address: apiData.address || '',
+      city: apiData.city || '',
+      state: apiData.state || '',
+      zipCode: apiData.zip_code || apiData.postal_code || '',
+      country: apiData.country || '',
+      bio: apiData.bio || ''
+    }
+  }
+
+  /**
+   * Transform frontend format (camelCase) to API request format (snake_case)
+   */
+  transformFrontendToApi(frontendData) {
+    const apiData = {}
+    
+    // Only include fields that are provided (API accepts optional fields)
+    if (frontendData.firstName !== undefined) {
+      apiData.first_name = frontendData.firstName
+    }
+    if (frontendData.lastName !== undefined) {
+      apiData.last_name = frontendData.lastName
+    }
+    if (frontendData.phone !== undefined) {
+      apiData.phone = frontendData.phone || null
+    }
+    if (frontendData.dateOfBirth !== undefined) {
+      apiData.date_of_birth = frontendData.dateOfBirth || null
+    }
+    if (frontendData.gender !== undefined) {
+      apiData.gender = frontendData.gender || null
+    }
+    
+    return apiData
+  }
+
   // Get current user profile
   async getProfile() {
     try {
-      // For development, return mock data
+      const response = await apiClient.get('/users/profile')
+      const transformedData = this.transformApiToFrontend(response.data)
+      
       return {
         success: true,
-        data: profileMockData.profile,
+        data: transformedData,
         message: 'Profile fetched successfully'
       }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.get(API_ENDPOINTS.USERS.GET_PROFILE)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'Profile fetched successfully'
-      // }
     } catch (error) {
-      console.error('Error fetching profile:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to fetch profile'
-      }
+      return handleApiError(error)
     }
   }
 
   // Update current user profile
   async updateProfile(profileData) {
     try {
-      // For development, simulate successful update
-      const updatedProfile = {
-        ...profileMockData.profile,
-        ...profileData,
-        updatedAt: new Date().toISOString()
-      }
+      // Transform frontend data to API format
+      const apiData = this.transformFrontendToApi(profileData)
+      
+      const response = await apiClient.put('/users/profile', apiData)
+      const transformedData = this.transformApiToFrontend(response.data)
       
       return {
         success: true,
-        data: updatedProfile,
+        data: transformedData,
         message: 'Profile updated successfully'
       }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.put(API_ENDPOINTS.USERS.UPDATE_PROFILE, profileData)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'Profile updated successfully'
-      // }
     } catch (error) {
-      console.error('Error updating profile:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to update profile'
-      }
+      return handleApiError(error)
     }
   }
 
   // Change user password
   async changePassword(passwordData) {
     try {
-      // For development, simulate successful password change
+      // API expects: { current_password, new_password }
+      const apiData = {
+        current_password: passwordData.currentPassword,
+        new_password: passwordData.newPassword
+      }
+      
+      await apiClient.put('/users/change-password', apiData)
+      
       return {
         success: true,
         data: { message: 'Password changed successfully' },
         message: 'Password changed successfully'
       }
-      
-      // Uncomment for real API integration
-      // const response = await apiService.put(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, passwordData)
-      // return {
-      //   success: true,
-      //   data: response.data,
-      //   message: 'Password changed successfully'
-      // }
     } catch (error) {
-      console.error('Error changing password:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to change password'
-      }
+      return handleApiError(error)
     }
   }
 
   // Upload profile avatar
   async uploadAvatar(file) {
     try {
+      // Handle base64 string or File object
+      let fileToUpload = file
+      
+      // If it's a base64 string, convert to File
+      if (typeof file === 'string' && file.startsWith('data:image/')) {
+        const base64Data = file.split(',')[1]
+        const mimeType = file.match(/data:([^;]+);/)?.[1] || 'image/jpeg'
+        const byteCharacters = atob(base64Data)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        const blob = new Blob([byteArray], { type: mimeType })
+        fileToUpload = new File([blob], 'profile-image', { type: mimeType })
+      }
+      
       const formData = new FormData()
-      formData.append('avatar', file)
+      formData.append('image_file', fileToUpload)
 
-      const response = await apiService.post(API_ENDPOINTS.USERS.UPLOAD_AVATAR, formData, {
+      const response = await apiClient.put('/users/profile-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
       
+      const transformedData = this.transformApiToFrontend(response.data)
+      
       return {
         success: true,
-        data: response.data,
+        data: transformedData,
         message: 'Avatar uploaded successfully'
       }
     } catch (error) {
-      console.error('Error uploading avatar:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to upload avatar'
-      }
+      return handleApiError(error)
     }
   }
 
-  // Delete profile avatar
+  // Delete profile avatar (by uploading empty/null)
   async deleteAvatar() {
     try {
-      const response = await apiService.delete(API_ENDPOINTS.USERS.UPLOAD_AVATAR)
+      // API doesn't have a delete endpoint, so we can update profile with null image
+      // Or we can use the profile-image endpoint with empty file
+      // For now, we'll update profile to remove image_url
+      const response = await apiClient.put('/users/profile', {
+        profile_image_url: null
+      })
+      
+      const transformedData = this.transformApiToFrontend(response.data)
+      
       return {
         success: true,
-        data: response.data,
+        data: transformedData,
         message: 'Avatar deleted successfully'
       }
     } catch (error) {
-      console.error('Error deleting avatar:', error)
-      return {
-        success: false,
-        data: null,
-        message: error.response?.data?.message || 'Failed to delete avatar'
-      }
+      return handleApiError(error)
     }
   }
 

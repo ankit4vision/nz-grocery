@@ -207,7 +207,7 @@ const Login = () => {
               </div>
               <div className="demo-credential-item">
                 <span className="demo-credential-label">Admin:</span>
-                <code className="demo-credential-value">admin@example.com / admin123</code>
+                <code className="demo-credential-value">vrajeshjayswal@gmail.com / Admin@1029</code>
               </div>
             </div>
 
