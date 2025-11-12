@@ -6,6 +6,8 @@ import { faLock, faCheckCircle, faArrowLeft } from '@fortawesome/free-solid-svg-
 import { useToast } from '../../components'
 import { Button } from '../../components'
 import { ThemeToggle } from '../../components'
+import logoImg from '../../assets/logo/logo-transprant.png'
+import authBgImg from '../../assets/images/auth-bg.jpg'
 import '../../styles/auth.css'
 
 const ResetPassword = () => {
@@ -86,7 +88,10 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="auth-page">
+    <div className="auth-page" style={{ backgroundImage: `url(${authBgImg})` }}>
+      {/* Overlay for better readability */}
+      <div className="auth-page-overlay"></div>
+      
       {/* Theme Toggle - Top Right */}
       <div className="position-absolute top-0 end-0 p-3" style={{ zIndex: 1000 }}>
         <ThemeToggle />
@@ -97,12 +102,12 @@ const ResetPassword = () => {
           <Col md={6} lg={5} xl={4}>
             {/* Logo/Brand Section */}
             <div className="text-center mb-4">
-              <div className="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" 
-                   style={{ width: '80px', height: '80px' }}>
-                <FontAwesomeIcon icon={faLock} size="2x" className="text-primary" />
+              <div className="d-inline-flex align-items-center justify-content-center mb-3 p-3" 
+                   style={{ boxShadow: '0 4px 20px rgba(34, 197, 94, 0.15)' }}>
+                <img src={logoImg} alt="Farm2Fridge Logo" style={{ width: '120px', height: 'auto' }} />
               </div>
-              <h2 className="text-dark fw-bold mb-1">BaseAdmin</h2>
-              <p className="text-muted mb-0">Secure Admin Dashboard</p>
+              <h2 className="text-success fw-bold mb-1">Farm2Fridge Admin</h2>
+              <p className="text-muted mb-0">Fresh Farm to Table Management</p>
             </div>
 
             <div className="auth-card">
@@ -167,7 +172,7 @@ const ResetPassword = () => {
                 </button>
 
                 <div className="text-center">
-                  <Link to="/login" className="text-decoration-none text-primary fw-medium">
+                  <Link to="/login" className="text-decoration-none text-success fw-medium">
                     <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
                     Back to Login
                   </Link>
@@ -178,7 +183,7 @@ const ResetPassword = () => {
             {/* Footer */}
             <div className="text-center mt-4">
               <p className="text-muted small mb-0">
-                © 2024 BaseAdmin. All rights reserved.
+                © 2024 Farm2Fridge Admin. All rights reserved.
               </p>
             </div>
           </Col>

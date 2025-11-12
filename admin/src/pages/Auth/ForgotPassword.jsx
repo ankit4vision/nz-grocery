@@ -7,6 +7,7 @@ import { useToast } from '../../components'
 import { Button } from '../../components'
 import { ThemeToggle } from '../../components'
 import logoImg from '../../assets/logo/logo-transprant.png'
+import authBgImg from '../../assets/images/auth-bg.jpg'
 import '../../styles/auth.css'
 
 const ForgotPassword = () => {
@@ -72,7 +73,10 @@ const ForgotPassword = () => {
 
   if (emailSent) {
     return (
-      <div className="auth-page">
+      <div className="auth-page" style={{ backgroundImage: `url(${authBgImg})` }}>
+        {/* Overlay for better readability */}
+        <div className="auth-page-overlay"></div>
+        
         {/* Theme Toggle - Top Right */}
         <div className="position-absolute top-0 end-0 p-3" style={{ zIndex: 1000 }}>
           <ThemeToggle />
@@ -147,7 +151,10 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="auth-page">
+    <div className="auth-page" style={{ backgroundImage: `url(${authBgImg})` }}>
+      {/* Overlay for better readability */}
+      <div className="auth-page-overlay"></div>
+      
       {/* Theme Toggle - Top Right */}
       <div className="position-absolute top-0 end-0 p-3" style={{ zIndex: 1000 }}>
         <ThemeToggle />
