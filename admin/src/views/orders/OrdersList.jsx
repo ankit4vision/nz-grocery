@@ -6,10 +6,7 @@ import {
   faSearch, 
   faSync,
   faEye,
-  faCheck,
   faTruck,
-  faPrint,
-  faImage,
   faClock,
   faDollarSign
 } from '@fortawesome/free-solid-svg-icons'
@@ -41,8 +38,11 @@ const OrdersList = () => {
   // Pagination
   const [pagination, setPagination] = useState({
     currentPage: 1,
-    pageSize: 10,
-    totalItems: 0
+    pageSize: 50, // Default limit from API
+    totalItems: 0,
+    totalPages: 1,
+    hasNext: false,
+    hasPrev: false
   })
 
   // Initial load
@@ -66,7 +66,11 @@ const OrdersList = () => {
         setOrders(response.data.orders || [])
         setPagination(prev => ({
           ...prev,
-          totalItems: response.data.total || 0
+          currentPage: response.data.page || prev.currentPage,
+          totalItems: response.data.totalCount || response.data.total || 0,
+          totalPages: response.data.totalPages || 1,
+          hasNext: response.data.hasNext || false,
+          hasPrev: response.data.hasPrev || false
         }))
       } else {
         setError(response.message || 'Failed to load orders')
@@ -161,41 +165,6 @@ const OrdersList = () => {
     fetchStats()
   }
 
-  const handleQuickAction = async (orderId, action) => {
-    try {
-      let response
-      switch (action) {
-        case 'process':
-          response = await orderService.updateOrderStatus(orderId, 'processing')
-          if (response.success) {
-            success('Order status updated to processing')
-          } else {
-            showError(response.message || 'Failed to update order status')
-          }
-          break
-        case 'ship':
-          response = await orderService.updateOrderStatus(orderId, 'out_for_delivery')
-          if (response.success) {
-            success('Order status updated to out for delivery')
-          } else {
-            showError(response.message || 'Failed to update order status')
-          }
-          break
-        case 'print':
-          // Handle print action
-          break
-        default:
-          break
-      }
-      if (response && response.success) {
-        handleOrderUpdate()
-      }
-    } catch (err) {
-      showError('An error occurred while performing the action')
-      console.error('Error performing quick action:', err)
-    }
-  }
-
   const getStatusColor = (status) => {
     const statusMap = {
       pending: 'warning',
@@ -224,13 +193,17 @@ const OrdersList = () => {
   const tableColumns = [
     {
       key: 'orderNumber',
-      header: 'Order ID',
+      header: 'Order Date & ID',
       render: (value, order) => {
         if (!order) return <div>No order data</div>
+        const orderDate = order.orderDate ? new Date(order.orderDate) : new Date()
         return (
           <div>
-            <div className="fw-bold">{order.orderNumber || 'N/A'}</div>
-            <small className="text-muted">{order.shippingMethod || 'Standard'}</small>
+            <div className="fw-bold">{order.orderNumber || `#${order.orderId || 'N/A'}`}</div>
+            <div className="text-muted" style={{ fontSize: '0.875rem' }}>
+              {formatDate(orderDate, 'MMM dd, yyyy')} at {formatDate(orderDate, 'h:mm a')}
+            </div>
+            <small className="text-muted">{order.orderType || 'Standard'}</small>
           </div>
         )
       }
@@ -240,60 +213,34 @@ const OrdersList = () => {
       header: 'Customer',
       render: (value, order) => {
         if (!order) return <div>No customer data</div>
+        const fullName = `${order.customer?.firstName || ''} ${order.customer?.lastName || ''}`.trim() || 'Unknown Customer'
         return (
           <div>
-            <div className="fw-bold">
-              {order.customer?.firstName || 'Unknown'} {order.customer?.lastName || 'Customer'}
-            </div>
+            <div className="fw-bold">{fullName}</div>
             <small className="text-muted">{order.customer?.email || 'No email'}</small>
-          </div>
-        )
-      }
-    },
-    {
-      key: 'items',
-      header: 'Items',
-      render: (value, order) => {
-        if (!order) return <div>No items data</div>
-        const firstItem = order.items?.[0]
-        return (
-          <div className="d-flex align-items-center">
-            {firstItem?.productImage ? (
-              <img 
-                src={firstItem.productImage} 
-                alt={firstItem?.productName || 'Product'}
-                className="rounded me-2"
-                style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-              />
-            ) : (
-              <div 
-                className="d-flex align-items-center justify-content-center border rounded me-2"
-                style={{ 
-                  width: '40px', 
-                  height: '40px', 
-                  backgroundColor: '#f8f9fa'
-                }}
-              >
-                <FontAwesomeIcon icon={faImage} className="text-muted" />
-              </div>
+            {order.customer?.phone && (
+              <div className="text-muted" style={{ fontSize: '0.75rem' }}>{order.customer.phone}</div>
             )}
-            <div>
-              <div className="fw-bold">{firstItem?.productName || 'Unknown Product'}</div>
-              <small className="text-muted">Qty: {firstItem?.quantity || 0}</small>
-            </div>
           </div>
         )
       }
     },
     {
-      key: 'total',
+      key: 'amount',
       header: 'Amount',
       render: (value, order) => {
         if (!order) return <div>No amount data</div>
         return (
           <div>
             <div className="fw-bold">{formatCurrency(order.total || 0)}</div>
-            <small className="text-success">Commission: {formatCurrency(order.commission || 0)}</small>
+            <div className="text-muted" style={{ fontSize: '0.75rem' }}>
+              Subtotal: {formatCurrency(order.subtotal || 0)}
+            </div>
+            {order.discount > 0 && (
+              <div className="text-success" style={{ fontSize: '0.75rem' }}>
+                Discount: {formatCurrency(order.discount || 0)}
+              </div>
+            )}
           </div>
         )
       }
@@ -303,9 +250,10 @@ const OrdersList = () => {
       header: 'Payment',
       render: (value, order) => {
         if (!order) return <div>No payment data</div>
+        const paymentStatus = order.paymentStatus || 'pending'
         return (
-          <Badge bg={getPaymentStatusColor(order.paymentStatus || 'pending')}>
-            {(order.paymentStatus || 'pending').charAt(0).toUpperCase() + (order.paymentStatus || 'pending').slice(1)}
+          <Badge bg={getPaymentStatusColor(paymentStatus)}>
+            {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1).replace(/_/g, ' ')}
           </Badge>
         )
       }
@@ -315,23 +263,11 @@ const OrdersList = () => {
       header: 'Status',
       render: (value, order) => {
         if (!order) return <div>No status data</div>
+        const status = order.status || 'pending'
         return (
-          <Badge bg={getStatusColor(order.status || 'pending')}>
-            {(order.status || 'pending').charAt(0).toUpperCase() + (order.status || 'pending').slice(1)}
+          <Badge bg={getStatusColor(status)}>
+            {status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')}
           </Badge>
-        )
-      }
-    },
-    {
-      key: 'orderDate',
-      header: 'Order Date',
-      render: (value, order) => {
-        if (!order) return <div>No date data</div>
-        return (
-          <div>
-            <div>{formatDate(order.orderDate || new Date(), 'MMM dd, yyyy')}</div>
-            <small className="text-muted">{formatDate(order.orderDate || new Date(), 'h:mm a')}</small>
-          </div>
         )
       }
     },
@@ -342,44 +278,15 @@ const OrdersList = () => {
         if (!order) return <div>No actions available</div>
         
         return (
-          <div className="d-flex gap-1">
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={() => handleViewDetails(order)}
-              title="View Details"
-            >
-              <FontAwesomeIcon icon={faEye} />
-            </Button>
-            {(order.status || 'pending') === 'pending' && (
-              <Button
-                variant="outline-success"
-                size="sm"
-                onClick={() => handleQuickAction(order.id, 'process')}
-                title="Process Order"
-              >
-                <FontAwesomeIcon icon={faCheck} />
-              </Button>
-            )}
-            {((order.status || 'pending') === 'processing' || (order.status || 'pending') === 'confirmed') && (
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => handleQuickAction(order.id, 'ship')}
-                title="Ship Order"
-              >
-                <FontAwesomeIcon icon={faTruck} />
-              </Button>
-            )}
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => handleQuickAction(order.id, 'print')}
-              title="Print"
-            >
-              <FontAwesomeIcon icon={faPrint} />
-            </Button>
-          </div>
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={() => handleViewDetails(order)}
+            title="View Details"
+          >
+            <FontAwesomeIcon icon={faEye} className="me-1" />
+            View Details
+          </Button>
         )
       }
     }
@@ -462,24 +369,27 @@ const OrdersList = () => {
                   <div className="mb-3">
                     <Form.Label className="fw-semibold">Order ID</Form.Label>
                     <Form.Control
-                      type="text"
-                      placeholder="Search by ID"
+                      type="number"
+                      placeholder="Order ID"
                       value={filters.search}
                       onChange={(e) => handleFilterChange('search', e.target.value)}
                       className="border-2"
+                      min="1"
                     />
+                    <Form.Text className="text-muted">Enter order ID number</Form.Text>
                   </div>
                 </Col>
                 <Col md={2}>
                   <div className="mb-3">
-                    <Form.Label className="fw-semibold">Customer</Form.Label>
+                    <Form.Label className="fw-semibold">Customer Name</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Customer name"
+                      placeholder="First or Last name"
                       value={filters.customer}
                       onChange={(e) => handleFilterChange('customer', e.target.value)}
                       className="border-2"
                     />
+                    <Form.Text className="text-muted">Search by customer name</Form.Text>
                   </div>
                 </Col>
                 <Col md={2}>

@@ -3,14 +3,9 @@ import { Modal, Row, Col, Card, Badge, Button, Form, Alert } from 'react-bootstr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faTimes, 
-  faCheck, 
   faTruck, 
-  faComment, 
   faPrint,
   faEnvelope,
-  faClock,
-  faCheckCircle,
-  faExclamationTriangle,
   faImage,
   faUser
 } from '@fortawesome/free-solid-svg-icons'
@@ -95,63 +90,13 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
     }
   }
 
-  const handleQuickAction = async (action) => {
-    setUpdating(true)
-    setError('')
-    setSuccessMsg('')
-
-    try {
-      let response
-      switch (action) {
-        case 'process':
-          response = await orderService.updateOrderStatus(orderId, 'processing')
-          if (response.success) {
-            setOrder(prev => ({ ...prev, status: 'processing' }))
-            setSuccessMsg('Order is now being processed')
-            success('Order is now being processed')
-          } else {
-            setError(response.message || 'Failed to process order')
-            showError(response.message || 'Failed to process order')
-          }
-          break
-        case 'ship':
-          response = await orderService.updateOrderStatus(orderId, 'out_for_delivery')
-          if (response.success) {
-            setOrder(prev => ({ ...prev, status: 'out_for_delivery' }))
-            setSuccessMsg('Order is out for delivery')
-            success('Order is out for delivery')
-          } else {
-            setError(response.message || 'Failed to update shipping status')
-            showError(response.message || 'Failed to update shipping status')
-          }
-          break
-        case 'contact':
-          // This would typically open an email client or messaging system
-          setSuccessMsg('Customer contact initiated')
-          success('Customer contact initiated')
-          break
-        default:
-          break
-      }
-      if (response && response.success) {
-        onOrderUpdate && onOrderUpdate()
-      }
-    } catch (err) {
-      const errorMsg = `Failed to ${action} order`
-      setError(errorMsg)
-      showError(errorMsg)
-      console.error(`Error ${action}ing order:`, err)
-    } finally {
-      setUpdating(false)
-    }
-  }
-
   const getStatusColor = (status) => {
     const statusMap = {
       pending: 'warning',
       confirmed: 'info',
       processing: 'primary',
-      shipped: 'info',
+      ready_for_pickup: 'info',
+      out_for_delivery: 'info',
       delivered: 'success',
       cancelled: 'danger',
       refunded: 'secondary'
@@ -168,22 +113,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
       partial: 'info'
     }
     return statusMap[status] || 'secondary'
-  }
-
-  const getTimelineIcon = (status, isCompleted) => {
-    if (isCompleted) {
-      return <FontAwesomeIcon icon={faCheckCircle} className="text-success" />
-    }
-    
-    const iconMap = {
-      pending: faClock,
-      confirmed: faCheck,
-      processing: faExclamationTriangle,
-      shipped: faTruck,
-      delivered: faCheckCircle
-    }
-    
-    return <FontAwesomeIcon icon={iconMap[status] || faClock} className="text-muted" />
   }
 
   if (!show) return null
@@ -215,79 +144,61 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                 <h5 className="mb-0">Order Items</h5>
               </Card.Header>
               <Card.Body>
-                {order.items.map((item) => (
-                  <div key={item.id} className="d-flex align-items-center mb-3 pb-3 border-bottom">
-                    {item.productImage ? (
-                      <img 
-                        src={item.productImage} 
-                        alt={item.productName}
-                        className="rounded me-3"
-                        style={{ width: '60px', height: '60px', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div 
-                        className="d-flex align-items-center justify-content-center border rounded me-3"
-                        style={{ 
-                          width: '60px', 
-                          height: '60px', 
-                          backgroundColor: '#f8f9fa'
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faImage} className="text-muted" />
-                      </div>
-                    )}
-                    <div className="flex-grow-1">
-                      <h6 className="mb-1">{item.productName}</h6>
-                      <p className="text-muted mb-1">{item.description}</p>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span className="text-muted">Qty: {item.quantity}</span>
-                        <div className="text-end">
-                          <div className="text-muted small">{formatCurrency(item.unitPrice)} each</div>
-                          <div className="fw-bold">{formatCurrency(item.totalPrice)}</div>
+                {order.items && order.items.length > 0 ? (
+                  order.items.map((item) => (
+                    <div key={item.id || item.orderItemId} className="d-flex align-items-center mb-3 pb-3 border-bottom">
+                      {item.productImage ? (
+                        <img 
+                          src={item.productImage} 
+                          alt={item.productName}
+                          className="rounded me-3"
+                          style={{ width: '60px', height: '60px', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div 
+                          className="d-flex align-items-center justify-content-center border rounded me-3"
+                          style={{ 
+                            width: '60px', 
+                            height: '60px', 
+                            backgroundColor: '#f8f9fa'
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faImage} className="text-muted" />
+                        </div>
+                      )}
+                      <div className="flex-grow-1">
+                        <h6 className="mb-1">
+                          {item.productName}
+                          {item.variantName && (
+                            <span className="text-muted ms-2" style={{ fontSize: '0.875rem' }}>
+                              ({item.variantName})
+                            </span>
+                          )}
+                        </h6>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="text-muted">Qty: {item.quantity}</span>
+                          <div className="text-end">
+                            <div className="text-muted small">{formatCurrency(item.unitPrice)} each</div>
+                            <div className="fw-bold">{formatCurrency(item.totalPrice)}</div>
+                          </div>
                         </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted py-3">No items found</div>
+                )}
+                {order.totalItemsCount > 0 && (
+                  <div className="mt-3 pt-3 border-top">
+                    <div className="d-flex justify-content-between">
+                      <strong>Total Items:</strong>
+                      <strong>{order.totalItemsCount}</strong>
+                    </div>
                   </div>
-                ))}
+                )}
               </Card.Body>
             </Card>
 
-            {/* Order Timeline */}
-            <Card>
-              <Card.Header>
-                <h5 className="mb-0">Order Timeline</h5>
-              </Card.Header>
-              <Card.Body>
-                {order.timeline.map((step, index) => (
-                  <div key={step.id} className="d-flex align-items-start mb-3">
-                    <div className="me-3 mt-1">
-                      {getTimelineIcon(step.status, step.isCompleted)}
-                    </div>
-                    <div className="flex-grow-1">
-                      <div className="d-flex justify-content-between align-items-start">
-                        <div>
-                          <h6 className="mb-1">{step.title}</h6>
-                          <p className="text-muted mb-1">{step.description}</p>
-                        </div>
-                        <div className="text-end">
-                          {step.date ? (
-                            <div className="text-muted small">
-                              {formatDate(step.date, 'MMM dd, yyyy')}
-                              <br />
-                              {formatDate(step.date, 'h:mm a')}
-                            </div>
-                          ) : step.expectedDate ? (
-                            <div className="text-muted small">
-                              Expected: {step.expectedDate}
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
           </Col>
 
           {/* Right Column - Customer Info, Summary & Actions */}
@@ -324,16 +235,46 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                   </div>
                 </div>
                 <div className="mb-2">
-                  <strong>Phone:</strong> {order.customer.phone}
+                  <strong>Phone:</strong> {order.customer.phone || 'N/A'}
                 </div>
-                <div>
-                  <strong>Shipping Address:</strong>
-                  <div className="text-muted">
-                    {order.shippingAddress.street}<br />
-                    {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}<br />
-                    {order.shippingAddress.country}
+                {order.deliveryAddressId && (
+                  <div className="mb-2">
+                    <strong>Delivery Address ID:</strong> {order.deliveryAddressId}
                   </div>
-                </div>
+                )}
+                {order.pickupAddressId && (
+                  <div className="mb-2">
+                    <strong>Pickup Address ID:</strong> {order.pickupAddressId}
+                  </div>
+                )}
+                {order.deliveryInstructions && (
+                  <div className="mb-2">
+                    <strong>Delivery Instructions:</strong>
+                    <div className="text-muted">{order.deliveryInstructions}</div>
+                  </div>
+                )}
+                {order.estimatedDeliveryTime && (
+                  <div className="mb-2">
+                    <strong>Estimated Delivery:</strong>
+                    <div className="text-muted">
+                      {formatDate(new Date(order.estimatedDeliveryTime), 'MMM dd, yyyy h:mm a')}
+                    </div>
+                  </div>
+                )}
+                {order.actualDeliveryTime && (
+                  <div className="mb-2">
+                    <strong>Actual Delivery:</strong>
+                    <div className="text-muted">
+                      {formatDate(new Date(order.actualDeliveryTime), 'MMM dd, yyyy h:mm a')}
+                    </div>
+                  </div>
+                )}
+                {order.cancellationReason && (
+                  <div className="mb-2">
+                    <strong>Cancellation Reason:</strong>
+                    <div className="text-danger">{order.cancellationReason}</div>
+                  </div>
+                )}
               </Card.Body>
             </Card>
 
@@ -345,63 +286,39 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
               <Card.Body>
                 <div className="d-flex justify-content-between mb-2">
                   <span>Subtotal:</span>
-                  <span>{formatCurrency(order.subtotal)}</span>
+                  <span>{formatCurrency(order.subtotal || 0)}</span>
                 </div>
+                {order.discount > 0 && (
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="text-success">Discount:</span>
+                    <span className="text-success">-{formatCurrency(order.discount || 0)}</span>
+                  </div>
+                )}
                 <div className="d-flex justify-content-between mb-2">
                   <span>Shipping:</span>
-                  <span>{formatCurrency(order.shipping)}</span>
+                  <span>{formatCurrency(order.shipping || 0)}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
-                  <span>GST:</span>
-                  <span>{formatCurrency(order.tax)}</span>
+                  <span>Tax:</span>
+                  <span>{formatCurrency(order.tax || 0)}</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between mb-2">
                   <strong>Total:</strong>
-                  <strong>{formatCurrency(order.total)}</strong>
+                  <strong>{formatCurrency(order.total || 0)}</strong>
                 </div>
                 <div className="d-flex justify-content-between">
                   <span className="text-success">Your Commission (10%):</span>
-                  <span className="text-success fw-bold">{formatCurrency(order.commission)}</span>
+                  <span className="text-success fw-bold">{formatCurrency(order.commission || 0)}</span>
                 </div>
-              </Card.Body>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="mb-4">
-              <Card.Header>
-                <h5 className="mb-0">Quick Actions</h5>
-              </Card.Header>
-              <Card.Body>
-                <div className="d-grid gap-2">
-                  <Button 
-                    variant="success" 
-                    size="sm"
-                    onClick={() => handleQuickAction('process')}
-                    disabled={updating || order.status === 'processing'}
-                  >
-                    <FontAwesomeIcon icon={faCheck} className="me-2" />
-                    Process Order
-                  </Button>
-                  <Button 
-                    variant="info" 
-                    size="sm"
-                    onClick={() => handleQuickAction('ship')}
-                    disabled={updating || order.status === 'shipped'}
-                  >
-                    <FontAwesomeIcon icon={faTruck} className="me-2" />
-                    Update Shipping
-                  </Button>
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm"
-                    onClick={() => handleQuickAction('contact')}
-                    disabled={updating}
-                  >
-                    <FontAwesomeIcon icon={faComment} className="me-2" />
-                    Contact Customer
-                  </Button>
-                </div>
+                {order.orderType && (
+                  <div className="mt-3 pt-3 border-top">
+                    <div className="d-flex justify-content-between">
+                      <span className="text-muted">Order Type:</span>
+                      <Badge bg="info">{order.orderType}</Badge>
+                    </div>
+                  </div>
+                )}
               </Card.Body>
             </Card>
 

@@ -9,12 +9,21 @@ const orderService = {
       const queryParams = {}
       
       // Map UI filters to API parameters
+      // API expects: order_id, customer_first_name, customer_last_name, order_status, payment_status, date_from, date_to, page, limit
       if (params.page) queryParams.page = params.page
       if (params.limit) queryParams.limit = params.limit
-      if (params.search) queryParams.order_id = parseInt(params.search) // Search by order ID
-      if (params.customer) {
-        // Split customer name into first and last name if possible
-        const nameParts = params.customer.trim().split(' ')
+      
+      // Order ID filter (must be integer)
+      if (params.search && params.search.trim() !== '') {
+        const orderId = parseInt(params.search.trim())
+        if (!isNaN(orderId) && orderId > 0) {
+          queryParams.order_id = orderId
+        }
+      }
+      
+      // Customer name filter - split into first and last name
+      if (params.customer && params.customer.trim() !== '') {
+        const nameParts = params.customer.trim().split(/\s+/)
         if (nameParts.length > 1) {
           queryParams.customer_first_name = nameParts[0]
           queryParams.customer_last_name = nameParts.slice(1).join(' ')
@@ -22,9 +31,13 @@ const orderService = {
           queryParams.customer_first_name = nameParts[0]
         }
       }
+      
+      // Order status filter
       if (params.status && params.status !== 'all') {
         queryParams.order_status = params.status
       }
+      
+      // Payment status filter
       if (params.paymentStatus && params.paymentStatus !== 'all') {
         queryParams.payment_status = params.paymentStatus
       }
@@ -68,9 +81,11 @@ const orderService = {
       const response = await apiClient.get('/admin/orders/', { params: queryParams })
       
       // Map API response to UI format
-      const orders = (response.data.items || response.data.orders || []).map(order => ({
+      // API returns: { orders: [], total_count, page, limit, total_pages, has_next, has_prev }
+      const orders = (response.data.orders || []).map(order => ({
         id: order.order_id,
-        orderNumber: `#${order.order_id}`,
+        orderId: order.order_id,
+        orderNumber: order.order_number || `#${order.order_id}`,
         customer: {
           firstName: order.customer_first_name || '',
           lastName: order.customer_last_name || '',
@@ -81,22 +96,29 @@ const orderService = {
         paymentStatus: order.payment_status || 'pending',
         total: parseFloat(order.total_amount || 0),
         subtotal: parseFloat(order.subtotal || 0),
-        shipping: parseFloat(order.shipping_cost || 0),
-        tax: parseFloat(order.gst_amount || 0),
+        shipping: parseFloat(order.shipping_fee || 0),
+        tax: parseFloat(order.tax_amount || 0),
+        discount: parseFloat(order.discount_amount || 0),
         commission: parseFloat(order.total_amount || 0) * 0.1, // 10% commission
-        orderDate: order.created_at || order.order_date || new Date().toISOString(),
-        items: order.order_items || [],
-        shippingAddress: order.shipping_address || {},
-        shippingMethod: order.shipping_method || 'Standard'
+        orderDate: order.created_at || new Date().toISOString(),
+        orderType: order.order_type || 'standard',
+        // Note: items are not returned in list endpoint, only in details endpoint
+        items: [],
+        estimatedDeliveryTime: order.estimated_delivery_time || null,
+        actualDeliveryTime: order.actual_delivery_time || null
       }))
       
       return {
         success: true,
         data: {
           orders: orders,
-          total: response.data.total || orders.length,
+          total: response.data.total_count || 0,
+          totalCount: response.data.total_count || 0,
           page: response.data.page || params.page || 1,
-          limit: response.data.limit || params.limit || 10
+          limit: response.data.limit || params.limit || 10,
+          totalPages: response.data.total_pages || 1,
+          hasNext: response.data.has_next || false,
+          hasPrev: response.data.has_prev || false
         },
         message: 'Orders fetched successfully'
       }
@@ -133,9 +155,7 @@ const orderService = {
           commission: parseFloat(order.total_amount || 0) * 0.1,
           orderDate: order.created_at || order.order_date || new Date().toISOString(),
           items: order.order_items || [],
-          shippingAddress: order.shipping_address || {},
-          timeline: this.generateTimeline(order),
-          notes: order.notes || []
+          shippingAddress: order.shipping_address || {}
         },
         message: 'Order fetched successfully'
       }
@@ -150,12 +170,15 @@ const orderService = {
       const response = await apiClient.get(`/admin/orders/${orderId}/details`)
       
       // Map API response to UI format
+      // API returns: order_id, order_number, customer_*, order_status, payment_status, items[], etc.
       const order = response.data
       return {
         success: true,
         data: {
           id: order.order_id,
-          orderNumber: `#${order.order_id}`,
+          orderId: order.order_id,
+          orderNumber: order.order_number || `#${order.order_id}`,
+          orderType: order.order_type || 'standard',
           customer: {
             firstName: order.customer_first_name || '',
             lastName: order.customer_last_name || '',
@@ -167,22 +190,36 @@ const orderService = {
           paymentStatus: order.payment_status || 'pending',
           total: parseFloat(order.total_amount || 0),
           subtotal: parseFloat(order.subtotal || 0),
-          shipping: parseFloat(order.shipping_cost || 0),
-          tax: parseFloat(order.gst_amount || 0),
+          shipping: parseFloat(order.shipping_fee || 0),
+          tax: parseFloat(order.tax_amount || 0),
+          discount: parseFloat(order.discount_amount || 0),
           commission: parseFloat(order.total_amount || 0) * 0.1,
-          orderDate: order.created_at || order.order_date || new Date().toISOString(),
-          items: (order.order_items || []).map(item => ({
-            id: item.order_item_id || item.id,
-            productName: item.product_name || item.variant_name || 'Unknown Product',
-            description: item.description || '',
+          orderDate: order.created_at || new Date().toISOString(),
+          updatedAt: order.updated_at || null,
+          items: (order.items || []).map(item => ({
+            id: item.order_item_id,
+            orderItemId: item.order_item_id,
+            productId: item.product_id,
+            variantId: item.variant_id,
+            productName: item.product_name || 'Unknown Product',
+            variantName: item.variant_name || null,
             quantity: item.quantity || 0,
-            unitPrice: parseFloat(item.unit_price || item.price || 0),
-            totalPrice: parseFloat(item.total_price || (item.quantity * (item.unit_price || item.price)) || 0),
-            productImage: item.product_image || item.image_url || null
+            unitPrice: parseFloat(item.unit_price || 0),
+            totalPrice: parseFloat(item.total_price || 0),
+            productImage: null, // Not in API response
+            createdAt: item.created_at || null
           })),
-          shippingAddress: order.shipping_address || {},
-          timeline: this.generateTimeline(order),
-          notes: order.notes || []
+          totalItemsCount: order.total_items_count || 0,
+          deliveryAddressId: order.delivery_address_id || null,
+          pickupAddressId: order.pickup_address_id || null,
+          deliveryInstructions: order.delivery_instructions || null,
+          estimatedDeliveryTime: order.estimated_delivery_time || null,
+          actualDeliveryTime: order.actual_delivery_time || null,
+          cancellationReason: order.cancellation_reason || null,
+          paymentMethodId: order.payment_method_id || null,
+          stripePaymentIntentId: order.stripe_payment_intent_id || null,
+          vendorId: order.vendor_id || null,
+          shippingAddress: {} // Will need to fetch separately if needed
         },
         message: 'Order details fetched successfully'
       }
