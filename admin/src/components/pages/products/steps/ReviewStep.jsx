@@ -365,7 +365,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
                     <small>
                       <strong>Quantity:</strong> {bp.minimum_quantity}
                       {bp.maximum_quantity ? ` - ${bp.maximum_quantity}` : '+'} | 
-                      <strong> Type:</strong> {bp.discount_type === 'fixed' ? 'Fixed Price' : 'Percentage Discount'} | 
+                      <strong> Type:</strong> {bp.discount_type === 'fixed' || bp.discount_type === 'fixed_amount' ? 'Fixed Price' : 'Percentage Discount'} | 
                       <strong> Value:</strong> {bp.discount_value}
                     </small>
                   </div>

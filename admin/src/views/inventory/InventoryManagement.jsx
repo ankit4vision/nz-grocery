@@ -31,8 +31,7 @@ const InventoryManagement = () => {
   const [categories, setCategories] = useState([])
   const [filters, setFilters] = useState({
     search: '',
-    category: '',
-    status: ''
+    category: ''
   })
   const [showBulkUpdateModal, setShowBulkUpdateModal] = useState(false)
   const [bulkUpdateData, setBulkUpdateData] = useState({
@@ -53,7 +52,7 @@ const InventoryManagement = () => {
   // Reload inventory when filters or pagination changes
   useEffect(() => {
     loadInventoryData()
-  }, [currentPage, pageSize, filters.category, filters.status])
+  }, [currentPage, pageSize, filters.category])
 
   const loadCategories = async () => {
     try {
@@ -106,8 +105,7 @@ const InventoryManagement = () => {
   const handleReset = () => {
     setFilters({
       search: '',
-      category: '',
-      status: ''
+      category: ''
     })
     setCurrentPage(1)
   }
@@ -434,42 +432,18 @@ const InventoryManagement = () => {
           {/* Alert Banners */}
           {stats.lowStockItems > 0 && (
             <Alert variant="warning" className="mb-3">
-              <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
-                  <strong>{stats.lowStockItems} variants are running low on stock.</strong> Consider restocking to avoid stockouts.
-                </div>
-                <Button 
-                  variant="warning" 
-                  size="sm"
-                  onClick={() => {
-                    setFilters({ ...filters, status: 'low_stock' })
-                    setCurrentPage(1)
-                  }}
-                >
-                  View Low Stock Items
-                </Button>
+              <div className="d-flex align-items-center">
+                <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+                <strong>{stats.lowStockItems} variants are running low on stock.</strong> Consider restocking to avoid stockouts.
               </div>
             </Alert>
           )}
 
           {stats.outOfStockItems > 0 && (
             <Alert variant="danger" className="mb-3">
-              <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <FontAwesomeIcon icon={faTimesCircle} className="me-2" />
-                  <strong>Out of Stock Alert:</strong> {stats.outOfStockItems} variants are currently out of stock.
-                </div>
-                <Button 
-                  variant="danger" 
-                  size="sm"
-                  onClick={() => {
-                    setFilters({ ...filters, status: 'out_of_stock' })
-                    setCurrentPage(1)
-                  }}
-                >
-                  View Out of Stock Items
-                </Button>
+              <div className="d-flex align-items-center">
+                <FontAwesomeIcon icon={faTimesCircle} className="me-2" />
+                <strong>Out of Stock Alert:</strong> {stats.outOfStockItems} variants are currently out of stock.
               </div>
             </Alert>
           )}
@@ -513,24 +487,6 @@ const InventoryManagement = () => {
                           {cat.category_name}
                         </option>
                       ))}
-                    </Form.Select>
-                  </div>
-                </Col>
-                <Col md={3}>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Stock Status</label>
-                    <Form.Select
-                      value={filters.status}
-                      onChange={(e) => {
-                        setFilters({ ...filters, status: e.target.value })
-                        setCurrentPage(1)
-                      }}
-                      className="border-2"
-                    >
-                      <option value="">All Status</option>
-                      <option value="in_stock">In Stock</option>
-                      <option value="low_stock">Low Stock</option>
-                      <option value="out_of_stock">Out of Stock</option>
                     </Form.Select>
                   </div>
                 </Col>

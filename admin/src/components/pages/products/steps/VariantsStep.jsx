@@ -60,7 +60,7 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
           id: bp.bulk_pricing_id, // For compatibility
           minQuantity: bp.minimum_quantity || 1,
           maxQuantity: bp.maximum_quantity || null,
-          priceType: bp.discount_type === 'fixed' ? 'price' : 'discount',
+          priceType: bp.discount_type === 'fixed' || bp.discount_type === 'fixed_amount' ? 'fixed_amount' : 'discount',
           price: bp.discount_value || 0,
           isNew: false // Existing bulk pricing from API
         }))
@@ -201,7 +201,7 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
       id: `new-${Date.now()}`, // Temporary ID for new bulk pricing
       minQuantity: 1,
       maxQuantity: null,
-      priceType: 'price',
+      priceType: 'fixed_amount',
       price: 0,
       isNew: true // Mark as new
     }
@@ -376,7 +376,7 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
                       className="border-0 bg-transparent"
                       disabled={savingBulkPricing[index] || deletingBulkPricing[index]}
                     >
-                      <option value="price">Fixed Price</option>
+                      <option value="fixed_amount">Fixed Price</option>
                       <option value="discount">Percentage Discount</option>
                     </FormSelect>
                   </td>

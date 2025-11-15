@@ -419,7 +419,7 @@ const productService = {
       const apiData = {
         minimum_quantity: parseInt(bulkPricingData.minimum_quantity || bulkPricingData.minQuantity || 1),
         maximum_quantity: bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity ? parseInt(bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity) : null,
-        discount_type: bulkPricingData.discount_type || (bulkPricingData.priceType === 'price' ? 'fixed' : 'percentage'),
+        discount_type: bulkPricingData.discount_type || (bulkPricingData.priceType === 'fixed_amount' ? 'fixed_amount' : 'percentage'),
         discount_value: parseFloat(bulkPricingData.discount_value || bulkPricingData.price || 0)
       }
       
@@ -442,7 +442,7 @@ const productService = {
         apiData.maximum_quantity = bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity ? parseInt(bulkPricingData.maximum_quantity || bulkPricingData.maxQuantity) : null
       }
       if (bulkPricingData.discount_type !== undefined || bulkPricingData.priceType !== undefined) {
-        apiData.discount_type = bulkPricingData.discount_type || (bulkPricingData.priceType === 'price' ? 'fixed' : 'percentage')
+        apiData.discount_type = bulkPricingData.discount_type || (bulkPricingData.priceType === 'fixed_amount' ? 'fixed_amount' : 'percentage')
       }
       if (bulkPricingData.discount_value !== undefined || bulkPricingData.price !== undefined) {
         apiData.discount_value = parseFloat(bulkPricingData.discount_value || bulkPricingData.price)
