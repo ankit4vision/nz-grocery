@@ -18,7 +18,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
-  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (show && orderId) {
@@ -29,7 +28,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
       setError('')
       setSuccessMsg('')
       setSelectedStatus('')
-      setNotes('')
     }
   }, [show, orderId])
 
@@ -63,15 +61,12 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
     setSuccessMsg('')
 
     try {
-      const response = await orderService.updateOrderStatus(orderId, selectedStatus, notes)
+      const response = await orderService.updateOrderStatus(orderId, selectedStatus)
       if (response.success) {
         setSuccessMsg('Order status updated successfully')
         success('Order status updated successfully')
         setOrder(prev => ({ ...prev, status: selectedStatus }))
         onOrderUpdate && onOrderUpdate()
-        
-        // Clear notes after successful update
-        setNotes('')
       } else {
         setError(response.message || 'Failed to update order status')
         showError(response.message || 'Failed to update order status')
@@ -397,19 +392,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                         </option>
                       ))}
                     </Form.Select>
-                  </Form.Group>
-                  
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-semibold">Notes (Optional)</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Add notes about this status change..."
-                      disabled={updating}
-                      className="border-2"
-                    />
                   </Form.Group>
 
                   <div className="d-grid">

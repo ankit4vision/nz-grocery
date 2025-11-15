@@ -1,13 +1,9 @@
 import React, { useState } from 'react'
-import { Modal, Row, Col, Form, FormControl, FormSelect, FormCheck, Alert, Button } from 'react-bootstrap'
+import { Modal, Row, Col, Form, FormCheck, Alert, Button } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faExclamationTriangle, 
   faBan, 
-  faPlay,
-  faEnvelope,
-  faBell,
-  faTicketAlt,
   faShoppingCart,
   faUser,
   faHeadset,
@@ -21,16 +17,7 @@ const SuspendCustomerModal = ({
   onSuspend,
   loading = false 
 }) => {
-  const [formData, setFormData] = useState({
-    reason: '',
-    durationType: 'temporary',
-    durationValue: '1',
-    durationUnit: 'day',
-    notes: '',
-    sendEmailNotification: true,
-    notifySupportTeam: true,
-    createSupportTicket: false
-  })
+  const [formData, setFormData] = useState({})
 
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -38,16 +25,7 @@ const SuspendCustomerModal = ({
   // Reset form when modal opens/closes
   React.useEffect(() => {
     if (visible) {
-      setFormData({
-        reason: '',
-        durationType: 'temporary',
-        durationValue: '1',
-        durationUnit: 'day',
-        notes: '',
-        sendEmailNotification: true,
-        notifySupportTeam: true,
-        createSupportTicket: false
-      })
+      setFormData({})
       setErrors({})
     }
   }, [visible])
@@ -75,23 +53,8 @@ const SuspendCustomerModal = ({
 
   // Validate form
   const validateForm = () => {
-    const newErrors = {}
-
-    if (!formData.reason) {
-      newErrors.reason = 'Reason for suspension is required'
-    }
-
-    if (formData.durationType === 'temporary') {
-      if (!formData.durationValue) {
-        newErrors.durationValue = 'Duration value is required'
-      }
-      if (!formData.durationUnit) {
-        newErrors.durationUnit = 'Duration unit is required'
-      }
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    // No validation needed since all fields are removed
+    return true
   }
 
   // Handle form submission
@@ -113,32 +76,6 @@ const SuspendCustomerModal = ({
     }
   }
 
-  // Handle preview action
-  const handlePreview = () => {
-    if (!validateForm()) {
-      return
-    }
-    // TODO: Implement preview functionality
-    console.log('Preview suspend action:', formData)
-  }
-
-  // Suspension reasons
-  const suspensionReasons = [
-    'Payment Issues',
-    'Terms of Service Violation',
-    'Fraudulent Activity',
-    'Inappropriate Behavior',
-    'Account Security Concerns',
-    'Requested by Customer',
-    'Other'
-  ]
-
-  // Duration units
-  const durationUnits = [
-    { value: 'day', label: 'Day(s)' },
-    { value: 'week', label: 'Week(s)' },
-    { value: 'month', label: 'Month(s)' }
-  ]
 
   if (!customer) return null
 
@@ -183,136 +120,6 @@ const SuspendCustomerModal = ({
           </div>
 
           <Form onSubmit={handleSubmit}>
-            {/* Reason for Suspension */}
-            <Row className="mb-4">
-              <Col md={12}>
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Reason for Suspension *</Form.Label>
-                  <FormSelect
-                    value={formData.reason}
-                    onChange={(e) => handleInputChange('reason', e.target.value)}
-                    isInvalid={!!errors.reason}
-                    className="border-2"
-                  >
-                    <option value="">Select a reason...</option>
-                    {suspensionReasons.map(reason => (
-                      <option key={reason} value={reason}>{reason}</option>
-                    ))}
-                  </FormSelect>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.reason}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            {/* Suspension Duration */}
-            <Row className="mb-4">
-              <Col md={4}>
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Suspension Duration *</Form.Label>
-                  <FormSelect
-                    value={formData.durationType}
-                    onChange={(e) => handleInputChange('durationType', e.target.value)}
-                    className="border-2"
-                  >
-                    <option value="temporary">Temporary</option>
-                    <option value="permanent">Permanent</option>
-                  </FormSelect>
-                </Form.Group>
-              </Col>
-              
-              {formData.durationType === 'temporary' && (
-                <>
-                  <Col md={3}>
-                    <Form.Group>
-                      <Form.Label className="fw-semibold">&nbsp;</Form.Label>
-                      <FormControl
-                        type="number"
-                        min="1"
-                        value={formData.durationValue}
-                        onChange={(e) => handleInputChange('durationValue', e.target.value)}
-                        isInvalid={!!errors.durationValue}
-                        className="border-2"
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.durationValue}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                  
-                  <Col md={5}>
-                    <Form.Group>
-                      <Form.Label className="fw-semibold">&nbsp;</Form.Label>
-                      <FormSelect
-                        value={formData.durationUnit}
-                        onChange={(e) => handleInputChange('durationUnit', e.target.value)}
-                        isInvalid={!!errors.durationUnit}
-                        className="border-2"
-                      >
-                        {durationUnits.map(unit => (
-                          <option key={unit.value} value={unit.value}>{unit.label}</option>
-                        ))}
-                      </FormSelect>
-                      <Form.Control.Feedback type="invalid">
-                        {errors.durationUnit}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Col>
-                </>
-              )}
-            </Row>
-
-            {/* Additional Notes */}
-            <Row className="mb-4">
-              <Col md={12}>
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Additional Notes</Form.Label>
-                  <FormControl
-                    as="textarea"
-                    rows={3}
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange('notes', e.target.value)}
-                    placeholder="Provide additional details about the suspension..."
-                    className="border-2"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            {/* Notification Options */}
-            <div className="mb-4">
-              <h6 className="fw-semibold mb-3">Notification Options</h6>
-              <Row>
-                <Col md={12}>
-                  <Form.Check
-                    type="checkbox"
-                    id="sendEmailNotification"
-                    label="Send suspension notification email to customer"
-                    checked={formData.sendEmailNotification}
-                    onChange={(e) => handleInputChange('sendEmailNotification', e.target.checked)}
-                    className="mb-2"
-                  />
-                  <Form.Check
-                    type="checkbox"
-                    id="notifySupportTeam"
-                    label="Notify customer support team"
-                    checked={formData.notifySupportTeam}
-                    onChange={(e) => handleInputChange('notifySupportTeam', e.target.checked)}
-                    className="mb-2"
-                  />
-                  <Form.Check
-                    type="checkbox"
-                    id="createSupportTicket"
-                    label="Create support ticket for follow-up"
-                    checked={formData.createSupportTicket}
-                    onChange={(e) => handleInputChange('createSupportTicket', e.target.checked)}
-                    className="mb-2"
-                  />
-                </Col>
-              </Row>
-            </div>
-
             {/* Account Impact Section */}
             <div className="mb-4">
               <div className="bg-info bg-opacity-10 p-3 rounded border">
@@ -357,14 +164,6 @@ const SuspendCustomerModal = ({
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
           Cancel
-        </Button>
-        <Button 
-          variant="warning" 
-          onClick={handlePreview}
-          disabled={isSubmitting}
-        >
-          <FontAwesomeIcon icon={faPlay} className="me-2" />
-          Preview Action
         </Button>
         <Button 
           variant="danger" 

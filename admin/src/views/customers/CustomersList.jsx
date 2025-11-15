@@ -9,7 +9,6 @@ import {
   faRefresh, 
   faUsers, 
   faUser,
-  faDownload,
   faBan,
   faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
@@ -394,12 +393,6 @@ const CustomersList = () => {
     setShowActivateModal(true)
   }
 
-  const handleExport = () => {
-    // TODO: Implement export functionality
-    console.log('Export customers')
-    showError('Export functionality coming soon')
-  }
-
   const handleSuspendCustomerSubmit = async (customerId) => {
     try {
       const response = await customerService.suspendCustomer(customerId)
@@ -445,12 +438,6 @@ const CustomersList = () => {
             <div className="d-flex align-items-center">
               <FontAwesomeIcon icon={faUsers} className="me-3 text-dark fs-4" />
               <h2 className="mb-0 text-dark">Customer Management</h2>
-            </div>
-            <div className="ms-auto d-flex align-items-center gap-3">
-              <Button variant="primary" onClick={handleExport}>
-                <FontAwesomeIcon icon={faDownload} className="me-2" />
-                Export
-              </Button>
             </div>
           </div>
 
