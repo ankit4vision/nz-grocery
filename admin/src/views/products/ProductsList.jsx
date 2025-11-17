@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Row, Col, Button, FormControl, FormSelect, Badge } from 'react-bootstrap'
+import { Container, Row, Col, Button, FormControl, FormSelect, Badge, Image } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -7,12 +7,51 @@ import {
   faPencil, 
   faSearch, 
   faRefresh, 
-  faBox
+  faBox,
+  faImage
 } from '@fortawesome/free-solid-svg-icons'
 import { Table } from '../../components'
 import { productService } from '../../services/productService'
 import { categoryService } from '../../services/categoryService'
 import { useToast } from '../../components'
+
+// Image cell component with error handling
+const VariantImageCell = ({ imageUrl }) => {
+  const [imageError, setImageError] = React.useState(false)
+
+  if (imageUrl && !imageError) {
+    return (
+      <div className="d-flex align-items-center justify-content-center" style={{ width: '80px' }}>
+        <Image 
+          src={imageUrl} 
+          rounded
+          style={{ 
+            width: '60px', 
+            height: '60px', 
+            objectFit: 'cover',
+            border: '1px solid #dee2e6'
+          }}
+          onError={() => setImageError(true)}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="d-flex align-items-center justify-content-center" style={{ width: '80px' }}>
+      <div 
+        className="d-flex align-items-center justify-content-center bg-light rounded"
+        style={{ 
+          width: '60px', 
+          height: '60px',
+          border: '1px solid #dee2e6'
+        }}
+      >
+        <FontAwesomeIcon icon={faImage} className="text-muted" />
+      </div>
+    </div>
+  )
+}
 
 const ProductsList = () => {
   const navigate = useNavigate()
@@ -108,6 +147,13 @@ const ProductsList = () => {
 
   // Table columns
   const columns = [
+    {
+      key: 'image',
+      label: 'Image',
+      render: (value, variant, index) => (
+        <VariantImageCell imageUrl={variant.image_url} />
+      )
+    },
     {
       key: 'product',
       label: 'Product / Variant',
