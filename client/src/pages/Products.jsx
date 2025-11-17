@@ -116,24 +116,36 @@ const Products = () => {
 
   // Transform product variants from API to component format
   const transformProductVariants = (variants) => {
-    return variants.map((variant) => ({
-      id: variant.variant_id || variant.id,
-      productId: variant.product_id,
-      name: variant.product_name || variant.name,
-      variantName: variant.variant_name,
-      unit: variant.unit || 'each',
-      currentPrice: variant.price || variant.current_price || 0,
-      originalPrice: variant.original_price || variant.currentPrice || null,
-      image: variant.image_url || variant.image || '/placeholder-image.jpg',
-      rating: variant.rating || 0,
-      reviews: variant.reviews_count || 0,
-      discount: variant.discount_percentage || 0,
-      category: variant.category_id,
-      categoryName: variant.category_name,
-      stockQuantity: variant.stock_quantity || 0,
-      sku: variant.sku,
-      isActive: variant.is_active !== false,
-    }));
+    return variants.map((variant) => {
+      const productName = variant.product_name || variant.name || 'Product';
+      const variantName = variant.variant_name || '';
+      
+      // Create display name: "Product Name - Variant Name" or just "Product Name" if no variant
+      const displayName = variantName 
+        ? `${productName} - ${variantName}` 
+        : productName;
+      
+      return {
+        id: variant.variant_id || variant.id, // Keep variant_id as id for backward compatibility
+        variantId: variant.variant_id || variant.id, // Explicit variant ID
+        productId: variant.product_id, // Product ID for fetching full details
+        name: displayName, // Display name: "Product Name - Variant Name"
+        productName: productName, // Original product name
+        variantName: variantName, // Variant name
+        unit: variant.unit || 'each',
+        currentPrice: variant.price || variant.current_price || 0,
+        originalPrice: variant.original_price || variant.currentPrice || null,
+        image: variant.image_url || variant.image || '/placeholder-image.jpg',
+        rating: variant.rating || 0,
+        reviews: variant.reviews_count || 0,
+        discount: variant.discount_percentage || 0,
+        category: variant.category_id,
+        categoryName: variant.category_name || 'Uncategorized',
+        stockQuantity: variant.stock_quantity || 0,
+        sku: variant.sku,
+        isActive: variant.is_active !== false,
+      };
+    });
   };
 
   // Create categories list with "All" option

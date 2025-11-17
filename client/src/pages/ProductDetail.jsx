@@ -12,7 +12,7 @@ import './ProductDetail.css';
  * Displays comprehensive product information including images, details, similar products, and reviews
  */
 const ProductDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // This is now product_id (not variant_id)
   const navigate = useNavigate();
   const reviewsRef = useRef(null);
   const { addItem, toggleCart } = useCartContext();
@@ -24,6 +24,7 @@ const ProductDetail = () => {
   const reviews = customerReviewsData;
 
   // Load product details on mount
+  // Note: id from URL params is now product_id (not variant_id)
   useEffect(() => {
     if (id) {
       loadProductDetails();
@@ -34,13 +35,14 @@ const ProductDetail = () => {
     setLoading(true);
     setError(null);
     try {
+      // Use product_id from URL to fetch full product details
       const response = await ProductsService.getProductFullDetails(id);
       if (response.success && response.data) {
         // Transform API response to match component expectations
         const transformedProduct = transformProductDetails(response.data);
         setProduct(transformedProduct);
         
-        // Load similar products
+        // Load similar products using product_id
         loadSimilarProducts(response.data.category_id, id);
       } else {
         setError(response.message || 'Product not found');
@@ -75,8 +77,9 @@ const ProductDetail = () => {
       id: apiProduct.product_id || apiProduct.id,
       name: apiProduct.product_name || apiProduct.name,
       description: apiProduct.description || '',
-      category: apiProduct.category_id,
-      categoryName: apiProduct.category_name,
+      category: apiProduct.category_name || 'Uncategorized', // Use category_name, not category_id
+      categoryId: apiProduct.category_id, // Keep category_id separately if needed for filtering
+      categoryName: apiProduct.category_name || 'Uncategorized', // Explicit category name
       images: apiProduct.images?.map(img => img.image_url) || [defaultImage],
       currentPrice: defaultVariant.price || defaultVariant.current_price || 0,
       originalPrice: defaultVariant.original_price || null,
@@ -95,24 +98,36 @@ const ProductDetail = () => {
 
   // Transform product variants from API to component format
   const transformProductVariants = (variants) => {
-    return variants.map((variant) => ({
-      id: variant.variant_id || variant.id,
-      productId: variant.product_id,
-      name: variant.product_name || variant.name,
-      variantName: variant.variant_name,
-      unit: variant.unit || 'each',
-      currentPrice: variant.price || variant.current_price || 0,
-      originalPrice: variant.original_price || variant.currentPrice || null,
-      image: variant.image_url || variant.image || '/placeholder-image.jpg',
-      rating: variant.rating || 0,
-      reviews: variant.reviews_count || 0,
-      discount: variant.discount_percentage || 0,
-      category: variant.category_id,
-      categoryName: variant.category_name,
-      stockQuantity: variant.stock_quantity || 0,
-      sku: variant.sku,
-      isActive: variant.is_active !== false,
-    }));
+    return variants.map((variant) => {
+      const productName = variant.product_name || variant.name || 'Product';
+      const variantName = variant.variant_name || '';
+      
+      // Create display name: "Product Name - Variant Name" or just "Product Name" if no variant
+      const displayName = variantName 
+        ? `${productName} - ${variantName}` 
+        : productName;
+      
+      return {
+        id: variant.variant_id || variant.id, // Keep variant_id as id for backward compatibility
+        variantId: variant.variant_id || variant.id, // Explicit variant ID
+        productId: variant.product_id, // Product ID for fetching full details
+        name: displayName, // Display name: "Product Name - Variant Name"
+        productName: productName, // Original product name
+        variantName: variantName, // Variant name
+        unit: variant.unit || 'each',
+        currentPrice: variant.price || variant.current_price || 0,
+        originalPrice: variant.original_price || variant.currentPrice || null,
+        image: variant.image_url || variant.image || '/placeholder-image.jpg',
+        rating: variant.rating || 0,
+        reviews: variant.reviews_count || 0,
+        discount: variant.discount_percentage || 0,
+        category: variant.category_id,
+        categoryName: variant.category_name || 'Uncategorized',
+        stockQuantity: variant.stock_quantity || 0,
+        sku: variant.sku,
+        isActive: variant.is_active !== false,
+      };
+    });
   };
 
   const handleAddToCart = (productId, quantity = 1) => {
@@ -131,6 +146,8 @@ const ProductDetail = () => {
   };
 
   const handleProductClick = (productId) => {
+    // Navigate using product_id (not variant_id)
+    // productId here should be the product_id from the product object
     navigate(`/product/${productId}`);
   };
 

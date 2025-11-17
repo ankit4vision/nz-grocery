@@ -77,7 +77,9 @@ const ProductGrid = ({
           {products.map((product) => (
             <Col key={product.id} xs={6} sm={6} md={3} lg={3} xl={3} className="product-grid-col">
               <ProductCard
-                id={product.id}
+                id={product.id} // Variant ID (for backward compatibility)
+                productId={product.productId} // Product ID for fetching full details
+                variantId={product.variantId || product.id} // Variant ID (explicit)
                 name={product.name}
                 unit={product.unit}
                 currentPrice={product.currentPrice}

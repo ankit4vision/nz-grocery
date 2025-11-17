@@ -8,7 +8,9 @@ import { useCartContext } from '../../context';
 import '../../styles/components/cards/product-card.css';
 
 const ProductCard = ({
-  id,
+  id, // Variant ID (for backward compatibility)
+  productId, // Product ID for fetching full details
+  variantId, // Variant ID (explicit)
   name,
   unit,
   currentPrice,
@@ -44,8 +46,11 @@ const ProductCard = ({
     e.stopPropagation();
     
     // Create product object for cart
+    // Include both productId and variantId for cart operations
     const product = {
-      id,
+      id: variantId || id, // Variant ID for cart item identification
+      productId: productId || id, // Product ID
+      variantId: variantId || id, // Variant ID
       name,
       unit,
       currentPrice,
@@ -68,15 +73,21 @@ const ProductCard = ({
   };
 
   const handleCardClick = () => {
-    navigate(`/product/${id}`);
+    // Use productId for navigation (to fetch full product details)
+    // If productId is not available, fall back to id (variantId for backward compatibility)
+    const productIdToUse = productId || id;
+    navigate(`/product/${productIdToUse}`);
   };
 
   const handleQuantityChange = (change) => {
     const newQuantity = Math.max(1, cartQuantity + change);
     
     // Create product object for cart
+    // Include both productId and variantId for cart operations
     const product = {
-      id,
+      id: variantId || id, // Variant ID for cart item identification
+      productId: productId || id, // Product ID
+      variantId: variantId || id, // Variant ID
       name,
       unit,
       currentPrice,
