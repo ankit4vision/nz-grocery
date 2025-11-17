@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Form, FormControl, FormSelect, Button, Table, Badge } from 'react-bootstrap'
+import { Row, Col, Form, FormControl, FormSelect, Button, Table, Badge, Card, Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faTrash, faSave, faSpinner, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faTrash, faEdit, faSpinner, faImage as faImageIcon } from '@fortawesome/free-solid-svg-icons'
 import { productService } from '../../../../services/productService'
 import { useToast } from '../../../../components'
+import VariantFormModal from '../VariantFormModal'
 
 const VariantsStep = ({ data, onChange, errors, productId }) => {
   const { success, error: showError } = useToast()
@@ -11,10 +12,13 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
   const [variants, setVariants] = useState([])
   const [bulkPricing, setBulkPricing] = useState([])
   const [loading, setLoading] = useState(true)
-  const [savingVariant, setSavingVariant] = useState({}) // Track which variant is being saved
-  const [savingBulkPricing, setSavingBulkPricing] = useState({}) // Track which bulk pricing is being saved
-  const [deletingVariant, setDeletingVariant] = useState({})
+  const [savingBulkPricing, setSavingBulkPricing] = useState({})
   const [deletingBulkPricing, setDeletingBulkPricing] = useState({})
+  const [deletingVariant, setDeletingVariant] = useState({})
+  
+  // Modal state
+  const [showVariantModal, setShowVariantModal] = useState(false)
+  const [editingVariant, setEditingVariant] = useState(null)
 
   // Load variants and bulk pricing from API
   useEffect(() => {
@@ -28,25 +32,37 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
 
   const loadVariants = async () => {
     try {
-      const response = await productService.getProductVariants(productId)
+      setLoading(true)
+      const response = await productService.getProductVariantsWithImages(productId)
       if (response.success && response.data) {
         // Map API response to component format
         const mappedVariants = response.data.map(v => ({
           variant_id: v.variant_id,
-          id: v.variant_id, // For compatibility
+          id: v.variant_id,
+          variant_name: v.variant_name,
+          variant_value: v.variant_value,
           name: v.variant_name || v.variant_value || '',
           sku: v.sku || '',
-          basePrice: v.base_price || '',
+          base_price: v.base_price,
+          basePrice: v.base_price,
+          sale_price: v.sale_price,
           salePrice: v.sale_price || '',
+          stock_quantity: v.stock_quantity,
           stock: v.stock_quantity || '',
+          low_stock_quantity: v.low_stock_quantity,
+          is_active: v.is_active,
           status: v.is_active ? 'active' : 'inactive',
-          isNew: false // Existing variant from API
+          images: v.images || [],
+          isNew: false
         }))
         setVariants(mappedVariants)
         onChange({ productVariants: mappedVariants })
       }
     } catch (error) {
       console.error('Error loading variants:', error)
+      showError('Failed to load variants')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -57,125 +73,50 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
         // Map API response to component format
         const mappedBulkPricing = response.data.map(bp => ({
           bulk_pricing_id: bp.bulk_pricing_id,
-          id: bp.bulk_pricing_id, // For compatibility
+          id: bp.bulk_pricing_id,
           minQuantity: bp.minimum_quantity || 1,
           maxQuantity: bp.maximum_quantity || null,
           priceType: bp.discount_type === 'fixed' || bp.discount_type === 'fixed_amount' ? 'fixed_amount' : 'discount',
           price: bp.discount_value || 0,
-          isNew: false // Existing bulk pricing from API
+          isNew: false
         }))
         setBulkPricing(mappedBulkPricing)
         onChange({ bulkPricing: mappedBulkPricing })
       }
     } catch (error) {
       console.error('Error loading bulk pricing:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
   // ========== Variant Handlers ==========
   
-  const handleVariantChange = (index, field, value) => {
-    const newVariants = [...variants]
-    newVariants[index] = { ...newVariants[index], [field]: value }
-    setVariants(newVariants)
-    onChange({ productVariants: newVariants })
+  const handleAddVariant = () => {
+    setEditingVariant(null)
+    setShowVariantModal(true)
   }
 
-  const addVariant = () => {
-    const newVariant = {
-      id: `new-${Date.now()}`, // Temporary ID for new variants
-      name: '',
-      sku: '',
-      basePrice: '',
-      salePrice: '',
-      stock: '',
-      status: 'active',
-      isNew: true // Mark as new
-    }
-    const newVariants = [...variants, newVariant]
-    setVariants(newVariants)
-    onChange({ productVariants: newVariants })
+  const handleEditVariant = (variant) => {
+    setEditingVariant(variant)
+    setShowVariantModal(true)
   }
 
-  const saveVariant = async (index) => {
-    const variant = variants[index]
-    
-    // Validation
-    if (!variant.name || !variant.name.trim()) {
-      showError('Variant name is required')
-      return
-    }
-    if (!variant.basePrice || parseFloat(variant.basePrice) <= 0) {
-      showError('Base price must be greater than 0')
+  const handleVariantSaved = async () => {
+    // Reload variants after save
+    await loadVariants()
+  }
+
+  const handleDeleteVariant = async (variant) => {
+    if (!window.confirm('Are you sure you want to delete this variant? This will also delete all its images.')) {
       return
     }
 
     try {
-      setSavingVariant(prev => ({ ...prev, [index]: true }))
-      
-      let response
-      if (variant.isNew) {
-        // Create new variant
-        response = await productService.createProductVariant(productId, variant)
-        if (response.success) {
-          // Update variant with API response
-          const updatedVariant = {
-            ...variant,
-            variant_id: response.data.variant_id,
-            id: response.data.variant_id,
-            isNew: false
-          }
-          const newVariants = [...variants]
-          newVariants[index] = updatedVariant
-          setVariants(newVariants)
-          onChange({ productVariants: newVariants })
-          success('Variant created successfully!')
-        } else {
-          showError(response.message || 'Failed to create variant')
-        }
-      } else {
-        // Update existing variant
-        response = await productService.updateProductVariant(variant.variant_id, variant)
-        if (response.success) {
-          success('Variant updated successfully!')
-        } else {
-          showError(response.message || 'Failed to update variant')
-        }
-      }
-    } catch (err) {
-      console.error('Error saving variant:', err)
-      showError('Failed to save variant. Please try again.')
-    } finally {
-      setSavingVariant(prev => ({ ...prev, [index]: false }))
-    }
-  }
-
-  const deleteVariant = async (index) => {
-    const variant = variants[index]
-    
-    // If it's a new variant (not saved yet), just remove from list
-    if (variant.isNew) {
-      const newVariants = variants.filter((_, i) => i !== index)
-      setVariants(newVariants)
-      onChange({ productVariants: newVariants })
-      return
-    }
-
-    if (!window.confirm('Are you sure you want to delete this variant?')) {
-      return
-    }
-
-    try {
-      setDeletingVariant(prev => ({ ...prev, [index]: true }))
-      const response = await productService.deleteProductVariant(variant.variant_id)
+      setDeletingVariant(prev => ({ ...prev, [variant.variant_id]: true }))
+      const response = await productService.deleteProductVariantWithImages(variant.variant_id)
       
       if (response.success) {
-        const newVariants = variants.filter((_, i) => i !== index)
-        setVariants(newVariants)
-        onChange({ productVariants: newVariants })
         success('Variant deleted successfully!')
+        await loadVariants()
       } else {
         showError(response.message || 'Failed to delete variant')
       }
@@ -183,7 +124,7 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
       console.error('Error deleting variant:', err)
       showError('Failed to delete variant. Please try again.')
     } finally {
-      setDeletingVariant(prev => ({ ...prev, [index]: false }))
+      setDeletingVariant(prev => ({ ...prev, [variant.variant_id]: false }))
     }
   }
 
@@ -198,12 +139,12 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
 
   const addBulkPrice = () => {
     const newBulkPrice = {
-      id: `new-${Date.now()}`, // Temporary ID for new bulk pricing
+      id: `new-${Date.now()}`,
       minQuantity: 1,
       maxQuantity: null,
       priceType: 'fixed_amount',
       price: 0,
-      isNew: true // Mark as new
+      isNew: true
     }
     const newBulkPricing = [...bulkPricing, newBulkPrice]
     setBulkPricing(newBulkPricing)
@@ -232,10 +173,8 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
       
       let response
       if (bulkPrice.isNew) {
-        // Create new bulk pricing
         response = await productService.createBulkPricing(productId, bulkPrice)
         if (response.success) {
-          // Update bulk pricing with API response
           const updatedBulkPricing = {
             ...bulkPrice,
             bulk_pricing_id: response.data.bulk_pricing_id,
@@ -251,7 +190,6 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
           showError(response.message || 'Failed to create bulk pricing')
         }
       } else {
-        // Update existing bulk pricing
         response = await productService.updateBulkPricing(bulkPrice.bulk_pricing_id, bulkPrice)
         if (response.success) {
           success('Bulk pricing updated successfully!')
@@ -270,7 +208,6 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
   const deleteBulkPricing = async (index) => {
     const bulkPrice = bulkPricing[index]
     
-    // If it's new (not saved yet), just remove from list
     if (bulkPrice.isNew) {
       const newBulkPricing = bulkPricing.filter((_, i) => i !== index)
       setBulkPricing(newBulkPricing)
@@ -321,8 +258,129 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
 
   return (
     <div>
-      {/* Bulk Pricing & Discounts Section */}
+      {/* Variant Form Modal */}
+      <VariantFormModal
+        show={showVariantModal}
+        onClose={() => {
+          setShowVariantModal(false)
+          setEditingVariant(null)
+        }}
+        onSave={handleVariantSaved}
+        variant={editingVariant}
+        productId={productId}
+      />
+
+      {/* Product Variants Section */}
       <div className="mb-5">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 className="mb-1 fw-semibold text-success">Product Variants</h5>
+            <p className="text-muted mb-0">Define different product variations with images</p>
+          </div>
+          <Button variant="success" onClick={handleAddVariant} className="d-flex align-items-center">
+            <FontAwesomeIcon icon={faPlus} className="me-2" />
+            Add Variant
+          </Button>
+        </div>
+
+        {variants.length > 0 ? (
+          <Row>
+            {variants.map((variant) => (
+              <Col md={6} lg={4} key={variant.variant_id} className="mb-3">
+                <Card>
+                  {/* Variant Image */}
+                  {variant.images && variant.images.length > 0 ? (
+                    <Card.Img 
+                      variant="top" 
+                      src={variant.images[0]} 
+                      style={{ height: '150px', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div 
+                      className="bg-light d-flex align-items-center justify-content-center"
+                      style={{ height: '150px' }}
+                    >
+                      <FontAwesomeIcon icon={faImageIcon} className="text-muted" style={{ fontSize: '3rem' }} />
+                    </div>
+                  )}
+                  
+                  <Card.Body>
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h6 className="mb-1">{variant.variant_name || variant.name}</h6>
+                        <small className="text-muted">SKU: {variant.sku || 'N/A'}</small>
+                      </div>
+                      <Badge bg={variant.is_active ? 'success' : 'secondary'}>
+                        {variant.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <div className="d-flex justify-content-between">
+                        <small className="text-muted">Base Price:</small>
+                        <strong>${variant.base_price || variant.basePrice}</strong>
+                      </div>
+                      {variant.sale_price && (
+                        <div className="d-flex justify-content-between">
+                          <small className="text-muted">Sale Price:</small>
+                          <strong className="text-success">${variant.sale_price || variant.salePrice}</strong>
+                        </div>
+                      )}
+                      <div className="d-flex justify-content-between">
+                        <small className="text-muted">Stock:</small>
+                        <strong>{variant.stock_quantity || variant.stock || 0}</strong>
+                      </div>
+                      {variant.images && variant.images.length > 0 && (
+                        <div className="d-flex justify-content-between">
+                          <small className="text-muted">Images:</small>
+                          <strong>{variant.images.length}</strong>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="d-flex gap-2 mt-3">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleEditVariant(variant)}
+                        className="flex-fill"
+                      >
+                        <FontAwesomeIcon icon={faEdit} className="me-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleDeleteVariant(variant)}
+                        disabled={deletingVariant[variant.variant_id]}
+                      >
+                        {deletingVariant[variant.variant_id] ? (
+                          <FontAwesomeIcon icon={faSpinner} spin />
+                        ) : (
+                          <FontAwesomeIcon icon={faTrash} />
+                        )}
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : (
+          <div className="text-center py-4 border rounded bg-light">
+            <p className="text-muted mb-0">No variants added yet. Click "Add Variant" to create one.</p>
+          </div>
+        )}
+
+        {errors.variants && (
+          <div className="text-danger mt-2">
+            {errors.variants}
+          </div>
+        )}
+      </div>
+
+      {/* Bulk Pricing & Discounts Section */}
+      <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
             <h5 className="mb-1 fw-semibold text-success">Bulk Pricing & Discounts</h5>
@@ -405,7 +463,7 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
                           <FontAwesomeIcon icon={faSpinner} spin />
                         ) : (
                           <>
-                            <FontAwesomeIcon icon={faSave} className="me-1" />
+                            <FontAwesomeIcon icon={faEdit} className="me-1" />
                             Save
                           </>
                         )}
@@ -431,148 +489,6 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
         ) : (
           <div className="text-center py-4 border rounded bg-light">
             <p className="text-muted mb-0">No bulk pricing rules added yet</p>
-          </div>
-        )}
-      </div>
-
-      {/* Product Variants Section */}
-      <div className="mb-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 className="mb-1 fw-semibold text-success">Product Variants</h5>
-            <p className="text-muted mb-0">Define different product variations (size, color, etc.)</p>
-          </div>
-          <Button variant="success" onClick={addVariant} className="d-flex align-items-center">
-            <FontAwesomeIcon icon={faPlus} className="me-2" />
-            Add Variant
-          </Button>
-        </div>
-
-        <div className="border rounded">
-          <div className="table-responsive">
-            <Table className="mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>Variant Name</th>
-                  <th>SKU</th>
-                  <th>Base Price</th>
-                  <th>Sale Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {variants.map((variant, index) => (
-                  <tr key={variant.id} className={variant.isNew ? 'table-warning' : ''}>
-                    <td>
-                      <FormControl
-                        type="text"
-                        value={variant.name}
-                        onChange={(e) => handleVariantChange(index, 'name', e.target.value)}
-                        className="border-0 bg-transparent"
-                        placeholder="e.g., Small, Medium, Large"
-                        disabled={savingVariant[index] || deletingVariant[index]}
-                      />
-                    </td>
-                    <td>
-                      <FormControl
-                        type="text"
-                        value={variant.sku}
-                        onChange={(e) => handleVariantChange(index, 'sku', e.target.value)}
-                        className="border-0 bg-transparent"
-                        placeholder="Unique SKU"
-                        disabled={savingVariant[index] || deletingVariant[index]}
-                      />
-                    </td>
-                    <td>
-                      <FormControl
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={variant.basePrice}
-                        onChange={(e) => handleVariantChange(index, 'basePrice', e.target.value)}
-                        className="border-0 bg-transparent"
-                        placeholder="0.00"
-                        disabled={savingVariant[index] || deletingVariant[index]}
-                      />
-                    </td>
-                    <td>
-                      <FormControl
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={variant.salePrice}
-                        onChange={(e) => handleVariantChange(index, 'salePrice', e.target.value)}
-                        className="border-0 bg-transparent"
-                        placeholder="0.00"
-                        disabled={savingVariant[index] || deletingVariant[index]}
-                      />
-                    </td>
-                    <td>
-                      <FormControl
-                        type="number"
-                        min="0"
-                        value={variant.stock}
-                        onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
-                        className="border-0 bg-transparent"
-                        placeholder="0"
-                        disabled={savingVariant[index] || deletingVariant[index]}
-                      />
-                    </td>
-                    <td>
-                      <FormSelect
-                        value={variant.status}
-                        onChange={(e) => handleVariantChange(index, 'status', e.target.value)}
-                        className="border-0 bg-transparent"
-                        disabled={savingVariant[index] || deletingVariant[index]}
-                      >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                      </FormSelect>
-                    </td>
-                    <td>
-                      <div className="d-flex gap-1">
-                        <Button
-                          variant="success"
-                          size="sm"
-                          onClick={() => saveVariant(index)}
-                          disabled={savingVariant[index] || deletingVariant[index]}
-                          className="d-flex align-items-center"
-                        >
-                          {savingVariant[index] ? (
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                          ) : (
-                            <>
-                              <FontAwesomeIcon icon={faSave} className="me-1" />
-                              Save
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => deleteVariant(index)}
-                          disabled={savingVariant[index] || deletingVariant[index] || (variants.length === 1 && !variant.isNew)}
-                        >
-                          {deletingVariant[index] ? (
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                          ) : (
-                            <FontAwesomeIcon icon={faTrash} />
-                          )}
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </div>
-
-        {errors.variants && (
-          <div className="text-danger mt-2">
-            {errors.variants}
           </div>
         )}
       </div>

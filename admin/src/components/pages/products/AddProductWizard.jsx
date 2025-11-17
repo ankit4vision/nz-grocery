@@ -7,7 +7,6 @@ import {
   faInfoCircle,
   faTag,
   faLayerGroup,
-  faImage,
   faCheckCircle,
   faSpinner
 } from '@fortawesome/free-solid-svg-icons'
@@ -16,7 +15,6 @@ import StepIndicator from '../../common/StepIndicator'
 import BasicInfoStep from './steps/BasicInfoStep'
 import AttributesStep from './steps/AttributesStep'
 import VariantsStep from './steps/VariantsStep'
-import ImageStep from './steps/ImageStep'
 import ReviewStep from './steps/ReviewStep'
 import { productService } from '../../../services/productService'
 import { useToast } from '../../../components'
@@ -35,8 +33,7 @@ const AddProductWizard = () => {
     { number: '1', title: 'Basic Info' },
     { number: '2', title: 'Attributes' },
     { number: '3', title: 'Variants' },
-    { number: '4', title: 'Image' },
-    { number: '5', title: 'Review' }
+    { number: '4', title: 'Review' }
   ]
 
   // Current step state
@@ -65,22 +62,7 @@ const AddProductWizard = () => {
     // Variants
     variants: {
       bulkPricing: [],
-      productVariants: [
-        {
-          id: 1,
-          name: '',
-          sku: '',
-          basePrice: '',
-          salePrice: '',
-          stock: '',
-          status: 'active'
-        }
-      ]
-    },
-    // Images
-    images: {
-      uploadedImages: [],
-      primaryImageIndex: 0
+      productVariants: []
     }
   })
 
@@ -117,11 +99,6 @@ const AddProductWizard = () => {
           variants: {
             bulkPricing: response.data.bulk_pricing || [],
             productVariants: response.data.variants || []
-          },
-          // Images - Will be loaded from API in ImageStep
-          images: {
-            uploadedImages: response.data.images || [],
-            primaryImageIndex: 0
           }
         })
       } else {
@@ -159,18 +136,13 @@ const AddProductWizard = () => {
         break
       case 2: // Variants
         const hasValidVariant = formData.variants.productVariants.some(variant => 
-          variant.name.trim() && variant.sku.trim()
+          variant.variant_name || variant.name
         )
         if (!hasValidVariant) {
           newErrors.variants = 'At least one valid variant is required'
         }
         break
-      case 3: // Images - At least one image required
-        if (formData.images.uploadedImages.length === 0) {
-          newErrors.images = 'At least one product image is required'
-        }
-        break
-      case 4: // Review - No validation needed
+      case 3: // Review - No validation needed
         break
     }
     
@@ -301,6 +273,12 @@ const AddProductWizard = () => {
     }
   }
 
+  const navigateToStep = (stepIndex) => {
+    if (stepIndex >= 0 && stepIndex < steps.length) {
+      setCurrentStep(stepIndex)
+    }
+  }
+
   const handleStepClick = (stepIndex) => {
     // Allow navigation to completed steps or next step
     if (stepIndex <= currentStep || stepIndex === currentStep + 1) {
@@ -331,13 +309,6 @@ const AddProductWizard = () => {
     setFormData(prev => ({
       ...prev,
       variants: { ...prev.variants, ...data }
-    }))
-  }
-
-  const updateImages = (data) => {
-    setFormData(prev => ({
-      ...prev,
-      images: { ...prev.images, ...data }
     }))
   }
 
@@ -404,20 +375,12 @@ const AddProductWizard = () => {
         )
       case 3:
         return (
-          <ImageStep
-            data={formData.images}
-            onChange={updateImages}
-            errors={errors}
-            productId={createdProductId || (mode === 'edit' ? productId : null)}
-          />
-        )
-      case 4:
-        return (
           <ReviewStep
             formData={formData}
             onCreateProduct={handleCreateProduct}
             loading={loading}
             productId={createdProductId || (mode === 'edit' ? productId : null)}
+            onEditStep={navigateToStep}
           />
         )
       default:
@@ -427,7 +390,7 @@ const AddProductWizard = () => {
 
   // Get step icon
   const getStepIcon = () => {
-    const icons = [faInfoCircle, faTag, faLayerGroup, faImage, faCheckCircle]
+    const icons = [faInfoCircle, faTag, faLayerGroup, faCheckCircle]
     return icons[currentStep]
   }
 
@@ -437,7 +400,6 @@ const AddProductWizard = () => {
       'Basic Information',
       'Product Attributes', 
       'Product Variants',
-      'Product Images',
       mode === 'edit' ? 'Review Product Changes' : 'Review Product Information'
     ]
     return titles[currentStep]

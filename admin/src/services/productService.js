@@ -333,6 +333,181 @@ const productService = {
     }
   },
 
+  // ========== Variants With Images API Methods ==========
+  
+  // Get product variants with images
+  getProductVariantsWithImages: async (productId) => {
+    try {
+      const response = await apiClient.get(`/product-service/products/${productId}/variants-with-images`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Create product variant with images
+  createProductVariantWithImages: async (productId, variantData, files = [], primaryFlags = [], sortOrders = []) => {
+    try {
+      const formData = new FormData()
+      
+      // Add variant fields
+      if (variantData.variant_name !== undefined) {
+        formData.append('variant_name', variantData.variant_name)
+      }
+      if (variantData.variant_value !== undefined) {
+        formData.append('variant_value', variantData.variant_value)
+      }
+      if (variantData.base_price !== undefined) {
+        formData.append('base_price', parseFloat(variantData.base_price))
+      }
+      if (variantData.sale_price !== undefined && variantData.sale_price !== null && variantData.sale_price !== '') {
+        formData.append('sale_price', parseFloat(variantData.sale_price))
+      }
+      if (variantData.stock_quantity !== undefined) {
+        formData.append('stock_quantity', parseInt(variantData.stock_quantity) || 0)
+      }
+      if (variantData.low_stock_quantity !== undefined) {
+        formData.append('low_stock_quantity', parseInt(variantData.low_stock_quantity) || 5)
+      }
+      if (variantData.sku !== undefined && variantData.sku !== null && variantData.sku !== '') {
+        formData.append('sku', variantData.sku)
+      }
+      if (variantData.is_active !== undefined) {
+        formData.append('is_active', variantData.is_active ? 'true' : 'false')
+      }
+      
+      // Add files
+      files.forEach(file => {
+        formData.append('files', file)
+      })
+      
+      // Add primary flags and sort orders as comma-separated strings
+      if (primaryFlags.length > 0) {
+        formData.append('primary_flags', primaryFlags.join(','))
+      }
+      if (sortOrders.length > 0) {
+        formData.append('sort_orders', sortOrders.join(','))
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+
+      const response = await apiClient.post(`/product-service/products/${productId}/variants-with-images`, formData, config)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Update product variant with images (variant data only, not images)
+  updateProductVariantWithImages: async (variantId, variantData) => {
+    try {
+      const formData = new URLSearchParams()
+      
+      if (variantData.variant_name !== undefined) {
+        formData.append('variant_name', variantData.variant_name)
+      }
+      if (variantData.variant_value !== undefined) {
+        formData.append('variant_value', variantData.variant_value)
+      }
+      if (variantData.base_price !== undefined) {
+        formData.append('base_price', parseFloat(variantData.base_price))
+      }
+      if (variantData.sale_price !== undefined) {
+        if (variantData.sale_price !== null && variantData.sale_price !== '') {
+          formData.append('sale_price', parseFloat(variantData.sale_price))
+        } else {
+          formData.append('sale_price', '')
+        }
+      }
+      if (variantData.stock_quantity !== undefined) {
+        formData.append('stock_quantity', parseInt(variantData.stock_quantity) || 0)
+      }
+      if (variantData.low_stock_quantity !== undefined) {
+        formData.append('low_stock_quantity', parseInt(variantData.low_stock_quantity) || 5)
+      }
+      if (variantData.sku !== undefined) {
+        formData.append('sku', variantData.sku || '')
+      }
+      if (variantData.is_active !== undefined) {
+        formData.append('is_active', variantData.is_active ? 'true' : 'false')
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+
+      const response = await apiClient.put(`/product-service/products/variants-with-images/${variantId}`, formData, config)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Delete product variant with images
+  deleteProductVariantWithImages: async (variantId) => {
+    try {
+      await apiClient.delete(`/product-service/products/variants-with-images/${variantId}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Variant deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Upload images for existing variant
+  uploadVariantImages: async (variantId, files, primaryFlags = [], sortOrders = []) => {
+    try {
+      const formData = new FormData()
+      
+      // Add files
+      files.forEach(file => {
+        formData.append('files', file)
+      })
+      
+      // Add primary flags and sort orders as comma-separated strings
+      if (primaryFlags.length > 0) {
+        formData.append('primary_flags', primaryFlags.join(','))
+      }
+      if (sortOrders.length > 0) {
+        formData.append('sort_orders', sortOrders.join(','))
+      }
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+
+      const response = await apiClient.post(`/product-service/products/variants/${variantId}/images`, formData, config)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Delete variant image
+  deleteVariantImage: async (imageId) => {
+    try {
+      await apiClient.delete(`/product-service/products/variants/images/${imageId}`)
+      return {
+        success: true,
+        data: null,
+        message: 'Image deleted successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
   // Create product variant
   createProductVariant: async (productId, variantData) => {
     try {

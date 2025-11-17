@@ -12,7 +12,7 @@ import {
 import { productService } from '../../../../services/productService'
 import { categoryService } from '../../../../services/categoryService'
 
-const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
+const ReviewStep = ({ formData, onCreateProduct, loading, productId, onEditStep }) => {
   const [attributes, setAttributes] = useState([])
   const [productData, setProductData] = useState(null)
   const [categories, setCategories] = useState([])
@@ -149,16 +149,30 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
       }))
   }
 
-  const getPrimaryImage = () => {
-    const images = productData?.images || formData.images.uploadedImages || []
-    const primaryIndex = productData?.images 
-      ? productData.images.findIndex(img => img.is_primary) 
-      : formData.images.primaryImageIndex
-    
-    if (images.length > 0 && primaryIndex >= 0) {
-      return images[primaryIndex]
+  // Get variant images (variants now have images)
+  const getVariantImages = (variant) => {
+    if (variant.images && Array.isArray(variant.images) && variant.images.length > 0) {
+      return variant.images
     }
-    return null
+    return []
+  }
+
+  const getAllVariantImages = () => {
+    const variants = (productData?.variants || formData.variants.productVariants || [])
+    const gallery = []
+
+    variants.forEach((variant) => {
+      const variantImages = getVariantImages(variant)
+      variantImages.forEach((url, index) => {
+        gallery.push({
+          variantName: variant.variant_name || variant.name || 'Variant',
+          url,
+          isPrimary: index === 0
+        })
+      })
+    })
+
+    return gallery
   }
 
   // Get display data - prefer API data, fallback to formData
@@ -172,11 +186,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
         description: product.full_description || product.short_description || formData.basicInfo.description,
         sku: product.sku || formData.basicInfo.sku,
         gstRate: product.gst || formData.basicInfo.gstRate,
-        variants: productData.variants || formData.variants.productVariants,
-        images: productData.images || formData.images.uploadedImages,
-        primaryImageIndex: productData.images 
-          ? productData.images.findIndex(img => img.is_primary) 
-          : formData.images.primaryImageIndex
+        variants: productData.variants || formData.variants.productVariants
       }
     }
     return {
@@ -186,9 +196,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
       description: formData.basicInfo.description,
       sku: formData.basicInfo.sku,
       gstRate: formData.basicInfo.gstRate,
-      variants: formData.variants.productVariants,
-      images: formData.images.uploadedImages,
-      primaryImageIndex: formData.images.primaryImageIndex
+      variants: formData.variants.productVariants
     }
   }
 
@@ -202,6 +210,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
   }
 
   const displayData = getDisplayData()
+  const variantImageGallery = getAllVariantImages()
 
   return (
     <div>
@@ -213,7 +222,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
               <FontAwesomeIcon icon={faInfoCircle} className="me-3 text-success fs-4" />
               <h5 className="mb-0 text-success">Basic Information</h5>
             </div>
-            <Button variant="outline-primary" size="sm">
+            <Button variant="outline-primary" size="sm" onClick={() => onEditStep?.(0)}>
               <FontAwesomeIcon icon={faEdit} className="me-2" />
               Edit
             </Button>
@@ -254,7 +263,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
               <FontAwesomeIcon icon={faTag} className="me-3 text-success fs-4" />
               <h5 className="mb-0 text-success">Product Attributes</h5>
             </div>
-            <Button variant="outline-primary" size="sm">
+            <Button variant="outline-primary" size="sm" onClick={() => onEditStep?.(1)}>
               <FontAwesomeIcon icon={faEdit} className="me-2" />
               Edit
             </Button>
@@ -310,7 +319,7 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
               <FontAwesomeIcon icon={faLayerGroup} className="me-3 text-success fs-4" />
               <h5 className="mb-0 text-success">Pricing & Variants</h5>
             </div>
-            <Button variant="outline-primary" size="sm">
+            <Button variant="outline-primary" size="sm" onClick={() => onEditStep?.(2)}>
               <FontAwesomeIcon icon={faEdit} className="me-2" />
               Edit
             </Button>
@@ -321,36 +330,57 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
           </div>
           
           {displayData.variants && displayData.variants.length > 0 ? (
-            displayData.variants.map((variant, index) => (
-              <div key={variant.variant_id || variant.id || index} className="border rounded p-3 mb-2">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{variant.variant_name || variant.name || `Variant ${index + 1}`}:</strong>
+            displayData.variants.map((variant, index) => {
+              const variantImages = getVariantImages(variant)
+              return (
+                <div key={variant.variant_id || variant.id || index} className="border rounded p-3 mb-3">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                      <strong>{variant.variant_name || variant.name || `Variant ${index + 1}`}:</strong>
+                    </div>
+                    <Badge bg={variant.is_active !== false && variant.status !== 'inactive' ? 'success' : 'secondary'}>
+                      {variant.is_active !== false && variant.status !== 'inactive' ? 'Active' : 'Inactive'}
+                    </Badge>
                   </div>
-                  <Badge bg={variant.is_active !== false && variant.status !== 'inactive' ? 'success' : 'secondary'}>
-                    {variant.is_active !== false && variant.status !== 'inactive' ? 'Active' : 'Inactive'}
-                  </Badge>
+                  <Row className="mt-2">
+                    <Col md={3}>
+                      <small className="text-muted">SKU:</small>
+                      <div>{formatValue(variant.sku)}</div>
+                    </Col>
+                    <Col md={3}>
+                      <small className="text-muted">Base Price:</small>
+                      <div>${formatValue(variant.base_price || variant.basePrice)}</div>
+                    </Col>
+                    <Col md={3}>
+                      <small className="text-muted">Sale Price:</small>
+                      <div>{variant.sale_price || variant.salePrice ? `$${formatValue(variant.sale_price || variant.salePrice)}` : '-'}</div>
+                    </Col>
+                    <Col md={3}>
+                      <small className="text-muted">Stock:</small>
+                      <div>{formatValue(variant.stock_quantity || variant.stock)}</div>
+                    </Col>
+                  </Row>
+                  {/* Variant Images */}
+                  {variantImages.length > 0 && (
+                    <div className="mt-3">
+                      <small className="text-muted d-block mb-2">Variant Images ({variantImages.length}):</small>
+                      <Row>
+                        {variantImages.map((imageUrl, imgIndex) => (
+                          <Col md={3} key={imgIndex} className="mb-2">
+                            <Image 
+                              src={imageUrl} 
+                              fluid 
+                              className="rounded border"
+                              style={{ height: '80px', objectFit: 'cover', width: '100%' }}
+                            />
+                          </Col>
+                        ))}
+                      </Row>
+                    </div>
+                  )}
                 </div>
-                <Row className="mt-2">
-                  <Col md={3}>
-                    <small className="text-muted">SKU:</small>
-                    <div>{formatValue(variant.sku)}</div>
-                  </Col>
-                  <Col md={3}>
-                    <small className="text-muted">Base Price:</small>
-                    <div>${formatValue(variant.base_price || variant.basePrice)}</div>
-                  </Col>
-                  <Col md={3}>
-                    <small className="text-muted">Sale Price:</small>
-                    <div>{variant.sale_price || variant.salePrice ? `$${formatValue(variant.sale_price || variant.salePrice)}` : '-'}</div>
-                  </Col>
-                  <Col md={3}>
-                    <small className="text-muted">Stock:</small>
-                    <div>{formatValue(variant.stock_quantity || variant.stock)}</div>
-                  </Col>
-                </Row>
-              </div>
-            ))
+              )
+            })
           ) : (
             <div className="text-muted">No variants added</div>
           )}
@@ -376,65 +406,50 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId }) => {
         </Card.Body>
       </Card>
 
-      {/* Product Images Section */}
+
+      {/* Variant Images Gallery */}
       <Card className="mb-4">
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="d-flex align-items-center">
               <FontAwesomeIcon icon={faImageIcon} className="me-3 text-success fs-4" />
-              <h5 className="mb-0 text-success">Product Images</h5>
+              <h5 className="mb-0 text-success">Variant Images Gallery</h5>
             </div>
-            <Button variant="outline-primary" size="sm">
+            <Button variant="outline-primary" size="sm" onClick={() => onEditStep?.(2)}>
               <FontAwesomeIcon icon={faEdit} className="me-2" />
               Edit
             </Button>
           </div>
-          
-          <div className="mb-3">
-            <strong>Uploaded Images ({displayData.images?.length || 0}/4):</strong>
-          </div>
-          
-          {displayData.images && displayData.images.length > 0 ? (
+
+          {variantImageGallery.length > 0 ? (
             <Row>
-              {displayData.images.map((image, index) => {
-                const imageUrl = image.image_url || image.url
-                const imageName = image.image_alt_text || image.name || `Image ${index + 1}`
-                const isPrimary = image.is_primary !== undefined 
-                  ? image.is_primary 
-                  : (index === displayData.primaryImageIndex)
-                
-                return (
-                  <Col md={3} key={image.image_id || image.id || index} className="mb-3">
-                    <div className="position-relative">
-                      <Image 
-                        src={imageUrl} 
-                        fluid 
-                        className="rounded border"
-                        style={{ height: '100px', objectFit: 'cover' }}
-                      />
-                      {isPrimary && (
-                        <Badge 
-                          bg="primary" 
-                          className="position-absolute top-0 end-0 m-1"
-                        >
-                          Primary
-                        </Badge>
-                      )}
-                      <div className="mt-1">
-                        <small className="text-muted text-truncate d-block">
-                          {imageName}
-                        </small>
-                      </div>
-                    </div>
-                  </Col>
-                )
-              })}
+              {variantImageGallery.map((image, index) => (
+                <Col lg={2} md={3} sm={4} xs={6} key={`${image.url}-${index}`} className="mb-3">
+                  <div className="position-relative">
+                    <Image
+                      src={image.url}
+                      fluid
+                      className="rounded border"
+                      style={{ height: '120px', objectFit: 'cover', width: '100%' }}
+                    />
+                    {image.isPrimary && (
+                      <Badge bg="primary" className="position-absolute top-0 end-0 m-1">
+                        Primary
+                      </Badge>
+                    )}
+                  </div>
+                  <small className="text-muted d-block text-truncate mt-1">
+                    {image.variantName}
+                  </small>
+                </Col>
+              ))}
             </Row>
           ) : (
-            <div className="text-muted">No images uploaded</div>
+            <div className="text-muted">No variant images uploaded yet</div>
           )}
         </Card.Body>
       </Card>
+
 
       {/* Note: Submit button is handled by parent AddProductWizard component */}
     </div>
