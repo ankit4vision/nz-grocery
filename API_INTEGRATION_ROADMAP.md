@@ -145,7 +145,7 @@
 ---
 
 ### 5. Product Management Module - Add Product Wizard ✅
-**Product Creation Wizard (5-Step Process):**
+**Product Creation Wizard (4-Step Process):**
 
 **Step 1 - Basic Information:**
 - Create Product - `POST /product-service/products/` (creates product with basic info)
@@ -164,60 +164,54 @@
 - Supports boolean (checkbox), text (textfield), and date attribute types
 - Loads existing product attributes in edit mode
 
-**Step 3 - Variants:**
-- Get Product Variants - `GET /product-service/products/{product_id}/variants`
-- Create Variant - `POST /product-service/products/{product_id}/variants`
-- Update Variant - `PUT /product-service/products/variants/{variant_id}`
-- Delete Variant - `DELETE /product-service/products/variants/{variant_id}`
+**Step 3 - Variants with Images:**
+- Get Product Variants with Images - `GET /product-service/products/{product_id}/variants-with-images`
+- Create Variant with Images - `POST /product-service/products/{product_id}/variants-with-images` (multipart/form-data with variant data and images)
+- Update Variant - `PUT /product-service/products/variants-with-images/{variant_id}` (variant data only)
+- Delete Variant with Images - `DELETE /product-service/products/variants-with-images/{variant_id}`
+- Upload Variant Images - `POST /product-service/products/variants/{variant_id}/images` (for existing variants)
+- Delete Variant Image - `DELETE /product-service/products/variants/images/{image_id}`
 - Get Bulk Pricing - `GET /product-service/products/{product_id}/bulk-pricing`
 - Create Bulk Pricing - `POST /product-service/products/{product_id}/bulk-pricing`
 - Update Bulk Pricing - `PUT /product-service/products/bulk-pricing/{bulk_pricing_id}`
 - Delete Bulk Pricing - `DELETE /product-service/products/bulk-pricing/{bulk_pricing_id}`
-- Row-level save functionality (save button per row)
-- Visual indicators for new unsaved rows
+- Modal-based variant add/edit with image upload (up to 4 images per variant, 5MB each)
+- Variant card view with image thumbnails
+- Primary image selection per variant
+- Drag & drop image upload support
 
-**Step 4 - Images:**
-- Get Product Images - `GET /product-service/products/{product_id}/images`
-- Upload Product Images - `POST /product-service/products/{product_id}/images` (multipart/form-data with files array, primary_flags, sort_orders)
-- Update Image Metadata - `PUT /product-service/products/{product_id}/images/meta` (is_primary, sort_order)
-- Delete Product Images - `PUT /product-service/products/{product_id}/images?delete_image_ids=[]`
-- Immediate upload on file selection
-- Auto-save metadata on primary image change and reorder
-- Drag & drop file upload support
-- File validation (max 4 images, 5MB each)
-
-**Step 5 - Review:**
+**Step 4 - Review:**
 - Get Full Product Details - `GET /product-service/products/{product_id}/full` (for review display)
 - Activate/Submit Product - `PUT /product-service/products/{product_id}/activate` (activates the product)
 - Displays all product information from API
 - Shows category names (fetched from categories API)
-- Displays variants, bulk pricing, images, and attributes
+- Displays variants with their images, bulk pricing, and attributes
+- Variant images gallery section showing all variant images
+- Edit buttons navigate to specific steps (Basic Info → Step 0, Attributes → Step 1, Variants → Step 2)
 - Submit button activates the product and navigates to products list
 
 **Files Updated:**
-- `admin/src/services/productService.js` ✅ Completed (all product, variant, bulk pricing, and image APIs)
-- `admin/src/components/pages/products/AddProductWizard.jsx` ✅ Completed
+- `admin/src/services/productService.js` ✅ Completed (all product, variant with images, bulk pricing APIs)
+- `admin/src/components/pages/products/AddProductWizard.jsx` ✅ Completed (4-step wizard)
+- `admin/src/components/pages/products/VariantFormModal.jsx` ✅ Completed (new - variant add/edit modal with images)
 - `admin/src/components/pages/products/steps/BasicInfoStep.jsx` ✅ Completed
 - `admin/src/components/pages/products/steps/AttributesStep.jsx` ✅ Completed
-- `admin/src/components/pages/products/steps/VariantsStep.jsx` ✅ Completed
-- `admin/src/components/pages/products/steps/ImageStep.jsx` ✅ Completed
-- `admin/src/components/pages/products/steps/ReviewStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/VariantsStep.jsx` ✅ Completed (updated - modal-based with images)
+- `admin/src/components/pages/products/steps/ReviewStep.jsx` ✅ Completed (updated - shows variant images, edit navigation)
 
 **Features Implemented:**
-- 5-step product creation wizard with API integration
+- 4-step product creation wizard with API integration (removed separate image step)
 - Step 1: Product creation/update with basic info (name, category, SKU, description, GST, margin) - auto-saves on completion
 - Step 2: Attribute assignment (boolean, text, date types) with auto-save
-- Step 3: Variants and bulk pricing with row-level save functionality
-- Step 4: Image upload with immediate save and metadata management
-- Step 5: Review page with full product details from API - Submit button activates product
+- Step 3: Variants with images via modal popup - each variant can have up to 4 images, primary image selection, drag & drop upload
+- Step 4: Review page with variant images displayed per variant and in gallery section, edit navigation buttons
 - Category dropdown populated from API
 - Toast notifications for all operations
 - Loading states for all API calls
 - Error handling with user-friendly messages
 - Edit mode support (loads existing product data, updates on Step 1)
 - Product ID management across steps
-- Row-level save for variants and bulk pricing
-- Auto-save for image metadata changes
+- Variant images displayed in card view
 - Update product API integration for edit mode
 - Activate product API integration for final submission
 
@@ -272,7 +266,7 @@ nz-grocery/
 │       │   │   ├── ToastProvider.jsx       # Toast notification provider
 │       │   │   └── ...                    # Other common components
 │       │   │
-│       │   └── 📁 pages/                   # Page-specific components
+│       │          └── 📁 pages/                   # Page-specific components
 │       │       └── 📁 categories/
 │       │           └── CategoryForm.jsx    # ✅ Category form component
 │       │       └── 📁 content/
@@ -280,15 +274,15 @@ nz-grocery/
 │       │           ├── FAQCategoryFormModal.jsx # ✅ FAQ Category form component
 │       │           └── FAQFormModal.jsx     # ✅ FAQ Entry form component
 │       │       └── 📁 products/
-│       │           ├── AddProductWizard.jsx # ✅ Product creation wizard (5 steps)
+│       │           ├── AddProductWizard.jsx # ✅ Product creation wizard (4 steps)
+│       │           ├── VariantFormModal.jsx # ✅ Variant add/edit modal with images
 │       │           └── 📁 steps/
 │       │               ├── BasicInfoStep.jsx # ✅ Step 1 - Basic information
 │       │               ├── AttributesStep.jsx # ✅ Step 2 - Product attributes
-│       │               ├── VariantsStep.jsx # ✅ Step 3 - Variants & bulk pricing
-│       │               ├── ImageStep.jsx # ✅ Step 4 - Product images
-│       │               └── ReviewStep.jsx # ✅ Step 5 - Review & submit
+│       │               ├── VariantsStep.jsx # ✅ Step 3 - Variants with images & bulk pricing
+│       │               └── ReviewStep.jsx # ✅ Step 4 - Review & submit (with variant images)
 │       │       └── 📁 orders/
-│       │           └── OrderDetailsModal.jsx # Order details (pending)
+│       │           └── OrderDetailsModal.jsx # ✅ Order details modal
 │       │       └── ...                     # Other page components
 │       │
 │       ├── 📁 views/                        # Page-level view components
@@ -384,16 +378,16 @@ nz-grocery/
 - ✅ `categoryService.js` - Category CRUD operations
 - ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
 - ✅ `settingsService.js` - Global Settings management (create/update by key, section-based organization)
-- ✅ `productService.js` - Product management (Add Product Wizard - all 5 steps with variants, bulk pricing, images, attributes, Product Variants List filter, Update Product API, and Activate Product API)
-
-**Pending Services**:
-- ⏳ `orderService.js` - Orders management
-- ⏳ `customerService.js` - Customers management
-- ⏳ `userService.js` - User management
-- ⏳ `subCategoryService.js` - Subcategory management
+- ✅ `productService.js` - Product management (Add Product Wizard - 4 steps with variants-with-images, bulk pricing, attributes, Product Variants List filter with images, Update Product API, and Activate Product API)
 
 **Completed Services (continued)**:
 - ✅ `inventoryService.js` - Inventory management (product variants with stock, inventory statistics, stock updates)
+- ✅ `orderService.js` - Orders management (order list, order details, status updates, statistics)
+
+**Pending Services**:
+- ⏳ `customerService.js` - Customers management
+- ⏳ `userService.js` - User management
+- ⏳ `subCategoryService.js` - Subcategory management
 
 #### 🎨 Component Files
 
@@ -406,25 +400,25 @@ nz-grocery/
 
 **Page Components** (`admin/src/components/pages/`):
 - ✅ **`categories/CategoryForm.jsx`** - Category form with validation
-- ✅ **`products/AddProductWizard.jsx`** - Product creation wizard (5 steps)
+- ✅ **`products/AddProductWizard.jsx`** - Product creation wizard (4 steps)
+- ✅ **`products/VariantFormModal.jsx`** - Variant add/edit modal with image upload
 - ✅ **`products/steps/BasicInfoStep.jsx`** - Step 1: Basic information
 - ✅ **`products/steps/AttributesStep.jsx`** - Step 2: Product attributes
-- ✅ **`products/steps/VariantsStep.jsx`** - Step 3: Variants & bulk pricing
-- ✅ **`products/steps/ImageStep.jsx`** - Step 4: Product images
-- ✅ **`products/steps/ReviewStep.jsx`** - Step 5: Review & submit
+- ✅ **`products/steps/VariantsStep.jsx`** - Step 3: Variants with images & bulk pricing (modal-based)
+- ✅ **`products/steps/ReviewStep.jsx`** - Step 4: Review & submit (with variant images, edit navigation)
 - ✅ **`inventory/StockAdjustmentForm.jsx`** - Stock adjustment modal (add/reduce stock, update threshold)
 - ✅ **`inventory/InventoryHistoryModal.jsx`** - Inventory history modal (with sample data)
-- ⏳ `orders/OrderDetailsModal.jsx` - Order details (pending)
+- ✅ **`orders/OrderDetailsModal.jsx`** - Order details modal
 
 #### 📄 View Files
 
 **View Files** (`admin/src/views/`):
 - ✅ **`categories/CategoriesList.jsx`** - Categories list page with CRUD operations
 - ✅ **`settings/Settings.jsx`** - Global Settings page with auto-save on blur
-- ✅ **`products/ProductsList.jsx`** - Product variants list page with server-side pagination
+- ✅ **`products/ProductsList.jsx`** - Product variants list page with images, server-side pagination
 - ✅ **`inventory/InventoryManagement.jsx`** - Inventory management page (product variants with stock)
+- ✅ **`orders/OrdersList.jsx`** - Orders list page with filters and statistics
 - ⏳ `dashboard/Dashboard.jsx` - Dashboard page (pending)
-- ⏳ `orders/OrdersList.jsx` - Orders list (pending)
 
 #### 🔐 Authentication Files
 
@@ -620,49 +614,48 @@ ToastProvider.jsx
 - `GET /product-service/products/{product_id}/attributes/` - Get product attributes
 - `POST /product-service/products/{product_id}/attributes/` - Assign attributes to product
 
-**Step 3 - Variants:**
-- `GET /product-service/products/{product_id}/variants` - List product variants
-- `POST /product-service/products/{product_id}/variants` - Create variant
-- `PUT /product-service/products/variants/{variant_id}` - Update variant
-- `DELETE /product-service/products/variants/{variant_id}` - Delete variant
+**Step 3 - Variants with Images:**
+- `GET /product-service/products/{product_id}/variants-with-images` - List product variants with images
+- `POST /product-service/products/{product_id}/variants-with-images` - Create variant with images (multipart/form-data)
+- `PUT /product-service/products/variants-with-images/{variant_id}` - Update variant data
+- `DELETE /product-service/products/variants-with-images/{variant_id}` - Delete variant with images
+- `POST /product-service/products/variants/{variant_id}/images` - Upload images for existing variant
+- `DELETE /product-service/products/variants/images/{image_id}` - Delete variant image
 - `GET /product-service/products/{product_id}/bulk-pricing` - List bulk pricing
 - `POST /product-service/products/{product_id}/bulk-pricing` - Create bulk pricing
 - `PUT /product-service/products/bulk-pricing/{bulk_pricing_id}` - Update bulk pricing
 - `DELETE /product-service/products/bulk-pricing/{bulk_pricing_id}` - Delete bulk pricing
+- Modal-based variant add/edit with image upload (up to 4 images per variant)
+- Variant card view displaying variant images
 
-**Step 4 - Images:**
-- `GET /product-service/products/{product_id}/images` - List product images
-- `POST /product-service/products/{product_id}/images` - Upload images (multipart/form-data)
-- `PUT /product-service/products/{product_id}/images/meta` - Update image metadata
-- `PUT /product-service/products/{product_id}/images?delete_image_ids=[]` - Delete images
-
-**Step 5 - Review:**
+**Step 4 - Review:**
 - `GET /product-service/products/{product_id}/full` - Get full product details for review
 - `PUT /product-service/products/{product_id}/activate` - Activate/Submit product
+- Displays variant images per variant and in gallery section
+- Edit buttons navigate to specific steps
 
 **Files Updated:**
-- `admin/src/services/productService.js` ✅ Completed
-- `admin/src/components/pages/products/AddProductWizard.jsx` ✅ Completed
+- `admin/src/services/productService.js` ✅ Completed (added variants-with-images APIs)
+- `admin/src/components/pages/products/AddProductWizard.jsx` ✅ Completed (4-step wizard)
+- `admin/src/components/pages/products/VariantFormModal.jsx` ✅ Completed (new - variant modal with images)
 - `admin/src/components/pages/products/steps/BasicInfoStep.jsx` ✅ Completed
 - `admin/src/components/pages/products/steps/AttributesStep.jsx` ✅ Completed
-- `admin/src/components/pages/products/steps/VariantsStep.jsx` ✅ Completed
-- `admin/src/components/pages/products/steps/ImageStep.jsx` ✅ Completed
-- `admin/src/components/pages/products/steps/ReviewStep.jsx` ✅ Completed
+- `admin/src/components/pages/products/steps/VariantsStep.jsx` ✅ Completed (updated - modal-based)
+- `admin/src/components/pages/products/steps/ReviewStep.jsx` ✅ Completed (updated - variant images, edit navigation)
 
 **Features Implemented:**
-- 5-step product creation wizard with full API integration
+- 4-step product creation wizard with full API integration (removed separate image step)
 - Step 1: Auto-save product on completion (create in new mode, update in edit mode), stores product_id for subsequent steps
 - Step 2: Auto-save attributes on completion, supports boolean/text/date types
-- Step 3: Row-level save for variants and bulk pricing (save button per row)
-- Step 4: Immediate image upload, auto-save metadata on changes
-- Step 5: Review page fetches and displays full product details from API, Submit button activates product
+- Step 3: Variants with images via modal popup - each variant can have up to 4 images, primary image selection, drag & drop upload, card view display
+- Step 4: Review page with variant images displayed per variant and in gallery, edit navigation buttons
 - Category dropdown populated from API
 - Toast notifications for all operations
 - Loading states and error handling
 - Edit mode support (loads existing product data, updates on Step 1)
 - Product ID management across all steps
 - Update product API integration for edit mode (Step 1)
-- Activate product API integration for final submission (Step 5)
+- Activate product API integration for final submission (Step 4)
 
 **Time Taken**: Completed
 
@@ -672,28 +665,31 @@ ToastProvider.jsx
 **Why**: Display and manage product variants in a list view.
 
 **APIs Integrated:**
-- `GET /product-service/products/variants/filter` - Filter and list product variants with pagination (supports product_name, category_id, attribute_id filters)
+- `GET /product-service/products/variants/filter` - Filter and list product variants with pagination (supports product_name, category_id, attribute_id filters, returns image_url for variants)
 
 **Files Updated:**
 - `admin/src/services/productService.js` ✅ Added `getProductVariantsFilter()` method
-- `admin/src/views/products/ProductsList.jsx` ✅ Completed - displays product variants instead of products
+- `admin/src/views/products/ProductsList.jsx` ✅ Completed - displays product variants with images
 - `admin/src/components/common/Table.jsx` ✅ Enhanced with `serverSidePagination` prop
 
 **Features Implemented:**
 - Product variants list (not products) - displays all variants with product and variant information
+- Image column showing variant images (60x60px thumbnails) with placeholder for missing images
 - Server-side pagination with page and page_size parameters
 - Search by product name (triggers on Search button click or Enter key, not on key change)
 - Category filter dropdown (populated from categories API)
-- Table columns: Product/Variant name, Category, Price (with discount badges), Stock (with status indicators), Status, Actions
+- Table columns: Image, Product/Variant name, Category, Price (with discount badges), Stock (with status indicators), Status, Actions
 - Edit button only (removed View button) - opens Product Wizard in edit mode using product_id
 - Removed summary/stats cards
 - Removed export button
 - Toast notifications for API errors
 - Loading states during API calls
 - Proper error handling
+- Image error handling with fallback placeholder
 
 **Key Implementation Details:**
 - List shows product variants, not products
+- Image column displays variant image from `image_url` field in API response
 - Edit button navigates to `/products/edit/{product_id}` (uses product_id, not variant_id)
 - Server-side pagination: Table component uses `serverSidePagination={true}` to skip client-side data slicing
 - Search triggers API call only on button click or Enter key press
@@ -970,8 +966,8 @@ export default moduleService
 - Category Management Module
 - Content Management Module (Banners, FAQ Categories, FAQ Entries)
 - Global Settings Module
-- Product Management Module - Add Product Wizard (5-step process)
-- Product Management Module - Products List (Variants List with server-side pagination)
+- Product Management Module - Add Product Wizard (4-step process with variant images)
+- Product Management Module - Products List (Variants List with images, server-side pagination)
 - Inventory Management Module (Product Variants with Stock Management)
 - Orders Management Module (Order List, Order Details, Status Updates, Statistics)
 
@@ -1514,5 +1510,12 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 5 steps with Update Product and Activate Product APIs), Product List (Variants List with server-side pagination), Inventory Management (Product Variants with Stock Management), and Orders Management (Order List, Order Details, Status Updates, Statistics) Modules Completed - Ready for Dashboard Module Integration
+**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 4 steps with Variant Images via Modal, Update Product and Activate Product APIs), Product List (Variants List with Images, server-side pagination), Inventory Management (Product Variants with Stock Management), and Orders Management (Order List, Order Details, Status Updates, Statistics) Modules Completed - Ready for Dashboard Module Integration
+
+**Recent Updates**:
+- Product Wizard updated to 4 steps (removed separate image step)
+- Variants now include images (uploaded via modal in Step 3)
+- VariantFormModal component for add/edit variants with image upload
+- Product List displays variant images in table
+- Review Step shows variant images with edit navigation
 

@@ -75,15 +75,15 @@ admin/
 │   │   │   │   ├── OrderDetailsModal.jsx # Order details modal component
 │   │   │   │   └── README.md          # Order components documentation
 │   │   │   ├── 📁 products/           # Product management
-│   │   │   │   ├── AddProductWizard.jsx # Multi-step product creation wizard
+│   │   │   │   ├── AddProductWizard.jsx # Multi-step product creation wizard (4 steps)
+│   │   │   │   ├── VariantFormModal.jsx # Variant add/edit modal with image upload
 │   │   │   │   ├── ProductForm.jsx    # Product form component
 │   │   │   │   ├── README.md          # Product components documentation
 │   │   │   │   └── 📁 steps/          # Wizard step components
-│   │   │   │       ├── BasicInfoStep.jsx    # Basic information step
-│   │   │   │       ├── AttributesStep.jsx   # Product attributes step
-│   │   │   │       ├── VariantsStep.jsx     # Product variants step
-│   │   │   │       ├── ImageStep.jsx        # Product images step
-│   │   │   │       └── ReviewStep.jsx       # Review and submit step
+│   │   │   │       ├── BasicInfoStep.jsx    # Step 1 - Basic information
+│   │   │   │       ├── AttributesStep.jsx   # Step 2 - Product attributes
+│   │   │   │       ├── VariantsStep.jsx     # Step 3 - Product variants with images
+│   │   │   │       └── ReviewStep.jsx       # Step 4 - Review and submit (with variant images)
 │   │   │   ├── 📁 roles/              # Role management
 │   │   │   │   └── RoleForm.jsx       # Role form component
 │   │   │   ├── 📁 subcategories/      # Subcategory management
@@ -753,7 +753,8 @@ const userService = {
 ### 🧩 Component Library
 - **StepIndicator** - Multi-step form progress indicator
 - **ImageUpload** - Drag-and-drop image upload component
-- **AddProductWizard** - Complete multi-step product creation wizard (supports create/edit modes)
+- **AddProductWizard** - Complete multi-step product creation wizard (4 steps, supports create/edit modes)
+- **VariantFormModal** - Modal for adding/editing product variants with image upload (up to 4 images per variant)
 - **ProductForm** - Single-step product form (legacy)
 - **FormModal** - Modal wrapper for forms
 - **Table** - Data table with sorting and pagination
@@ -801,7 +802,8 @@ const userService = {
 - **Order Management**: Complete order tracking with status management, customer details, and timeline
 - **Custom Table Component**: Reusable table with sorting, pagination, and loading states
 - **Multi-Step Forms**: StepIndicator component with wizard pattern for complex forms
-- **Image Management**: Drag-and-drop upload with primary image selection
+- **Variant Image Management**: Drag-and-drop upload with primary image selection per variant (up to 4 images per variant)
+- **Modal-Based Variant Management**: VariantFormModal for add/edit variants with integrated image upload
 - **Form Validation**: Step-by-step validation with error handling
 - **Mock Data System**: JSON-based mock data for development and testing
 - **Image Handling**: Fallback system with icon display for missing product images
