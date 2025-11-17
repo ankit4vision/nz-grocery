@@ -4563,44 +4563,6 @@
               "type": "integer",
               "title": "Product Id"
             }
-          },
-          {
-            "name": "primary_flags",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "boolean"
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Primary Flags"
-            }
-          },
-          {
-            "name": "sort_orders",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Sort Orders"
-            }
           }
         ],
         "requestBody": {
@@ -4645,6 +4607,7 @@
           "Products"
         ],
         "summary": "Update Product Images",
+        "description": "Update product images by uploading new images and/or updating existing image metadata.\n\nThis endpoint:\n- Uploads new images (via files parameter)\n- Updates existing image metadata like is_primary and sort_order (via update_images parameter)\n\nNote: To delete images, use the DELETE /product-service/products/images/{image_id} endpoint.",
         "operationId": "update_product_images_product_service_products__product_id__images_put",
         "parameters": [
           {
@@ -4654,63 +4617,6 @@
             "schema": {
               "type": "integer",
               "title": "Product Id"
-            }
-          },
-          {
-            "name": "delete_image_ids",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Delete Image Ids"
-            }
-          },
-          {
-            "name": "primary_flags",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "boolean"
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Primary Flags"
-            }
-          },
-          {
-            "name": "sort_orders",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Sort Orders"
             }
           }
         ],
@@ -4834,6 +4740,42 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/images/{image_id}": {
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Delete Product Images",
+        "description": "Delete a product image by image_id.\n\nThis endpoint:\n- Deletes the image record from the database\n- Deletes the actual image file from S3 bucket\n\n**Parameters:**\n- **image_id**: The ID of the image to delete\n\n**Returns:** 204 No Content on success, 404 if image not found",
+        "operationId": "delete_product_images_product_service_products_images__image_id__delete",
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Image Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -5057,6 +4999,283 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/{product_id}/variants-with-images": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "List Product Variant With Images",
+        "description": "List all product variants for a product along with all their image URLs.\nData is pulled from `product_variants` and `product_variant_images`.",
+        "operationId": "list_product_variant_with_images_product_service_products__product_id__variants_with_images_get",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductVariantWithImagesOut"
+                  },
+                  "title": "Response List Product Variant With Images Product Service Products  Product Id  Variants With Images Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Create Product Variant With Images",
+        "description": "Create a new product variant and optionally upload one or more images for that variant.\n\n- Variant fields are same as `create_product_variant` endpoint.\n- Images are uploaded to AWS S3 and their URLs are stored in `product_variant_images`.",
+        "operationId": "create_product_variant_with_images_product_service_products__product_id__variants_with_images_post",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_product_variant_with_images_product_service_products__product_id__variants_with_images_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__product_variant__ProductVariantOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/variants/{variant_id}/images": {
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Upload Product Variant Image",
+        "description": "Upload one or more images for an existing product variant.\n\n- Files are uploaded to AWS S3 under a variant-specific path.\n- Image metadata is stored in the `product_variant_images` table.\n- Returns list of uploaded image URLs.",
+        "operationId": "upload_product_variant_image_product_service_products_variants__variant_id__images_post",
+        "parameters": [
+          {
+            "name": "variant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Variant Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_product_variant_image_product_service_products_variants__variant_id__images_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response Upload Product Variant Image Product Service Products Variants  Variant Id  Images Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/variants-with-images/{variant_id}": {
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Delete Product Variant With Images Endpoint",
+        "description": "Delete an existing product variant and all its images.\n\n- Deletes image files from S3.\n- Deletes records from `product_variant_images`.\n- Deletes the `product_variants` record.",
+        "operationId": "delete_product_variant_with_images_endpoint_product_service_products_variants_with_images__variant_id__delete",
+        "parameters": [
+          {
+            "name": "variant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Variant Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Update Product Variant With Images",
+        "description": "Update an existing product variant's data (except its images).\n\nThis endpoint accepts the same fields as `create_product_variant`, but all are optional.\nImage management is done via separate endpoints and is not modified here.",
+        "operationId": "update_product_variant_with_images_product_service_products_variants_with_images__variant_id__put",
+        "parameters": [
+          {
+            "name": "variant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Variant Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_update_product_variant_with_images_product_service_products_variants_with_images__variant_id__put"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__product_variant__ProductVariantOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/variants/images/{image_id}": {
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Delete Product Variant Image Endpoint",
+        "description": "Delete a single product variant image by image_id.\n\n- Deletes the image file from S3.\n- Deletes the record from `product_variant_images`.",
+        "operationId": "delete_product_variant_image_endpoint_product_service_products_variants_images__image_id__delete",
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Image Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -5477,6 +5696,53 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/StockManagementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/products/variants/{variant_id}/stock-history": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Fetch Product Variant Stock History Endpoint",
+        "description": "Fetch stock history records for a given product variant.\n\nData is returned from `product_variants_stock_history`, ordered by `created_at` descending.",
+        "operationId": "fetch_product_variant_stock_history_endpoint_product_service_products_variants__variant_id__stock_history_get",
+        "parameters": [
+          {
+            "name": "variant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Variant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductVariantStockHistoryOut"
+                  },
+                  "title": "Response Fetch Product Variant Stock History Endpoint Product Service Products Variants  Variant Id  Stock History Get"
                 }
               }
             }
@@ -8729,6 +8995,171 @@
         ],
         "title": "Body_create_category_endpoint_product_service_categories__post"
       },
+      "Body_create_product_variant_with_images_product_service_products__product_id__variants_with_images_post": {
+        "properties": {
+          "variant_name": {
+            "type": "string",
+            "title": "Variant Name"
+          },
+          "variant_value": {
+            "type": "string",
+            "title": "Variant Value"
+          },
+          "base_price": {
+            "type": "number",
+            "title": "Base Price"
+          },
+          "sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sale Price"
+          },
+          "discount_percentage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discount Percentage",
+            "default": 0
+          },
+          "stock_quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Quantity",
+            "default": 0
+          },
+          "low_stock_quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low Stock Quantity",
+            "default": 5
+          },
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active",
+            "default": true
+          },
+          "margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin"
+          },
+          "margin_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin Type"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Files"
+          },
+          "primary_flags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Flags",
+            "description": "Comma-separated list of booleans for primary flags for new files (e.g., 'true,false,true')"
+          },
+          "sort_orders": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Orders",
+            "description": "Comma-separated list of integers for sort orders for new files (e.g., '0,1,2')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variant_name",
+          "variant_value",
+          "base_price"
+        ],
+        "title": "Body_create_product_variant_with_images_product_service_products__product_id__variants_with_images_post"
+      },
       "Body_update_category_endpoint_product_service_categories__category_id__put": {
         "properties": {
           "category_name": {
@@ -8804,6 +9235,18 @@
       },
       "Body_update_product_images_product_service_products__product_id__images_put": {
         "properties": {
+          "update_images": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Update Images",
+            "description": "JSON array of image updates: [{'image_id': 1, 'is_primary': true}, {'image_id': 2, 'is_primary': false}]"
+          },
           "files": {
             "anyOf": [
               {
@@ -8818,10 +9261,172 @@
               }
             ],
             "title": "Files"
+          },
+          "primary_flags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Flags",
+            "description": "Comma-separated list of booleans for primary flags for new files (e.g., 'true,false,true')"
+          },
+          "sort_orders": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Orders",
+            "description": "Comma-separated list of integers for sort orders for new files (e.g., '0,1,2')"
           }
         },
         "type": "object",
         "title": "Body_update_product_images_product_service_products__product_id__images_put"
+      },
+      "Body_update_product_variant_with_images_product_service_products_variants_with_images__variant_id__put": {
+        "properties": {
+          "variant_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Name"
+          },
+          "variant_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Value"
+          },
+          "base_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Price"
+          },
+          "sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sale Price"
+          },
+          "discount_percentage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discount Percentage"
+          },
+          "stock_quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Quantity"
+          },
+          "low_stock_quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low Stock Quantity"
+          },
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin"
+          },
+          "margin_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin Type"
+          }
+        },
+        "type": "object",
+        "title": "Body_update_product_variant_with_images_product_service_products_variants_with_images__variant_id__put"
       },
       "Body_upload_product_images_product_service_products__product_id__images_post": {
         "properties": {
@@ -8832,6 +9437,30 @@
             },
             "type": "array",
             "title": "Files"
+          },
+          "primary_flags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Flags",
+            "description": "Comma-separated list of booleans for primary flags (e.g., 'true,false,true')"
+          },
+          "sort_orders": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Orders",
+            "description": "Comma-separated list of integers for sort orders (e.g., '0,1,2')"
           }
         },
         "type": "object",
@@ -8839,6 +9468,47 @@
           "files"
         ],
         "title": "Body_upload_product_images_product_service_products__product_id__images_post"
+      },
+      "Body_upload_product_variant_image_product_service_products_variants__variant_id__images_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "primary_flags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Flags",
+            "description": "Comma-separated list of booleans for primary flags (e.g., 'true,false,true')"
+          },
+          "sort_orders": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Orders",
+            "description": "Comma-separated list of integers for sort orders (e.g., '0,1,2')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_product_variant_image_product_service_products_variants__variant_id__images_post"
       },
       "Body_upload_profile_image_endpoint_users_profile_image_put": {
         "properties": {
@@ -12752,6 +13422,25 @@
             ],
             "title": "Discounted Sale Price"
           },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/VariantImageInfo"
+            },
+            "type": "array",
+            "title": "Images",
+            "default": []
+          },
           "created_date": {
             "anyOf": [
               {
@@ -12804,6 +13493,79 @@
           "is_active"
         ],
         "title": "ProductVariantFilterResponse"
+      },
+      "ProductVariantStockHistoryOut": {
+        "properties": {
+          "stock_history_id": {
+            "type": "integer",
+            "title": "Stock History Id"
+          },
+          "product_variant_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Variant Id"
+          },
+          "change_type": {
+            "type": "string",
+            "title": "Change Type"
+          },
+          "quantity_change": {
+            "type": "integer",
+            "title": "Quantity Change"
+          },
+          "previous_stock": {
+            "type": "integer",
+            "title": "Previous Stock"
+          },
+          "new_stock": {
+            "type": "integer",
+            "title": "New Stock"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stock_history_id",
+          "product_variant_id",
+          "change_type",
+          "quantity_change",
+          "previous_stock",
+          "new_stock",
+          "created_at"
+        ],
+        "title": "ProductVariantStockHistoryOut"
       },
       "ProductVariantUpdate": {
         "properties": {
@@ -12942,6 +13704,133 @@
         },
         "type": "object",
         "title": "ProductVariantUpdate"
+      },
+      "ProductVariantWithImagesOut": {
+        "properties": {
+          "variant_id": {
+            "type": "integer",
+            "title": "Variant Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "variant_name": {
+            "type": "string",
+            "title": "Variant Name"
+          },
+          "variant_value": {
+            "type": "string",
+            "title": "Variant Value"
+          },
+          "base_price": {
+            "type": "number",
+            "title": "Base Price"
+          },
+          "sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sale Price"
+          },
+          "discount_percentage": {
+            "type": "number",
+            "title": "Discount Percentage"
+          },
+          "discounted_sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discounted Sale Price"
+          },
+          "stock_quantity": {
+            "type": "integer",
+            "title": "Stock Quantity"
+          },
+          "low_stock_quantity": {
+            "type": "integer",
+            "title": "Low Stock Quantity"
+          },
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin"
+          },
+          "margin_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin Type"
+          },
+          "images": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Images",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "variant_id",
+          "product_id",
+          "variant_name",
+          "variant_value",
+          "base_price",
+          "discount_percentage",
+          "stock_quantity",
+          "low_stock_quantity",
+          "is_active"
+        ],
+        "title": "ProductVariantWithImagesOut"
       },
       "ProfileUpdate": {
         "properties": {
@@ -14046,6 +14935,29 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VariantImageInfo": {
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "title": "Image Url"
+          },
+          "is_primary": {
+            "type": "boolean",
+            "title": "Is Primary"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_url",
+          "is_primary",
+          "sort_order"
+        ],
+        "title": "VariantImageInfo"
       },
       "WishlistCreate": {
         "properties": {
