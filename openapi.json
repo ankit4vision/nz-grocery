@@ -5168,6 +5168,48 @@
         }
       }
     },
+    "/product-service/products/variants/image/meta": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Update Product Variant Image Meta",
+        "description": "Update metadata (is_primary, sort_order) for product variant images.\n\n- Accepts a list of images with image_id, is_primary, and sort_order\n- Updates only images that belong to the specified product_variant_id\n- Each image update must include image_id; is_primary and sort_order are optional\n- Returns the number of images updated",
+        "operationId": "update_product_variant_image_meta_product_service_products_variants_image_meta_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductVariantImageMetaUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/product-service/products/variants-with-images/{variant_id}": {
       "delete": {
         "tags": [
@@ -7234,6 +7276,303 @@
               "application/json": {
                 "schema": {
 
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/reviews/": {
+      "get": {
+        "tags": [
+          "Product Reviews"
+        ],
+        "summary": "List Product Reviews",
+        "description": "List all product reviews with optional filters and sorting.\n\n**Query Parameters:**\n- **product_id**: Filter reviews by product ID\n- **product_variant_id**: Filter reviews by product variant ID\n- **user_id**: Filter reviews by user ID\n- **is_approved**: Filter reviews by approval status (true/false)\n- **sort_by**: Sort order - \"Newest\" (default), \"Oldest\", \"Highest rating\", \"Lowest rating\"\n\n**Returns:** List of product reviews",
+        "operationId": "list_product_reviews_product_service_reviews__get",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by product ID",
+              "title": "Product Id"
+            },
+            "description": "Filter by product ID"
+          },
+          {
+            "name": "product_variant_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by product variant ID",
+              "title": "Product Variant Id"
+            },
+            "description": "Filter by product variant ID"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by user ID",
+              "title": "User Id"
+            },
+            "description": "Filter by user ID"
+          },
+          {
+            "name": "is_approved",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by approval status",
+              "title": "Is Approved"
+            },
+            "description": "Filter by approval status"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort by: Newest, Oldest, Highest rating, Lowest rating",
+              "default": "Newest",
+              "title": "Sort By"
+            },
+            "description": "Sort by: Newest, Oldest, Highest rating, Lowest rating"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductReviewOut"
+                  },
+                  "title": "Response List Product Reviews Product Service Reviews  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Product Reviews"
+        ],
+        "summary": "Create Product Review",
+        "description": "Create a new product review.\n\n**Request Body:**\n- **product_id**: Product ID (required)\n- **product_variant_id**: Product variant ID (optional)\n- **user_id**: User ID who wrote the review (required)\n- **order_id**: Order ID (optional)\n- **rating**: Rating from 1 to 5 (required)\n- **review_title**: Review title (optional, max 255 characters)\n- **review_text**: Review text (optional)\n- **is_verified_purchase**: Whether this is a verified purchase (default: false)\n- **is_helpful_count**: Number of helpful votes (default: 0)\n- **is_reported**: Whether the review has been reported (default: false)\n- **report_reason**: Reason for reporting (optional)\n- **is_approved**: Whether the review is approved (default: true)\n\n**Returns:** Created product review",
+        "operationId": "create_product_review_product_service_reviews__post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductReviewCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductReviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-service/reviews/{review_id}": {
+      "get": {
+        "tags": [
+          "Product Reviews"
+        ],
+        "summary": "Get Product Review",
+        "description": "Get a single product review by ID.\n\n**Parameters:**\n- **review_id**: The ID of the review to retrieve\n\n**Returns:** Product review details",
+        "operationId": "get_product_review_product_service_reviews__review_id__get",
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductReviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Product Reviews"
+        ],
+        "summary": "Update Product Review",
+        "description": "Update an existing product review.\n\n**Parameters:**\n- **review_id**: The ID of the review to update\n\n**Request Body:** All fields are optional. Only provided fields will be updated.\n- **product_variant_id**: Product variant ID\n- **rating**: Rating from 1 to 5\n- **review_title**: Review title (max 255 characters)\n- **review_text**: Review text\n- **is_verified_purchase**: Whether this is a verified purchase\n- **is_helpful_count**: Number of helpful votes\n- **is_reported**: Whether the review has been reported\n- **report_reason**: Reason for reporting\n- **is_approved**: Whether the review is approved\n\n**Returns:** Updated product review",
+        "operationId": "update_product_review_product_service_reviews__review_id__put",
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductReviewUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductReviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Product Reviews"
+        ],
+        "summary": "Delete Product Review",
+        "description": "Delete a product review by ID.\n\n**Parameters:**\n- **review_id**: The ID of the review to delete\n\n**Returns:** 204 No Content on success, 404 if review not found",
+        "operationId": "delete_product_review_product_service_reviews__review_id__delete",
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -12896,7 +13235,7 @@
           },
           "variants": {
             "items": {
-              "$ref": "#/components/schemas/app__schemas__product_variant__ProductVariantOut"
+              "$ref": "#/components/schemas/ProductVariantWithDetailedImagesOut"
             },
             "type": "array",
             "title": "Variants"
@@ -13115,6 +13454,405 @@
           "product_name"
         ],
         "title": "ProductOut"
+      },
+      "ProductReviewCreate": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id",
+            "description": "Product ID"
+          },
+          "product_variant_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Variant Id",
+            "description": "Product variant ID (optional)"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id",
+            "description": "User ID who wrote the review"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id",
+            "description": "Order ID (optional)"
+          },
+          "rating": {
+            "type": "integer",
+            "maximum": 5,
+            "minimum": 1,
+            "title": "Rating",
+            "description": "Rating from 1 to 5"
+          },
+          "review_title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Title",
+            "description": "Review title"
+          },
+          "review_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Text",
+            "description": "Review text"
+          },
+          "is_verified_purchase": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Verified Purchase",
+            "description": "Whether this is a verified purchase",
+            "default": false
+          },
+          "is_helpful_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Helpful Count",
+            "description": "Number of helpful votes",
+            "default": 0
+          },
+          "is_reported": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Reported",
+            "description": "Whether the review has been reported",
+            "default": false
+          },
+          "report_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Reason",
+            "description": "Reason for reporting"
+          },
+          "is_approved": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Approved",
+            "description": "Whether the review is approved",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "user_id",
+          "rating"
+        ],
+        "title": "ProductReviewCreate"
+      },
+      "ProductReviewOut": {
+        "properties": {
+          "review_id": {
+            "type": "integer",
+            "title": "Review Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "product_variant_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Variant Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "user_full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Full Name"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "rating": {
+            "type": "integer",
+            "title": "Rating"
+          },
+          "review_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Title"
+          },
+          "review_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Text"
+          },
+          "is_verified_purchase": {
+            "type": "boolean",
+            "title": "Is Verified Purchase"
+          },
+          "is_helpful_count": {
+            "type": "integer",
+            "title": "Is Helpful Count"
+          },
+          "is_reported": {
+            "type": "boolean",
+            "title": "Is Reported"
+          },
+          "report_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Reason"
+          },
+          "is_approved": {
+            "type": "boolean",
+            "title": "Is Approved"
+          },
+          "average_rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Rating"
+          },
+          "total_reviews": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Reviews"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "review_id",
+          "product_id",
+          "user_id",
+          "rating",
+          "is_verified_purchase",
+          "is_helpful_count",
+          "is_reported",
+          "is_approved",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProductReviewOut"
+      },
+      "ProductReviewUpdate": {
+        "properties": {
+          "product_variant_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Variant Id"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5,
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          },
+          "review_title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Title"
+          },
+          "review_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Text"
+          },
+          "is_verified_purchase": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Verified Purchase"
+          },
+          "is_helpful_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Helpful Count"
+          },
+          "is_reported": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Reported"
+          },
+          "report_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Reason"
+          },
+          "is_approved": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Approved"
+          }
+        },
+        "type": "object",
+        "title": "ProductReviewUpdate"
       },
       "ProductUpdate": {
         "properties": {
@@ -13435,7 +14173,7 @@
           },
           "images": {
             "items": {
-              "$ref": "#/components/schemas/VariantImageInfo"
+              "$ref": "#/components/schemas/app__schemas__product_variant_filter__VariantImageInfo"
             },
             "type": "array",
             "title": "Images",
@@ -13493,6 +14231,27 @@
           "is_active"
         ],
         "title": "ProductVariantFilterResponse"
+      },
+      "ProductVariantImageMetaUpdateRequest": {
+        "properties": {
+          "product_variant_id": {
+            "type": "integer",
+            "title": "Product Variant Id"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/VariantImageMetaUpdate"
+            },
+            "type": "array",
+            "title": "Images"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_variant_id",
+          "images"
+        ],
+        "title": "ProductVariantImageMetaUpdateRequest"
       },
       "ProductVariantStockHistoryOut": {
         "properties": {
@@ -13705,6 +14464,133 @@
         "type": "object",
         "title": "ProductVariantUpdate"
       },
+      "ProductVariantWithDetailedImagesOut": {
+        "properties": {
+          "variant_id": {
+            "type": "integer",
+            "title": "Variant Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "variant_name": {
+            "type": "string",
+            "title": "Variant Name"
+          },
+          "variant_value": {
+            "type": "string",
+            "title": "Variant Value"
+          },
+          "base_price": {
+            "type": "number",
+            "title": "Base Price"
+          },
+          "sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sale Price"
+          },
+          "discount_percentage": {
+            "type": "number",
+            "title": "Discount Percentage"
+          },
+          "discounted_sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discounted Sale Price"
+          },
+          "stock_quantity": {
+            "type": "integer",
+            "title": "Stock Quantity"
+          },
+          "low_stock_quantity": {
+            "type": "integer",
+            "title": "Low Stock Quantity"
+          },
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "margin": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin"
+          },
+          "margin_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margin Type"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/VariantImageDetail"
+            },
+            "type": "array",
+            "title": "Images",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "variant_id",
+          "product_id",
+          "variant_name",
+          "variant_value",
+          "base_price",
+          "discount_percentage",
+          "stock_quantity",
+          "low_stock_quantity",
+          "is_active"
+        ],
+        "title": "ProductVariantWithDetailedImagesOut"
+      },
       "ProductVariantWithImagesOut": {
         "properties": {
           "variant_id": {
@@ -13811,7 +14697,7 @@
           },
           "images": {
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/app__schemas__product_variant__VariantImageInfo"
             },
             "type": "array",
             "title": "Images",
@@ -14936,28 +15822,68 @@
         ],
         "title": "ValidationError"
       },
-      "VariantImageInfo": {
+      "VariantImageDetail": {
         "properties": {
+          "image_id": {
+            "type": "integer",
+            "title": "Image Id"
+          },
           "image_url": {
             "type": "string",
             "title": "Image Url"
           },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          },
           "is_primary": {
             "type": "boolean",
             "title": "Is Primary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_id",
+          "image_url",
+          "sort_order",
+          "is_primary"
+        ],
+        "title": "VariantImageDetail"
+      },
+      "VariantImageMetaUpdate": {
+        "properties": {
+          "image_id": {
+            "type": "integer",
+            "title": "Image Id"
+          },
+          "is_primary": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Primary"
           },
           "sort_order": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Sort Order"
           }
         },
         "type": "object",
         "required": [
-          "image_url",
-          "is_primary",
-          "sort_order"
+          "image_id"
         ],
-        "title": "VariantImageInfo"
+        "title": "VariantImageMetaUpdate"
       },
       "WishlistCreate": {
         "properties": {
@@ -15447,6 +16373,47 @@
           "is_active"
         ],
         "title": "ProductVariantOut"
+      },
+      "app__schemas__product_variant__VariantImageInfo": {
+        "properties": {
+          "image_id": {
+            "type": "integer",
+            "title": "Image Id"
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_id",
+          "image_url"
+        ],
+        "title": "VariantImageInfo"
+      },
+      "app__schemas__product_variant_filter__VariantImageInfo": {
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "title": "Image Url"
+          },
+          "is_primary": {
+            "type": "boolean",
+            "title": "Is Primary"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_url",
+          "is_primary",
+          "sort_order"
+        ],
+        "title": "VariantImageInfo"
       },
       "app__schemas__product_variant_search__ProductVariantOut": {
         "properties": {

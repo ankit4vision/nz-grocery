@@ -1,85 +1,92 @@
 {
-  "description": "This file contains a comprehensive list of module and task-wise APIs that have been integrated in the admin panel and Customer(Client) panel. The APIs are organized by functional modules  with detailed information about endpoints, HTTP methods, and descriptions. For complete API documentation including request/response schemas, authentication details, and all available server endpoints, please refer to the swagger openapi.json file.",
-
+  "description": "This file contains a comprehensive list of module and task-wise APIs integrated in the admin and customer portals. The APIs are categorized by modules with endpoints, methods, and descriptions. For detailed request/response schemas, authentication, and server documentation, please refer to the Swagger openapi.json file.",
   "modules": {
     "Admin": {
       "Categories": [
-        { "screen": "Categories", "functionality": "Create Category", "method": "POST", "endpoint": "/categories/" },
-        { "screen": "Categories", "functionality": "List of categories", "method": "GET", "endpoint": "/categories/with_counts" },
-        { "screen": "Categories", "functionality": "Get Category details", "method": "GET", "endpoint": "/categories/{category_id}" },
-        { "screen": "Categories", "functionality": "Update Category", "method": "PUT", "endpoint": "/categories/{category_id}" },
-        { "screen": "Categories", "functionality": "Delete Category", "method": "DELETE", "endpoint": "/categories/{category_id}" },
-        { "screen": "Categories", "functionality": "Dropdown list of active categories", "method": "GET", "endpoint": "/categories/options?only_active=true" }
+        { "functionality": "Create Category", "method": "POST", "endpoint": "/categories/" },
+        { "functionality": "List of categories", "method": "GET", "endpoint": "/categories/with_counts" },
+        { "functionality": "Get Category details", "method": "GET", "endpoint": "/categories/{category_id}" },
+        { "functionality": "Update Category", "method": "PUT", "endpoint": "/categories/{category_id}" },
+        { "functionality": "Delete Category", "method": "DELETE", "endpoint": "/categories/{category_id}" },
+        { "functionality": "List of categories for dropdown", "method": "GET", "endpoint": "/categories/options?only_active=true" }
       ],
-
       "Product": [
-        { "functionality": "Create new product - step 1", "method": "POST", "endpoint": "/product-service/products/" },
-        { "functionality": "Update product - step 1", "method": "PUT", "endpoint": "/product-service/products/{product_id}" },
+        { "functionality": "Create new product (step 1)", "method": "POST", "endpoint": "/product-service/products/" },
+        { "functionality": "Update product (step 1)", "method": "PUT", "endpoint": "/product-service/products/{product_id}" },
 
-        { "functionality": "Upload product images - step 4", "method": "POST", "endpoint": "/product-service/products/{product_id}/images" },
-        { "functionality": "Update product images - step 4", "method": "PUT", "endpoint": "/product-service/products/{product_id}/images" },
-        { "functionality": "List product images - step 4", "method": "GET", "endpoint": "/product-service/products/{product_id}/images" },
+        { "functionality": "Upload product images (step 4)", "method": "POST", "endpoint": "/product-service/products/{product_id}/images" },
+        { "functionality": "Update existing product images (step 4)", "method": "PUT", "endpoint": "/product-service/products/{product_id}/images" },
+        { "functionality": "Get product images list (step 4)", "method": "GET", "endpoint": "/product-service/products/{product_id}/images" },
 
-        { "functionality": "Full product review details - step 5", "method": "GET", "endpoint": "/product-service/products/{product_id}/full" },
+        { "functionality": "Get full product details (step 5)", "method": "GET", "endpoint": "/product-service/products/{product_id}/full" },
 
-        { "functionality": "Create product variant - step 3", "method": "POST", "endpoint": "/product-service/products/{product_id}/variants-with-images" },
-        { "functionality": "Update product variant - step 3", "method": "PUT", "endpoint": "/product-service/products/variants-with-images/{variant_id}" },
-        { "functionality": "Upload new image for variant", "method": "POST", "endpoint": "/product-service/products/variants/{variant_id}/images" },
-        { "functionality": "List all variants - step 3", "method": "GET", "endpoint": "/product-service/products/{product_id}/variants-with-images" },
-        { "functionality": "Delete variant with images - step 3", "method": "DELETE", "endpoint": "/product-service/products/variants-with-images/{variant_id}" },
-        { "functionality": "Delete variant image only - step 3", "method": "DELETE", "endpoint": "/product-service/products/variants/images/{image_id}" },
+        { "functionality": "Create product variant (step 3)", "method": "POST", "endpoint": "/product-service/products/{product_id}/variants-with-images" },
+        { "functionality": "Update product variant (step 3)", "method": "PUT", "endpoint": "/product-service/products/variants-with-images/{variant_id}" },
+
+        { "functionality": "Update meta details of variant images", "method": "PUT", "endpoint": "/product-service/products/variants/image/meta" },
+
+        { "functionality": "Upload variant image", "method": "POST", "endpoint": "/product-service/products/variants/{variant_id}/images" },
+        { "functionality": "List all variants (step 3)", "method": "GET", "endpoint": "/product-service/products/{product_id}/variants-with-images" },
+
+        { "functionality": "Delete variant", "method": "DELETE", "endpoint": "/product-service/products/variants-with-images/{variant_id}" },
+        { "functionality": "Delete variant image", "method": "DELETE", "endpoint": "/product-service/products/variants/images/{image_id}" },
 
         { "functionality": "List bulk pricing", "method": "GET", "endpoint": "/product-service/products/{product_id}/bulk-pricing" },
         { "functionality": "Create bulk pricing", "method": "POST", "endpoint": "/product-service/products/{product_id}/bulk-pricing" },
         { "functionality": "Update bulk pricing", "method": "PUT", "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}" },
         { "functionality": "Delete bulk pricing", "method": "DELETE", "endpoint": "/product-service/products/bulk-pricing/{bulk_pricing_id}" },
 
-        { "functionality": "List all attributes", "method": "GET", "endpoint": "/product-service/attributes/" },
-        { "functionality": "Assign attributes to product", "method": "POST", "endpoint": "/product-service/products/{product_id}/attributes/" },
-        { "functionality": "List assigned product attributes", "method": "GET", "endpoint": "/product-service/products/{product_id}/attributes/" },
+        { "functionality": "Get all attributes", "method": "GET", "endpoint": "/product-service/attributes/" },
+        { "functionality": "Assign attributes to product (step 2)", "method": "POST", "endpoint": "/product-service/products/{product_id}/attributes/" },
+        { "functionality": "List product assigned attributes (step 2)", "method": "GET", "endpoint": "/product-service/products/{product_id}/attributes/" },
 
-        { "functionality": "Submit & activate product - final step", "method": "PUT", "endpoint": "/product-service/products/{product_id}/activate" }
+        { "functionality": "Submit product (final approval)", "method": "PUT", "endpoint": "/product-service/products/{product_id}/activate" },
+
+        { "functionality": "Product list with stock details", "method": "GET", "endpoint": "/product-service/products/variants/filter" }
       ],
-
-      "Product List": [
-        { "functionality": "List product variants with stock details", "method": "GET", "endpoint": "/product-service/products/variants/filter" }
-      ],
-
       "Inventory": [
-        { "functionality": "Dashboard inventory counts", "method": "GET", "endpoint": "pending" },
-        { "functionality": "List variants with stock", "method": "GET", "endpoint": "/product-service/products/variants/filter" },
-        { "functionality": "Update stock", "method": "PUT", "endpoint": "/product-service/products/variants/stock/update" },
-        { "functionality": "Stock history", "method": "GET", "endpoint": "/product-service/products/variants/{variant_id}/stock-history" }
+        { "functionality": "Display dashboard counts", "method": "GET", "endpoint": "pending" },
+        { "functionality": "List product variants with stock", "method": "GET", "endpoint": "/product-service/products/variants/filter" },
+        { "functionality": "Update stock addition/reduction/low stock qty", "method": "PUT", "endpoint": "/product-service/products/variants/stock/update" },
+        { "functionality": "Get stock change history", "method": "GET", "endpoint": "/product-service/products/variants/{variant_id}/stock-history" }
       ],
-
       "Orders Management": [
-        { "functionality": "List all orders", "method": "GET", "endpoint": "/admin/orders" },
-        { "functionality": "Order details with items", "method": "GET", "endpoint": "/admin/orders/:order_id/details" },
-        { "functionality": "Order details", "method": "GET", "endpoint": "/admin/orders/:order_id" },
-        { "functionality": "Update order status", "method": "PUT", "endpoint": "/admin/orders/:order_id/status?order_status=pending" },
-        { "functionality": "Update payment status", "method": "PUT", "endpoint": "/admin/orders/:order_id/payment-status?payment_status=paid&stripe_payment_intent_id=919191919" },
-        { "functionality": "Order stats", "method": "GET", "endpoint": "/admin/orders/stats" }
+        { "functionality": "Get all orders with filters", "method": "GET", "endpoint": "/admin/orders" },
+        { "functionality": "Get full order details with items", "method": "GET", "endpoint": "/admin/orders/:order_id/details" },
+        { "functionality": "Get order details", "method": "GET", "endpoint": "/admin/orders/:order_id" },
+        {
+          "functionality": "Update order status",
+          "method": "PUT",
+          "endpoint": "/admin/orders/:order_id/status?order_status=pending"
+        },
+        {
+          "functionality": "Update payment status (stripe intent)",
+          "method": "PUT",
+          "endpoint": "/admin/orders/:order_id/payment-status?payment_status=paid&stripe_payment_intent_id=919191919"
+        },
+        { "functionality": "Get order stats", "method": "GET", "endpoint": "/admin/orders/stats" }
       ],
-
       "Customer Management": [
         { "functionality": "List customers", "method": "GET", "endpoint": "/admin/customers/" },
-        { "functionality": "Get full customer details", "method": "GET", "endpoint": "/admin/customers/:user_id/details" },
-        { "functionality": "Get customer details", "method": "GET", "endpoint": "/admin/customers/:user_id" },
+        { "functionality": "Full customer details", "method": "GET", "endpoint": "/admin/customers/:user_id/details" },
+        { "functionality": "Basic customer details", "method": "GET", "endpoint": "/admin/customers/:user_id" },
         { "functionality": "Update verification status", "method": "PUT", "endpoint": "/admin/customers/:user_id" },
         { "functionality": "Suspend customer", "method": "PUT", "endpoint": "/admin/customers/:user_id/suspend" },
         { "functionality": "Activate customer", "method": "PUT", "endpoint": "/admin/customers/:user_id/activate" },
-        { "functionality": "Update customer status", "method": "PUT", "endpoint": "/admin/customers/:user_id/status?customer_status=active" },
-        { "functionality": "Customer stats", "method": "GET", "endpoint": "/admin/customers/stats" }
+        {
+          "functionality": "Update customer status",
+          "method": "PUT",
+          "endpoint": "/admin/customers/:user_id/status?customer_status=active"
+        },
+        { "functionality": "Customer statistics", "method": "GET", "endpoint": "/admin/customers/stats" }
       ],
-
       "Banners": [
-        { "functionality": "Create Banner", "method": "POST", "endpoint": "/banners/" },
-        { "functionality": "List Banners", "method": "GET", "endpoint": "/banners/" },
+        { "functionality": "Create banner", "method": "POST", "endpoint": "/banners/" },
+        { "functionality": "List all banners", "method": "GET", "endpoint": "/banners/" },
         { "functionality": "Banner details", "method": "GET", "endpoint": "/banners/{banner_id}" },
-        { "functionality": "Update Banner", "method": "PUT", "endpoint": "/banners/{banner_id}" },
-        { "functionality": "Delete Banner", "method": "DELETE", "endpoint": "/banners/{banner_id}" }
+        { "functionality": "Update banner", "method": "PUT", "endpoint": "/banners/{banner_id}" },
+        { "functionality": "Delete banner", "method": "DELETE", "endpoint": "/banners/{banner_id}" }
       ],
-
       "FAQ Management": [
         { "functionality": "Create FAQ category", "method": "POST", "endpoint": "/faq/categories/" },
         { "functionality": "List FAQ categories", "method": "GET", "endpoint": "/faq/categories/" },
@@ -87,81 +94,100 @@
         { "functionality": "Update FAQ category", "method": "PUT", "endpoint": "/faq/categories/{category_id}" },
         { "functionality": "Delete FAQ category", "method": "DELETE", "endpoint": "/faq/categories/{category_id}" },
 
-        { "functionality": "Create FAQ", "method": "POST", "endpoint": "/faq/entries/" },
-        { "functionality": "List FAQs", "method": "GET", "endpoint": "/faq/entries/" },
+        { "functionality": "Create FAQ entry", "method": "POST", "endpoint": "/faq/entries/" },
+        { "functionality": "List FAQ entries", "method": "GET", "endpoint": "/faq/entries/" },
         { "functionality": "FAQ details", "method": "GET", "endpoint": "/faq/entries/{faq_id}" },
         { "functionality": "Update FAQ", "method": "PUT", "endpoint": "/faq/entries/{faq_id}" },
         { "functionality": "Delete FAQ", "method": "DELETE", "endpoint": "/faq/entries/{faq_id}" },
         { "functionality": "FAQ with category", "method": "GET", "endpoint": "/faq/entries/{faq_id}/with-category" }
       ],
-
       "Global Settings": [
-        { "functionality": "Create setting", "method": "POST", "endpoint": "/global-settings/" },
-        { "functionality": "List settings", "method": "GET", "endpoint": "/global-settings/" },
-        { "functionality": "Setting details", "method": "GET", "endpoint": "/global-settings/{setting_id}" },
-        { "functionality": "Update setting", "method": "PUT", "endpoint": "/global-settings/{setting_id}" },
-        { "functionality": "Delete setting", "method": "DELETE", "endpoint": "/global-settings/{setting_id}" }
+        { "functionality": "Create Global Setting", "method": "POST", "endpoint": "/global-settings/" },
+        { "functionality": "List Global Settings", "method": "GET", "endpoint": "/global-settings/" },
+        { "functionality": "Get Setting", "method": "GET", "endpoint": "/global-settings/{setting_id}" },
+        { "functionality": "Update Setting", "method": "PUT", "endpoint": "/global-settings/{setting_id}" },
+        { "functionality": "Delete Setting", "method": "DELETE", "endpoint": "/global-settings/{setting_id}" }
       ]
     },
 
     "Customer": {
       "Categories": [
-        { "functionality": "List categories", "method": "GET", "endpoint": "/product-service/categories/" }
+        { "functionality": "Fetch product categories", "method": "GET", "endpoint": "/product-service/categories/" }
       ],
-
       "Products": [
-        { "functionality": "List product variants", "method": "GET", "endpoint": "/product-service/products/variants/filter" },
-        { "functionality": "Product full details", "method": "GET", "endpoint": "/product-service/products/{product_id}/full" }
+        { "functionality": "Product list", "method": "GET", "endpoint": "/product-service/products/variants/filter" },
+        {
+          "functionality": "Product details with variants",
+          "method": "GET",
+          "endpoint": "/product-service/products/{product_id}/full"
+        }
       ],
-
       "Shopping Cart": [
         { "functionality": "Get active cart", "method": "GET", "endpoint": "/shopping-cart/user/{user_id}/active" },
-        { "functionality": "Create cart", "method": "POST", "endpoint": "/shopping-cart/" },
-        { "functionality": "Add item", "method": "POST", "endpoint": "/shopping-cart/items/" },
-        { "functionality": "List cart items", "method": "GET", "endpoint": "/shopping-cart/{cart_id}/items/with-pricing" },
-        { "functionality": "Update cart item", "method": "PUT", "endpoint": "/shopping-cart/items/{cart_item_id}" },
-        { "functionality": "Delete cart item", "method": "DELETE", "endpoint": "/shopping-cart/items/{cart_item_id}" }
+        { "functionality": "Create new active cart", "method": "POST", "endpoint": "/shopping-cart/" },
+        { "functionality": "Add item to cart", "method": "POST", "endpoint": "/shopping-cart/items/" },
+        {
+          "functionality": "List cart items",
+          "method": "GET",
+          "endpoint": "/shopping-cart/{cart_id}/items/with-pricing"
+        },
+        { "functionality": "Update cart item qty", "method": "PUT", "endpoint": "/shopping-cart/items/{cart_item_id}" },
+        { "functionality": "Delete item from cart", "method": "DELETE", "endpoint": "/shopping-cart/items/{cart_item_id}" }
       ]
     },
 
     "Authentication": [
-      { "functionality": "Register", "method": "POST", "endpoint": "/auth/register" },
+      { "functionality": "Customer Registration", "method": "POST", "endpoint": "/auth/register" },
       { "functionality": "Login", "method": "POST", "endpoint": "/auth/login" },
-      { "functionality": "Me", "method": "GET", "endpoint": "/auth/me" },
+      { "functionality": "Get current user", "method": "GET", "endpoint": "/auth/me" },
       { "functionality": "Change password", "method": "PUT", "endpoint": "/users/change-password" }
     ],
 
-    "User Addresses": [
-      { "functionality": "Create Address", "method": "POST", "endpoint": "/users/addresses" },
-      { "functionality": "Update Address", "method": "PUT", "endpoint": "/users/addresses/<ID>" },
-      { "functionality": "Delete Address", "method": "DELETE", "endpoint": "/users/addresses/<ID>" },
-      { "functionality": "Address details", "method": "GET", "endpoint": "/users/addresses/<ID>" },
-      { "functionality": "All addresses", "method": "GET", "endpoint": "/users/addresses?only_active=true" }
-    ],
-
-    "User Profile": [
-      { "functionality": "Update profile", "method": "PUT", "endpoint": "/users/profile" },
-      { "functionality": "Fetch profile", "method": "GET", "endpoint": "/users/profile" }
-    ],
+    "Users": {
+      "Address": [
+        { "functionality": "Add address", "method": "POST", "endpoint": "/users/addresses" },
+        { "functionality": "Update address", "method": "PUT", "endpoint": "/users/addresses/<ID>" },
+        { "functionality": "Delete address", "method": "DELETE", "endpoint": "/users/addresses/<ID>" },
+        { "functionality": "Get address details", "method": "GET", "endpoint": "/users/addresses/<ID>" },
+        { "functionality": "List all addresses", "method": "GET", "endpoint": "/users/addresses?only_active=true" }
+      ],
+      "Profile": [
+        { "functionality": "Update profile", "method": "PUT", "endpoint": "users/profile" },
+        { "functionality": "Fetch profile", "method": "GET", "endpoint": "users/profile" }
+      ]
+    },
 
     "Wishlist": [
       { "functionality": "Get default wishlist", "method": "GET", "endpoint": "/wishlists/default" },
-      { "functionality": "Wishlist details", "method": "GET", "endpoint": "/wishlists/{wishlist_id}/details" },
-      { "functionality": "Wishlist items", "method": "GET", "endpoint": "/wishlists/{wishlist_id}/items" },
-      { "functionality": "Get wishlist", "method": "GET", "endpoint": "/wishlists/{wishlist_id}" },
-      { "functionality": "Update wishlist", "method": "PUT", "endpoint": "/wishlists/{wishlist_id}" },
+      { "functionality": "Get wishlist details", "method": "GET", "endpoint": "/wishlists/{id}/details" },
+      { "functionality": "Get wishlist items", "method": "GET", "endpoint": "/wishlists/{id}/items" },
+      { "functionality": "Get wishlist", "method": "GET", "endpoint": "/wishlists/{id}" },
+      { "functionality": "Update wishlist name", "method": "PUT", "endpoint": "/wishlists/{id}" },
       { "functionality": "Create wishlist", "method": "POST", "endpoint": "/wishlists/" },
-      { "functionality": "Add item", "method": "POST", "endpoint": "/wishlists/items" },
-      { "functionality": "Remove item", "method": "DELETE", "endpoint": "/wishlists/items/{item_id}" }
+      { "functionality": "Add wishlist item", "method": "POST", "endpoint": "/wishlists/items" },
+      { "functionality": "Remove wishlist item", "method": "DELETE", "endpoint": "/wishlists/items/{item_id}" }
     ],
 
     "Customer Orders": [
-      { "functionality": "Create order", "method": "POST", "endpoint": "http://54.153.172.146:8000/orders/" },
-      { "functionality": "List orders", "method": "GET", "endpoint": "http://54.153.172.146:8000/orders/" },
+      { "functionality": "Create order", "method": "POST", "endpoint": "http://3.27.33.106:8000/orders/" },
+      { "functionality": "List orders", "method": "GET", "endpoint": "http://3.27.33.106:8000/orders/" },
       { "functionality": "Order details with items", "method": "GET", "endpoint": "/orders/:order_id/details" },
       { "functionality": "Order details", "method": "GET", "endpoint": "/orders/:order_id" },
       { "functionality": "Update order", "method": "PUT", "endpoint": "/orders/:order_id" },
-      { "functionality": "Cancel order", "method": "PUT", "endpoint": "/orders/:order_id/cancel?cancellation_reason=string" }
+      {
+        "functionality": "Cancel order",
+        "method": "PUT",
+        "endpoint": "/orders/:order_id/cancel?cancellation_reason=string"
+      }
+    ],
+
+    "Customer Reviews": [
+      { "functionality": "Submit review", "method": "POST", "endpoint": "/product-service/reviews/" },
+      {
+        "functionality": "List all reviews of product variant",
+        "method": "GET",
+        "endpoint": "/product-service/reviews/"
+      }
     ]
   }
 }
