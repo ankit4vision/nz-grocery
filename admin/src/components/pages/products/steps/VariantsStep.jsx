@@ -52,7 +52,25 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
           low_stock_quantity: v.low_stock_quantity,
           is_active: v.is_active,
           status: v.is_active ? 'active' : 'inactive',
-          images: v.images || [],
+          // Ensure images array includes image_id and image_url/metadata
+          images: (v.images || []).map(img => {
+            // Handle both formats: object with image_id/image_url or string URL
+            if (typeof img === 'string') {
+              return {
+                image_id: null, // Will be handled in VariantFormModal
+                image_url: img,
+                url: img
+              }
+            }
+            // Object format with image_id and image_url
+            return {
+              image_id: img.image_id,
+              image_url: img.image_url || img.url,
+              url: img.image_url || img.url,
+              is_primary: img.is_primary,
+              sort_order: img.sort_order
+            }
+          }),
           isNew: false
         }))
         setVariants(mappedVariants)
@@ -289,20 +307,40 @@ const VariantsStep = ({ data, onChange, errors, productId }) => {
               <Col md={6} lg={4} key={variant.variant_id} className="mb-3">
                 <Card>
                   {/* Variant Image */}
-                  {variant.images && variant.images.length > 0 ? (
-                    <Card.Img 
-                      variant="top" 
-                      src={variant.images[0]} 
-                      style={{ height: '150px', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div 
-                      className="bg-light d-flex align-items-center justify-content-center"
-                      style={{ height: '150px' }}
-                    >
-                      <FontAwesomeIcon icon={faImageIcon} className="text-muted" style={{ fontSize: '3rem' }} />
-                    </div>
-                  )}
+                  {(() => {
+                    // Find primary image or use first image
+                    let imageUrl = null
+                    if (variant.images && variant.images.length > 0) {
+                      const primaryImage = variant.images.find(img => img.is_primary) || variant.images[0]
+                      // Handle both object format and string format (backward compatibility)
+                      if (typeof primaryImage === 'string') {
+                        imageUrl = primaryImage
+                      } else if (primaryImage) {
+                        imageUrl = primaryImage.image_url || primaryImage.url
+                      }
+                    }
+                    
+                    return imageUrl ? (
+                      <Card.Img 
+                        variant="top" 
+                        src={imageUrl} 
+                        style={{ height: '150px', objectFit: 'cover' }}
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          e.target.style.display = 'none'
+                          const placeholder = e.target.parentElement.querySelector('.image-placeholder')
+                          if (placeholder) placeholder.style.display = 'flex'
+                        }}
+                      />
+                    ) : (
+                      <div 
+                        className="image-placeholder bg-light d-flex align-items-center justify-content-center"
+                        style={{ height: '150px' }}
+                      >
+                        <FontAwesomeIcon icon={faImageIcon} className="text-muted" style={{ fontSize: '3rem' }} />
+                      </div>
+                    )
+                  })()}
                   
                   <Card.Body>
                     <div className="d-flex justify-content-between align-items-start mb-2">

@@ -149,10 +149,29 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId, onEditStep 
       }))
   }
 
-  // Get variant images (variants now have images)
+  // Get variant images (variants now have images as objects with image_id and image_url)
   const getVariantImages = (variant) => {
     if (variant.images && Array.isArray(variant.images) && variant.images.length > 0) {
-      return variant.images
+      // Handle both formats: array of objects (with image_id, image_url) or array of strings (legacy)
+      return variant.images.map(img => {
+        if (typeof img === 'string') {
+          // Legacy format: string URL
+          return {
+            image_id: null,
+            image_url: img,
+            url: img,
+            is_primary: false
+          }
+        }
+        // Object format: { image_id, image_url, is_primary, sort_order }
+        return {
+          image_id: img.image_id,
+          image_url: img.image_url || img.url,
+          url: img.image_url || img.url,
+          is_primary: img.is_primary || false,
+          sort_order: img.sort_order
+        }
+      })
     }
     return []
   }
@@ -163,12 +182,17 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId, onEditStep 
 
     variants.forEach((variant) => {
       const variantImages = getVariantImages(variant)
-      variantImages.forEach((url, index) => {
-        gallery.push({
-          variantName: variant.variant_name || variant.name || 'Variant',
-          url,
-          isPrimary: index === 0
-        })
+      variantImages.forEach((img, index) => {
+        // Use image_url from object, or fallback to url property
+        const imageUrl = img.image_url || img.url || (typeof img === 'string' ? img : null)
+        if (imageUrl) {
+          gallery.push({
+            variantName: variant.variant_name || variant.name || 'Variant',
+            url: imageUrl,
+            isPrimary: img.is_primary || index === 0, // Use is_primary flag or first image
+            image_id: img.image_id
+          })
+        }
       })
     })
 
@@ -365,16 +389,32 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId, onEditStep 
                     <div className="mt-3">
                       <small className="text-muted d-block mb-2">Variant Images ({variantImages.length}):</small>
                       <Row>
-                        {variantImages.map((imageUrl, imgIndex) => (
-                          <Col md={3} key={imgIndex} className="mb-2">
-                            <Image 
-                              src={imageUrl} 
-                              fluid 
-                              className="rounded border"
-                              style={{ height: '80px', objectFit: 'cover', width: '100%' }}
-                            />
-                          </Col>
-                        ))}
+                        {variantImages.map((img, imgIndex) => {
+                          // Extract URL from image object or use string directly
+                          const imageUrl = img.image_url || img.url || (typeof img === 'string' ? img : null)
+                          if (!imageUrl) return null
+                          
+                          return (
+                            <Col md={3} key={img.image_id || imgIndex} className="mb-2">
+                              <div className="position-relative">
+                                <Image 
+                                  src={imageUrl} 
+                                  fluid 
+                                  className="rounded border"
+                                  style={{ height: '150px', objectFit: 'cover', width: '100%' }}
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                  }}
+                                />
+                                {img.is_primary && (
+                                  <Badge bg="primary" className="position-absolute top-0 end-0 m-1" style={{ fontSize: '0.7rem' }}>
+                                    Primary
+                                  </Badge>
+                                )}
+                              </div>
+                            </Col>
+                          )
+                        })}
                       </Row>
                     </div>
                   )}
@@ -402,50 +442,6 @@ const ReviewStep = ({ formData, onCreateProduct, loading, productId, onEditStep 
                 ))}
               </div>
             </div>
-          )}
-        </Card.Body>
-      </Card>
-
-
-      {/* Variant Images Gallery */}
-      <Card className="mb-4">
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <div className="d-flex align-items-center">
-              <FontAwesomeIcon icon={faImageIcon} className="me-3 text-success fs-4" />
-              <h5 className="mb-0 text-success">Variant Images Gallery</h5>
-            </div>
-            <Button variant="outline-primary" size="sm" onClick={() => onEditStep?.(2)}>
-              <FontAwesomeIcon icon={faEdit} className="me-2" />
-              Edit
-            </Button>
-          </div>
-
-          {variantImageGallery.length > 0 ? (
-            <Row>
-              {variantImageGallery.map((image, index) => (
-                <Col lg={2} md={3} sm={4} xs={6} key={`${image.url}-${index}`} className="mb-3">
-                  <div className="position-relative">
-                    <Image
-                      src={image.url}
-                      fluid
-                      className="rounded border"
-                      style={{ height: '120px', objectFit: 'cover', width: '100%' }}
-                    />
-                    {image.isPrimary && (
-                      <Badge bg="primary" className="position-absolute top-0 end-0 m-1">
-                        Primary
-                      </Badge>
-                    )}
-                  </div>
-                  <small className="text-muted d-block text-truncate mt-1">
-                    {image.variantName}
-                  </small>
-                </Col>
-              ))}
-            </Row>
-          ) : (
-            <div className="text-muted">No variant images uploaded yet</div>
           )}
         </Card.Body>
       </Card>

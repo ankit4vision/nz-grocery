@@ -165,28 +165,32 @@
 - Loads existing product attributes in edit mode
 
 **Step 3 - Variants with Images:**
-- Get Product Variants with Images - `GET /product-service/products/{product_id}/variants-with-images`
+- Get Product Variants with Images - `GET /product-service/products/{product_id}/variants-with-images` (returns image_id and image_url)
 - Create Variant with Images - `POST /product-service/products/{product_id}/variants-with-images` (multipart/form-data with variant data and images)
 - Update Variant - `PUT /product-service/products/variants-with-images/{variant_id}` (variant data only)
+- Update Variant Image Metadata - `PUT /product-service/products/variants/image/meta` (updates is_primary, sort_order for existing images)
 - Delete Variant with Images - `DELETE /product-service/products/variants-with-images/{variant_id}`
 - Upload Variant Images - `POST /product-service/products/variants/{variant_id}/images` (for existing variants)
-- Delete Variant Image - `DELETE /product-service/products/variants/images/{image_id}`
+- Delete Variant Image - `DELETE /product-service/products/variants/images/{image_id}` (uses image_id from API response)
 - Get Bulk Pricing - `GET /product-service/products/{product_id}/bulk-pricing`
 - Create Bulk Pricing - `POST /product-service/products/{product_id}/bulk-pricing`
 - Update Bulk Pricing - `PUT /product-service/products/bulk-pricing/{bulk_pricing_id}`
 - Delete Bulk Pricing - `DELETE /product-service/products/bulk-pricing/{bulk_pricing_id}`
 - Modal-based variant add/edit with image upload (up to 4 images per variant, 5MB each)
-- Variant card view with image thumbnails
-- Primary image selection per variant
+- Variant card view with image thumbnails (displays primary image or first image)
+- Primary image selection per variant (with automatic metadata update)
+- Image sort/reorder functionality (up/down arrows to reorder images)
 - Drag & drop image upload support
+- Proper image_id handling for deletion and metadata updates
 
 **Step 4 - Review:**
-- Get Full Product Details - `GET /product-service/products/{product_id}/full` (for review display)
+- Get Full Product Details - `GET /product-service/products/{product_id}/full` (returns variants with images as objects with image_id, image_url, is_primary, sort_order)
 - Activate/Submit Product - `PUT /product-service/products/{product_id}/activate` (activates the product)
 - Displays all product information from API
 - Shows category names (fetched from categories API)
-- Displays variants with their images, bulk pricing, and attributes
-- Variant images gallery section showing all variant images
+- Displays variants with their images (150px height), bulk pricing, and attributes
+- Variant images displayed per variant card (handles image objects from API)
+- Primary image badges shown on variant images
 - Edit buttons navigate to specific steps (Basic Info → Step 0, Attributes → Step 1, Variants → Step 2)
 - Submit button activates the product and navigates to products list
 
@@ -204,14 +208,19 @@
 - Step 1: Product creation/update with basic info (name, category, SKU, description, GST, margin) - auto-saves on completion
 - Step 2: Attribute assignment (boolean, text, date types) with auto-save
 - Step 3: Variants with images via modal popup - each variant can have up to 4 images, primary image selection, drag & drop upload
-- Step 4: Review page with variant images displayed per variant and in gallery section, edit navigation buttons
+  - Fixed image upload (Promise.all for multiple files, proper error handling)
+  - Image sort/reorder with up/down arrow buttons
+  - Automatic metadata updates (is_primary, sort_order) when changed
+  - Proper image_id extraction and usage for deletion
+  - Variant grid displays images correctly (primary or first image)
+- Step 4: Review page with variant images displayed per variant (150px height), handles image objects from API, primary badges, edit navigation buttons
 - Category dropdown populated from API
 - Toast notifications for all operations
 - Loading states for all API calls
 - Error handling with user-friendly messages
 - Edit mode support (loads existing product data, updates on Step 1)
 - Product ID management across steps
-- Variant images displayed in card view
+- Variant images displayed in card view with proper image_url extraction
 - Update product API integration for edit mode
 - Activate product API integration for final submission
 
@@ -378,7 +387,7 @@ nz-grocery/
 - ✅ `categoryService.js` - Category CRUD operations
 - ✅ `contentService.js` - Content management (Banners, FAQ Categories, FAQ Entries)
 - ✅ `settingsService.js` - Global Settings management (create/update by key, section-based organization)
-- ✅ `productService.js` - Product management (Add Product Wizard - 4 steps with variants-with-images, bulk pricing, attributes, Product Variants List filter with images, Update Product API, and Activate Product API)
+- ✅ `productService.js` - Product management (Add Product Wizard - 4 steps with variants-with-images, variant image metadata updates, bulk pricing, attributes, Product Variants List filter with images, Update Product API, and Activate Product API)
 
 **Completed Services (continued)**:
 - ✅ `inventoryService.js` - Inventory management (product variants with stock, inventory statistics, stock updates)
@@ -615,23 +624,27 @@ ToastProvider.jsx
 - `POST /product-service/products/{product_id}/attributes/` - Assign attributes to product
 
 **Step 3 - Variants with Images:**
-- `GET /product-service/products/{product_id}/variants-with-images` - List product variants with images
+- `GET /product-service/products/{product_id}/variants-with-images` - List product variants with images (returns image_id and image_url)
 - `POST /product-service/products/{product_id}/variants-with-images` - Create variant with images (multipart/form-data)
 - `PUT /product-service/products/variants-with-images/{variant_id}` - Update variant data
+- `PUT /product-service/products/variants/image/meta` - Update variant image metadata (is_primary, sort_order)
 - `DELETE /product-service/products/variants-with-images/{variant_id}` - Delete variant with images
 - `POST /product-service/products/variants/{variant_id}/images` - Upload images for existing variant
-- `DELETE /product-service/products/variants/images/{image_id}` - Delete variant image
+- `DELETE /product-service/products/variants/images/{image_id}` - Delete variant image (uses image_id)
 - `GET /product-service/products/{product_id}/bulk-pricing` - List bulk pricing
 - `POST /product-service/products/{product_id}/bulk-pricing` - Create bulk pricing
 - `PUT /product-service/products/bulk-pricing/{bulk_pricing_id}` - Update bulk pricing
 - `DELETE /product-service/products/bulk-pricing/{bulk_pricing_id}` - Delete bulk pricing
-- Modal-based variant add/edit with image upload (up to 4 images per variant)
-- Variant card view displaying variant images
+- Modal-based variant add/edit with image upload (up to 4 images per variant, 5MB each)
+- Variant card view displaying variant images (primary image or first image)
+- Image sort/reorder with up/down buttons
+- Automatic metadata updates when primary image or sort order changes
 
 **Step 4 - Review:**
-- `GET /product-service/products/{product_id}/full` - Get full product details for review
+- `GET /product-service/products/{product_id}/full` - Get full product details for review (returns variants with images as objects)
 - `PUT /product-service/products/{product_id}/activate` - Activate/Submit product
-- Displays variant images per variant and in gallery section
+- Displays variant images per variant (150px height, handles image objects with image_id, image_url, is_primary)
+- Primary image badges shown on variant images
 - Edit buttons navigate to specific steps
 
 **Files Updated:**
@@ -648,7 +661,12 @@ ToastProvider.jsx
 - Step 1: Auto-save product on completion (create in new mode, update in edit mode), stores product_id for subsequent steps
 - Step 2: Auto-save attributes on completion, supports boolean/text/date types
 - Step 3: Variants with images via modal popup - each variant can have up to 4 images, primary image selection, drag & drop upload, card view display
-- Step 4: Review page with variant images displayed per variant and in gallery, edit navigation buttons
+  - Fixed image upload (Promise.all for multiple files, proper error handling)
+  - Image sort/reorder with up/down arrow buttons
+  - Automatic metadata updates (is_primary, sort_order) when changed
+  - Proper image_id extraction and usage for deletion
+  - Variant grid displays images correctly (primary or first image)
+- Step 4: Review page with variant images displayed per variant (150px height), handles image objects from API, primary badges, edit navigation buttons
 - Category dropdown populated from API
 - Toast notifications for all operations
 - Loading states and error handling
@@ -1516,6 +1534,12 @@ For each module integration:
 - Product Wizard updated to 4 steps (removed separate image step)
 - Variants now include images (uploaded via modal in Step 3)
 - VariantFormModal component for add/edit variants with image upload
+- Fixed image upload functionality (Promise.all for multiple files)
+- Added image sort/reorder functionality (up/down arrow buttons)
+- Integrated variant image metadata update API (is_primary, sort_order)
+- Proper image_id handling for deletion and metadata updates
+- Variant grid displays images correctly (primary or first image)
 - Product List displays variant images in table
-- Review Step shows variant images with edit navigation
+- Review Step shows variant images (150px height) with proper image object handling from full product API
+- Removed variant images gallery section from Review Step
 

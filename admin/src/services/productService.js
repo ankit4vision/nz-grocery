@@ -508,6 +508,26 @@ const productService = {
     }
   },
 
+  // Update variant image metadata (is_primary, sort_order)
+  updateVariantImageMeta: async (productVariantId, imagesMeta) => {
+    try {
+      // imagesMeta should be an array of { image_id, is_primary?, sort_order? }
+      const payload = {
+        product_variant_id: productVariantId,
+        images: imagesMeta.map(img => ({
+          image_id: img.image_id,
+          is_primary: img.is_primary !== undefined ? img.is_primary : null,
+          sort_order: img.sort_order !== undefined ? img.sort_order : null
+        }))
+      }
+
+      const response = await apiClient.put('/product-service/products/variants/image/meta', payload)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
   // Create product variant
   createProductVariant: async (productId, variantData) => {
     try {

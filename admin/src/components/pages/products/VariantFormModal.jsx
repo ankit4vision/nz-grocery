@@ -7,7 +7,9 @@ import {
   faImage,
   faSpinner,
   faStar,
-  faPlus
+  faPlus,
+  faArrowUp,
+  faArrowDown
 } from '@fortawesome/free-solid-svg-icons'
 import { productService } from '../../../services/productService'
 import { useToast } from '../../../components'
@@ -31,9 +33,9 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
     is_active: true
   })
 
-  const [images, setImages] = useState([]) // Array of { image_id?, url, is_primary, sort_order } or { file, preview } for new images
-  const [originalImages, setOriginalImages] = useState([]) // Track original images to detect deletions
-  const [imagesToDelete, setImagesToDelete] = useState([]) // Track image URLs to delete
+  const [images, setImages] = useState([]) // Array of { image_id?, image_url/url, is_primary, sort_order } or { file, preview } for new images
+  const [originalImages, setOriginalImages] = useState([]) // Track original images with metadata to detect changes
+  const [imagesToDelete, setImagesToDelete] = useState([]) // Track image_ids to delete
 
   // Load variant data when editing
   useEffect(() => {
@@ -51,14 +53,37 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
       
       // Load existing images
       if (variant.images && Array.isArray(variant.images)) {
-        const loadedImages = variant.images.map((url, index) => ({
-          url,
-          is_primary: index === 0, // First image is primary by default
-          sort_order: index,
-          isNew: false
-        }))
+        // Handle both formats: array of URLs (legacy) or array of objects with image_id and image_url
+        const loadedImages = variant.images.map((img, index) => {
+          // If img is a string (URL), convert to object format
+          if (typeof img === 'string') {
+            return {
+              image_id: null, // Will need to fetch or extract from URL
+              image_url: img,
+              url: img,
+              is_primary: index === 0,
+              sort_order: index,
+              isNew: false
+            }
+          }
+          // If img is an object with image_id and image_url
+          return {
+            image_id: img.image_id,
+            image_url: img.image_url || img.url,
+            url: img.image_url || img.url,
+            is_primary: img.is_primary !== undefined ? img.is_primary : (index === 0),
+            sort_order: img.sort_order !== undefined ? img.sort_order : index,
+            isNew: false
+          }
+        })
         setImages(loadedImages)
-        setOriginalImages([...variant.images]) // Store original URLs for comparison
+        // Store original images with metadata for comparison
+        setOriginalImages(loadedImages.map(img => ({
+          image_id: img.image_id,
+          image_url: img.image_url || img.url,
+          is_primary: img.is_primary,
+          sort_order: img.sort_order
+        })))
       } else {
         setImages([])
         setOriginalImages([])
@@ -89,36 +114,62 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
   const handleFileSelect = async (files) => {
     const maxImages = 4
     const maxSize = 5 * 1024 * 1024 // 5MB
-    const filesToAdd = []
+    const fileArray = Array.from(files)
+    const currentImageCount = images.length
 
-    Array.from(files).forEach((file) => {
-      if (images.length + filesToAdd.length >= maxImages) {
-        showError(`Maximum ${maxImages} images allowed.`)
-        return
-      }
+    // Check total count first
+    if (currentImageCount + fileArray.length > maxImages) {
+      showError(`Maximum ${maxImages} images allowed. You can add ${maxImages - currentImageCount} more.`)
+      return
+    }
 
-      if (file.size > maxSize) {
-        showError(`File ${file.name} is too large. Maximum size is 5MB.`)
-        return
-      }
+    // Validate file sizes
+    const invalidFiles = fileArray.filter(file => file.size > maxSize)
+    if (invalidFiles.length > 0) {
+      showError(`Some files are too large. Maximum size is 5MB.`)
+      return
+    }
 
-      // Create preview
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        filesToAdd.push({
-          file,
-          preview: e.target.result,
-          is_primary: images.length === 0 && filesToAdd.length === 0, // First image is primary
-          sort_order: images.length + filesToAdd.length,
-          isNew: true
-        })
-        
-        if (filesToAdd.length === Array.from(files).length) {
-          setImages(prev => [...prev, ...filesToAdd])
+    // Process all files with Promise.all
+    const filePromises = fileArray.map((file, index) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          resolve({
+            file,
+            preview: e.target.result,
+            is_primary: currentImageCount === 0 && index === 0, // First image is primary if no existing images
+            sort_order: currentImageCount + index,
+            isNew: true
+          })
         }
-      }
-      reader.readAsDataURL(file)
+        reader.onerror = () => {
+          showError(`Failed to read file: ${file.name}`)
+          resolve(null)
+        }
+        reader.readAsDataURL(file)
+      })
     })
+
+    try {
+      const filesToAdd = await Promise.all(filePromises)
+      const validFiles = filesToAdd.filter(f => f !== null)
+      
+      if (validFiles.length > 0) {
+        setImages(prev => {
+          const updated = [...prev, ...validFiles]
+          // Ensure only first image is primary
+          return updated.map((img, idx) => ({
+            ...img,
+            is_primary: idx === 0,
+            sort_order: idx
+          }))
+        })
+      }
+    } catch (error) {
+      console.error('Error processing files:', error)
+      showError('Failed to process some images. Please try again.')
+    }
   }
 
   const handleDrop = (e) => {
@@ -165,10 +216,15 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
     try {
       setDeletingImage(prev => ({ ...prev, [index]: true }))
       
-      // Track this image URL for deletion
-      // We'll need to get image_id when saving, but for now track the URL
-      const imageUrl = image.url
-      setImagesToDelete(prev => [...prev, imageUrl])
+      // Track image_id for deletion (if available)
+      if (image.image_id) {
+        setImagesToDelete(prev => [...prev, image.image_id])
+      } else {
+        // Fallback: if image_id is not available, we'll try to delete by URL pattern
+        // This should not happen if API returns proper structure, but handle gracefully
+        console.warn('Image ID not available for deletion, will attempt during save')
+        setImagesToDelete(prev => [...prev, image.url || image.image_url])
+      }
       
       // Remove from current images list
       const newImages = images.filter((_, i) => i !== index)
@@ -179,10 +235,6 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
         }
       })
       setImages(newImages)
-      
-      // Image will be deleted when saving the variant
-      // Note: We need image_id to delete, which we'll try to extract from the URL
-      // If extraction fails, the image may not be deleted (API limitation)
     } catch (err) {
       console.error('Error removing image:', err)
       showError('Failed to remove image')
@@ -194,9 +246,38 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
   const setPrimaryImage = (index) => {
     const newImages = images.map((img, idx) => ({
       ...img,
-      is_primary: idx === index
+      is_primary: idx === index,
+      sort_order: idx === index ? 0 : (idx < index ? idx + 1 : idx) // Reorder: primary becomes 0, others shift
     }))
-    setImages(newImages)
+    // Reorder: move primary to first position
+    const primaryImage = newImages[index]
+    const otherImages = newImages.filter((_, idx) => idx !== index)
+    const reordered = [primaryImage, ...otherImages].map((img, idx) => ({
+      ...img,
+      sort_order: idx,
+      is_primary: idx === 0
+    }))
+    setImages(reordered)
+  }
+
+  const moveImage = (index, direction) => {
+    if ((direction === 'up' && index === 0) || (direction === 'down' && index === images.length - 1)) {
+      return // Can't move further
+    }
+
+    const newImages = [...images]
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    const temp = newImages[index]
+    newImages[index] = newImages[newIndex]
+    newImages[newIndex] = temp
+
+    // Update sort orders and primary flag
+    const updated = newImages.map((img, idx) => ({
+      ...img,
+      sort_order: idx,
+      is_primary: idx === 0
+    }))
+    setImages(updated)
   }
 
   const handleSubmit = async () => {
@@ -231,38 +312,26 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
 
       if (variant && variant.variant_id) {
         // Update existing variant
-        // First, delete images that were marked for deletion
-        // Note: We need image_id to delete, but API only returns URLs
-        // We'll need to fetch variant details or extract from URL
-        // For now, we'll try to delete by attempting to extract image_id from URL
-        // If that's not possible, we'll need to reload variant after save to get proper structure
+        setUploading(true)
         
-        // Delete images that were removed
-        // Note: The variants-with-images API only returns URLs, not image_ids
-        // To delete, we need image_id. We'll try to extract it from URL or handle it differently
+        // First, delete images that were marked for deletion (using image_id)
         if (imagesToDelete.length > 0) {
-          setUploading(true)
           try {
-            // Try to extract image_id from URL if it follows a pattern
-            // Common S3 URL patterns might include image_id in the path
-            // For now, we'll attempt deletion by trying common patterns
-            const deletePromises = imagesToDelete.map(async (imageUrl) => {
+            const deletePromises = imagesToDelete.map(async (imageIdOrUrl) => {
               try {
-                // Try to extract image_id from URL (e.g., if URL contains /images/{id}/ or similar)
-                // This is a workaround - ideally the API should return image_ids
-                const urlParts = imageUrl.split('/')
-                const possibleId = urlParts[urlParts.length - 1]?.split('.')[0] // Get filename without extension
-                
-                // If we can't extract a valid ID, skip deletion for this image
-                // The user will need to delete it manually or we need API support
-                if (possibleId && !isNaN(possibleId)) {
-                  const deleteResponse = await productService.deleteVariantImage(parseInt(possibleId))
+                // If it's a number (image_id), use it directly
+                // If it's a string (URL fallback), try to extract ID or skip
+                if (typeof imageIdOrUrl === 'number' || (typeof imageIdOrUrl === 'string' && !isNaN(imageIdOrUrl))) {
+                  const imageId = typeof imageIdOrUrl === 'number' ? imageIdOrUrl : parseInt(imageIdOrUrl)
+                  const deleteResponse = await productService.deleteVariantImage(imageId)
                   if (!deleteResponse.success) {
-                    console.warn(`Failed to delete image with possible ID ${possibleId}:`, deleteResponse.message)
+                    console.warn(`Failed to delete image with ID ${imageId}:`, deleteResponse.message)
                   }
                   return deleteResponse.success
                 } else {
-                  console.warn('Could not extract image_id from URL:', imageUrl)
+                  // URL fallback - try to extract ID from URL (last resort)
+                  console.warn('Image ID not available, attempting URL-based deletion:', imageIdOrUrl)
+                  // Skip deletion if we can't get a valid ID
                   return false
                 }
               } catch (err) {
@@ -282,8 +351,6 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
           } catch (err) {
             console.error('Error during image deletion:', err)
             showError('Some images could not be deleted. Please try again or delete them manually.')
-          } finally {
-            setUploading(false)
           }
         }
 
@@ -292,7 +359,46 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
         
         if (!updateResponse.success) {
           showError(updateResponse.message || 'Failed to update variant')
+          setUploading(false)
           return
+        }
+
+        // Check if metadata (is_primary, sort_order) has changed for existing images
+        const metadataChanged = existingImages.some((img, idx) => {
+          const original = originalImages.find(orig => orig.image_id === img.image_id)
+          if (!original) return false
+          return (
+            original.is_primary !== img.is_primary ||
+            original.sort_order !== img.sort_order
+          )
+        })
+
+        // Update image metadata if changed
+        if (metadataChanged && existingImages.length > 0) {
+          try {
+            const imagesMeta = existingImages
+              .filter(img => img.image_id) // Only include images with image_id
+              .map(img => ({
+                image_id: img.image_id,
+                is_primary: img.is_primary,
+                sort_order: img.sort_order
+              }))
+
+            if (imagesMeta.length > 0) {
+              const metaResponse = await productService.updateVariantImageMeta(
+                variant.variant_id,
+                imagesMeta
+              )
+
+              if (!metaResponse.success) {
+                console.warn('Failed to update image metadata:', metaResponse.message)
+                // Don't fail the whole operation, just warn
+              }
+            }
+          } catch (err) {
+            console.error('Error updating image metadata:', err)
+            // Don't fail the whole operation, just log the error
+          }
         }
 
         // Then upload new images if any
@@ -304,7 +410,6 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
             .filter(img => img.isNew)
             .map((img, idx) => existingImages.length + idx)
 
-          setUploading(true)
           const uploadResponse = await productService.uploadVariantImages(
             variant.variant_id,
             newImageFiles,
@@ -317,8 +422,9 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
             setUploading(false)
             return
           }
-          setUploading(false)
         }
+        
+        setUploading(false)
         
         // Reset deletion tracking after successful save
         setImagesToDelete([])
@@ -531,6 +637,8 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
                 onChange={(e) => {
                   if (e.target.files && e.target.files.length > 0) {
                     handleFileSelect(e.target.files)
+                    // Reset input to allow selecting same file again
+                    e.target.value = ''
                   }
                 }}
                 style={{ display: 'none' }}
@@ -546,7 +654,7 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
                     <Card className="position-relative">
                       <Card.Img 
                         variant="top" 
-                        src={image.preview || image.url} 
+                        src={image.preview || image.url || image.image_url} 
                         style={{ height: '100px', objectFit: 'cover' }}
                       />
                       
@@ -565,11 +673,59 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
                         className="position-absolute bottom-0 start-0 m-1"
                         style={{ cursor: 'pointer' }}
                         onClick={() => setPrimaryImage(index)}
+                        title="Set as primary image"
                       >
                         <FontAwesomeIcon 
                           icon={faStar} 
                           className={image.is_primary ? 'text-warning' : 'text-muted'}
+                          size="sm"
                         />
+                      </div>
+
+                      {/* Sort/Reorder Buttons */}
+                      <div className="position-absolute top-0 start-0 m-1 d-flex flex-column gap-1">
+                        <Button
+                          variant="light"
+                          size="sm"
+                          className="p-1"
+                          style={{ 
+                            width: '24px', 
+                            height: '24px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            opacity: index === 0 ? 0.5 : 1
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            moveImage(index, 'up')
+                          }}
+                          disabled={index === 0 || uploading || loading}
+                          title="Move up"
+                        >
+                          <FontAwesomeIcon icon={faArrowUp} size="xs" />
+                        </Button>
+                        <Button
+                          variant="light"
+                          size="sm"
+                          className="p-1"
+                          style={{ 
+                            width: '24px', 
+                            height: '24px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            opacity: index === images.length - 1 ? 0.5 : 1
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            moveImage(index, 'down')
+                          }}
+                          disabled={index === images.length - 1 || uploading || loading}
+                          title="Move down"
+                        >
+                          <FontAwesomeIcon icon={faArrowDown} size="xs" />
+                        </Button>
                       </div>
 
                       {/* Delete Button */}
@@ -582,6 +738,7 @@ const VariantFormModal = ({ show, onClose, onSave, variant = null, productId }) 
                           removeImage(index)
                         }}
                         disabled={deletingImage[index] || uploading || loading}
+                        title="Delete image"
                       >
                         {deletingImage[index] ? (
                           <FontAwesomeIcon icon={faSpinner} spin />
