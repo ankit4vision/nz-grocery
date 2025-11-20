@@ -74,9 +74,12 @@ const ProductCard = ({
 
   const handleCardClick = () => {
     // Use productId for navigation (to fetch full product details)
-    // If productId is not available, fall back to id (variantId for backward compatibility)
+    // Pass variant_id as query parameter
     const productIdToUse = productId || id;
-    navigate(`/product/${productIdToUse}`);
+    const variantIdToUse = variantId || id;
+    
+    // Navigate with variant_id as query parameter
+    navigate(`/product/${productIdToUse}?variant_id=${variantIdToUse}`);
   };
 
   const handleQuantityChange = (change) => {

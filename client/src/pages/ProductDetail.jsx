@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
 import { useCartContext } from '../context';
 import { customerReviewsData } from '../data/mockData';
@@ -12,40 +12,79 @@ import './ProductDetail.css';
  * Displays comprehensive product information including images, details, similar products, and reviews
  */
 const ProductDetail = () => {
-  const { id } = useParams(); // This is now product_id (not variant_id)
+  const { id } = useParams(); // This is product_id
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const reviewsRef = useRef(null);
   const { addItem, toggleCart } = useCartContext();
   
   const [product, setProduct] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [variants, setVariants] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const reviews = customerReviewsData;
 
+  // Get variant_id from query params
+  const variantIdFromQuery = searchParams.get('variant_id');
+
   // Load product details on mount
-  // Note: id from URL params is now product_id (not variant_id)
+  // Note: id from URL params is product_id
   useEffect(() => {
     if (id) {
       loadProductDetails();
     }
-  }, [id]);
+  }, [id, variantIdFromQuery]);
 
   const loadProductDetails = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Use product_id from URL to fetch full product details
-      const response = await ProductsService.getProductFullDetails(id);
-      if (response.success && response.data) {
+      // Fetch both product details and variants with images
+      const [productResponse, variantsResponse] = await Promise.all([
+        ProductsService.getProductFullDetails(id),
+        ProductsService.getProductVariantsWithImages(id)
+      ]);
+
+      // Handle variants response
+      if (variantsResponse.success && variantsResponse.data && Array.isArray(variantsResponse.data)) {
         // Transform API response to match component expectations
-        const transformedProduct = transformProductDetails(response.data);
+        const transformedVariants = transformVariantsWithImages(variantsResponse.data);
+        setVariants(transformedVariants);
+        
+        // Select variant based on query param or use first variant
+        const variantIdToSelect = variantIdFromQuery 
+          ? parseInt(variantIdFromQuery) 
+          : transformedVariants[0]?.variantId;
+        
+        const selected = transformedVariants.find(v => v.variantId === variantIdToSelect) || transformedVariants[0];
+        setSelectedVariant(selected);
+        
+        // Get product-level info from product details response
+        // ProductFullDetailsOut has structure: { product, images, variants, bulk_pricing, attributes }
+        let productData = null;
+        if (productResponse.success && productResponse.data) {
+          if (productResponse.data.product) {
+            // Structure: { product: {...}, images: [...], variants: [...] }
+            productData = productResponse.data.product;
+          } else if (productResponse.data.product_name || productResponse.data.name) {
+            // Structure: direct product object
+            productData = productResponse.data;
+          }
+        }
+        
+        // Transform selected variant to product format for display
+        const transformedProduct = transformVariantToProduct(selected, transformedVariants, productData);
         setProduct(transformedProduct);
         
         // Load similar products using product_id
-        loadSimilarProducts(response.data.category_id, id);
+        const categoryId = productData?.category_id || selected?.categoryId;
+        if (categoryId) {
+          loadSimilarProducts(categoryId, id);
+        }
       } else {
-        setError(response.message || 'Product not found');
+        setError(variantsResponse.message || 'Product not found');
       }
     } catch (err) {
       setError('Failed to load product details');
@@ -67,33 +106,104 @@ const ProductDetail = () => {
     }
   };
 
-  // Transform product details from API to component format
-  const transformProductDetails = (apiProduct) => {
-    // Get the first variant or default variant
-    const defaultVariant = apiProduct.variants?.[0] || {};
-    const defaultImage = apiProduct.images?.[0]?.image_url || '/placeholder-image.jpg';
+  // Transform variants with images from API to component format
+  const transformVariantsWithImages = (apiVariants) => {
+    return apiVariants.map((variant) => {
+      // Get images from variant.images array
+      const images = variant.images?.map(img => img.image_url || img.url) || [];
+      const defaultImage = images[0] || '/placeholder-image.jpg';
+      
+      // Determine current price (use discounted_sale_price if available, else sale_price, else base_price)
+      const currentPrice = variant.discounted_sale_price || variant.sale_price || variant.base_price || 0;
+      const originalPrice = variant.sale_price && variant.discounted_sale_price ? variant.sale_price : null;
+      
+      return {
+        variantId: variant.variant_id,
+        productId: variant.product_id,
+        variantName: variant.variant_name || '',
+        variantValue: variant.variant_value || '',
+        basePrice: variant.base_price || 0,
+        salePrice: variant.sale_price,
+        discountedSalePrice: variant.discounted_sale_price,
+        currentPrice: currentPrice,
+        originalPrice: originalPrice,
+        discountPercentage: variant.discount_percentage || 0,
+        stockQuantity: variant.stock_quantity || 0,
+        lowStockQuantity: variant.low_stock_quantity || 0,
+        sku: variant.sku,
+        weight: variant.weight,
+        isActive: variant.is_active !== false,
+        images: images,
+        defaultImage: defaultImage,
+      };
+    });
+  };
+
+  // Transform selected variant to product format for display
+  const transformVariantToProduct = (selectedVariant, allVariants, productData = null) => {
+    if (!selectedVariant) return null;
+    
+    // Get product name from product data or construct from variant
+    const productName = productData?.product_name || productData?.name || 'Product';
+    const variantName = selectedVariant.variantName || '';
+    
+    // Create display name: "Product Name - Variant Name" or just "Product Name" if no variant
+    const displayName = variantName 
+      ? `${productName} - ${variantName}` 
+      : productName;
     
     return {
-      id: apiProduct.product_id || apiProduct.id,
-      name: apiProduct.product_name || apiProduct.name,
-      description: apiProduct.description || '',
-      category: apiProduct.category_name || 'Uncategorized', // Use category_name, not category_id
-      categoryId: apiProduct.category_id, // Keep category_id separately if needed for filtering
-      categoryName: apiProduct.category_name || 'Uncategorized', // Explicit category name
-      images: apiProduct.images?.map(img => img.image_url) || [defaultImage],
-      currentPrice: defaultVariant.price || defaultVariant.current_price || 0,
-      originalPrice: defaultVariant.original_price || null,
-      unit: defaultVariant.unit || 'each',
-      rating: apiProduct.rating || 0,
-      reviews: apiProduct.reviews_count || 0,
-      discount: defaultVariant.discount_percentage || 0,
-      stockQuantity: defaultVariant.stock_quantity || 0,
-      sku: defaultVariant.sku,
-      variants: apiProduct.variants || [],
-      attributes: apiProduct.attributes || [],
-      bulkPricing: apiProduct.bulk_pricing || [],
-      healthStarRating: apiProduct.health_star_rating || 0,
+      id: selectedVariant.productId,
+      variantId: selectedVariant.variantId,
+      name: displayName,
+      productName: productName,
+      variantName: variantName,
+      description: productData?.description || '',
+      category: productData?.category_name || 'Uncategorized',
+      categoryId: productData?.category_id || null,
+      categoryName: productData?.category_name || 'Uncategorized',
+      images: selectedVariant.images || [selectedVariant.defaultImage],
+      currentPrice: selectedVariant.currentPrice,
+      originalPrice: selectedVariant.originalPrice,
+      unit: productData?.unit || 'each',
+      rating: productData?.rating || 0,
+      reviews: productData?.reviews_count || 0,
+      discount: selectedVariant.discountPercentage,
+      stockQuantity: selectedVariant.stockQuantity,
+      sku: selectedVariant.sku,
+      variants: allVariants,
+      attributes: productData?.attributes || [],
+      bulkPricing: productData?.bulk_pricing || [],
+      healthStarRating: productData?.health_star_rating || 0,
     };
+  };
+
+  // Handle variant selection change
+  const handleVariantChange = (variantId) => {
+    const selected = variants.find(v => v.variantId === variantId);
+    if (selected) {
+      setSelectedVariant(selected);
+      // Update URL with new variant_id
+      navigate(`/product/${id}?variant_id=${variantId}`, { replace: true });
+      
+      // Transform selected variant to product format for display
+      const productData = product ? {
+        product_name: product.productName,
+        name: product.productName,
+        description: product.description,
+        category_name: product.categoryName,
+        category_id: product.categoryId,
+        unit: product.unit,
+        rating: product.rating,
+        reviews_count: product.reviews,
+        attributes: product.attributes,
+        bulk_pricing: product.bulkPricing,
+        health_star_rating: product.healthStarRating,
+      } : null;
+      
+      const transformedProduct = transformVariantToProduct(selected, variants, productData);
+      setProduct(transformedProduct);
+    }
   };
 
   // Transform product variants from API to component format
@@ -131,12 +241,37 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = (productId, quantity = 1) => {
-    // Find the product in similar products or use main product
-    const productToAdd = similarProducts.find(p => p.id === productId) || product;
-    
-    if (productToAdd) {
+    // Use the selected variant for cart operations
+    if (product && selectedVariant) {
+      // Create product object with variant information for cart
+      const productToAdd = {
+        id: selectedVariant.variantId, // Use variant ID for cart
+        variantId: selectedVariant.variantId,
+        productId: product.id,
+        name: product.name,
+        productName: product.productName,
+        variantName: product.variantName,
+        unit: product.unit,
+        currentPrice: product.currentPrice,
+        originalPrice: product.originalPrice,
+        image: product.images?.[0] || '/placeholder-image.jpg',
+        rating: product.rating,
+        reviews: product.reviews,
+        discount: product.discount,
+        category: product.categoryId,
+        stockQuantity: product.stockQuantity,
+        sku: product.sku,
+      };
+      
       addItem(productToAdd, quantity);
       console.log(`Added ${quantity} x ${productToAdd.name} to cart`);
+    } else {
+      // Fallback to similar products
+      const productToAdd = similarProducts.find(p => p.id === productId) || product;
+      if (productToAdd) {
+        addItem(productToAdd, quantity);
+        console.log(`Added ${quantity} x ${productToAdd.name} to cart`);
+      }
     }
   };
 

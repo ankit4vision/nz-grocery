@@ -159,6 +159,22 @@ export class ProductsService {
       return handleApiError(error)
     }
   }
+
+  /**
+   * Get product variants with images by product ID
+   * 
+   * @param {string|number} productId - Product ID
+   * @returns {Promise} - Array of product variants with their images
+   */
+  static async getProductVariantsWithImages(productId) {
+    try {
+      const endpoint = `/product-service/products/${productId}/variants-with-images`
+      const response = await apiClient.get(endpoint)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
 }
 
 export default ProductsService;

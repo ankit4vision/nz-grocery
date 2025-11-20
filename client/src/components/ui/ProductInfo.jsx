@@ -40,21 +40,30 @@ const ProductInfo = ({
   };
 
   const handleAddToCart = () => {
-    addItem(product, quantity);
+    // Use variantId for cart if available, otherwise use id
+    const cartId = product.variantId || product.id;
+    const productForCart = {
+      ...product,
+      id: cartId, // Ensure cart uses variant ID
+    };
+    
+    addItem(productForCart, quantity);
     if (onAddToCart) {
-      onAddToCart(product.id, quantity);
+      onAddToCart(cartId, quantity);
     }
   };
 
   const handleQuantityChange = (change) => {
-    const currentQuantity = isInCart(product.id) ? getItemQuantity(product.id) : quantity;
+    // Use variantId for cart if available, otherwise use id
+    const cartId = product.variantId || product.id;
+    const currentQuantity = isInCart(cartId) ? getItemQuantity(cartId) : quantity;
     const newQuantity = Math.max(1, currentQuantity + change);
     
-    if (isInCart(product.id)) {
+    if (isInCart(cartId)) {
       if (newQuantity === 0) {
-        removeItem(product.id);
+        removeItem(cartId);
       } else {
-        updateItemQuantity(product.id, newQuantity);
+        updateItemQuantity(cartId, newQuantity);
       }
     } else {
       setQuantity(newQuantity);
@@ -160,13 +169,13 @@ const ProductInfo = ({
               variant="outline-secondary" 
               size="sm"
               onClick={() => handleQuantityChange(-1)}
-              disabled={isInCart(product.id) ? getItemQuantity(product.id) <= 1 : quantity <= 1}
+              disabled={isInCart(product.variantId || product.id) ? getItemQuantity(product.variantId || product.id) <= 1 : quantity <= 1}
               className="product-card__quantity-btn"
             >
               −
             </Button>
             <span className="product-card__quantity">
-              {isInCart(product.id) ? getItemQuantity(product.id) : quantity}
+              {isInCart(product.variantId || product.id) ? getItemQuantity(product.variantId || product.id) : quantity}
             </span>
             <Button 
               variant="outline-secondary" 
@@ -180,7 +189,7 @@ const ProductInfo = ({
           </div>
         </div>
         
-        {!isInCart(product.id) ? (
+        {!isInCart(product.variantId || product.id) ? (
           <CustomButton
             variant="success"
             size="md"
