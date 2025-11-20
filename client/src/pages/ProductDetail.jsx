@@ -3,8 +3,8 @@ import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
 import { useCartContext } from '../context';
-import { customerReviewsData } from '../data/mockData';
 import ProductsService from '../services/api/products';
+import ReviewsService from '../services/api/reviews';
 import './ProductDetail.css';
 
 /**
@@ -25,7 +25,8 @@ const ProductDetail = () => {
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const reviews = customerReviewsData;
+  const [productRating, setProductRating] = useState(0);
+  const [productReviewCount, setProductReviewCount] = useState(0);
 
   // Get variant_id from query params
   const variantIdFromQuery = searchParams.get('variant_id');
@@ -42,10 +43,11 @@ const ProductDetail = () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch both product details and variants with images
-      const [productResponse, variantsResponse] = await Promise.all([
+      // Fetch product details, variants with images, and reviews
+      const [productResponse, variantsResponse, reviewsResponse] = await Promise.all([
         ProductsService.getProductFullDetails(id),
-        ProductsService.getProductVariantsWithImages(id)
+        ProductsService.getProductVariantsWithImages(id),
+        ReviewsService.getReviews({ product_id: id, is_approved: true })
       ]);
 
       // Handle variants response
@@ -76,6 +78,24 @@ const ProductDetail = () => {
           setProductMeta(null);
         }
 
+        // Calculate rating and review count from reviews
+        let calculatedRating = 0;
+        let reviewCount = 0;
+        
+        if (reviewsResponse.success && reviewsResponse.data && Array.isArray(reviewsResponse.data)) {
+          const approvedReviews = reviewsResponse.data;
+          reviewCount = approvedReviews.length;
+          
+          if (reviewCount > 0) {
+            const totalRating = approvedReviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+            calculatedRating = Math.round((totalRating / reviewCount) * 10) / 10; // Round to 1 decimal
+          }
+        }
+        
+        // Store rating and review count for use when variant changes
+        setProductRating(calculatedRating);
+        setProductReviewCount(reviewCount);
+        
         // Select variant based on query param or use first variant
         const variantIdToSelect = variantIdFromQuery 
           ? parseInt(variantIdFromQuery) 
@@ -91,7 +111,9 @@ const ProductDetail = () => {
           normalizedProduct,
           normalizedImages,
           normalizedAttributes,
-          normalizedBulkPricing
+          normalizedBulkPricing,
+          calculatedRating,
+          reviewCount
         );
         setProduct(transformedProduct);
         
@@ -170,7 +192,9 @@ const ProductDetail = () => {
     baseProduct = null,
     baseImages = [],
     attributes = [],
-    bulkPricing = []
+    bulkPricing = [],
+    calculatedRating = 0,
+    reviewCount = 0
   ) => {
     if (!selectedVariant) return null;
     
@@ -206,8 +230,8 @@ const ProductDetail = () => {
       currentPrice: selectedVariant.currentPrice,
       originalPrice: selectedVariant.originalPrice,
       unit: selectedVariant.unit || baseProduct?.unit || 'each',
-      rating: baseProduct?.rating || baseProduct?.average_rating || 0,
-      reviews: baseProduct?.reviews_count || baseProduct?.review_count || 0,
+      rating: calculatedRating || baseProduct?.rating || baseProduct?.average_rating || 0,
+      reviews: reviewCount || baseProduct?.reviews_count || baseProduct?.review_count || 0,
       discount: selectedVariant.discountPercentage,
       stockQuantity: selectedVariant.stockQuantity,
       stockCount: selectedVariant.stockQuantity,
@@ -239,7 +263,9 @@ const ProductDetail = () => {
         baseProduct,
         baseImages,
         attributes,
-        bulkPricing
+        bulkPricing,
+        productRating,
+        productReviewCount
       );
       setProduct(transformedProduct);
     }
@@ -333,16 +359,6 @@ const ProductDetail = () => {
     navigate(`/product/${productId}`);
   };
 
-  const handleWriteReview = () => {
-    console.log('Write review clicked');
-    // In a real app, this would open a review form modal
-  };
-
-  const handleShowAllReviews = (showAll) => {
-    console.log('Show all reviews:', showAll);
-    // In a real app, this would expand/collapse reviews
-  };
-
   const handleImageClick = (imageUrl) => {
     console.log('Image clicked:', imageUrl);
     // In a real app, this might open a lightbox or fullscreen view
@@ -426,9 +442,12 @@ const ProductDetail = () => {
         {/* Customer Reviews Section */}
         <div ref={reviewsRef}>
           <CustomerReviews
-            reviewsData={reviews}
-            onWriteReview={handleWriteReview}
-            onShowAllReviews={handleShowAllReviews}
+            productId={id}
+            variantId={selectedVariant?.variantId || variantIdFromQuery}
+            onReviewSubmitted={async () => {
+              // Reload product details to update rating/review count after review submission
+              await loadProductDetails();
+            }}
             className="customer-reviews-section"
           />
         </div>

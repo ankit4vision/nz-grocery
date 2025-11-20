@@ -168,14 +168,6 @@ const ProductInfo = ({
         )}
       </div>
 
-      {/* Rating */}
-      <div className="product-rating-simple">
-        <div className="stars">
-          {renderStars(product.rating)}
-        </div>
-        <span className="rating-text">{product.rating} ({product.reviews} reviews)</span>
-      </div>
-
       {/* Add to Cart */}
       <div className="add-to-cart-simple">
         <div className="quantity-controls">

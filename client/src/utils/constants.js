@@ -271,6 +271,13 @@ export const API_ENDPOINTS = {
     ADD_ITEM: '/wishlists/items',
     REMOVE_ITEM: (itemId) => `/wishlists/items/${itemId}`,
   },
+  REVIEWS: {
+    LIST: '/product-service/reviews/',
+    GET_BY_ID: (reviewId) => `/product-service/reviews/${reviewId}`,
+    CREATE: '/product-service/reviews/',
+    UPDATE: (reviewId) => `/product-service/reviews/${reviewId}`,
+    DELETE: (reviewId) => `/product-service/reviews/${reviewId}`,
+  },
 };
 
 export default {

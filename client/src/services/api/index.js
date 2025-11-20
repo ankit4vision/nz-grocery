@@ -5,3 +5,4 @@ export { default as UsersService } from './users';
 export { default as CartService } from './cart';
 export { default as OrdersService } from './orders';
 export { default as AuthService } from './auth';
+export { default as ReviewsService } from './reviews';

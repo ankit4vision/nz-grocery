@@ -45,6 +45,50 @@
 
 ---
 
+### 2. Product Reviews Module ⭐ ✅ **COMPLETED**
+**Why After Products**: Users need to view and submit product reviews after browsing products.
+
+**APIs Integrated**:
+- `GET /product-service/reviews/` - List product reviews (with filters: product_id, product_variant_id, is_approved, sort_by)
+- `GET /product-service/reviews/{review_id}` - Get single review
+- `POST /product-service/reviews/` - Create new product review
+- `PUT /product-service/reviews/{review_id}` - Update review
+- `DELETE /product-service/reviews/{review_id}` - Delete review
+
+**Files Updated/Created**:
+- `client/src/services/api/reviews.js` ✅ Created
+- `client/src/utils/constants.js` ✅ Updated (Review endpoints added)
+- `client/src/components/ui/CustomerReviews.jsx` ✅ Updated (API integration)
+- `client/src/pages/ProductDetail.jsx` ✅ Updated (fetches reviews, calculates rating)
+- `client/src/components/ui/ProductInfo.jsx` ✅ Updated (displays calculated rating)
+- `client/src/services/api/index.js` ✅ Updated (ReviewsService export)
+
+**Features Implemented**:
+- ✅ View product reviews with ratings
+- ✅ Sort reviews (Newest, Oldest, Highest/Lowest rating)
+- ✅ Submit new reviews (requires authentication)
+- ✅ Display verified purchase badges
+- ✅ Show overall rating and review count
+- ✅ Calculate average rating from reviews
+- ✅ Display rating in ProductInfo component
+- ✅ Loading states during API calls
+- ✅ Error handling with user-friendly messages
+- ✅ Review submission with validation
+- ✅ Auto-refresh rating after review submission
+- ✅ Responsive UI
+
+**Key Implementation Details**:
+- Reviews service uses apiClient pattern with error handling
+- Reviews fetched in parallel with product details for better performance
+- Average rating calculated from all approved reviews
+- Rating and review count stored in state for variant changes
+- Review submission requires user authentication
+- Modal always rendered (even in "no reviews" state) for better UX
+- Data transformation maps API fields to component format
+- Rating updates automatically when new reviews are submitted
+
+**Time Taken**: Completed
+
 ---
 
 ## 📁 Project File Structure
@@ -197,6 +241,7 @@ nz-grocery/
 - ✅ `auth.js` - Authentication (register, login, get current user, change password)
 - ⏳ `products.js` - Product browsing and details
 - ⏳ `categories.js` - Category listing
+- ✅ `reviews.js` - Product reviews (list, create, update, delete)
 - ⏳ `cart.js` - Shopping cart operations
 - ⏳ `orders.js` - Order management (create, list, details, cancel)
 - ⏳ `users.js` - User profile and addresses
@@ -363,6 +408,52 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 **Current Status**: Integration in progress - API services updated, pages updated, but testing and refinement ongoing
 
 **Time Taken**: In Progress
+
+---
+
+### Priority 2.5: Product Reviews Module ⭐ ✅ **COMPLETED**
+**Why After Products**: Users need to view and submit product reviews after browsing products.
+
+**APIs Integrated**:
+- `GET /product-service/reviews/` - List product reviews (with filters: product_id, product_variant_id, is_approved, sort_by) ✅ Completed
+- `GET /product-service/reviews/{review_id}` - Get single review ✅ Completed
+- `POST /product-service/reviews/` - Create new product review ✅ Completed
+- `PUT /product-service/reviews/{review_id}` - Update review ✅ Completed
+- `DELETE /product-service/reviews/{review_id}` - Delete review ✅ Completed
+
+**Files Updated/Created**:
+- `client/src/services/api/reviews.js` ✅ Created
+- `client/src/utils/constants.js` ✅ Updated (Review endpoints added)
+- `client/src/components/ui/CustomerReviews.jsx` ✅ Updated (API integration)
+- `client/src/pages/ProductDetail.jsx` ✅ Updated (fetches reviews, calculates rating)
+- `client/src/components/ui/ProductInfo.jsx` ✅ Updated (displays calculated rating)
+- `client/src/services/api/index.js` ✅ Updated (ReviewsService export)
+
+**Features Implemented**:
+- ✅ View product reviews with ratings
+- ✅ Sort reviews (Newest, Oldest, Highest/Lowest rating)
+- ✅ Submit new reviews (requires authentication)
+- ✅ Display verified purchase badges
+- ✅ Show overall rating and review count
+- ✅ Calculate average rating from reviews
+- ✅ Display rating in ProductInfo component
+- ✅ Loading states during API calls
+- ✅ Error handling with user-friendly messages
+- ✅ Review submission with validation
+- ✅ Auto-refresh rating after review submission
+- ✅ Responsive UI
+
+**Key Implementation Details**:
+- Reviews service uses apiClient pattern with error handling
+- Reviews fetched in parallel with product details for better performance
+- Average rating calculated from all approved reviews
+- Rating and review count stored in state for variant changes
+- Review submission requires user authentication
+- Modal always rendered (even in "no reviews" state) for better UX
+- Data transformation maps API fields to component format
+- Rating updates automatically when new reviews are submitted
+
+**Time Taken**: Completed
 
 ---
 
@@ -623,6 +714,13 @@ export default moduleService
   - Change Password
   - Token Management
   - Error Handling (no page reload on auth errors)
+- Product Reviews Module (Priority 2.5)
+  - List Product Reviews (with filters and sorting)
+  - Submit New Reviews (with authentication)
+  - Calculate and Display Average Rating
+  - Review Rating Integration in ProductInfo
+  - Review Submission with Validation
+  - Auto-refresh Rating on New Review
 
 ⏳ **In Progress**:
 - Products & Categories Module (Priority 2)
@@ -978,6 +1076,13 @@ For each module integration:
 - `GET /product-service/products/variants/filter` - Filter product variants
 - `GET /product-service/products/{product_id}/full` - Get full product details
 
+### Product Reviews
+- `GET /product-service/reviews/` - List product reviews (with filters)
+- `GET /product-service/reviews/{review_id}` - Get single review
+- `POST /product-service/reviews/` - Create new review
+- `PUT /product-service/reviews/{review_id}` - Update review
+- `DELETE /product-service/reviews/{review_id}` - Delete review
+
 ### Shopping Cart
 - `GET /shopping-cart/user/{user_id}/active` - Get active cart
 - `POST /shopping-cart/` - Create cart
@@ -1015,6 +1120,6 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Products & Categories Module In Progress - API integration completed, testing and refinement ongoing  
+**Status**: Products & Categories Module In Progress, Product Reviews Module Completed  
 **Next Step**: Complete testing and refinement of Products & Categories Module, then proceed to Priority 3 - Shopping Cart Module Integration
 
