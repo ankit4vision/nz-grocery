@@ -11,8 +11,15 @@
   font-size: 2rem;
   font-weight: 700;
   color: var(--dark);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   line-height: 1.2;
+}
+
+.product-info .product-name-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
 }
 
 .product-info .product-unit-badge {

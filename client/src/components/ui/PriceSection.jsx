@@ -109,8 +109,11 @@ const PriceSection = ({
                       <span className="product-card__original-price">${product.originalPrice}</span>
                     </div>
                     <p className="product-card__title">
-                      {product.name}
+                      {product.variantName || product.name}
                     </p>
+                    {product.productName && product.productName !== (product.variantName || product.name) && (
+                      <p className="product-card__product-name text-muted small mb-0">{product.productName}</p>
+                    )}
                     
                     {/* Dynamic Button/Quantity Selector */}
                     {productInCart ? (

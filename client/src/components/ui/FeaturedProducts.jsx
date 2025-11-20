@@ -69,22 +69,30 @@ const FeaturedProducts = ({
 
         {/* Products Grid */}
         <Row className="featured-products__grid">
-          {displayedProducts.map((product) => (
-            <Col 
-              key={product.id} 
-              xs={12} 
-              sm={6} 
-              md={6} 
-              lg={12 / productsPerRow}
-              className="featured-products__item"
-            >
-              <ProductCard
-                {...product}
-                onAddToCart={onAddToCart}
-                onToggleFavorite={onToggleFavorite}
-              />
-            </Col>
-          ))}
+          {displayedProducts.map((product) => {
+            // Get category name - use categoryName if available, otherwise use category
+            const categoryDisplay = product.categoryName || 
+              (product.category && typeof product.category === 'string' ? product.category : null) ||
+              'Uncategorized';
+            
+            return (
+              <Col 
+                key={product.id} 
+                xs={12} 
+                sm={6} 
+                md={6} 
+                lg={12 / productsPerRow}
+                className="featured-products__item"
+              >
+                <ProductCard
+                  {...product}
+                  category={categoryDisplay}
+                  onAddToCart={onAddToCart}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              </Col>
+            );
+          })}
         </Row>
 
         {/* Load More Button */}

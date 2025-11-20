@@ -180,8 +180,11 @@ const SimilarProducts = ({
                     {product.unit && <span className="price-unit"> / {product.unit}</span>}
                   </div>
 
-                  {/* Product Name */}
-                  <h3 className="product-name">{product.name}</h3>
+                  {/* Product Name - Variant as main, Product as small */}
+                  <h3 className="product-name">{product.variantName || product.name}</h3>
+                  {product.productName && product.productName !== (product.variantName || product.name) && (
+                    <p className="product-name-subtitle text-muted small mb-0">{product.productName}</p>
+                  )}
 
                   {/* Rating */}
                   <div className="product-rating">

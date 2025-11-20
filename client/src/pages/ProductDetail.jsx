@@ -19,6 +19,7 @@ const ProductDetail = () => {
   const { addItem, toggleCart } = useCartContext();
   
   const [product, setProduct] = useState(null);
+  const [productMeta, setProductMeta] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [variants, setVariants] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
@@ -53,6 +54,28 @@ const ProductDetail = () => {
         const transformedVariants = transformVariantsWithImages(variantsResponse.data);
         setVariants(transformedVariants);
         
+        // Normalize product-level info from product service response
+        let normalizedProduct = null;
+        let normalizedImages = [];
+        let normalizedAttributes = [];
+        let normalizedBulkPricing = [];
+
+        if (productResponse.success && productResponse.data) {
+          const fullDetails = productResponse.data;
+          normalizedProduct = fullDetails.product || fullDetails;
+          normalizedImages = fullDetails.images || fullDetails.product_images || normalizedProduct?.images || [];
+          normalizedAttributes = fullDetails.attributes || normalizedProduct?.attributes || [];
+          normalizedBulkPricing = fullDetails.bulk_pricing || normalizedProduct?.bulk_pricing || [];
+          setProductMeta({
+            baseProduct: normalizedProduct,
+            images: normalizedImages,
+            attributes: normalizedAttributes,
+            bulkPricing: normalizedBulkPricing,
+          });
+        } else {
+          setProductMeta(null);
+        }
+
         // Select variant based on query param or use first variant
         const variantIdToSelect = variantIdFromQuery 
           ? parseInt(variantIdFromQuery) 
@@ -61,25 +84,19 @@ const ProductDetail = () => {
         const selected = transformedVariants.find(v => v.variantId === variantIdToSelect) || transformedVariants[0];
         setSelectedVariant(selected);
         
-        // Get product-level info from product details response
-        // ProductFullDetailsOut has structure: { product, images, variants, bulk_pricing, attributes }
-        let productData = null;
-        if (productResponse.success && productResponse.data) {
-          if (productResponse.data.product) {
-            // Structure: { product: {...}, images: [...], variants: [...] }
-            productData = productResponse.data.product;
-          } else if (productResponse.data.product_name || productResponse.data.name) {
-            // Structure: direct product object
-            productData = productResponse.data;
-          }
-        }
-        
         // Transform selected variant to product format for display
-        const transformedProduct = transformVariantToProduct(selected, transformedVariants, productData);
+        const transformedProduct = transformVariantToProduct(
+          selected,
+          transformedVariants,
+          normalizedProduct,
+          normalizedImages,
+          normalizedAttributes,
+          normalizedBulkPricing
+        );
         setProduct(transformedProduct);
         
         // Load similar products using product_id
-        const categoryId = productData?.category_id || selected?.categoryId;
+        const categoryId = normalizedProduct?.category_id || selected?.categoryId;
         if (categoryId) {
           loadSimilarProducts(categoryId, id);
         }
@@ -109,72 +126,97 @@ const ProductDetail = () => {
   // Transform variants with images from API to component format
   const transformVariantsWithImages = (apiVariants) => {
     return apiVariants.map((variant) => {
-      // Get images from variant.images array
       const images = variant.images?.map(img => img.image_url || img.url) || [];
       const defaultImage = images[0] || '/placeholder-image.jpg';
+      const variantName = variant.variant_name || '';
+      const variantValue = variant.variant_value || '';
+      const variantLabel = variantName && variantValue
+        ? `${variantName}: ${variantValue}`
+        : variantValue || variantName || '';
       
-      // Determine current price (use discounted_sale_price if available, else sale_price, else base_price)
       const currentPrice = variant.discounted_sale_price || variant.sale_price || variant.base_price || 0;
       const originalPrice = variant.sale_price && variant.discounted_sale_price ? variant.sale_price : null;
       
       return {
         variantId: variant.variant_id,
         productId: variant.product_id,
-        variantName: variant.variant_name || '',
-        variantValue: variant.variant_value || '',
+        variantName,
+        variantValue,
+        variantLabel,
+        categoryId: variant.category_id,
+        categoryName: variant.category_name,
+        unit: variant.unit || 'each',
         basePrice: variant.base_price || 0,
         salePrice: variant.sale_price,
         discountedSalePrice: variant.discounted_sale_price,
-        currentPrice: currentPrice,
-        originalPrice: originalPrice,
+        currentPrice,
+        originalPrice,
         discountPercentage: variant.discount_percentage || 0,
         stockQuantity: variant.stock_quantity || 0,
         lowStockQuantity: variant.low_stock_quantity || 0,
         sku: variant.sku,
         weight: variant.weight,
         isActive: variant.is_active !== false,
-        images: images,
-        defaultImage: defaultImage,
+        images,
+        defaultImage,
       };
     });
   };
 
   // Transform selected variant to product format for display
-  const transformVariantToProduct = (selectedVariant, allVariants, productData = null) => {
+  const transformVariantToProduct = (
+    selectedVariant,
+    allVariants,
+    baseProduct = null,
+    baseImages = [],
+    attributes = [],
+    bulkPricing = []
+  ) => {
     if (!selectedVariant) return null;
     
-    // Get product name from product data or construct from variant
-    const productName = productData?.product_name || productData?.name || 'Product';
-    const variantName = selectedVariant.variantName || '';
+    const productName = baseProduct?.product_name || baseProduct?.name || selectedVariant.productName || 'Product';
+    const variantLabel = selectedVariant.variantLabel || selectedVariant.variantName || selectedVariant.variantValue || '';
+    const description = baseProduct?.full_description || baseProduct?.short_description || baseProduct?.description || '';
+    const shortDescription = baseProduct?.short_description || baseProduct?.full_description || '';
+    const categoryId = baseProduct?.category_id || selectedVariant.categoryId || null;
+    const categoryName = baseProduct?.category_name || selectedVariant.categoryName || 'Uncategorized';
+    const productImages = selectedVariant.images?.length
+      ? selectedVariant.images
+      : baseImages.map(img => img.image_url || img.url).filter(Boolean);
+    const images = productImages.length ? productImages : ['/placeholder-image.jpg'];
     
-    // Create display name: "Product Name - Variant Name" or just "Product Name" if no variant
-    const displayName = variantName 
-      ? `${productName} - ${variantName}` 
-      : productName;
+    // Use variantName as main display name, fallback to variantLabel or productName
+    const displayName = selectedVariant.variantName || variantLabel || productName;
     
     return {
       id: selectedVariant.productId,
+      productId: selectedVariant.productId,
       variantId: selectedVariant.variantId,
-      name: displayName,
-      productName: productName,
-      variantName: variantName,
-      description: productData?.description || '',
-      category: productData?.category_name || 'Uncategorized',
-      categoryId: productData?.category_id || null,
-      categoryName: productData?.category_name || 'Uncategorized',
-      images: selectedVariant.images || [selectedVariant.defaultImage],
+      name: displayName, // Main title - variant name
+      productName, // Product name for small text
+      variantName: selectedVariant.variantName,
+      variantValue: selectedVariant.variantValue,
+      variantLabel,
+      description,
+      shortDescription,
+      category: categoryName,
+      categoryId,
+      categoryName,
+      images,
       currentPrice: selectedVariant.currentPrice,
       originalPrice: selectedVariant.originalPrice,
-      unit: productData?.unit || 'each',
-      rating: productData?.rating || 0,
-      reviews: productData?.reviews_count || 0,
+      unit: selectedVariant.unit || baseProduct?.unit || 'each',
+      rating: baseProduct?.rating || baseProduct?.average_rating || 0,
+      reviews: baseProduct?.reviews_count || baseProduct?.review_count || 0,
       discount: selectedVariant.discountPercentage,
       stockQuantity: selectedVariant.stockQuantity,
-      sku: selectedVariant.sku,
+      stockCount: selectedVariant.stockQuantity,
+      inStock: selectedVariant.stockQuantity > 0,
+      sku: selectedVariant.sku || baseProduct?.sku,
       variants: allVariants,
-      attributes: productData?.attributes || [],
-      bulkPricing: productData?.bulk_pricing || [],
-      healthStarRating: productData?.health_star_rating || 0,
+      attributes,
+      bulkPricing,
+      healthStarRating: baseProduct?.health_star_rating || 0,
     };
   };
 
@@ -186,22 +228,19 @@ const ProductDetail = () => {
       // Update URL with new variant_id
       navigate(`/product/${id}?variant_id=${variantId}`, { replace: true });
       
-      // Transform selected variant to product format for display
-      const productData = product ? {
-        product_name: product.productName,
-        name: product.productName,
-        description: product.description,
-        category_name: product.categoryName,
-        category_id: product.categoryId,
-        unit: product.unit,
-        rating: product.rating,
-        reviews_count: product.reviews,
-        attributes: product.attributes,
-        bulk_pricing: product.bulkPricing,
-        health_star_rating: product.healthStarRating,
-      } : null;
-      
-      const transformedProduct = transformVariantToProduct(selected, variants, productData);
+      const baseProduct = productMeta?.baseProduct || null;
+      const baseImages = productMeta?.images || [];
+      const attributes = productMeta?.attributes || [];
+      const bulkPricing = productMeta?.bulkPricing || [];
+
+      const transformedProduct = transformVariantToProduct(
+        selected,
+        variants,
+        baseProduct,
+        baseImages,
+        attributes,
+        bulkPricing
+      );
       setProduct(transformedProduct);
     }
   };
@@ -217,6 +256,12 @@ const ProductDetail = () => {
         ? `${productName} - ${variantName}` 
         : productName;
       
+      // Determine current price: discounted_sale_price > sale_price
+      const currentPrice = variant.discounted_sale_price || variant.sale_price || variant.price || variant.current_price || 0;
+      const originalPrice = variant.discounted_sale_price && variant.sale_price 
+        ? variant.sale_price 
+        : (variant.original_price || null);
+      
       return {
         id: variant.variant_id || variant.id, // Keep variant_id as id for backward compatibility
         variantId: variant.variant_id || variant.id, // Explicit variant ID
@@ -224,9 +269,9 @@ const ProductDetail = () => {
         name: displayName, // Display name: "Product Name - Variant Name"
         productName: productName, // Original product name
         variantName: variantName, // Variant name
-        unit: variant.unit || 'each',
-        currentPrice: variant.price || variant.current_price || 0,
-        originalPrice: variant.original_price || variant.currentPrice || null,
+        unit: variant.unit || null, // Unit (null if not provided, don't default to 'each')
+        currentPrice: currentPrice,
+        originalPrice: originalPrice,
         image: variant.image_url || variant.image || '/placeholder-image.jpg',
         rating: variant.rating || 0,
         reviews: variant.reviews_count || 0,
@@ -251,6 +296,7 @@ const ProductDetail = () => {
         name: product.name,
         productName: product.productName,
         variantName: product.variantName,
+        variantLabel: product.variantLabel,
         unit: product.unit,
         currentPrice: product.currentPrice,
         originalPrice: product.originalPrice,
@@ -261,6 +307,7 @@ const ProductDetail = () => {
         category: product.categoryId,
         stockQuantity: product.stockQuantity,
         sku: product.sku,
+        shortDescription: product.shortDescription,
       };
       
       addItem(productToAdd, quantity);

@@ -11,7 +11,9 @@ const ProductCard = ({
   id, // Variant ID (for backward compatibility)
   productId, // Product ID for fetching full details
   variantId, // Variant ID (explicit)
-  name,
+  name, // Display name (variant name or combined)
+  productName, // Product name for small text
+  variantName, // Variant name for main title
   unit,
   currentPrice,
   originalPrice,
@@ -225,25 +227,23 @@ const ProductCard = ({
 
       <Card.Body className="product-card__body">
         <Card.Title className="product-card__title">
-          {name}
+          {variantName || name}
         </Card.Title>
-        <p className="product-card__unit">{unit}</p>
+        {productName && productName !== (variantName || name) && (
+          <p className="product-card__product-name text-muted small mb-1">{productName}</p>
+        )}
+        {unit && unit !== 'each' && (
+          <p className="product-card__unit">{unit}</p>
+        )}
         {category && (
           <p className="product-card__category">{category}</p>
         )}
         
-        <div className="product-card__rating">
-          <div className="product-card__stars">
-            {renderStars(rating)}
-          </div>
-          <span className="product-card__reviews">({reviews})</span>
-        </div>
-        
         <div className="product-card__pricing">
-          {originalPrice && (
-            <span className="product-card__original-price">${originalPrice}</span>
+          {originalPrice && originalPrice !== currentPrice && (
+            <span className="product-card__original-price">${parseFloat(originalPrice).toFixed(2)}</span>
           )}
-          <span className="product-card__current-price">${currentPrice}</span>
+          <span className="product-card__current-price">${parseFloat(currentPrice).toFixed(2)}</span>
         </div>
         
         <div className="product-card__actions">

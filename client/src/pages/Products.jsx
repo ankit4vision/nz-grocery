@@ -125,6 +125,12 @@ const Products = () => {
         ? `${productName} - ${variantName}` 
         : productName;
       
+      // Determine current price: discounted_sale_price > sale_price
+      const currentPrice = variant.discounted_sale_price || variant.sale_price || 0;
+      const originalPrice = variant.discounted_sale_price && variant.sale_price 
+        ? variant.sale_price 
+        : null;
+      
       return {
         id: variant.variant_id || variant.id, // Keep variant_id as id for backward compatibility
         variantId: variant.variant_id || variant.id, // Explicit variant ID
@@ -132,9 +138,9 @@ const Products = () => {
         name: displayName, // Display name: "Product Name - Variant Name"
         productName: productName, // Original product name
         variantName: variantName, // Variant name
-        unit: variant.unit || 'each',
-        currentPrice: variant.price || variant.current_price || 0,
-        originalPrice: variant.original_price || variant.currentPrice || null,
+        unit: variant.unit || null, // Unit (null if not provided, don't default to 'each')
+        currentPrice: currentPrice,
+        originalPrice: originalPrice,
         image: variant.image_url || variant.image || '/placeholder-image.jpg',
         rating: variant.rating || 0,
         reviews: variant.reviews_count || 0,

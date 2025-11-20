@@ -101,15 +101,30 @@ const ProductInfo = ({
     );
   }
 
+  const descriptionText = product.shortDescription || product.description;
+
+  // Get display names - variant name as main, product name as secondary
+  const variantDisplayName = product.variantName || product.name || 'Product';
+  const productDisplayName = product.productName || '';
+
   return (
     <div className={`product-info ${className}`}>
-      {/* Product Title and Unit */}
+      {/* Product Title */}
       <div className="product-header">
-        <h1 className="product-title">{product.name}</h1>
-        <div className="product-unit-badge">
-          <span className="unit-text">{product.unit}</span>
-        </div>
+        <h1 className="product-title">{variantDisplayName}</h1>
+        {productDisplayName && productDisplayName !== variantDisplayName && (
+          <p className="product-name-subtitle text-muted small mb-0">{productDisplayName}</p>
+        )}
       </div>
+
+      {/* Variant Label */}
+      {product.variantLabel && product.variantLabel !== variantDisplayName && (
+        <div className="product-variant-label mb-3">
+          <Badge bg="light" text="dark" className="text-uppercase">
+            {product.variantLabel}
+          </Badge>
+        </div>
+      )}
 
       {/* Rating and Favorite */}
       <div className="product-rating-section">
@@ -133,13 +148,13 @@ const ProductInfo = ({
 
       {/* Product Description */}
       <div className="product-description">
-        <p>{product.description}</p>
+        <p>{descriptionText}</p>
       </div>
 
       {/* Pricing */}
       <div className="product-pricing">
         <div className="current-price">
-          {formatPrice(product.currentPrice)}/{product.unit}
+          {formatPrice(product.currentPrice)}
         </div>
         {product.originalPrice && product.originalPrice !== product.currentPrice && (
           <div className="original-price">
@@ -181,7 +196,7 @@ const ProductInfo = ({
               variant="outline-secondary" 
               size="sm"
               onClick={() => handleQuantityChange(1)}
-              disabled={isInCart(product.id) ? false : quantity >= (product.stockCount || 99)}
+              disabled={isInCart(product.variantId || product.id) ? false : quantity >= (product.stockCount || 99)}
               className="product-card__quantity-btn"
             >
               +
