@@ -1,79 +1,112 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Badge, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Badge, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner, faShoppingBag, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { CustomButton } from '../common';
+import OrdersService from '../../services/api/orders';
 import '../../styles/components/ui-components/my-orders.css';
 
 const MyOrders = () => {
   const navigate = useNavigate();
-  const [orders] = useState([
-    {
-      id: 'ORD-12345',
-      date: '8/22/2025',
-      status: 'current',
-      items: [
-        { name: 'Fresh Tomatoes', price: 2.99 },
-        { name: 'Organic Bananas', price: 1.49 },
-        { name: 'Whole Milk', price: 3.99 }
-      ],
-      total: 8.47
-    },
-    {
-      id: 'ORD-12344',
-      date: 'Dec 15, 2024',
-      status: 'delivered',
-      items: [
-        { name: 'Organic Apples', price: 4.99 },
-        { name: 'Fresh Bread', price: 2.49 },
-        { name: 'Greek Yogurt', price: 5.51 }
-      ],
-      total: 12.99
-    },
-    {
-      id: 'ORD-12343',
-      date: 'Dec 10, 2024',
-      status: 'delivered',
-      items: [
-        { name: 'Spinach', price: 2.99 },
-        { name: 'Chicken Breast', price: 5.76 }
-      ],
-      total: 8.75
-    },
-    {
-      id: 'ORD-12342',
-      date: 'Dec 5, 2024',
-      status: 'delivered',
-      items: [
-        { name: 'Salmon Fillet', price: 12.99 },
-        { name: 'Brown Rice', price: 2.26 }
-      ],
-      total: 15.25
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'current':
-        return <Badge bg="warning" className="status-badge">Processing</Badge>;
-      case 'delivered':
-        return <Badge bg="success" className="status-badge">Delivered</Badge>;
-      case 'shipped':
-        return <Badge bg="info" className="status-badge">Shipped</Badge>;
-      case 'cancelled':
-        return <Badge bg="danger" className="status-badge">Cancelled</Badge>;
-      default:
-        return <Badge bg="secondary" className="status-badge">Unknown</Badge>;
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await OrdersService.getOrders({ limit: 50 });
+      if (response.success) {
+        // API returns array directly
+        const ordersData = Array.isArray(response.data) ? response.data : [];
+        setOrders(ordersData);
+      } else {
+        setError(response.message || 'Failed to load orders');
+      }
+    } catch (err) {
+      setError('An error occurred while loading orders');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (err) {
+      return dateString;
+    }
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (err) {
+      return dateString;
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      pending: { bg: 'warning', text: 'Pending' },
+      confirmed: { bg: 'info', text: 'Confirmed' },
+      processing: { bg: 'primary', text: 'Processing' },
+      ready_for_pickup: { bg: 'info', text: 'Ready for Pickup' },
+      out_for_delivery: { bg: 'info', text: 'Out for Delivery' },
+      delivered: { bg: 'success', text: 'Delivered' },
+      cancelled: { bg: 'danger', text: 'Cancelled' },
+      refunded: { bg: 'secondary', text: 'Refunded' },
+    };
+
+    const config = statusConfig[status] || { bg: 'secondary', text: status };
+    return <Badge bg={config.bg} className="status-badge">{config.text}</Badge>;
+  };
+
+  const getPaymentStatusBadge = (paymentStatus) => {
+    const statusConfig = {
+      pending: { bg: 'warning', text: 'Payment Pending' },
+      paid: { bg: 'success', text: 'Paid' },
+      failed: { bg: 'danger', text: 'Payment Failed' },
+      refunded: { bg: 'secondary', text: 'Refunded' },
+    };
+
+    const config = statusConfig[paymentStatus] || { bg: 'secondary', text: paymentStatus };
+    return <Badge bg={config.bg} className="payment-status-badge">{config.text}</Badge>;
+  };
+
+  const isCurrentOrder = (order) => {
+    const currentStatuses = ['pending', 'confirmed', 'processing', 'ready_for_pickup', 'out_for_delivery'];
+    return currentStatuses.includes(order.order_status);
+  };
+
   const getActionButtons = (order) => {
-    if (order.status === 'current') {
+    if (isCurrentOrder(order)) {
       return (
         <div className="order-actions-compact">
           <CustomButton
             variant="outline-primary"
             size="sm"
-            onClick={() => handleViewDetails(order.id)}
+            onClick={() => handleViewDetails(order.order_id)}
             className="action-btn"
           >
             View Details
@@ -81,7 +114,7 @@ const MyOrders = () => {
           <CustomButton
             variant="primary"
             size="sm"
-            onClick={() => handleTrackOrder(order.id)}
+            onClick={() => handleTrackOrder(order.order_id)}
             className="action-btn"
           >
             Track Order
@@ -94,41 +127,55 @@ const MyOrders = () => {
           <CustomButton
             variant="outline-primary"
             size="sm"
-            onClick={() => handleViewDetails(order.id)}
+            onClick={() => handleViewDetails(order.order_id)}
             className="action-btn"
           >
             View Details
           </CustomButton>
-          <CustomButton
-            variant="primary"
-            size="sm"
-            onClick={() => handleReorder(order.id)}
-            className="action-btn"
-          >
-            Reorder
-          </CustomButton>
+          {order.order_status === 'delivered' && (
+            <CustomButton
+              variant="primary"
+              size="sm"
+              onClick={() => handleReorder(order.order_id)}
+              className="action-btn"
+            >
+              Reorder
+            </CustomButton>
+          )}
         </div>
       );
     }
   };
 
   const handleViewDetails = (orderId) => {
-    console.log('View details for order:', orderId);
     navigate(`/order/${orderId}`, { state: { from: 'dashboard' } });
   };
 
   const handleTrackOrder = (orderId) => {
-    console.log('Track order:', orderId);
     navigate(`/order/${orderId}`, { state: { from: 'dashboard' } });
   };
 
   const handleReorder = (orderId) => {
+    // TODO: Implement reorder functionality
     console.log('Reorder:', orderId);
-    // Add items to cart
+    navigate('/products');
   };
 
-  const currentOrders = orders.filter(order => order.status === 'current');
-  const pastOrders = orders.filter(order => order.status !== 'current');
+  const currentOrders = orders.filter(order => isCurrentOrder(order));
+  const pastOrders = orders.filter(order => !isCurrentOrder(order));
+
+  if (loading) {
+    return (
+      <div className="my-orders-compact">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <FontAwesomeIcon icon={faSpinner} className="fa-spin fa-2x text-primary mb-3" />
+            <p>Loading orders...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-orders-compact">
@@ -137,39 +184,51 @@ const MyOrders = () => {
         <p className="orders-subtitle-compact">Track your order history and current orders</p>
       </div>
 
+      {error && (
+        <Alert variant="danger" className="mb-4" dismissible onClose={() => setError(null)}>
+          <FontAwesomeIcon icon={faExclamationCircle} className="me-2" />
+          {error}
+        </Alert>
+      )}
+
       {currentOrders.length > 0 && (
         <div className="orders-section-compact">
-          <h5 className="section-title-compact">Current Order</h5>
+          <h5 className="section-title-compact">Current Orders</h5>
           {currentOrders.map((order) => (
-            <Card key={order.id} className="order-card-compact current-order">
+            <Card key={order.order_id} className="order-card-compact current-order">
               <Card.Body className="p-3">
                 <Row className="align-items-center">
                   <Col xs={12} md={8}>
                     <div className="order-info-compact">
                       <div className="order-header-compact">
                         <div className="order-title-section">
-                          <h6 className="order-id-compact">Order #{order.id}</h6>
-                          <span className="order-date-compact">Placed on: {order.date}</span>
+                          <h6 className="order-id-compact">Order #{order.order_number || order.order_id}</h6>
+                          <span className="order-date-compact">
+                            Placed on: {formatDate(order.created_at)}
+                          </span>
                         </div>
-                        {getStatusBadge(order.status)}
+                        <div className="d-flex flex-column align-items-end gap-2">
+                          {getStatusBadge(order.order_status)}
+                          {getPaymentStatusBadge(order.payment_status)}
+                        </div>
                       </div>
-                      <div className="order-items-compact">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="order-item-compact">
-                            <span className="item-name-compact">{item.name}</span>
-                            <span className="item-price-compact">(${item.price.toFixed(2)})</span>
-                          </div>
-                        ))}
+                      <div className="order-meta-compact mt-2">
+                        <span className="order-type-badge">
+                          {order.order_type === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}
+                        </span>
+                        {order.estimated_delivery_time && (
+                          <span className="delivery-time-text ms-3">
+                            Est. Delivery: {formatDateTime(order.estimated_delivery_time)}
+                          </span>
+                        )}
                       </div>
-                      <div className="order-total-compact">
-                        <strong>Total: ${order.total.toFixed(2)}</strong>
+                      <div className="order-total-compact mt-2">
+                        <strong>Total: ${order.total_amount?.toFixed(2) || '0.00'}</strong>
                       </div>
                     </div>
                   </Col>
-                  <Col xs={12} md={4} className="text-end">
-                    <div className="order-actions-compact">
-                      {getActionButtons(order)}
-                    </div>
+                  <Col xs={12} md={4} className="text-end mt-3 mt-md-0">
+                    {getActionButtons(order)}
                   </Col>
                 </Row>
               </Card.Body>
@@ -182,35 +241,37 @@ const MyOrders = () => {
         <div className="orders-section-compact">
           <h5 className="section-title-compact">Past Orders</h5>
           {pastOrders.map((order) => (
-            <Card key={order.id} className="order-card-compact past-order">
+            <Card key={order.order_id} className="order-card-compact past-order">
               <Card.Body className="p-3">
                 <Row className="align-items-center">
                   <Col xs={12} md={8}>
                     <div className="order-info-compact">
                       <div className="order-header-compact">
                         <div className="order-title-section">
-                          <h6 className="order-id-compact">Order #{order.id}</h6>
-                          <span className="order-date-compact">Delivered on: {order.date}</span>
+                          <h6 className="order-id-compact">Order #{order.order_number || order.order_id}</h6>
+                          <span className="order-date-compact">
+                            {order.order_status === 'delivered' && order.actual_delivery_time
+                              ? `Delivered on: ${formatDate(order.actual_delivery_time)}`
+                              : `Placed on: ${formatDate(order.created_at)}`}
+                          </span>
                         </div>
-                        {getStatusBadge(order.status)}
+                        <div className="d-flex flex-column align-items-end gap-2">
+                          {getStatusBadge(order.order_status)}
+                          {getPaymentStatusBadge(order.payment_status)}
+                        </div>
                       </div>
-                      <div className="order-items-compact">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="order-item-compact">
-                            <span className="item-name-compact">{item.name}</span>
-                            <span className="item-price-compact">(${item.price.toFixed(2)})</span>
-                          </div>
-                        ))}
+                      <div className="order-meta-compact mt-2">
+                        <span className="order-type-badge">
+                          {order.order_type === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}
+                        </span>
                       </div>
-                      <div className="order-total-compact">
-                        <strong>Total: ${order.total.toFixed(2)}</strong>
+                      <div className="order-total-compact mt-2">
+                        <strong>Total: ${order.total_amount?.toFixed(2) || '0.00'}</strong>
                       </div>
                     </div>
                   </Col>
-                  <Col xs={12} md={4} className="text-end">
-                    <div className="order-actions-compact">
-                      {getActionButtons(order)}
-                    </div>
+                  <Col xs={12} md={4} className="text-end mt-3 mt-md-0">
+                    {getActionButtons(order)}
                   </Col>
                 </Row>
               </Card.Body>
@@ -219,15 +280,17 @@ const MyOrders = () => {
         </div>
       )}
 
-      {orders.length === 0 && (
+      {orders.length === 0 && !loading && (
         <Card className="empty-orders-card-compact">
           <Card.Body className="text-center p-4">
             <div className="empty-orders-icon-compact">
-              <i className="fas fa-shopping-bag"></i>
+              <FontAwesomeIcon icon={faShoppingBag} className="fa-3x text-muted" />
             </div>
             <h5 className="empty-orders-title-compact">No Orders Yet</h5>
-            <p className="empty-orders-text-compact">You haven't placed any orders yet. Start shopping to see your orders here!</p>
-            <CustomButton variant="success" size="lg">
+            <p className="empty-orders-text-compact">
+              You haven't placed any orders yet. Start shopping to see your orders here!
+            </p>
+            <CustomButton variant="success" size="lg" onClick={() => navigate('/products')}>
               Start Shopping
             </CustomButton>
           </Card.Body>
