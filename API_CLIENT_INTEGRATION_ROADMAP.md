@@ -224,10 +224,10 @@ nz-grocery/
 │       │   │   ├── auth.js                    # ✅ Authentication service
 │       │   │   ├── products.js                # ⏳ Products service (TO BE UPDATED)
 │       │   │   ├── categories.js              # ⏳ Categories service (TO BE UPDATED)
-│       │   │   ├── cart.js                    # ⏳ Shopping cart service (TO BE UPDATED)
-│       │   │   ├── orders.js                  # ⏳ Orders service (TO BE UPDATED)
-│       │   │   ├── users.js                   # ⏳ User profile & addresses service (TO BE UPDATED)
-│       │   │   └── wishlist.js                # ⏳ Wishlist service (TO BE CREATED)
+│       │   │   ├── cart.js                    # ✅ Shopping cart service
+│       │   │   ├── orders.js                  # ✅ Orders service
+│       │   │   ├── users.js                   # ✅ User profile & addresses service
+│       │   │   └── wishlist.js                # ✅ Wishlist service
 │       │   └── index.js                        # Service exports
 │       │
 │       ├── 📁 utils/                          # Utility functions
@@ -256,10 +256,11 @@ nz-grocery/
 │       │   │   ├── SignupModal.jsx             # ⏳ Signup modal (TO BE UPDATED)
 │       │   │   ├── ProductCard.jsx             # ⏳ Product card (TO BE UPDATED)
 │       │   │   ├── ProductGrid.jsx             # ⏳ Product grid (TO BE UPDATED)
-│       │   │   ├── CartSidebar.jsx             # ⏳ Cart sidebar (TO BE UPDATED)
-│       │   │   ├── Wishlist.jsx                # ⏳ Wishlist component (TO BE UPDATED)
-│       │   │   ├── MyOrders.jsx                # ⏳ Orders list (TO BE UPDATED)
-│       │   │   ├── ProfileInformation.jsx      # ⏳ Profile form (TO BE UPDATED)
+│       │   │   ├── CartSidebar.jsx             # ✅ Cart sidebar
+│       │   │   ├── Wishlist.jsx                # ✅ Wishlist component
+│       │   │   ├── MyOrders.jsx                # ✅ Orders list
+│       │   │   ├── ProfileInformation.jsx      # ✅ Profile form
+│       │   │   ├── AddressManagement.jsx      # ✅ Address management component
 │       │   │   └── ...                         # Other UI components
 │       │   │
 │       │   └── layout/                         # Layout components
@@ -348,9 +349,9 @@ nz-grocery/
 - ✅ `categories.js` - Category listing
 - ✅ `reviews.js` - Product reviews (list, create, update, delete)
 - ✅ `cart.js` - Shopping cart operations (all CRUD operations)
-- ⏳ `orders.js` - Order management (create, list, details, cancel)
-- ⏳ `users.js` - User profile and addresses
-- ⏳ `wishlist.js` - Wishlist management (TO BE CREATED)
+- ✅ `orders.js` - Order management (list, details, cancel)
+- ✅ `users.js` - User profile and addresses
+- ✅ `wishlist.js` - Wishlist management
 
 #### 🎨 Component Files
 
@@ -617,127 +618,169 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 
 ---
 
-### Priority 4: User Profile & Addresses Module 👤
+### 4. User Profile & Addresses Module 👤 ✅ **COMPLETED**
 **Why Fourth**: Users need to manage their profile and delivery addresses.
 
-**APIs to Integrate**:
-- `GET /users/profile` - Get user profile
-- `PUT /users/profile` - Update user profile
-- `GET /users/addresses` - List user addresses (with optional only_active filter)
-- `POST /users/addresses` - Add new address
-- `GET /users/addresses/{address_id}` - Get address details
-- `PUT /users/addresses/{address_id}` - Update address
-- `DELETE /users/addresses/{address_id}` - Delete address
-- `PUT /users/addresses/{address_id}/set-default` - Set default address
+**APIs Integrated**:
+- `GET /users/profile` - Get user profile ✅ Completed
+- `PUT /users/profile` - Update user profile ✅ Completed
+- `PUT /users/profile/image` - Upload profile image ✅ Completed
+- `PUT /users/change-password` - Change password ✅ Completed
+- `GET /users/addresses` - List user addresses ✅ Completed
+- `GET /users/addresses/{address_id}` - Get address details ✅ Completed
+- `POST /users/addresses` - Add new address ✅ Completed
+- `PUT /users/addresses/{address_id}` - Update address ✅ Completed
+- `DELETE /users/addresses/{address_id}` - Delete address ✅ Completed
+- `PUT /users/addresses/{address_id}/set-default` - Set default address ✅ Completed
 
-**Files to Update**:
-- `client/src/services/api/users.js` ⏳ Update
-- `client/src/pages/UserDashboard.jsx` ⏳ Update
-- `client/src/components/ui/ProfileInformation.jsx` ⏳ Update
-- `client/src/components/ui/ChangePassword.jsx` ⏳ Update
-- `client/src/pages/Checkout.jsx` ⏳ Update (address selection)
+**Files Updated/Created**:
+- `client/src/services/api/users.js` ✅ Updated (all user profile and address APIs using apiClient)
+- `client/src/pages/UserDashboard.jsx` ✅ Updated (profile image, address management tab)
+- `client/src/components/ui/ProfileInformation.jsx` ✅ Updated (API integration, profile image upload)
+- `client/src/components/ui/ChangePassword.jsx` ✅ Updated (API integration)
+- `client/src/components/ui/AddressManagement.jsx` ✅ Created (full CRUD for addresses)
+- `client/src/styles/components/ui-components/address-management.css` ✅ Created
 
-**Features to Implement**:
-- Get user profile information
-- Update profile (name, phone, date of birth, gender)
-- List user addresses
-- Add new address
-- Update existing address
-- Delete address
-- Set default address
-- Address validation
-- Address selection in checkout
-- Profile image upload (if supported)
-- Change password functionality
-- Toast notifications
-- Loading states
-- Form validation
-
-**Estimated Time**: 4-5 hours
-
----
-
-### Priority 5: Orders Module 📦
-**Why Fifth**: Users need to place orders and view order history.
-
-**APIs to Integrate**:
-- `POST /orders/` - Create new order
-- `GET /orders/` - List user orders (with pagination, filters: status, date range)
-- `GET /orders/{order_id}` - Get order details
-- `GET /orders/{order_id}/details` - Get order details with items
-- `PUT /orders/{order_id}/cancel` - Cancel order (with cancellation_reason)
-
-**Files to Update**:
-- `client/src/services/api/orders.js` ⏳ Update
-- `client/src/pages/Checkout.jsx` ⏳ Update (order creation)
-- `client/src/pages/UserDashboard.jsx` ⏳ Update (orders list)
-- `client/src/pages/OrderDetails.jsx` ⏳ Update
-- `client/src/components/ui/MyOrders.jsx` ⏳ Update
-- `client/src/components/ui/OrderItems.jsx` ⏳ Update
-- `client/src/components/ui/OrderStatus.jsx` ⏳ Update
-- `client/src/components/ui/OrderSummary.jsx` ⏳ Update
-
-**Features to Implement**:
-- Create order from cart
-- Order confirmation page
-- List user orders with pagination
-- Filter orders by status
-- Order details page with complete information
-- Order items display with images
-- Order status tracking
-- Order timeline/progress
-- Cancel order functionality
-- Order invoice/receipt
-- Payment status display
-- Shipping address display
-- Order totals breakdown
-- Toast notifications
-- Loading states
-- Error handling
+**Features Implemented**:
+- ✅ Get user profile information
+- ✅ Update profile (name, phone, date of birth, gender)
+- ✅ Upload profile image (multipart/form-data)
+- ✅ Change password functionality
+- ✅ List user addresses
+- ✅ Add new address with validation
+- ✅ Update existing address
+- ✅ Delete address
+- ✅ Set default address
+- ✅ Address cards display
+- ✅ Address form modals
+- ✅ Profile image display in dashboard
+- ✅ Loading states during API calls
+- ✅ Error handling with user-friendly messages
+- ✅ Form validation
+- ✅ Success notifications
 
 **Key Implementation Details**:
-- Order creation requires authenticated user
-- Order includes cart items, shipping address, payment method
-- Order status: pending, confirmed, processing, ready_for_pickup, out_for_delivery, delivered, cancelled, refunded
-- Payment status: pending, paid, failed, refunded
-- Order cancellation requires reason
+- All user profile and address operations use apiClient pattern
+- Profile image upload uses apiClient.upload for multipart/form-data
+- Address management component with full CRUD operations
+- Default address cannot be deleted (handled in UI)
+- Address cards show default badge
+- Profile image displayed in UserDashboard header
+- All mock data dependencies removed
 
-**Estimated Time**: 6-7 hours
+**Time Taken**: Completed
 
 ---
 
-### Priority 6: Wishlist Module ❤️
+### 5. Orders Module 📦 ✅ **COMPLETED**
+**Why Fifth**: Users need to place orders and view order history.
+
+**APIs Integrated**:
+- `GET /orders/` - List user orders (with pagination, filters: status, date range) ✅ Completed
+- `GET /orders/{order_id}` - Get order details ✅ Completed
+- `GET /orders/{order_id}/details` - Get order details with items ✅ Completed
+- `PUT /orders/{order_id}/cancel` - Cancel order (with cancellation_reason as query param) ✅ Completed
+- `POST /orders/` - Create new order (API ready, UI pending)
+
+**Files Updated/Created**:
+- `client/src/services/api/orders.js` ✅ Updated (all order APIs using apiClient)
+- `client/src/pages/UserDashboard.jsx` ✅ Updated (orders tab)
+- `client/src/components/ui/MyOrders.jsx` ✅ Updated (API integration, order listing, categorization)
+- `client/src/styles/components/ui-components/my-orders.css` ✅ Updated
+
+**Features Implemented**:
+- ✅ List user orders with pagination
+- ✅ Categorize orders into "Current" and "Past" based on status
+- ✅ Order details display (order number, total amount, status, payment status)
+- ✅ Order status tracking (pending, confirmed, processing, ready_for_pickup, out_for_delivery, delivered, cancelled, refunded)
+- ✅ Payment status display (pending, paid, failed, refunded)
+- ✅ Order type display (delivery, pickup)
+- ✅ Estimated delivery time display
+- ✅ Cancel order functionality (with cancellation reason as query parameter)
+- ✅ Order date formatting
+- ✅ Loading states during API calls
+- ✅ Error handling with user-friendly messages
+- ✅ Empty states
+- ✅ Order status badges
+- ✅ Order date display
+
+**Key Implementation Details**:
+- Orders service uses apiClient pattern with error handling
+- Orders categorized into "Current" (active) and "Past" (completed/cancelled)
+- Cancel order uses PUT method with cancellation_reason as query parameter (per OpenAPI spec)
+- Order status and payment status displayed with badges
+- Order dates formatted for display
+- All mock data dependencies removed
+- Order creation API ready (UI integration pending)
+
+**Time Taken**: Completed
+
+---
+
+### 6. Wishlist Module ❤️ ✅ **COMPLETED**
 **Why Sixth**: Additional feature - users can save products for later.
 
-**APIs to Integrate**:
-- `GET /wishlists/default` - Get default wishlist
-- `GET /wishlists/{wishlist_id}/details` - Get wishlist details
-- `GET /wishlists/{wishlist_id}/items` - Get wishlist items
-- `POST /wishlists/` - Create new wishlist
-- `PUT /wishlists/{wishlist_id}` - Update wishlist name
-- `POST /wishlists/items` - Add item to wishlist
-- `DELETE /wishlists/items/{item_id}` - Remove item from wishlist
+**APIs Integrated**:
+- `GET /wishlists/` - Get all wishlists for user ✅ Completed
+- `GET /wishlists/default` - Get default wishlist ✅ Completed
+- `GET /wishlists/{wishlist_id}` - Get wishlist by ID ✅ Completed
+- `GET /wishlists/{wishlist_id}/details` - Get wishlist details with items ✅ Completed
+- `GET /wishlists/{wishlist_id}/items` - Get wishlist items ✅ Completed
+- `POST /wishlists/` - Create new wishlist ✅ Completed
+- `PUT /wishlists/{wishlist_id}` - Update wishlist name ✅ Completed
+- `DELETE /wishlists/{wishlist_id}` - Delete wishlist ✅ Completed
+- `POST /wishlists/items` - Add item to wishlist ✅ Completed
+- `DELETE /wishlists/items/{item_id}` - Remove item from wishlist ✅ Completed
 
-**Files to Update/Create**:
-- `client/src/services/api/wishlist.js` ⏳ Create
-- `client/src/components/ui/Wishlist.jsx` ⏳ Update
-- `client/src/components/ui/ProductCard.jsx` ⏳ Update (wishlist button)
-- `client/src/pages/UserDashboard.jsx` ⏳ Update (wishlist section)
-- `client/src/hooks/useFavorites.js` ⏳ Update
+**Files Updated/Created**:
+- `client/src/services/api/wishlist.js` ✅ Created (all wishlist APIs using apiClient)
+- `client/src/components/ui/Wishlist.jsx` ✅ Updated (full CRUD, multiple wishlists, tabbed UI)
+- `client/src/components/ui/ProductCard.jsx` ✅ Updated (wishlist integration, skipWishlistCheck prop)
+- `client/src/pages/ProductDetail.jsx` ✅ Updated (wishlist API integration)
+- `client/src/components/ui/ProductInfo.jsx` ✅ Updated (wishlist state management)
+- `client/src/pages/UserDashboard.jsx` ✅ Updated (wishlist tab)
+- `client/src/utils/constants.js` ✅ Updated (wishlist endpoints)
+- `client/src/services/api/index.js` ✅ Updated (WishlistService export)
+- `client/src/styles/components/ui-components/wishlist.css` ✅ Updated (tabbed UI styling)
 
-**Features to Implement**:
-- Get or create default wishlist
-- Add product variant to wishlist
-- Remove item from wishlist
-- List wishlist items
-- Wishlist item count badge
-- Move wishlist item to cart
-- Wishlist management (create, rename, delete wishlists)
-- Toast notifications
-- Loading states
-- Empty wishlist state
+**Features Implemented**:
+- ✅ Get or create default wishlist
+- ✅ Get all wishlists for user
+- ✅ Multiple wishlists support with tabbed UI
+- ✅ Create new wishlist
+- ✅ Update wishlist name and visibility
+- ✅ Delete wishlist (default wishlist protected)
+- ✅ Add product variant to wishlist
+- ✅ Remove item from wishlist
+- ✅ List wishlist items with product details
+- ✅ Move wishlist item to cart
+- ✅ Wishlist status check on product cards
+- ✅ Wishlist integration in Product Detail page
+- ✅ Default wishlist protection (cannot edit/delete)
+- ✅ Optimized API calls (prevent duplicate calls)
+- ✅ Product name and variant name display (variant as main, product as secondary)
+- ✅ Correct price display (discounted_sale_price, sale_price logic)
+- ✅ Loading states during API calls
+- ✅ Error handling with user-friendly messages
+- ✅ Empty wishlist state
+- ✅ Success notifications
+- ✅ Responsive UI with horizontal tabs
+- ✅ Product grid layout (3 per row on large screens)
 
-**Estimated Time**: 3-4 hours
+**Key Implementation Details**:
+- Wishlist service uses apiClient pattern with error handling
+- Multiple wishlists supported with tabbed navigation
+- Default wishlist ("My Wishlist") cannot be edited or deleted
+- ProductCard has skipWishlistCheck prop to prevent duplicate API calls in wishlist view
+- Wishlist status checked on mount for authenticated users
+- ProductDetail page checks and updates wishlist status
+- Optimized API calls using refs to prevent duplicate requests
+- Variant name displayed as main title, product name as secondary text
+- Price logic matches Products page (discounted_sale_price > sale_price, originalPrice only on discount)
+- All mock data dependencies removed
+- UI rearranged with wishlist tabs at top, full-width product grid
+
+**Time Taken**: Completed
 
 ---
 
@@ -824,14 +867,14 @@ export default moduleService
 ## 🎯 Current Status
 
 ✅ **Completed**:
-- Authentication Module (Priority 1)
+- Authentication Module (Priority 1) ✅
   - User Registration
   - User Login
   - Get Current User
   - Change Password
   - Token Management
   - Error Handling (no page reload on auth errors)
-- Products & Categories Module (Priority 2)
+- Products & Categories Module (Priority 2) ✅
   - List Categories (API integrated and tested)
   - Filter Product Variants (API integrated and tested)
   - Get Product Full Details (API integrated and tested)
@@ -842,14 +885,14 @@ export default moduleService
   - Category Images Integration (API integrated, responsive thumbnails)
   - Loading & Error States (Fully implemented)
   - Mock Data Removal (All components updated)
-- Product Reviews Module (Priority 2.5)
+- Product Reviews Module (Priority 2.5) ✅
   - List Product Reviews (with filters and sorting)
   - Submit New Reviews (with authentication)
   - Calculate and Display Average Rating
   - Review Rating Integration in ProductInfo
   - Review Submission with Validation
   - Auto-refresh Rating on New Review
-- Shopping Cart Module (Priority 3)
+- Shopping Cart Module (Priority 3) ✅
   - Get or Create Active Cart
   - Add Items to Cart (with product_id and variant_id)
   - Update Cart Item Quantity
@@ -863,11 +906,44 @@ export default moduleService
   - Duplicate Add Prevention
   - Optimized API Calls (summary endpoint)
   - All Mock Data Removed
+- User Profile & Addresses Module (Priority 4) ✅
+  - Get and Update User Profile
+  - Upload Profile Image
+  - Change Password
+  - List User Addresses
+  - Add, Update, Delete Addresses
+  - Set Default Address
+  - Address Management UI with CRUD
+  - Profile Image Display
+- Orders Module (Priority 5) ✅
+  - List User Orders (with pagination)
+  - Get Order Details
+  - Categorize Orders (Current/Past)
+  - Cancel Order (with cancellation reason)
+  - Order Status Tracking
+  - Payment Status Display
+  - Order Type Display
+  - Estimated Delivery Time
+- Wishlist Module (Priority 6) ✅
+  - Get All Wishlists
+  - Get Default Wishlist
+  - Create, Update, Delete Wishlists
+  - Add/Remove Items from Wishlist
+  - Multiple Wishlists Support (Tabbed UI)
+  - Default Wishlist Protection
+  - Wishlist Integration in Product Cards
+  - Wishlist Integration in Product Detail Page
+  - Optimized API Calls
+  - Product Name/Variant Name Display
+  - Correct Price Display
 
 📋 **Next Up**:
-- Priority 4: User Profile & Addresses Module
-- Priority 5: Orders Module
-- Priority 6: Wishlist Module
+- Checkout Module (Order Creation UI)
+- Payment Integration
+- Order Details Page Enhancement
+- Checkout Module (Order Creation UI)
+- Payment Integration
+- Order Details Page Enhancement
 
 ---
 
@@ -1249,6 +1325,14 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Products & Categories Module Completed, Shopping Cart Module Completed, Product Reviews Module Completed  
-**Next Step**: Proceed to Priority 4 - User Profile & Addresses Module Integration
+**Status**: 
+- ✅ Authentication Module Completed
+- ✅ Products & Categories Module Completed
+- ✅ Product Reviews Module Completed
+- ✅ Shopping Cart Module Completed
+- ✅ User Profile & Addresses Module Completed
+- ✅ Orders Module Completed (Listing & Details)
+- ✅ Wishlist Module Completed
+
+**Next Step**: Checkout Module (Order Creation UI) and Payment Integration
 
