@@ -1,70 +1,179 @@
-import React, { useState } from 'react';
-import { Row, Col, Form, Button, Card, Image } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Form, Card, Image, Alert } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner, faCheck, faExclamationCircle, faUser } from '@fortawesome/free-solid-svg-icons';
 import { CustomButton } from '../common';
+import UsersService from '../../services/api/users';
+import { useUserContext } from '../../context';
 import '../../styles/components/ui-components/profile-information.css';
 
-const ProfileInformation = ({ user }) => {
+const ProfileInformation = () => {
+  const { user, updateProfile: updateUserContext } = useUserContext();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  
   const [formData, setFormData] = useState({
-    fullName: user ? `${user.firstName} ${user.lastName}` : 'Demo User',
-    email: user?.email || 'demo@egrocerymart.com',
-    contactNumber: user?.profile?.phone || user?.mobile || '+1 (555) 123-4567',
-    dateOfBirth: user?.profile?.dateOfBirth || '01/01/1990',
-    bio: user?.profile?.bio || 'Demo user for eGroceryMart',
-    billingAddress: {
-      street: user?.profile?.billingAddress?.street || '123 Main Street',
-      apartment: user?.profile?.billingAddress?.apartment || 'Apt 4B',
-      city: user?.profile?.billingAddress?.city || 'New York',
-      state: user?.profile?.billingAddress?.state || 'NY',
-      zipCode: user?.profile?.billingAddress?.zipCode || '10001',
-      country: user?.profile?.billingAddress?.country || 'United States'
-    },
-    shippingAddress: {
-      street: user?.profile?.shippingAddress?.street || '456 Oak Avenue',
-      apartment: user?.profile?.shippingAddress?.apartment || 'Unit 7',
-      city: user?.profile?.shippingAddress?.city || 'Los Angeles',
-      state: user?.profile?.shippingAddress?.state || 'CA',
-      zipCode: user?.profile?.shippingAddress?.zipCode || '90210',
-      country: user?.profile?.shippingAddress?.country || 'United States'
-    }
+    first_name: '',
+    last_name: '',
+    phone: '',
+    date_of_birth: '',
+    gender: '',
   });
 
   const [profileImage, setProfileImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+
+  // Load profile on mount
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await UsersService.getProfile();
+      if (response.success && response.data) {
+        const profile = response.data;
+        setFormData({
+          first_name: profile.first_name || '',
+          last_name: profile.last_name || '',
+          phone: profile.phone || '',
+          date_of_birth: profile.date_of_birth ? profile.date_of_birth.split('T')[0] : '',
+          gender: profile.gender || '',
+        });
+        if (profile.profile_image_url) {
+          setProfileImage(profile.profile_image_url);
+        }
+      } else {
+        setError(response.message || 'Failed to load profile');
+      }
+    } catch (err) {
+      setError('An error occurred while loading profile');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
-
-  const handleAddressChange = (type, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [type]: {
-        ...prev[type],
-        [field]: value
-      }
-    }));
-  };
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setProfileImage(URL.createObjectURL(file));
+    // Clear error for this field
+    if (formErrors[field]) {
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
-  const handleAutoFillAddress = () => {
-    setFormData(prev => ({
-      ...prev,
-      shippingAddress: { ...prev.billingAddress }
-    }));
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.match('image/(jpeg|jpg|png|gif)')) {
+      setError('Please select a valid image file (JPEG, PNG, or GIF)');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    setError(null);
+    setSuccessMessage('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image_file', file);
+
+      const response = await UsersService.uploadProfileImage(formData);
+      if (response.success && response.data) {
+        setProfileImage(response.data.profile_image_url);
+        setImageFile(null);
+        setSuccessMessage('Profile image uploaded successfully!');
+        // Update user context if available
+        if (updateUserContext && response.data) {
+          updateUserContext(response.data);
+        }
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setError(response.message || 'Failed to upload image');
+      }
+    } catch (err) {
+      setError('An error occurred while uploading image');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
-  const handleSaveChanges = () => {
-    console.log('Saving profile changes:', formData);
-    // Here you would typically make an API call to save the data
+  const handleSaveChanges = async () => {
+    setSaving(true);
+    setError(null);
+    setSuccessMessage('');
+    setFormErrors({});
+
+    try {
+      // Prepare profile data (only send fields that have values)
+      const profileData = {};
+      if (formData.first_name.trim()) profileData.first_name = formData.first_name.trim();
+      if (formData.last_name.trim()) profileData.last_name = formData.last_name.trim();
+      if (formData.phone.trim()) profileData.phone = formData.phone.trim();
+      if (formData.date_of_birth) profileData.date_of_birth = formData.date_of_birth;
+      if (formData.gender) profileData.gender = formData.gender;
+
+      const response = await UsersService.updateProfile(profileData);
+      if (response.success) {
+        setSuccessMessage(response.message || 'Profile updated successfully!');
+        // Update user context
+        if (updateUserContext && response.data) {
+          updateUserContext(response.data);
+        }
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        if (response.errors && Array.isArray(response.errors)) {
+          const errors = {};
+          response.errors.forEach(err => {
+            if (err.loc && err.loc.length > 0) {
+              const field = err.loc[err.loc.length - 1];
+              errors[field] = err.msg || err.message;
+            }
+          });
+          setFormErrors(errors);
+        } else {
+          setError(response.message || 'Failed to update profile');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred while updating profile');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="profile-information">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <FontAwesomeIcon icon={faSpinner} className="fa-spin fa-2x text-primary mb-3" />
+            <p>Loading profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-information">
@@ -72,6 +181,20 @@ const ProfileInformation = ({ user }) => {
         <h2 className="profile-title">Profile Information</h2>
         <p className="profile-subtitle">Update your profile information and settings</p>
       </div>
+
+      {successMessage && (
+        <Alert variant="success" className="mb-4" dismissible onClose={() => setSuccessMessage('')}>
+          <FontAwesomeIcon icon={faCheck} className="me-2" />
+          {successMessage}
+        </Alert>
+      )}
+
+      {error && (
+        <Alert variant="danger" className="mb-4" dismissible onClose={() => setError(null)}>
+          <FontAwesomeIcon icon={faExclamationCircle} className="me-2" />
+          {error}
+        </Alert>
+      )}
 
       <Row className="mt-4">
         <Col lg={12}>
@@ -87,7 +210,7 @@ const ProfileInformation = ({ user }) => {
                         <Image src={profileImage} roundedCircle className="profile-image" />
                       ) : (
                         <div className="profile-image-placeholder">
-                          <i className="fas fa-user"></i>
+                          <FontAwesomeIcon icon={faUser} className="fa-3x" />
                         </div>
                       )}
                     </div>
@@ -99,15 +222,24 @@ const ProfileInformation = ({ user }) => {
                         accept="image/jpeg,image/png,image/gif"
                         onChange={handleImageUpload}
                         style={{ display: 'none' }}
+                        disabled={uploadingImage}
                       />
                       <CustomButton
                         variant="outline-primary"
                         onClick={() => document.getElementById('profile-image-upload').click()}
                         className="upload-btn"
+                        disabled={uploadingImage}
                       >
-                        Upload Photo
+                        {uploadingImage ? (
+                          <>
+                            <FontAwesomeIcon icon={faSpinner} className="fa-spin me-2" />
+                            Uploading...
+                          </>
+                        ) : (
+                          'Upload Photo'
+                        )}
                       </CustomButton>
-                      <p className="upload-info">JPG, PNG or GIF. Max size 2MB</p>
+                      <p className="upload-info">JPG, PNG or GIF. Max size 5MB</p>
                     </div>
                   </div>
                 </Col>
@@ -116,39 +248,57 @@ const ProfileInformation = ({ user }) => {
                   <div className="personal-info-section">
                     <Row>
                       <Col md={6}>
-                        <Form.Group className="mb-3" controlId="fullName">
-                          <Form.Label>Full Name</Form.Label>
+                        <Form.Group className="mb-3" controlId="firstName">
+                          <Form.Label>First Name</Form.Label>
                           <Form.Control
                             type="text"
-                            value={formData.fullName}
-                            onChange={(e) => handleInputChange('fullName', e.target.value)}
-                            placeholder="Enter your full name"
+                            value={formData.first_name}
+                            onChange={(e) => handleInputChange('first_name', e.target.value)}
+                            placeholder="Enter your first name"
+                            isInvalid={!!formErrors.first_name}
                           />
+                          {formErrors.first_name && (
+                            <Form.Control.Feedback type="invalid">
+                              {formErrors.first_name}
+                            </Form.Control.Feedback>
+                          )}
                         </Form.Group>
                       </Col>
                       <Col md={6}>
-                        <Form.Group className="mb-3" controlId="emailAddress">
-                          <Form.Label>Email Address</Form.Label>
+                        <Form.Group className="mb-3" controlId="lastName">
+                          <Form.Label>Last Name</Form.Label>
                           <Form.Control
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
-                            placeholder="Enter your email"
+                            type="text"
+                            value={formData.last_name}
+                            onChange={(e) => handleInputChange('last_name', e.target.value)}
+                            placeholder="Enter your last name"
+                            isInvalid={!!formErrors.last_name}
                           />
+                          {formErrors.last_name && (
+                            <Form.Control.Feedback type="invalid">
+                              {formErrors.last_name}
+                            </Form.Control.Feedback>
+                          )}
                         </Form.Group>
                       </Col>
                     </Row>
 
                     <Row>
                       <Col md={6}>
-                        <Form.Group className="mb-3" controlId="contactNumber">
-                          <Form.Label>Contact Number</Form.Label>
+                        <Form.Group className="mb-3" controlId="phone">
+                          <Form.Label>Phone Number</Form.Label>
                           <Form.Control
                             type="tel"
-                            value={formData.contactNumber}
-                            onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                            value={formData.phone}
+                            onChange={(e) => handleInputChange('phone', e.target.value)}
                             placeholder="Enter your phone number"
+                            isInvalid={!!formErrors.phone}
                           />
+                          {formErrors.phone && (
+                            <Form.Control.Feedback type="invalid">
+                              {formErrors.phone}
+                            </Form.Control.Feedback>
+                          )}
                         </Form.Group>
                       </Col>
                       <Col md={6}>
@@ -156,196 +306,52 @@ const ProfileInformation = ({ user }) => {
                           <Form.Label>Date of Birth</Form.Label>
                           <Form.Control
                             type="date"
-                            value={formData.dateOfBirth}
-                            onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                            value={formData.date_of_birth}
+                            onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
+                            isInvalid={!!formErrors.date_of_birth}
                           />
+                          {formErrors.date_of_birth && (
+                            <Form.Control.Feedback type="invalid">
+                              {formErrors.date_of_birth}
+                            </Form.Control.Feedback>
+                          )}
                         </Form.Group>
                       </Col>
                     </Row>
 
-                    <Form.Group className="mb-3" controlId="bio">
-                      <Form.Label>Bio</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={3}
-                        value={formData.bio}
-                        onChange={(e) => handleInputChange('bio', e.target.value)}
-                        placeholder="Tell us about yourself"
-                      />
-                    </Form.Group>
-                  </div>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row className="mt-4">
-        <Col lg={12}>
-          <Card className="addresses-card">
-            <Card.Body>
-              <h5 className="form-section-title">Addresses</h5>
-              
-              <Row>
-                <Col lg={6}>
-                  <div className="address-section">
-                    <h6 className="address-section-title">Billing Address</h6>
-                    
-                    <Form.Group className="mb-3" controlId="billingStreet">
-                      <Form.Label>Street Address</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.billingAddress.street}
-                        onChange={(e) => handleAddressChange('billingAddress', 'street', e.target.value)}
-                        placeholder="Enter street address"
-                      />
-                    </Form.Group>
-                    
-                    <Form.Group className="mb-3" controlId="billingApartment">
-                      <Form.Label>Apartment/Suite</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.billingAddress.apartment}
-                        onChange={(e) => handleAddressChange('billingAddress', 'apartment', e.target.value)}
-                        placeholder="Enter apartment/suite"
-                      />
-                    </Form.Group>
-                    
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="billingCity">
-                          <Form.Label>City</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.billingAddress.city}
-                            onChange={(e) => handleAddressChange('billingAddress', 'city', e.target.value)}
-                            placeholder="Enter city"
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="billingState">
-                          <Form.Label>State/Province</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.billingAddress.state}
-                            onChange={(e) => handleAddressChange('billingAddress', 'state', e.target.value)}
-                            placeholder="Enter state"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="billingZip">
-                          <Form.Label>ZIP/Postal Code</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.billingAddress.zipCode}
-                            onChange={(e) => handleAddressChange('billingAddress', 'zipCode', e.target.value)}
-                            placeholder="Enter ZIP code"
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="billingCountry">
-                          <Form.Label>Country</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.billingAddress.country}
-                            onChange={(e) => handleAddressChange('billingAddress', 'country', e.target.value)}
-                            placeholder="Enter country"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                  </div>
-                </Col>
-
-                <Col lg={6}>
-                  <div className="address-section">
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <h6 className="address-section-title mb-0">Shipping Address</h6>
-                      <CustomButton
-                        variant="outline-success"
-                        size="sm"
-                        onClick={handleAutoFillAddress}
+                    <Form.Group className="mb-3" controlId="gender">
+                      <Form.Label>Gender</Form.Label>
+                      <Form.Select
+                        value={formData.gender}
+                        onChange={(e) => handleInputChange('gender', e.target.value)}
+                        isInvalid={!!formErrors.gender}
                       >
-                        Copy from Billing
-                      </CustomButton>
-                    </div>
-                    
-                    <Form.Group className="mb-3" controlId="shippingStreet">
-                      <Form.Label>Street Address</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.shippingAddress.street}
-                        onChange={(e) => handleAddressChange('shippingAddress', 'street', e.target.value)}
-                        placeholder="Enter street address"
-                      />
+                        <option value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </Form.Select>
+                      {formErrors.gender && (
+                        <Form.Control.Feedback type="invalid">
+                          {formErrors.gender}
+                        </Form.Control.Feedback>
+                      )}
                     </Form.Group>
-                    
-                    <Form.Group className="mb-3" controlId="shippingApartment">
-                      <Form.Label>Apartment/Suite</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.shippingAddress.apartment}
-                        onChange={(e) => handleAddressChange('shippingAddress', 'apartment', e.target.value)}
-                        placeholder="Enter apartment/suite"
-                      />
-                    </Form.Group>
-                    
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="shippingCity">
-                          <Form.Label>City</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.shippingAddress.city}
-                            onChange={(e) => handleAddressChange('shippingAddress', 'city', e.target.value)}
-                            placeholder="Enter city"
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="shippingState">
-                          <Form.Label>State/Province</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.shippingAddress.state}
-                            onChange={(e) => handleAddressChange('shippingAddress', 'state', e.target.value)}
-                            placeholder="Enter state"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="shippingZip">
-                          <Form.Label>ZIP/Postal Code</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.shippingAddress.zipCode}
-                            onChange={(e) => handleAddressChange('shippingAddress', 'zipCode', e.target.value)}
-                            placeholder="Enter ZIP code"
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3" controlId="shippingCountry">
-                          <Form.Label>Country</Form.Label>
-                          <Form.Control
-                            type="text"
-                            value={formData.shippingAddress.country}
-                            onChange={(e) => handleAddressChange('shippingAddress', 'country', e.target.value)}
-                            placeholder="Enter country"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
+
+                    {user?.email && (
+                      <Form.Group className="mb-3">
+                        <Form.Label>Email Address</Form.Label>
+                        <Form.Control
+                          type="email"
+                          value={user.email}
+                          disabled
+                          className="bg-light"
+                        />
+                        <Form.Text className="text-muted">
+                          Email cannot be changed
+                        </Form.Text>
+                      </Form.Group>
+                    )}
                   </div>
                 </Col>
               </Row>
@@ -360,8 +366,16 @@ const ProfileInformation = ({ user }) => {
           size="lg"
           onClick={handleSaveChanges}
           className="save-changes-btn"
+          disabled={saving}
         >
-          Save All Changes
+          {saving ? (
+            <>
+              <FontAwesomeIcon icon={faSpinner} className="fa-spin me-2" />
+              Saving...
+            </>
+          ) : (
+            'Save Changes'
+          )}
         </CustomButton>
       </div>
     </div>

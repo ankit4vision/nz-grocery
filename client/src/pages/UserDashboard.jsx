@@ -3,6 +3,7 @@ import { Container, Row, Col, Nav, Card, ListGroup } from 'react-bootstrap';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { ProfileInformation } from '../components/ui';
 import { ChangePassword } from '../components/ui';
+import { AddressManagement } from '../components/ui';
 import { MyOrders } from '../components/ui';
 import { Wishlist } from '../components/ui';
 import { HelpCenter } from '../components/ui';
@@ -18,7 +19,7 @@ const UserDashboard = () => {
   // Handle tab from URL parameters
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && ['profile', 'password', 'orders', 'wishlist', 'help'].includes(tab)) {
+    if (tab && ['profile', 'password', 'addresses', 'orders', 'wishlist', 'help'].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -43,6 +44,7 @@ const UserDashboard = () => {
   const dashboardTabs = [
     { key: 'profile', title: 'Profile', icon: '👤' },
     { key: 'password', title: 'Change Password', icon: '🔒' },
+    { key: 'addresses', title: 'Addresses', icon: '📍' },
     { key: 'orders', title: 'All Orders', icon: '📦' },
     { key: 'wishlist', title: 'Wishlist', icon: '❤️' },
     { key: 'help', title: 'Help', icon: '❓' },
@@ -51,9 +53,11 @@ const UserDashboard = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'profile':
-        return <ProfileInformation user={user} />;
+        return <ProfileInformation />;
       case 'password':
-        return <ChangePassword user={user} />;
+        return <ChangePassword />;
+      case 'addresses':
+        return <AddressManagement />;
       case 'orders':
         return <MyOrders user={user} />;
       case 'wishlist':
@@ -61,7 +65,7 @@ const UserDashboard = () => {
       case 'help':
         return <HelpCenter user={user} />;
       default:
-        return <ProfileInformation user={user} />;
+        return <ProfileInformation />;
     }
   };
 
@@ -89,15 +93,21 @@ const UserDashboard = () => {
             <Card.Header className="sidebar-header">
               <div className="account-header">
                 <div className="user-avatar">
-                  <img 
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" 
-                    alt="Demo User"
-                    className="avatar-image"
-                  />
+                  {user?.profile_image_url ? (
+                    <img 
+                      src={user.profile_image_url} 
+                      alt={user ? `${user.first_name || user.firstName} ${user.last_name || user.lastName}` : 'User'}
+                      className="avatar-image"
+                    />
+                  ) : (
+                    <div className="avatar-placeholder">
+                      {user ? (user.first_name || user.firstName || user.email || 'U').charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
                 </div>
                 <div className="user-info">
                   <h5 className="user-name">
-                    {user ? `${user.firstName} ${user.lastName}` : 'User'}
+                    {user ? `${user.first_name || user.firstName || ''} ${user.last_name || user.lastName || ''}`.trim() || 'User' : 'User'}
                   </h5>
                   <p className="user-email">{user?.email || 'user@example.com'}</p>
                 </div>

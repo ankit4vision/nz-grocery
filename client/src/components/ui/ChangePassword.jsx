@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Form, Alert, InputGroup, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faSpinner, faSave, faCheck, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import UsersService from '../../services/api/users';
 import '../../styles/components/ui-components/change-password.css';
 
 const ChangePassword = () => {
@@ -79,19 +80,26 @@ const ChangePassword = () => {
 
     setIsLoading(true);
     setSuccessMessage('');
+    setErrors({});
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setSuccessMessage('Password updated successfully!');
-      setFormData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      const response = await UsersService.changePassword({
+        current_password: formData.currentPassword,
+        new_password: formData.newPassword,
       });
+
+      if (response.success) {
+        setSuccessMessage(response.message || 'Password updated successfully!');
+        setFormData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+      } else {
+        setErrors({ submit: response.message || 'Failed to update password. Please try again.' });
+      }
     } catch (error) {
-      setErrors({ submit: 'Failed to update password. Please try again.' });
+      setErrors({ submit: 'An unexpected error occurred. Please try again.' });
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,6 @@
-import { apiGet, apiPost, apiPut, apiDelete } from '../../utils/api';
-import { API_ENDPOINTS } from '../../utils/constants';
+import apiClient from '../../config/apiClient'
+import { handleApiError, formatSuccessResponse } from '../../utils/errorHandler'
+import { API_ENDPOINTS } from '../../utils/constants'
 
 /**
  * Users API service
@@ -12,11 +13,10 @@ export class UsersService {
    */
   static async getProfile() {
     try {
-      const response = await apiGet(API_ENDPOINTS.USERS.PROFILE);
-      return response;
+      const response = await apiClient.get(API_ENDPOINTS.USERS.PROFILE)
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error fetching user profile:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
@@ -24,15 +24,38 @@ export class UsersService {
    * Update user profile
    * 
    * @param {object} profileData - Profile data
+   * @param {string} profileData.first_name - First name (optional)
+   * @param {string} profileData.last_name - Last name (optional)
+   * @param {string} profileData.phone - Phone number (optional)
+   * @param {string} profileData.date_of_birth - Date of birth in YYYY-MM-DD format (optional)
+   * @param {string} profileData.gender - Gender: male, female, other (optional)
    * @returns {Promise} - Updated profile
    */
   static async updateProfile(profileData) {
     try {
-      const response = await apiPut(API_ENDPOINTS.USERS.UPDATE_PROFILE, profileData);
-      return response;
+      const response = await apiClient.put(API_ENDPOINTS.USERS.UPDATE_PROFILE, profileData)
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error updating user profile:', error);
-      throw error;
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Upload profile image
+   * 
+   * @param {FormData} formData - FormData with image file (key: image_file)
+   * @returns {Promise} - Updated profile with image URL
+   */
+  static async uploadProfileImage(formData) {
+    try {
+      const response = await apiClient.put('/users/profile-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   }
 
@@ -40,99 +63,51 @@ export class UsersService {
    * Change password
    * 
    * @param {object} passwordData - Password data
-   * @param {string} passwordData.currentPassword - Current password
-   * @param {string} passwordData.newPassword - New password
+   * @param {string} passwordData.current_password - Current password
+   * @param {string} passwordData.new_password - New password
    * @returns {Promise} - Password change result
    */
   static async changePassword(passwordData) {
     try {
-      const response = await apiPost(API_ENDPOINTS.USERS.CHANGE_PASSWORD, passwordData);
-      return response;
+      const response = await apiClient.put(API_ENDPOINTS.USERS.CHANGE_PASSWORD, {
+        current_password: passwordData.current_password || passwordData.currentPassword,
+        new_password: passwordData.new_password || passwordData.newPassword,
+      })
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error changing password:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
-  /**
-   * Get user orders
-   * 
-   * @param {object} params - Query parameters
-   * @returns {Promise} - User orders
-   */
-  static async getUserOrders(params = {}) {
-    try {
-      const response = await apiGet(API_ENDPOINTS.ORDERS.LIST, params);
-      return response;
-    } catch (error) {
-      console.error('Error fetching user orders:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get user favorites
-   * 
-   * @param {object} params - Query parameters
-   * @returns {Promise} - User favorites
-   */
-  static async getUserFavorites(params = {}) {
-    try {
-      const response = await apiGet(API_ENDPOINTS.FAVORITES.LIST, params);
-      return response;
-    } catch (error) {
-      console.error('Error fetching user favorites:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Add product to favorites
-   * 
-   * @param {string|number} productId - Product ID
-   * @returns {Promise} - Favorite result
-   */
-  static async addToFavorites(productId) {
-    try {
-      const endpoint = API_ENDPOINTS.FAVORITES.ADD.replace(':id', productId);
-      const response = await apiPost(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error adding to favorites:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove product from favorites
-   * 
-   * @param {string|number} productId - Product ID
-   * @returns {Promise} - Removal result
-   */
-  static async removeFromFavorites(productId) {
-    try {
-      const endpoint = API_ENDPOINTS.FAVORITES.REMOVE.replace(':id', productId);
-      const response = await apiDelete(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error removing from favorites:', error);
-      throw error;
-    }
-  }
 
   /**
    * Get user addresses
    * 
-   * @returns {Promise} - User addresses
+   * @param {object} params - Query parameters
+   * @param {boolean} params.only_active - Filter to show only active addresses (default: true)
+   * @returns {Promise} - User addresses array
    */
-  static async getUserAddresses() {
+  static async getUserAddresses(params = { only_active: true }) {
     try {
-      const endpoint = '/users/addresses';
-      const response = await apiGet(endpoint);
-      return response;
+      const response = await apiClient.get(API_ENDPOINTS.USERS.ADDRESSES.LIST, { params })
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error fetching user addresses:', error);
-      throw error;
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Get address by ID
+   * 
+   * @param {string|number} addressId - Address ID
+   * @returns {Promise} - Address details
+   */
+  static async getAddressById(addressId) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.USERS.ADDRESSES.GET_BY_ID(addressId))
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   }
 
@@ -140,16 +115,24 @@ export class UsersService {
    * Add user address
    * 
    * @param {object} addressData - Address data
+   * @param {string} addressData.address_type - Address type: home, work, other (default: home)
+   * @param {string} addressData.address_line1 - Primary address line (required)
+   * @param {string} addressData.address_line2 - Secondary address line (optional)
+   * @param {string} addressData.city - City name (required)
+   * @param {string} addressData.state - State/Province name (required)
+   * @param {string} addressData.postal_code - Postal/ZIP code (required)
+   * @param {string} addressData.country - Country name (default: New Zealand)
+   * @param {number} addressData.latitude - GPS latitude (optional)
+   * @param {number} addressData.longitude - GPS longitude (optional)
+   * @param {boolean} addressData.is_default - Set as default address (default: false)
    * @returns {Promise} - Created address
    */
   static async addAddress(addressData) {
     try {
-      const endpoint = '/users/addresses';
-      const response = await apiPost(endpoint, addressData);
-      return response;
+      const response = await apiClient.post(API_ENDPOINTS.USERS.ADDRESSES.CREATE, addressData)
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error adding address:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
@@ -157,17 +140,15 @@ export class UsersService {
    * Update user address
    * 
    * @param {string|number} addressId - Address ID
-   * @param {object} addressData - Address data
+   * @param {object} addressData - Address data (all fields optional)
    * @returns {Promise} - Updated address
    */
   static async updateAddress(addressId, addressData) {
     try {
-      const endpoint = `/users/addresses/${addressId}`;
-      const response = await apiPut(endpoint, addressData);
-      return response;
+      const response = await apiClient.put(API_ENDPOINTS.USERS.ADDRESSES.UPDATE(addressId), addressData)
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error updating address:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
@@ -179,98 +160,29 @@ export class UsersService {
    */
   static async deleteAddress(addressId) {
     try {
-      const endpoint = `/users/addresses/${addressId}`;
-      const response = await apiDelete(endpoint);
-      return response;
+      const response = await apiClient.delete(API_ENDPOINTS.USERS.ADDRESSES.DELETE(addressId))
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error deleting address:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
   /**
-   * Get user notifications
+   * Set default address
    * 
-   * @param {object} params - Query parameters
-   * @returns {Promise} - User notifications
+   * @param {string|number} addressId - Address ID
+   * @returns {Promise} - Updated address with is_default=true
    */
-  static async getUserNotifications(params = {}) {
+  static async setDefaultAddress(addressId) {
     try {
-      const endpoint = '/users/notifications';
-      const response = await apiGet(endpoint, params);
-      return response;
+      const response = await apiClient.put(API_ENDPOINTS.USERS.ADDRESSES.SET_DEFAULT(addressId))
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error fetching user notifications:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
-  /**
-   * Mark notification as read
-   * 
-   * @param {string|number} notificationId - Notification ID
-   * @returns {Promise} - Update result
-   */
-  static async markNotificationAsRead(notificationId) {
-    try {
-      const endpoint = `/users/notifications/${notificationId}/read`;
-      const response = await apiPut(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get user statistics
-   * 
-   * @returns {Promise} - User statistics
-   */
-  static async getUserStats() {
-    try {
-      const endpoint = '/users/stats';
-      const response = await apiGet(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error fetching user stats:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Upload user avatar
-   * 
-   * @param {FormData} formData - Form data with avatar file
-   * @returns {Promise} - Upload result
-   */
-  static async uploadAvatar(formData) {
-    try {
-      const endpoint = '/users/avatar';
-      const response = await apiPost(endpoint, formData);
-      return response;
-    } catch (error) {
-      console.error('Error uploading avatar:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Delete user account
-   * 
-   * @param {object} confirmationData - Confirmation data
-   * @returns {Promise} - Deletion result
-   */
-  static async deleteAccount(confirmationData) {
-    try {
-      const endpoint = '/users/account';
-      const response = await apiDelete(endpoint, confirmationData);
-      return response;
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      throw error;
-    }
-  }
 }
 
 export default UsersService;
+

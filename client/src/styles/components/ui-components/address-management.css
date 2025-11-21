@@ -1,0 +1,94 @@
+.address-management {
+  padding: 0;
+}
+
+.address-header {
+  margin-bottom: 2rem;
+}
+
+.address-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  margin-bottom: 0.5rem;
+}
+
+.address-subtitle {
+  color: var(--text-secondary, #666);
+  margin-bottom: 0;
+}
+
+.address-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.empty-address-card {
+  border: 2px dashed var(--border-color, #dee2e6);
+  background-color: var(--bg-light, #f8f9fa);
+}
+
+.address-card {
+  height: 100%;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color, #dee2e6);
+}
+
+.address-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.address-card.default-address {
+  border-color: var(--success-color, #28a745);
+  border-width: 2px;
+}
+
+.address-actions-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.address-actions-buttons .btn-link {
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+}
+
+.address-actions-buttons .btn-link:hover {
+  opacity: 0.7;
+}
+
+.address-details {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.address-details p {
+  margin-bottom: 0.25rem;
+}
+
+/* Modal Styles */
+.modal-body .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal-body .form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.modal-body .text-danger {
+  color: var(--danger-color, #dc3545);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .address-actions {
+    justify-content: center;
+  }
+
+  .address-card {
+    margin-bottom: 1rem;
+  }
+}
+
