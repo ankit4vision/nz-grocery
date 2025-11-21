@@ -73,22 +73,64 @@ const UserProfileDropdown = ({ onLogout, isAuthenticated = false, user = null })
     );
   }
 
+  // Get user name (handle both API format and frontend format)
+  const getUserName = () => {
+    if (!user) return 'User';
+    const firstName = user.first_name || user.firstName || '';
+    const lastName = user.last_name || user.lastName || '';
+    return `${firstName} ${lastName}`.trim() || 'User';
+  };
+
+  // Get user initials
+  const getUserInitials = () => {
+    if (!user) return 'U';
+    const firstName = user.first_name || user.firstName || '';
+    const lastName = user.last_name || user.lastName || '';
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    }
+    if (firstName) {
+      return firstName.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
+  // Get profile image URL
+  const getProfileImageUrl = () => {
+    return user?.profile_image_url || user?.profileImage || user?.profile_image || null;
+  };
+
+  const profileImageUrl = getProfileImageUrl();
+  const userName = getUserName();
+  const userInitials = getUserInitials();
+
   return (
     <NavDropdown
       title={
         <div className="user-profile-trigger">
           <div className="user-avatar">
-            {user ? (
-              <div className="user-avatar-circle">
-                {user.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
-              </div>
-            ) : (
-              <FaUser className="user-profile-icon" />
-            )}
+            {profileImageUrl ? (
+              <img 
+                src={profileImageUrl} 
+                alt={userName}
+                className="user-avatar-image"
+                onError={(e) => {
+                  // Fallback to initials if image fails to load
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div 
+              className="user-avatar-circle"
+              style={{ display: profileImageUrl ? 'none' : 'flex' }}
+            >
+              {userInitials}
+            </div>
           </div>
           <div className="user-info">
             <span className="user-name">
-              {user ? `${user.firstName} ${user.lastName}` : 'User'}
+              {userName}
             </span>
             <span className="user-role">
               {user?.role === 'admin' ? 'Admin' : 'Customer'}
@@ -106,7 +148,7 @@ const UserProfileDropdown = ({ onLogout, isAuthenticated = false, user = null })
       <div className="user-info-section">
         <div className="user-info-content">
           <div className="user-name-display">
-            {user ? `${user.firstName} ${user.lastName}` : 'User'}
+            {userName}
           </div>
           <div className="user-email-display">
             {user?.email}

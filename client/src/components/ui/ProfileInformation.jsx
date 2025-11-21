@@ -100,13 +100,24 @@ const ProfileInformation = () => {
 
       const response = await UsersService.uploadProfileImage(formData);
       if (response.success && response.data) {
-        setProfileImage(response.data.profile_image_url);
+        const updatedProfile = response.data;
+        setProfileImage(updatedProfile.profile_image_url);
         setImageFile(null);
         setSuccessMessage('Profile image uploaded successfully!');
-        // Update user context if available
-        if (updateUserContext && response.data) {
-          updateUserContext(response.data);
+        
+        // Update user context with the updated profile data (including profile_image_url)
+        if (updateUserContext) {
+          // Ensure profile_image_url is included in the update
+          const updateData = {
+            profile_image_url: updatedProfile.profile_image_url,
+            ...updatedProfile
+          };
+          updateUserContext(updateData);
         }
+        
+        // Also reload profile to get latest data
+        await loadProfile();
+        
         setTimeout(() => setSuccessMessage(''), 3000);
       } else {
         setError(response.message || 'Failed to upload image');

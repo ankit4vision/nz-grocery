@@ -82,6 +82,8 @@ const userReducer = (state, action) => {
       return {
         ...state,
         profile: { ...state.profile, ...action.payload },
+        // Also update user state if it exists (for navbar dropdown)
+        user: state.user ? { ...state.user, ...action.payload } : state.user,
         error: null,
       };
 
