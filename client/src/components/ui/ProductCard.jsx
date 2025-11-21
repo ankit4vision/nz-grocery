@@ -99,7 +99,15 @@ const ProductCard = ({
   const handleToggleFavorite = async (e) => {
     e.stopPropagation();
     
-    // If authenticated, use wishlist API (prioritize API over custom handler)
+    // If showDeleteIcon is true, we're in wishlist context - use custom handler directly
+    // (The handler in wishlist context has the item ID and handles the API call)
+    if (showDeleteIcon && onToggleFavorite) {
+      setFavorite(!favorite);
+      onToggleFavorite(id, !favorite);
+      return;
+    }
+    
+    // If authenticated, use wishlist API (and also call custom handler for UI updates if provided)
     if (isAuthenticated) {
       setWishlistLoading(true);
       try {
@@ -110,7 +118,7 @@ const ProductCard = ({
           if (response.success) {
             setFavorite(false);
             setWishlistItemId(null);
-            // Also call custom handler if provided (for UI state updates)
+            // Call custom handler for UI updates if provided
             if (onToggleFavorite) {
               onToggleFavorite(id, false);
             }
@@ -144,7 +152,7 @@ const ProductCard = ({
               console.log('[ProductCard] Item ID not in response, refreshing wishlist status...');
               setTimeout(() => checkWishlistStatus(), 500);
             }
-            // Also call custom handler if provided (for UI state updates)
+            // Call custom handler for UI updates if provided
             if (onToggleFavorite) {
               onToggleFavorite(id, true);
             }
@@ -161,13 +169,11 @@ const ProductCard = ({
     }
 
     // If not authenticated, use custom handler if provided, or show message
-    console.log('[ProductCard] Not authenticated, using custom handler or showing message');
     if (onToggleFavorite) {
       setFavorite(!favorite);
       onToggleFavorite(id, !favorite);
     } else {
-      // Could show a toast or modal here
-      console.log('Please login to add items to wishlist');
+      console.log('[ProductCard] Not authenticated, please login to add items to wishlist');
     }
   };
 

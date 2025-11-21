@@ -554,27 +554,11 @@ const Wishlist = () => {
                                     isFavorite={true}
                                     category={product.category}
                                     onToggleFavorite={() => handleRemoveItem(item.wishlist_item_id)}
+                                    onAddToCart={() => handleMoveToCart(item)}
                                     variant="listing"
                                     showDeleteIcon={true}
                                     skipWishlistCheck={true}
                                   />
-                                  <div className="wishlist-item-actions mt-2">
-                                    <CustomButton
-                                      variant="success"
-                                      size="sm"
-                                      className="w-100 mb-2"
-                                      onClick={() => handleMoveToCart(item)}
-                                      disabled={!product.isActive || product.stock === 0}
-                                    >
-                                      <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
-                                      Add to Cart
-                                    </CustomButton>
-                                    {(!product.isActive || product.stock === 0) && (
-                                      <Badge bg="warning" className="w-100 text-center d-block mt-2">
-                                        Out of Stock
-                                      </Badge>
-                                    )}
-                                  </div>
                                 </div>
                               </Col>
                             );
