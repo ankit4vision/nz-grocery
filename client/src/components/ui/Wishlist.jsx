@@ -407,181 +407,186 @@ const Wishlist = () => {
         </Card>
       ) : (
         <Tab.Container activeKey={selectedWishlist?.wishlist_id || wishlists[0]?.wishlist_id || null}>
-          <Row>
-            <Col md={3}>
-              <Card className="wishlist-sidebar">
-                <Card.Header>
+          <div className="wishlist-tabs-container">
+            {/* Wishlist Tabs - Horizontal at Top */}
+            <Card className="wishlist-tabs-card mb-4">
+              <Card.Body className="p-3">
+                <div className="d-flex justify-content-between align-items-center mb-3">
                   <h5 className="mb-0">Your Wishlists</h5>
-                </Card.Header>
-                <Card.Body className="p-0">
-                  <Nav variant="pills" className="flex-column">
-                    {wishlists.map((wishlist) => {
-                      const isDefault = isDefaultWishlist(wishlist);
-                      return (
-                        <Nav.Item key={wishlist.wishlist_id}>
-                          <Nav.Link
-                            eventKey={wishlist.wishlist_id}
-                            active={selectedWishlist?.wishlist_id === wishlist.wishlist_id}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              // Only update if different wishlist
-                              if (selectedWishlist?.wishlist_id !== wishlist.wishlist_id) {
-                                lastLoadedWishlistIdRef.current = null; // Reset to allow reload
-                                setSelectedWishlist(wishlist);
-                              }
-                            }}
-                            className="wishlist-nav-link"
-                          >
-                            <div className="d-flex justify-content-between align-items-center">
-                              <div>
-                                <div className="wishlist-nav-name">{wishlist.wishlist_name}</div>
-                                {wishlist.is_public && (
-                                  <Badge bg="info" className="ms-2">Public</Badge>
-                                )}
-                                {isDefault && (
-                                  <Badge bg="secondary" className="ms-2">Default</Badge>
-                                )}
-                              </div>
-                              {!isDefault && (
-                                <div className="wishlist-nav-actions">
-                                  <Button
-                                    variant="link"
-                                    size="sm"
-                                    className="text-primary p-0 me-1"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleOpenWishlistModal(wishlist);
-                                    }}
-                                    title="Edit wishlist"
-                                  >
-                                    <FontAwesomeIcon icon={faEdit} />
-                                  </Button>
-                                  <Button
-                                    variant="link"
-                                    size="sm"
-                                    className="text-danger p-0"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setWishlistToDelete(wishlist);
-                                      setShowDeleteModal(true);
-                                    }}
-                                    title="Delete wishlist"
-                                  >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          </Nav.Link>
-                        </Nav.Item>
-                      );
-                    })}
-                  </Nav>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={9}>
-              <Tab.Content>
-                {wishlists.map((wishlist) => (
-                  <Tab.Pane key={wishlist.wishlist_id} eventKey={wishlist.wishlist_id}>
-                    <Card className="wishlist-content-card">
-                      <Card.Header className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <h5 className="mb-0">{wishlist.wishlist_name}</h5>
-                          <div className="mt-1">
+                  <CustomButton
+                    variant="outline-success"
+                    size="sm"
+                    onClick={() => handleOpenWishlistModal()}
+                  >
+                    <FontAwesomeIcon icon={faPlus} className="me-1" />
+                    New Wishlist
+                  </CustomButton>
+                </div>
+                <Nav variant="pills" className="wishlist-tabs-nav">
+                  {wishlists.map((wishlist) => {
+                    const isDefault = isDefaultWishlist(wishlist);
+                    return (
+                      <Nav.Item key={wishlist.wishlist_id}>
+                        <Nav.Link
+                          eventKey={wishlist.wishlist_id}
+                          active={selectedWishlist?.wishlist_id === wishlist.wishlist_id}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // Only update if different wishlist
+                            if (selectedWishlist?.wishlist_id !== wishlist.wishlist_id) {
+                              lastLoadedWishlistIdRef.current = null; // Reset to allow reload
+                              setSelectedWishlist(wishlist);
+                            }
+                          }}
+                          className="wishlist-tab-link"
+                        >
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="wishlist-tab-name">{wishlist.wishlist_name}</span>
                             {wishlist.is_public && (
-                              <Badge bg="info" className="me-2">Public Wishlist</Badge>
+                              <Badge bg="info" className="wishlist-tab-badge">Public</Badge>
                             )}
-                            {isDefaultWishlist(wishlist) && (
-                              <Badge bg="secondary">Default Wishlist</Badge>
+                            {isDefault && (
+                              <Badge bg="secondary" className="wishlist-tab-badge">Default</Badge>
+                            )}
+                            {!isDefault && (
+                              <div className="wishlist-tab-actions">
+                                <Button
+                                  variant="link"
+                                  size="sm"
+                                  className="text-primary p-0"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenWishlistModal(wishlist);
+                                  }}
+                                  title="Edit wishlist"
+                                >
+                                  <FontAwesomeIcon icon={faEdit} />
+                                </Button>
+                                <Button
+                                  variant="link"
+                                  size="sm"
+                                  className="text-danger p-0"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setWishlistToDelete(wishlist);
+                                    setShowDeleteModal(true);
+                                  }}
+                                  title="Delete wishlist"
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </Button>
+                              </div>
                             )}
                           </div>
+                        </Nav.Link>
+                      </Nav.Item>
+                    );
+                  })}
+                </Nav>
+              </Card.Body>
+            </Card>
+
+            {/* Wishlist Content - Full Width */}
+            <Tab.Content>
+              {wishlists.map((wishlist) => (
+                <Tab.Pane key={wishlist.wishlist_id} eventKey={wishlist.wishlist_id}>
+                  <Card className="wishlist-content-card">
+                    <Card.Header className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5 className="mb-0">{wishlist.wishlist_name}</h5>
+                        <div className="mt-1">
+                          {wishlist.is_public && (
+                            <Badge bg="info" className="me-2">Public Wishlist</Badge>
+                          )}
+                          {isDefaultWishlist(wishlist) && (
+                            <Badge bg="secondary">Default Wishlist</Badge>
+                          )}
                         </div>
-                        {!isDefaultWishlist(wishlist) && (
-                          <div>
-                            <CustomButton
-                              variant="outline-primary"
-                              size="sm"
-                              onClick={() => handleOpenWishlistModal(wishlist)}
-                              className="me-2"
-                            >
-                              <FontAwesomeIcon icon={faEdit} className="me-1" />
-                              Edit
-                            </CustomButton>
-                          </div>
-                        )}
-                      </Card.Header>
-                      <Card.Body>
-                        {itemsLoading ? (
-                          <div className="text-center py-5">
-                            <FontAwesomeIcon icon={faSpinner} className="fa-spin fa-2x text-primary mb-3" />
-                            <p>Loading items...</p>
-                          </div>
-                        ) : wishlistItems.length === 0 ? (
-                          <div className="text-center py-5">
-                            <FontAwesomeIcon icon={faHeart} className="fa-3x text-muted mb-3" />
-                            <h5>This wishlist is empty</h5>
-                            <p className="text-muted">Add products to this wishlist to see them here</p>
-                            <CustomButton variant="success" onClick={() => navigate('/products')}>
-                              Browse Products
-                            </CustomButton>
-                          </div>
-                        ) : (
-                          <Row>
-                            {wishlistItems.map((item) => {
-                              const product = transformWishlistItemToProduct(item);
-                              return (
-                                <Col key={item.wishlist_item_id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-                                  <div className="wishlist-item-wrapper">
-                                    <ProductCard
-                                      id={product.variantId || product.id}
-                                      productId={product.id}
-                                      variantId={product.variantId}
-                                      name={product.name}
-                                      unit={product.unit}
-                                      currentPrice={product.currentPrice}
-                                      originalPrice={product.originalPrice}
-                                      image={product.image}
-                                      rating={product.rating}
-                                      reviews={product.reviews}
-                                      discount={product.discount}
-                                      isFavorite={true}
-                                      category={product.category}
-                                      onToggleFavorite={() => handleRemoveItem(item.wishlist_item_id)}
-                                      variant="listing"
-                                      showDeleteIcon={true}
-                                      skipWishlistCheck={true}
-                                    />
-                                    <div className="wishlist-item-actions mt-2">
-                                      <CustomButton
-                                        variant="success"
-                                        size="sm"
-                                        className="w-100 mb-2"
-                                        onClick={() => handleMoveToCart(item)}
-                                        disabled={!product.isActive || product.stock === 0}
-                                      >
-                                        <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
-                                        Add to Cart
-                                      </CustomButton>
-                                      {(!product.isActive || product.stock === 0) && (
-                                        <Badge bg="warning" className="w-100 text-center d-block mt-2">
-                                          Out of Stock
-                                        </Badge>
-                                      )}
-                                    </div>
+                      </div>
+                      {!isDefaultWishlist(wishlist) && (
+                        <div>
+                          <CustomButton
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => handleOpenWishlistModal(wishlist)}
+                            className="me-2"
+                          >
+                            <FontAwesomeIcon icon={faEdit} className="me-1" />
+                            Edit
+                          </CustomButton>
+                        </div>
+                      )}
+                    </Card.Header>
+                    <Card.Body>
+                      {itemsLoading ? (
+                        <div className="text-center py-5">
+                          <FontAwesomeIcon icon={faSpinner} className="fa-spin fa-2x text-primary mb-3" />
+                          <p>Loading items...</p>
+                        </div>
+                      ) : wishlistItems.length === 0 ? (
+                        <div className="text-center py-5">
+                          <FontAwesomeIcon icon={faHeart} className="fa-3x text-muted mb-3" />
+                          <h5>This wishlist is empty</h5>
+                          <p className="text-muted">Add products to this wishlist to see them here</p>
+                          <CustomButton variant="success" onClick={() => navigate('/products')}>
+                            Browse Products
+                          </CustomButton>
+                        </div>
+                      ) : (
+                        <Row>
+                          {wishlistItems.map((item) => {
+                            const product = transformWishlistItemToProduct(item);
+                            return (
+                              <Col key={item.wishlist_item_id} xs={12} sm={6} md={4} lg={4} xl={4} className="mb-4">
+                                <div className="wishlist-item-wrapper">
+                                  <ProductCard
+                                    id={product.variantId || product.id}
+                                    productId={product.id}
+                                    variantId={product.variantId}
+                                    name={product.name}
+                                    unit={product.unit}
+                                    currentPrice={product.currentPrice}
+                                    originalPrice={product.originalPrice}
+                                    image={product.image}
+                                    rating={product.rating}
+                                    reviews={product.reviews}
+                                    discount={product.discount}
+                                    isFavorite={true}
+                                    category={product.category}
+                                    onToggleFavorite={() => handleRemoveItem(item.wishlist_item_id)}
+                                    variant="listing"
+                                    showDeleteIcon={true}
+                                    skipWishlistCheck={true}
+                                  />
+                                  <div className="wishlist-item-actions mt-2">
+                                    <CustomButton
+                                      variant="success"
+                                      size="sm"
+                                      className="w-100 mb-2"
+                                      onClick={() => handleMoveToCart(item)}
+                                      disabled={!product.isActive || product.stock === 0}
+                                    >
+                                      <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
+                                      Add to Cart
+                                    </CustomButton>
+                                    {(!product.isActive || product.stock === 0) && (
+                                      <Badge bg="warning" className="w-100 text-center d-block mt-2">
+                                        Out of Stock
+                                      </Badge>
+                                    )}
                                   </div>
-                                </Col>
-                              );
-                            })}
-                          </Row>
-                        )}
-                      </Card.Body>
-                    </Card>
-                  </Tab.Pane>
-                ))}
-              </Tab.Content>
-            </Col>
-          </Row>
+                                </div>
+                              </Col>
+                            );
+                          })}
+                        </Row>
+                      )}
+                    </Card.Body>
+                  </Card>
+                </Tab.Pane>
+              ))}
+            </Tab.Content>
+          </div>
         </Tab.Container>
       )}
 
