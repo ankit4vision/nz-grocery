@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faShoppingCart, faStar, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faShoppingCart, faStar, faTrash, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { ImageWithFallback } from '../common';
-import { useCartContext } from '../../context';
+import { useCartContext, useUserContext } from '../../context';
+import WishlistService from '../../services/api/wishlist';
 import '../../styles/components/cards/product-card.css';
 
 const ProductCard = ({
@@ -27,22 +28,147 @@ const ProductCard = ({
   onToggleFavorite,
   variant = 'default', // New prop for different variants
   showQuantitySelector = false, // New prop for quantity selector
-  showDeleteIcon = false // New prop to show delete icon instead of heart
+  showDeleteIcon = false, // New prop to show delete icon instead of heart
+  skipWishlistCheck = false // Skip wishlist status check (useful when already in wishlist context)
 }) => {
   const [favorite, setFavorite] = useState(initialIsFavorite);
   const [quantity, setQuantity] = useState(1);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wishlistItemId, setWishlistItemId] = useState(null);
   const navigate = useNavigate();
   const { addItem, toggleCart, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
+  const { isAuthenticated } = useUserContext();
 
   // Check if product is already in cart (using variant ID)
   const finalVariantId = variantId || id;
+  const finalProductId = productId || id;
   const productInCart = isInCart(finalVariantId);
   const cartQuantity = getItemQuantity(finalVariantId);
 
-  const handleToggleFavorite = (e) => {
+  // Check if item is in wishlist on mount (if authenticated and not skipped)
+  // Use ref to prevent multiple calls
+  const wishlistCheckedRef = useRef(false);
+  useEffect(() => {
+    // Skip check if explicitly disabled or if we're in a wishlist context
+    if (skipWishlistCheck) {
+      return;
+    }
+    
+    if (isAuthenticated && finalProductId && !wishlistCheckedRef.current) {
+      wishlistCheckedRef.current = true;
+      checkWishlistStatus();
+    }
+    // Reset when product changes
+    return () => {
+      wishlistCheckedRef.current = false;
+    };
+  }, [isAuthenticated, finalProductId, finalVariantId, skipWishlistCheck]);
+
+  const checkWishlistStatus = async () => {
+    try {
+      const response = await WishlistService.getDefaultWishlist();
+      if (response.success && response.data) {
+        const itemsResponse = await WishlistService.getWishlistItems(response.data.wishlist_id);
+        if (itemsResponse.success && Array.isArray(itemsResponse.data)) {
+          // Find item matching product_id and variant_id (if variant_id exists)
+          const item = itemsResponse.data.find(item => {
+            const productMatch = item.product_id === finalProductId;
+            // If variant_id exists in wishlist item, it must match. If not, match any variant of this product
+            if (item.variant_id !== null && item.variant_id !== undefined) {
+              return productMatch && item.variant_id === finalVariantId;
+            }
+            // If no variant_id in wishlist item, it matches any variant of this product
+            return productMatch;
+          });
+          if (item) {
+            setFavorite(true);
+            setWishlistItemId(item.wishlist_item_id);
+          } else {
+            // Not in wishlist
+            setFavorite(false);
+            setWishlistItemId(null);
+          }
+        }
+      }
+    } catch (err) {
+      // Silently fail - wishlist check is optional
+      console.error('Error checking wishlist status:', err);
+    }
+  };
+
+  const handleToggleFavorite = async (e) => {
     e.stopPropagation();
-    setFavorite(!favorite);
-    onToggleFavorite?.(id, !favorite);
+    
+    // If authenticated, use wishlist API (prioritize API over custom handler)
+    if (isAuthenticated) {
+      setWishlistLoading(true);
+      try {
+        if (favorite && wishlistItemId) {
+          // Remove from wishlist
+          console.log('[ProductCard] Removing from wishlist:', { wishlistItemId, productId: finalProductId, variantId: finalVariantId });
+          const response = await WishlistService.removeItem(wishlistItemId);
+          if (response.success) {
+            setFavorite(false);
+            setWishlistItemId(null);
+            // Also call custom handler if provided (for UI state updates)
+            if (onToggleFavorite) {
+              onToggleFavorite(id, false);
+            }
+            console.log('[ProductCard] Successfully removed from wishlist');
+          } else {
+            console.error('[ProductCard] Failed to remove from wishlist:', response.message);
+          }
+        } else {
+          // Add to wishlist (uses default wishlist)
+          // Validate we have product_id
+          if (!finalProductId) {
+            console.error('[ProductCard] Cannot add to wishlist: productId is missing');
+            setWishlistLoading(false);
+            return;
+          }
+          
+          console.log('[ProductCard] Adding to wishlist:', { productId: finalProductId, variantId: finalVariantId });
+          const response = await WishlistService.addItem({
+            product_id: finalProductId,
+            variant_id: finalVariantId || undefined,
+          });
+          if (response.success && response.data) {
+            setFavorite(true);
+            // Extract wishlist_item_id from response (could be nested or direct)
+            const itemId = response.data.wishlist_item_id || response.data.id || response.data.item_id;
+            if (itemId) {
+              setWishlistItemId(itemId);
+              console.log('[ProductCard] Successfully added to wishlist, item ID:', itemId);
+            } else {
+              // If item ID not in response, refresh wishlist status to get it
+              console.log('[ProductCard] Item ID not in response, refreshing wishlist status...');
+              setTimeout(() => checkWishlistStatus(), 500);
+            }
+            // Also call custom handler if provided (for UI state updates)
+            if (onToggleFavorite) {
+              onToggleFavorite(id, true);
+            }
+          } else {
+            console.error('[ProductCard] Failed to add to wishlist:', response.message || response);
+          }
+        }
+      } catch (err) {
+        console.error('[ProductCard] Error updating wishlist:', err);
+      } finally {
+        setWishlistLoading(false);
+      }
+      return;
+    }
+
+    // If not authenticated, use custom handler if provided, or show message
+    console.log('[ProductCard] Not authenticated, using custom handler or showing message');
+    if (onToggleFavorite) {
+      setFavorite(!favorite);
+      onToggleFavorite(id, !favorite);
+    } else {
+      // Could show a toast or modal here
+      console.log('Please login to add items to wishlist');
+    }
   };
 
   const handleAddToCart = async (e) => {
@@ -207,9 +333,14 @@ const ProductCard = ({
         <button
           className={`product-card__favorite ${favorite ? 'favorited' : ''} ${showDeleteIcon ? 'delete-icon' : ''}`}
           onClick={handleToggleFavorite}
+          disabled={wishlistLoading}
           aria-label={showDeleteIcon ? 'Remove from wishlist' : (favorite ? 'Remove from favorites' : 'Add to favorites')}
         >
-          <FontAwesomeIcon icon={showDeleteIcon ? faTrash : faHeart} />
+          {wishlistLoading ? (
+            <FontAwesomeIcon icon={faSpinner} className="fa-spin" />
+          ) : (
+            <FontAwesomeIcon icon={showDeleteIcon ? faTrash : faHeart} />
+          )}
         </button>
 
         {/* Discount Badge */}
