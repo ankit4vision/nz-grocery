@@ -7,3 +7,4 @@ export { default as OrdersService } from './orders';
 export { default as AuthService } from './auth';
 export { default as ReviewsService } from './reviews';
 export { default as WishlistService } from './wishlist';
+export { default as FAQService } from './faq';

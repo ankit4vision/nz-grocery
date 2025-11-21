@@ -281,6 +281,16 @@ export const API_ENDPOINTS = {
     UPDATE: (reviewId) => `/product-service/reviews/${reviewId}`,
     DELETE: (reviewId) => `/product-service/reviews/${reviewId}`,
   },
+  FAQ: {
+    CATEGORIES: {
+      LIST: '/faq/categories/',
+      GET_BY_ID: (categoryId) => `/faq/categories/${categoryId}`,
+    },
+    ENTRIES: {
+      LIST: '/faq/entries/',
+      GET_BY_ID: (faqId) => `/faq/entries/${faqId}`,
+    },
+  },
 };
 
 export default {
