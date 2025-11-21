@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Badge, Row, Col } from 'react-bootstrap';
 import { FaHeart, FaStar, FaShoppingCart } from 'react-icons/fa';
 import { CustomButton } from '../common';
@@ -25,11 +25,20 @@ const ProductInfo = ({
   onAddToCart, 
   onToggleFavorite,
   onRatingClick,
+  isFavorite: externalIsFavorite,
+  wishlistLoading = false,
   className = '' 
 }) => {
-  const [isFavorite, setIsFavorite] = useState(product?.isFavorite || false);
+  const [isFavorite, setIsFavorite] = useState(externalIsFavorite !== undefined ? externalIsFavorite : (product?.isFavorite || false));
   const [quantity, setQuantity] = useState(1);
   const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
+
+  // Update favorite state when external prop changes
+  useEffect(() => {
+    if (externalIsFavorite !== undefined) {
+      setIsFavorite(externalIsFavorite);
+    }
+  }, [externalIsFavorite]);
 
   const handleToggleFavorite = () => {
     const newFavoriteState = !isFavorite;
@@ -148,9 +157,14 @@ const ProductInfo = ({
           <button 
             className={`favorite-btn ${isFavorite ? 'favorited' : ''}`}
             onClick={handleToggleFavorite}
+            disabled={wishlistLoading}
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <FaHeart />
+            {wishlistLoading ? (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            ) : (
+              <FaHeart />
+            )}
           </button>
         </div>
       </div>

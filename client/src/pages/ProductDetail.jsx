@@ -2,9 +2,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
-import { useCartContext } from '../context';
+import { useCartContext, useUserContext } from '../context';
 import ProductsService from '../services/api/products';
 import ReviewsService from '../services/api/reviews';
+import WishlistService from '../services/api/wishlist';
 import './ProductDetail.css';
 
 /**
@@ -17,6 +18,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const reviewsRef = useRef(null);
   const { addItem, toggleCart } = useCartContext();
+  const { isAuthenticated } = useUserContext();
   
   const [product, setProduct] = useState(null);
   const [productMeta, setProductMeta] = useState(null);
@@ -27,6 +29,9 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [productRating, setProductRating] = useState(0);
   const [productReviewCount, setProductReviewCount] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [wishlistItemId, setWishlistItemId] = useState(null);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   // Get variant_id from query params
   const variantIdFromQuery = searchParams.get('variant_id');
@@ -38,6 +43,13 @@ const ProductDetail = () => {
       loadProductDetails();
     }
   }, [id, variantIdFromQuery]);
+
+  // Check wishlist status when product/variant changes
+  useEffect(() => {
+    if (isAuthenticated && product && selectedVariant) {
+      checkWishlistStatus();
+    }
+  }, [isAuthenticated, product?.productId, selectedVariant?.variantId]);
 
   const loadProductDetails = async () => {
     setLoading(true);
@@ -348,9 +360,82 @@ const ProductDetail = () => {
     }
   };
 
-  const handleToggleFavorite = (productId, isFavorite) => {
-    console.log('Toggle favorite:', productId, 'Is favorite:', isFavorite);
-    // In a real app, this would update the favorite status
+  const checkWishlistStatus = async () => {
+    if (!isAuthenticated || !product || !selectedVariant) return;
+    
+    try {
+      const response = await WishlistService.getDefaultWishlist();
+      if (response.success && response.data) {
+        const itemsResponse = await WishlistService.getWishlistItems(response.data.wishlist_id);
+        if (itemsResponse.success && Array.isArray(itemsResponse.data)) {
+          const item = itemsResponse.data.find(
+            item => item.product_id === product.productId && 
+            (item.variant_id === selectedVariant.variantId || !item.variant_id)
+          );
+          if (item) {
+            setIsFavorite(true);
+            setWishlistItemId(item.wishlist_item_id);
+          } else {
+            setIsFavorite(false);
+            setWishlistItemId(null);
+          }
+        }
+      }
+    } catch (err) {
+      // Silently fail - wishlist check is optional
+      console.error('Error checking wishlist status:', err);
+    }
+  };
+
+  const handleToggleFavorite = async (productId, currentFavoriteState) => {
+    if (!isAuthenticated) {
+      console.log('Please login to add items to wishlist');
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      if (isFavorite && wishlistItemId) {
+        // Remove from wishlist
+        const response = await WishlistService.removeItem(wishlistItemId);
+        if (response.success) {
+          setIsFavorite(false);
+          setWishlistItemId(null);
+          console.log('Successfully removed from wishlist');
+        } else {
+          console.error('Failed to remove from wishlist:', response.message);
+        }
+      } else {
+        // Add to wishlist
+        if (!product || !selectedVariant) {
+          console.error('Product or variant information is missing');
+          setWishlistLoading(false);
+          return;
+        }
+
+        const response = await WishlistService.addItem({
+          product_id: product.productId,
+          variant_id: selectedVariant.variantId || undefined,
+        });
+        if (response.success && response.data) {
+          setIsFavorite(true);
+          const itemId = response.data.wishlist_item_id || response.data.id || response.data.item_id;
+          if (itemId) {
+            setWishlistItemId(itemId);
+          } else {
+            // Refresh wishlist status to get item ID
+            setTimeout(() => checkWishlistStatus(), 500);
+          }
+          console.log('Successfully added to wishlist');
+        } else {
+          console.error('Failed to add to wishlist:', response.message || response);
+        }
+      }
+    } catch (err) {
+      console.error('Error updating wishlist:', err);
+    } finally {
+      setWishlistLoading(false);
+    }
   };
 
   const handleProductClick = (productId) => {
@@ -424,6 +509,8 @@ const ProductDetail = () => {
               onAddToCart={handleAddToCart}
               onToggleFavorite={handleToggleFavorite}
               onRatingClick={handleRatingClick}
+              isFavorite={isFavorite}
+              wishlistLoading={wishlistLoading}
               className="product-info"
             />
           </Col>
