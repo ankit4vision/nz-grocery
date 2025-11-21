@@ -326,13 +326,26 @@ const Wishlist = () => {
   };
 
   const transformWishlistItemToProduct = (item) => {
+    // Prioritize variant_name or variant_value as the main name
+    const variantName = item.variant_name || item.variant_value || '';
+    const productName = item.product_name || 'Product';
+    
+    // Determine current price: discounted_sale_price > sale_price
+    const currentPrice = item.discounted_sale_price || item.sale_price || 0;
+    // Original price: only show if there's a discount (discounted_sale_price exists, then sale_price is original)
+    const originalPrice = item.discounted_sale_price && item.sale_price 
+      ? item.sale_price 
+      : null;
+    
     return {
       id: item.product_id,
       variantId: item.variant_id,
-      name: item.product_name || 'Product',
+      name: variantName || productName, // Use variant name as main name, fallback to product name
+      productName: productName, // Product name for secondary display
+      variantName: variantName, // Variant name for main title
       unit: item.variant_value || '',
-      currentPrice: item.discounted_sale_price || item.sale_price || item.base_price || 0,
-      originalPrice: item.base_price || item.sale_price || 0,
+      currentPrice: currentPrice,
+      originalPrice: originalPrice,
       image: item.variant_image_url || item.product_image_url || '',
       rating: 0,
       reviews: 0,

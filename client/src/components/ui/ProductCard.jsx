@@ -361,7 +361,7 @@ const ProductCard = ({
         <Card.Title className="product-card__title">
           {variantName || name}
         </Card.Title>
-        {productName && productName !== (variantName || name) && (
+        {productName && productName !== (variantName || name) && variantName && (
           <p className="product-card__product-name text-muted small mb-1">{productName}</p>
         )}
         {unit && unit !== 'each' && (
