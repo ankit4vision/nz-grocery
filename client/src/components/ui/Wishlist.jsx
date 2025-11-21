@@ -326,8 +326,8 @@ const Wishlist = () => {
   };
 
   const transformWishlistItemToProduct = (item) => {
-    // Prioritize variant_name or variant_value as the main name
-    const variantName = item.variant_name || item.variant_value || '';
+    // Main text: variant_name, Secondary text: product_name (keep separate)
+    const variantName = item.variant_name || '';
     const productName = item.product_name || 'Product';
     
     // Determine current price: discounted_sale_price > sale_price
@@ -340,9 +340,9 @@ const Wishlist = () => {
     return {
       id: item.product_id,
       variantId: item.variant_id,
-      name: variantName || productName, // Use variant name as main name, fallback to product name
-      productName: productName, // Product name for secondary display
-      variantName: variantName, // Variant name for main title
+      name: variantName || productName, // Fallback for name field
+      productName: productName, // Product name (secondary text)
+      variantName: variantName, // Variant name (main text)
       unit: item.variant_value || '',
       currentPrice: currentPrice,
       originalPrice: originalPrice,
@@ -557,6 +557,8 @@ const Wishlist = () => {
                                     productId={product.id}
                                     variantId={product.variantId}
                                     name={product.name}
+                                    productName={product.productName}
+                                    variantName={product.variantName}
                                     unit={product.unit}
                                     currentPrice={product.currentPrice}
                                     originalPrice={product.originalPrice}
