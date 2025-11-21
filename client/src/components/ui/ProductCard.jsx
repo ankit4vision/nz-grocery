@@ -34,9 +34,10 @@ const ProductCard = ({
   const navigate = useNavigate();
   const { addItem, toggleCart, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
 
-  // Check if product is already in cart
-  const productInCart = isInCart(id);
-  const cartQuantity = getItemQuantity(id);
+  // Check if product is already in cart (using variant ID)
+  const finalVariantId = variantId || id;
+  const productInCart = isInCart(finalVariantId);
+  const cartQuantity = getItemQuantity(finalVariantId);
 
   const handleToggleFavorite = (e) => {
     e.stopPropagation();
@@ -44,15 +45,20 @@ const ProductCard = ({
     onToggleFavorite?.(id, !favorite);
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.stopPropagation();
+    
+    // Ensure we have both productId and variantId
+    const finalProductId = productId || id;
+    const finalVariantId = variantId || id;
     
     // Create product object for cart
     // Include both productId and variantId for cart operations
     const product = {
-      id: variantId || id, // Variant ID for cart item identification
-      productId: productId || id, // Product ID
-      variantId: variantId || id, // Variant ID
+      productId: finalProductId, // Product ID (required)
+      variantId: finalVariantId, // Variant ID (optional but should be included)
+      product_id: finalProductId, // API format
+      variant_id: finalVariantId, // API format
       name,
       unit,
       currentPrice,
@@ -64,14 +70,19 @@ const ProductCard = ({
       category
     };
     
-    // Add to cart using context
-    addItem(product, quantity);
+    // Add to cart using context (now uses real API)
+    const result = await addItem(product, quantity);
     
     // Call custom handler if provided
     onAddToCart?.(product, quantity);
     
-    // Show success feedback (optional)
-    console.log(`Added ${quantity} x ${name} to cart`);
+    // Show success feedback
+    if (result.success) {
+      // Optionally show toast notification here
+      console.log(`Added ${quantity} x ${name} to cart`);
+    } else {
+      console.error('Failed to add to cart:', result.message);
+    }
   };
 
   const handleCardClick = () => {
@@ -80,36 +91,20 @@ const ProductCard = ({
     const productIdToUse = productId || id;
     const variantIdToUse = variantId || id;
     
-    // Navigate with variant_id as query parameter
-    navigate(`/product/${productIdToUse}?variant_id=${variantIdToUse}`);
+    // Navigate to product detail page with variant_id as query parameter
+    navigate(`/product/${productIdToUse}${variantIdToUse ? `?variant_id=${variantIdToUse}` : ''}`);
   };
 
-  const handleQuantityChange = (change) => {
+  const handleQuantityChange = async (change) => {
+    const finalVariantId = variantId || id;
     const newQuantity = Math.max(1, cartQuantity + change);
-    
-    // Create product object for cart
-    // Include both productId and variantId for cart operations
-    const product = {
-      id: variantId || id, // Variant ID for cart item identification
-      productId: productId || id, // Product ID
-      variantId: variantId || id, // Variant ID
-      name,
-      unit,
-      currentPrice,
-      originalPrice,
-      image,
-      rating,
-      reviews,
-      discount: discountPercentage,
-      category
-    };
     
     if (newQuantity === 0) {
       // Remove from cart if quantity becomes 0
-      removeItem(id);
+      await removeItem(finalVariantId);
     } else {
-      // Update quantity in cart
-      updateItemQuantity(id, newQuantity);
+      // Update quantity in cart (uses real API)
+      await updateItemQuantity(finalVariantId, newQuantity);
     }
   };
 

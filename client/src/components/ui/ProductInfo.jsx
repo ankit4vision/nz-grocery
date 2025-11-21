@@ -39,31 +39,40 @@ const ProductInfo = ({
     }
   };
 
-  const handleAddToCart = () => {
-    // Use variantId for cart if available, otherwise use id
-    const cartId = product.variantId || product.id;
+  const handleAddToCart = async () => {
+    // Ensure we have both productId and variantId
+    const productId = product.productId || product.product_id || product.id;
+    const variantId = product.variantId || product.variant_id || product.id;
+    
+    // Create product object for cart with proper IDs
     const productForCart = {
+      productId: productId, // Product ID (required)
+      variantId: variantId, // Variant ID (optional but should be included)
+      product_id: productId, // API format
+      variant_id: variantId, // API format
       ...product,
-      id: cartId, // Ensure cart uses variant ID
     };
     
-    addItem(productForCart, quantity);
+    const result = await addItem(productForCart, quantity);
     if (onAddToCart) {
-      onAddToCart(cartId, quantity);
+      onAddToCart(variantId, quantity);
+    }
+    
+    if (!result.success) {
+      console.error('Failed to add to cart:', result.message);
     }
   };
 
-  const handleQuantityChange = (change) => {
-    // Use variantId for cart if available, otherwise use id
-    const cartId = product.variantId || product.id;
-    const currentQuantity = isInCart(cartId) ? getItemQuantity(cartId) : quantity;
+  const handleQuantityChange = async (change) => {
+    const variantId = product.variantId || product.variant_id || product.id;
+    const currentQuantity = isInCart(variantId) ? getItemQuantity(variantId) : quantity;
     const newQuantity = Math.max(1, currentQuantity + change);
     
-    if (isInCart(cartId)) {
+    if (isInCart(variantId)) {
       if (newQuantity === 0) {
-        removeItem(cartId);
+        await removeItem(variantId);
       } else {
-        updateItemQuantity(cartId, newQuantity);
+        await updateItemQuantity(variantId, newQuantity);
       }
     } else {
       setQuantity(newQuantity);
@@ -176,19 +185,19 @@ const ProductInfo = ({
               variant="outline-secondary" 
               size="sm"
               onClick={() => handleQuantityChange(-1)}
-              disabled={isInCart(product.variantId || product.id) ? getItemQuantity(product.variantId || product.id) <= 1 : quantity <= 1}
+              disabled={(isInCart(product.variantId || product.variant_id || product.id) ? getItemQuantity(product.variantId || product.variant_id || product.id) : quantity) <= 1}
               className="product-card__quantity-btn"
             >
               −
             </Button>
             <span className="product-card__quantity">
-              {isInCart(product.variantId || product.id) ? getItemQuantity(product.variantId || product.id) : quantity}
+              {isInCart(product.variantId || product.variant_id || product.id) ? getItemQuantity(product.variantId || product.variant_id || product.id) : quantity}
             </span>
             <Button 
               variant="outline-secondary" 
               size="sm"
               onClick={() => handleQuantityChange(1)}
-              disabled={isInCart(product.variantId || product.id) ? false : quantity >= (product.stockCount || 99)}
+              disabled={isInCart(product.variantId || product.variant_id || product.id) ? false : quantity >= (product.stockCount || 99)}
               className="product-card__quantity-btn"
             >
               +
@@ -196,7 +205,7 @@ const ProductInfo = ({
           </div>
         </div>
         
-        {!isInCart(product.variantId || product.id) ? (
+        {!isInCart(product.variantId || product.variant_id || product.id) ? (
           <CustomButton
             variant="success"
             size="md"

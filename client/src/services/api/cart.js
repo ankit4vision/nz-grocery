@@ -1,22 +1,89 @@
-import { apiGet, apiPost, apiPut, apiDelete } from '../../utils/api';
-import { API_ENDPOINTS } from '../../utils/constants';
+import apiClient from '../../config/apiClient'
+import { handleApiError, formatSuccessResponse } from '../../utils/errorHandler'
+import { API_ENDPOINTS } from '../../utils/constants'
 
 /**
- * Cart API service
+ * Shopping Cart API service
+ * Handles all cart operations including creating cart, adding items, updating quantities, etc.
  */
 export class CartService {
   /**
-   * Get cart items
+   * Get active cart for a user
    * 
-   * @returns {Promise} - Cart data
+   * @param {number} userId - User ID
+   * @returns {Promise} - Active cart response
    */
-  static async getCart() {
+  static async getActiveCart(userId) {
     try {
-      const response = await apiGet(API_ENDPOINTS.CART.GET);
-      return response;
+      const response = await apiClient.get(API_ENDPOINTS.CART.GET_ACTIVE(userId))
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error fetching cart:', error);
-      throw error;
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Create a new shopping cart
+   * 
+   * @param {object} cartData - Cart creation data
+   * @param {number} cartData.user_id - User ID (required)
+   * @param {number} cartData.vendor_id - Vendor ID (optional)
+   * @returns {Promise} - Created cart response
+   */
+  static async createCart(cartData) {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.CART.CREATE, cartData)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Get cart by ID
+   * 
+   * @param {number} cartId - Cart ID
+   * @returns {Promise} - Cart response
+   */
+  static async getCart(cartId) {
+    try {
+      const response = await apiClient.get(`/shopping-cart/${cartId}`)
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Get or create active cart for user
+   * This is a convenience method that gets active cart or creates one if it doesn't exist
+   * 
+   * @param {number} userId - User ID
+   * @returns {Promise} - Active cart response
+   */
+  static async getOrCreateActiveCart(userId) {
+    try {
+      // Try to get active cart first
+      const getResponse = await this.getActiveCart(userId)
+      
+      // If cart exists, return it
+      if (getResponse.success && getResponse.data) {
+        return getResponse
+      }
+      
+      // If no active cart exists (404 or error), create a new one
+      if (getResponse.status === 404 || !getResponse.success) {
+        const createResponse = await this.createCart({ user_id: userId })
+        return createResponse
+      }
+      
+      return getResponse
+    } catch (error) {
+      // If getActiveCart fails with 404, create new cart
+      if (error.response?.status === 404) {
+        return await this.createCart({ user_id: userId })
+      }
+      return handleApiError(error)
     }
   }
 
@@ -24,254 +91,111 @@ export class CartService {
    * Add item to cart
    * 
    * @param {object} itemData - Item data
-   * @param {string|number} itemData.productId - Product ID
-   * @param {number} itemData.quantity - Quantity
-   * @param {object} itemData.options - Product options (size, color, etc.)
-   * @returns {Promise} - Added item
+   * @param {number} itemData.cart_id - Cart ID (required)
+   * @param {number} itemData.product_id - Product ID (required)
+   * @param {number} itemData.variant_id - Variant ID (optional)
+   * @param {number} itemData.quantity - Quantity (default: 1)
+   * @returns {Promise} - Added item response
    */
   static async addItem(itemData) {
     try {
-      const response = await apiPost(API_ENDPOINTS.CART.ADD_ITEM, itemData);
-      return response;
+      const response = await apiClient.post(API_ENDPOINTS.CART.ADD_ITEM, itemData)
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error adding item to cart:', error);
-      throw error;
+      return handleApiError(error)
+    }
+  }
+
+  /**
+   * Get cart items with pricing
+   * Returns detailed cart items with pricing information
+   * 
+   * @param {number} cartId - Cart ID
+   * @returns {Promise} - Cart items with pricing response
+   */
+  static async getCartItemsWithPricing(cartId) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.CART.GET_ITEMS_WITH_PRICING(cartId))
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
     }
   }
 
   /**
    * Update cart item quantity
    * 
-   * @param {string|number} itemId - Cart item ID
-   * @param {number} quantity - New quantity
-   * @returns {Promise} - Updated item
+   * @param {number} cartItemId - Cart item ID
+   * @param {number} quantity - New quantity (must be at least 1)
+   * @returns {Promise} - Updated item response
    */
-  static async updateItemQuantity(itemId, quantity) {
+  static async updateItemQuantity(cartItemId, quantity) {
     try {
-      const endpoint = API_ENDPOINTS.CART.UPDATE_ITEM.replace(':id', itemId);
-      const response = await apiPut(endpoint, { quantity });
-      return response;
+      const response = await apiClient.put(API_ENDPOINTS.CART.UPDATE_ITEM(cartItemId), { quantity })
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error updating cart item:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Update cart item options
-   * 
-   * @param {string|number} itemId - Cart item ID
-   * @param {object} options - New options
-   * @returns {Promise} - Updated item
-   */
-  static async updateItemOptions(itemId, options) {
-    try {
-      const endpoint = API_ENDPOINTS.CART.UPDATE_ITEM.replace(':id', itemId);
-      const response = await apiPut(endpoint, { options });
-      return response;
-    } catch (error) {
-      console.error('Error updating cart item options:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
   /**
    * Remove item from cart
    * 
-   * @param {string|number} itemId - Cart item ID
-   * @returns {Promise} - Removal result
+   * @param {number} cartItemId - Cart item ID
+   * @returns {Promise} - Removal response
    */
-  static async removeItem(itemId) {
+  static async removeItem(cartItemId) {
     try {
-      const endpoint = API_ENDPOINTS.CART.REMOVE_ITEM.replace(':id', itemId);
-      const response = await apiDelete(endpoint);
-      return response;
+      const response = await apiClient.delete(API_ENDPOINTS.CART.REMOVE_ITEM(cartItemId))
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error removing cart item:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Clear entire cart
-   * 
-   * @returns {Promise} - Clear result
-   */
-  static async clearCart() {
-    try {
-      const response = await apiDelete(API_ENDPOINTS.CART.CLEAR);
-      return response;
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Apply coupon to cart
-   * 
-   * @param {string} couponCode - Coupon code
-   * @returns {Promise} - Coupon application result
-   */
-  static async applyCoupon(couponCode) {
-    try {
-      const endpoint = '/cart/coupon';
-      const response = await apiPost(endpoint, { code: couponCode });
-      return response;
-    } catch (error) {
-      console.error('Error applying coupon:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Remove coupon from cart
-   * 
-   * @returns {Promise} - Coupon removal result
-   */
-  static async removeCoupon() {
-    try {
-      const endpoint = '/cart/coupon';
-      const response = await apiDelete(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error removing coupon:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
   /**
    * Get cart summary
    * 
-   * @returns {Promise} - Cart summary
+   * @param {number} cartId - Cart ID
+   * @returns {Promise} - Cart summary response
    */
-  static async getCartSummary() {
+  static async getCartSummary(cartId) {
     try {
-      const endpoint = '/cart/summary';
-      const response = await apiGet(endpoint);
-      return response;
+      const response = await apiClient.get(`/shopping-cart/${cartId}/summary`)
+      return formatSuccessResponse(response)
     } catch (error) {
-      console.error('Error fetching cart summary:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 
   /**
-   * Validate cart items
+   * Clear cart (delete all items)
+   * This is done by deleting each item individually
    * 
-   * @returns {Promise} - Validation result
+   * @param {number} cartId - Cart ID
+   * @returns {Promise} - Clear response
    */
-  static async validateCart() {
+  static async clearCart(cartId) {
     try {
-      const endpoint = '/cart/validate';
-      const response = await apiGet(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error validating cart:', error);
-      throw error;
-    }
-  }
+      // Get all items first
+      const itemsResponse = await this.getCartItemsWithPricing(cartId)
+      
+      if (!itemsResponse.success || !itemsResponse.data?.items || itemsResponse.data.items.length === 0) {
+        return { success: true, message: 'Cart is already empty' }
+      }
 
-  /**
-   * Save cart for later
-   * 
-   * @param {string} name - Saved cart name
-   * @returns {Promise} - Save result
-   */
-  static async saveCart(name) {
-    try {
-      const endpoint = '/cart/save';
-      const response = await apiPost(endpoint, { name });
-      return response;
+      // Delete all items
+      const deletePromises = itemsResponse.data.items.map(item => 
+        this.removeItem(item.cart_item_id)
+      )
+      
+      await Promise.all(deletePromises)
+      
+      return { success: true, message: 'Cart cleared successfully' }
     } catch (error) {
-      console.error('Error saving cart:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get saved carts
-   * 
-   * @returns {Promise} - Saved carts
-   */
-  static async getSavedCarts() {
-    try {
-      const endpoint = '/cart/saved';
-      const response = await apiGet(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error fetching saved carts:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Load saved cart
-   * 
-   * @param {string|number} savedCartId - Saved cart ID
-   * @returns {Promise} - Load result
-   */
-  static async loadSavedCart(savedCartId) {
-    try {
-      const endpoint = `/cart/saved/${savedCartId}/load`;
-      const response = await apiPost(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error loading saved cart:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Delete saved cart
-   * 
-   * @param {string|number} savedCartId - Saved cart ID
-   * @returns {Promise} - Deletion result
-   */
-  static async deleteSavedCart(savedCartId) {
-    try {
-      const endpoint = `/cart/saved/${savedCartId}`;
-      const response = await apiDelete(endpoint);
-      return response;
-    } catch (error) {
-      console.error('Error deleting saved cart:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get cart shipping options
-   * 
-   * @param {object} address - Delivery address
-   * @returns {Promise} - Shipping options
-   */
-  static async getShippingOptions(address) {
-    try {
-      const endpoint = '/cart/shipping-options';
-      const response = await apiPost(endpoint, { address });
-      return response;
-    } catch (error) {
-      console.error('Error fetching shipping options:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Set shipping method
-   * 
-   * @param {string} shippingMethodId - Shipping method ID
-   * @returns {Promise} - Set result
-   */
-  static async setShippingMethod(shippingMethodId) {
-    try {
-      const endpoint = '/cart/shipping-method';
-      const response = await apiPost(endpoint, { methodId: shippingMethodId });
-      return response;
-    } catch (error) {
-      console.error('Error setting shipping method:', error);
-      throw error;
+      return handleApiError(error)
     }
   }
 }
 
-export default CartService;
+export default CartService

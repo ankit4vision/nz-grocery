@@ -17,7 +17,7 @@ const AppNavbar = ({
   userPoints = 0,
   ...props 
 }) => {
-  const { totalItems } = useCartContext();
+  const { itemCount, totalItems } = useCartContext();
   const { isAuthenticated, user, logout } = useUserContext();
   
   const navbarClasses = [
@@ -71,12 +71,13 @@ const AppNavbar = ({
               >
                 <div className="app-navbar__cart-container">
                   <FaShoppingCart className="app-navbar__cart-icon" />
-                  {totalItems > 0 && (
+                  {itemCount > 0 && (
                     <Badge 
                       bg="danger" 
                       className="app-navbar__cart-badge"
+                      title={`${itemCount} ${itemCount === 1 ? 'product' : 'products'} (${totalItems} ${totalItems === 1 ? 'item' : 'items'} total)`}
                     >
-                      {totalItems}
+                      {itemCount}
                     </Badge>
                   )}
                 </div>
