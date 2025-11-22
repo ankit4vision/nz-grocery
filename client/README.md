@@ -9,7 +9,22 @@ A modern React application built with Vite and React Bootstrap for the NZ Grocer
 npm install
 ```
 
-### 2. Start Development Server
+### 2. Install Stripe Dependencies (Required for Payment Integration)
+```bash
+npm install @stripe/stripe-js @stripe/react-stripe-js
+```
+
+### 3. Configure Environment Variables
+Copy `.env.example` to `.env.local` and update the values:
+```bash
+cp .env.example .env.local
+```
+
+**Required Environment Variables:**
+- `VITE_API_BASE_URL` - Backend API base URL
+- `VITE_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key (for payment integration)
+
+### 4. Start Development Server
 ```bash
 npm run dev
 ```
@@ -47,6 +62,7 @@ npm run preview:prod     # Preview production build
 - **React Router DOM** - Client-side routing
 - **React Icons** - Icon library
 - **FontAwesome** - Icon library
+- **Stripe** - Payment processing (@stripe/stripe-js, @stripe/react-stripe-js)
 - **Local Storage** - Data persistence
 - **Context API** - State management
 
@@ -122,6 +138,8 @@ client/
 │   ├── pages/                   # Page components
 │   │   ├── About.jsx & About.css
 │   │   ├── Checkout.jsx & Checkout.css
+│   │   ├── Payment.jsx & Payment.css
+│   │   ├── PaymentSuccess.jsx & PaymentSuccess.css
 │   │   ├── Home.jsx & Home.css
 │   │   ├── OrderDetails.jsx & OrderDetails.css
 │   │   ├── ProductDetail.jsx & ProductDetail.css
@@ -219,6 +237,9 @@ client/
 │   │   ├── useFavorites.js
 │   │   ├── useLocalStorage.js
 │   │   └── index.js
+│   ├── components/              # Reusable components
+│   │   ├── stripe/              # Stripe payment components
+│   │   │   └── StripeProvider.jsx
 │   ├── services/                # API services
 │   │   ├── api/                 # API service modules
 │   │   │   ├── auth.js
@@ -226,6 +247,7 @@ client/
 │   │   │   ├── categories.js
 │   │   │   ├── orders.js
 │   │   │   ├── products.js
+│   │   │   ├── stripe.js
 │   │   │   ├── users.js
 │   │   │   └── index.js
 │   │   └── index.js

@@ -293,6 +293,12 @@ export const API_ENDPOINTS = {
       GET_BY_ID: (faqId) => `/faq/entries/${faqId}`,
     },
   },
+  STRIPE: {
+    CONFIG: '/product-service/stripe/config',
+    CREATE_PAYMENT_INTENT: '/product-service/stripe/payment-intents',
+    GET_PAYMENT_INTENT: (paymentIntentId) => `/product-service/stripe/payment-intents/${paymentIntentId}`,
+    CONFIRM_PAYMENT_INTENT: (paymentIntentId) => `/product-service/stripe/payment-intents/${paymentIntentId}/confirm`,
+  },
 };
 
 export default {

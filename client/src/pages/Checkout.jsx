@@ -378,6 +378,7 @@ const Checkout = () => {
       const deliveryPreferences = transformDeliveryPreferences();
 
     const orderData = {
+        vendor_id: 0, // Default vendor ID
         order_type: deliveryInfo.deliveryType, // 'delivery' or 'pickup'
         delivery_address_id: deliveryInfo.deliveryType === 'delivery' ? selectedAddressId : null,
         pickup_address_id: deliveryInfo.deliveryType === 'pickup' ? selectedAddressId : null,
@@ -387,7 +388,7 @@ const Checkout = () => {
         shipping_fee: checkoutSummary.shipping_fee || deliveryFee,
         discount_amount: checkoutSummary.discount_amount || discountAmount,
         total_amount: checkoutSummary.total_amount || total,
-        payment_method_id: null, // Will be set after payment processing
+        payment_method_id: 0, // Default payment method ID
         delivery_instructions: deliveryInfo.deliveryInstruction || null,
         estimated_delivery_time: null, // Can be calculated on backend
         delivery_preferences: deliveryPreferences.length > 0 ? deliveryPreferences : null

@@ -8,6 +8,8 @@ import Products from './pages/Products';
 import About from './pages/About';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
+import Payment from './pages/Payment';
+import PaymentSuccess from './pages/PaymentSuccess';
 import OrderDetails from './pages/OrderDetails';
 import UserDashboard from './pages/UserDashboard';
 
@@ -26,6 +28,8 @@ function App() {
                   <Route path="/products" element={<Products />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/payment" element={<Payment />} />
+                  <Route path="/payment-success" element={<PaymentSuccess />} />
                   <Route path="/order/:orderId" element={<OrderDetails />} />
                   <Route path="/dashboard" element={<UserDashboard />} />
                   <Route path="/about" element={<About />} />

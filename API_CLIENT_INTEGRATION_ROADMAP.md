@@ -272,7 +272,9 @@ nz-grocery/
 │       │   ├── Home.jsx                        # ⏳ Home page (TO BE UPDATED)
 │       │   ├── Products.jsx                   # ⏳ Products listing page (TO BE UPDATED)
 │       │   ├── ProductDetail.jsx               # ⏳ Product detail page (TO BE UPDATED)
-│       │   ├── Checkout.jsx                    # ⏳ Checkout page (TO BE UPDATED)
+│       │   ├── Checkout.jsx                    # ✅ Checkout page (API integrated)
+│       │   ├── Payment.jsx                     # ✅ Payment page (Stripe integrated)
+│       │   ├── PaymentSuccess.jsx              # ✅ Payment success page
 │       │   ├── UserDashboard.jsx               # ⏳ User dashboard (TO BE UPDATED)
 │       │   ├── OrderDetails.jsx                # ⏳ Order details page (TO BE UPDATED)
 │       │   └── About.jsx                       # About page
@@ -349,9 +351,10 @@ nz-grocery/
 - ✅ `categories.js` - Category listing
 - ✅ `reviews.js` - Product reviews (list, create, update, delete)
 - ✅ `cart.js` - Shopping cart operations (all CRUD operations)
-- ✅ `orders.js` - Order management (list, details, cancel)
+- ✅ `orders.js` - Order management (list, details, cancel, create)
 - ✅ `users.js` - User profile and addresses
 - ✅ `wishlist.js` - Wishlist management
+- ✅ `stripe.js` - Stripe payment integration
 
 #### 🎨 Component Files
 
@@ -376,7 +379,9 @@ nz-grocery/
 - ✅ **`Home.jsx`** - Home page (products/categories API integrated)
 - ✅ **`Products.jsx`** - Products listing page (products API integrated)
 - ✅ **`ProductDetail.jsx`** - Product detail page (product details API integrated)
-- ⏳ **`Checkout.jsx`** - Checkout page (needs cart and order APIs)
+- ✅ **`Checkout.jsx`** - Checkout page (API integrated, order creation ready)
+- ✅ **`Payment.jsx`** - Payment page (Stripe integration ready)
+- ✅ **`PaymentSuccess.jsx`** - Payment success page (ready)
 - ⏳ **`UserDashboard.jsx`** - User dashboard (needs profile, orders APIs)
 - ⏳ **`OrderDetails.jsx`** - Order details page (needs order details API)
 
@@ -784,6 +789,76 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 
 ---
 
+### 7. Checkout & Payment Module 💳 ⏳ **IN PROGRESS**
+**Why Seventh**: Complete the order flow - users need to checkout and pay for orders.
+
+**APIs Integrated**:
+- `GET /shopping-cart/{cart_id}/details` - Get cart with details (includes product names) ✅ Completed
+- `GET /shopping-cart/{cart_id}/summary` - Get cart summary ✅ Completed
+- `GET /users/addresses` - List user addresses ✅ Completed
+- `PUT /users/addresses/{address_id}/set-default` - Set default address ✅ Completed
+- `POST /orders/` - Create new order ✅ Completed (pending backend fix for vendor_id/payment_method_id)
+- `POST /product-service/stripe/payment-intents` - Create payment intent ✅ Completed
+- `GET /product-service/stripe/payment-intents/{id}` - Get payment intent ✅ Completed
+- `POST /product-service/stripe/payment-intents/{id}/confirm` - Confirm payment intent ✅ Completed
+
+**Files Updated/Created**:
+- `client/src/pages/Checkout.jsx` ✅ Updated (API integration, order creation)
+- `client/src/components/ui/DeliveryInfo.jsx` ✅ Updated (address selection from API)
+- `client/src/components/ui/OrderSummary.jsx` ✅ Updated (API data display)
+- `client/src/services/api/cart.js` ✅ Updated (getCartWithDetails method)
+- `client/src/services/api/stripe.js` ✅ Created (Stripe payment service)
+- `client/src/components/stripe/StripeProvider.jsx` ✅ Created (Stripe Elements provider)
+- `client/src/components/ui/PaymentForm.jsx` ✅ Created (Stripe payment form)
+- `client/src/pages/Payment.jsx` ✅ Created (Payment processing page)
+- `client/src/pages/PaymentSuccess.jsx` ✅ Created (Payment success page)
+- `client/src/pages/Payment.css` ✅ Created
+- `client/src/pages/PaymentSuccess.css` ✅ Created
+- `client/src/styles/components/ui-components/payment-form.css` ✅ Created
+- `client/src/utils/constants.js` ✅ Updated (Stripe endpoints)
+- `client/src/App.jsx` ✅ Updated (payment routes)
+- `client/env.example` ✅ Updated (Stripe publishable key)
+
+**Features Implemented**:
+- ✅ Load cart items with product names and variant names from API
+- ✅ Load cart summary (subtotal, tax, shipping, discount, total) from API
+- ✅ Load user addresses from API
+- ✅ Select and set default address
+- ✅ Transform cart items to order items format
+- ✅ Transform delivery preferences to API format
+- ✅ Create order via API with all required fields
+- ✅ Handle order creation errors and loading states
+- ✅ Redirect to payment page for card payments
+- ✅ Redirect to order details for COD payments
+- ✅ Create Stripe payment intent with order_id
+- ✅ Display Stripe payment form with Elements
+- ✅ Process payment with Stripe
+- ✅ Show payment success page with order details
+- ✅ Clear cart after successful order creation
+- ✅ Loading states during API calls
+- ✅ Error handling with user-friendly messages
+- ✅ Order items correctly populated with product/variant names
+- ✅ Tax and shipping calculated on frontend (awaiting backend API)
+
+**Key Implementation Details**:
+- Uses `getCartWithDetails` endpoint to get product names (CartItemWithDetails schema)
+- Falls back to `getCartItemsWithPricing` if details endpoint fails
+- Order items transformation handles both CartItemWithDetails and CartItemWithPricing schemas
+- Payment intent created automatically when payment page loads
+- Stripe Elements integrated with PaymentElement component
+- Payment success page loads order details from API
+- All payment processing handled securely by Stripe
+- Frontend calculates tax (3.5%) and shipping ($2.00 delivery, $0 pickup) until backend APIs available
+- Order creation includes vendor_id: 0 and payment_method_id: 0 (pending backend fix)
+
+**Pending Backend Fix**:
+- Backend needs to accept `vendor_id` and `payment_method_id` in order creation request body
+- Current error: "Unconsumed column names: payment_method_id, vendor_id"
+
+**Time Taken**: In Progress (awaiting backend fix)
+
+---
+
 ## 📋 Integration Checklist
 
 ### Per Module Integration Steps:
@@ -937,13 +1012,16 @@ export default moduleService
   - Product Name/Variant Name Display
   - Correct Price Display
 
-📋 **Next Up**:
-- Checkout Module (Order Creation UI)
-- Payment Integration
+📋 **In Progress**:
+- Checkout & Payment Module ⏳
+  - Order creation API integration (pending backend fix)
+  - Stripe payment integration (ready, needs testing)
+  - Payment success flow (ready, needs testing)
+
+📋 **Next Up** (After Backend Fix):
+- Test complete checkout → payment → success flow
 - Order Details Page Enhancement
-- Checkout Module (Order Creation UI)
-- Payment Integration
-- Order Details Page Enhancement
+- Additional payment methods (if needed)
 
 ---
 
@@ -1307,11 +1385,16 @@ For each module integration:
 - `PUT /users/addresses/{address_id}/set-default` - Set default address
 
 ### Orders
-- `POST /orders/` - Create order
-- `GET /orders/` - List orders
-- `GET /orders/{order_id}` - Get order
-- `GET /orders/{order_id}/details` - Get order details with items
-- `PUT /orders/{order_id}/cancel` - Cancel order
+- `POST /orders/` - Create order ✅
+- `GET /orders/` - List orders ✅
+- `GET /orders/{order_id}` - Get order ✅
+- `GET /orders/{order_id}/details` - Get order details with items ✅
+- `PUT /orders/{order_id}/cancel` - Cancel order ✅
+
+### Stripe Payments
+- `POST /product-service/stripe/payment-intents` - Create payment intent ✅
+- `GET /product-service/stripe/payment-intents/{id}` - Get payment intent ✅
+- `POST /product-service/stripe/payment-intents/{id}/confirm` - Confirm payment intent ✅
 
 ### Wishlist
 - `GET /wishlists/default` - Get default wishlist
@@ -1333,6 +1416,12 @@ For each module integration:
 - ✅ User Profile & Addresses Module Completed
 - ✅ Orders Module Completed (Listing & Details)
 - ✅ Wishlist Module Completed
+- ⏳ Checkout & Payment Module In Progress (pending backend fix)
 
-**Next Step**: Checkout Module (Order Creation UI) and Payment Integration
+**Current Status**: 
+- Frontend integration complete for Checkout & Payment module
+- Awaiting backend fix for `vendor_id` and `payment_method_id` in order creation
+- Stripe payment integration ready for testing once order creation works
+
+**Next Step**: Test complete order flow after backend fix
 

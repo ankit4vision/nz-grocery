@@ -33,6 +33,8 @@ nz-grocery/
 │   │   │   │   ├── Layout.jsx
 │   │   │   │   ├── UserProfileDropdown.jsx
 │   │   │   │   └── index.js
+│   │   │   ├── stripe/              # Stripe payment components
+│   │   │   │   └── StripeProvider.jsx
 │   │   │   ├── ui/                  # UI components
 │   │   │   │   ├── InfoCard.jsx
 │   │   │   │   ├── StatCard.jsx
@@ -59,6 +61,7 @@ nz-grocery/
 │   │   │   │   ├── CartSidebar.jsx
 │   │   │   │   ├── DeliveryInfo.jsx
 │   │   │   │   ├── PaymentMethod.jsx
+│   │   │   │   ├── PaymentForm.jsx
 │   │   │   │   ├── OrderSummary.jsx
 │   │   │   │   ├── OrderStatus.jsx
 │   │   │   │   ├── OrderSummaryBreakdown.jsx
@@ -83,6 +86,10 @@ nz-grocery/
 │   │   │   ├── ProductDetail.css
 │   │   │   ├── Checkout.jsx
 │   │   │   ├── Checkout.css
+│   │   │   ├── Payment.jsx
+│   │   │   ├── Payment.css
+│   │   │   ├── PaymentSuccess.jsx
+│   │   │   ├── PaymentSuccess.css
 │   │   │   ├── OrderDetails.jsx
 │   │   │   ├── OrderDetails.css
 │   │   │   ├── UserDashboard.jsx
@@ -160,6 +167,7 @@ nz-grocery/
 │   │   │   │   │   ├── cart-sidebar.css
 │   │   │   │   │   ├── delivery-info.css
 │   │   │   │   │   ├── payment-method.css
+│   │   │   │   │   ├── payment-form.css
 │   │   │   │   │   ├── order-summary.css
 │   │   │   │   │   ├── order-status.css
 │   │   │   │   │   ├── order-summary-breakdown.css
@@ -197,6 +205,7 @@ nz-grocery/
 │   │   │   │   ├── users.js         # Users API
 │   │   │   │   ├── cart.js          # Cart API
 │   │   │   │   ├── orders.js        # Orders API
+│   │   │   │   ├── stripe.js        # Stripe Payment API
 │   │   │   │   └── auth.js          # Authentication API
 │   │   │   └── index.js             # Export file
 │   │   ├── context/                 # React Context providers
@@ -438,6 +447,7 @@ npm update           # Update dependencies
 - `CartSidebar` - Shopping cart sidebar with full cart management functionality
 - `DeliveryInfo` - Delivery information form with day/time selection and contact details
 - `PaymentMethod` - Payment method selection with card details and payment options
+- `PaymentForm` - Stripe payment form component with Elements integration
 - `OrderSummary` - Order summary with items, pricing breakdown, promo codes, and checkout button
 - `OrderStatus` - Order status display with payment status badge, order summary cards, and progress tracker
 - `OrderSummaryBreakdown` - Order amount breakdown component showing subtotal, shipping, tax, discount, and total
@@ -526,7 +536,9 @@ npm update           # Update dependencies
 - **Home Page** (`Home.jsx`) - Main landing page with hero slider, ads banner, value section, price section, and featured products
 - **Products Page** (`Products.jsx`) - Product listing page with breadcrumb, categories, product grid, and pagination
 - **Product Detail Page** (`ProductDetail.jsx`) - Individual product detail page with image gallery, product info, similar products, and customer reviews
-- **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary
+- **Checkout Page** (`Checkout.jsx`) - Complete checkout flow with delivery information, payment method, and order summary (API integrated)
+- **Payment Page** (`Payment.jsx`) - Stripe payment processing page with payment form and order summary
+- **Payment Success Page** (`PaymentSuccess.jsx`) - Payment confirmation page with order details and navigation options
 - **Order Details Page** (`OrderDetails.jsx`) - Order tracking and details page with progress status, order summary, items list, delivery notes, and context-aware back navigation
 - **User Dashboard Page** (`UserDashboard.jsx`) - User account dashboard with tabbed navigation for profile, password, orders, wishlist, and help, with authentication protection and loading states
 - **About Page** (`About.jsx`) - About page component
