@@ -1,46 +1,267 @@
-import React, { useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useCartContext } from '../context';
+import { useCartContext, useUserContext } from '../context';
 import { DeliveryInfo, PaymentMethod, OrderSummary } from '../components/ui';
+import { Loader } from '../components/common';
+import OrdersService from '../services/api/orders';
+import UsersService from '../services/api/users';
+import CartService from '../services/api/cart';
 import './Checkout.css';
 
 const Checkout = () => {
-  const { items, totalPrice, totalItems, clearCart } = useCartContext();
+  const { items: cartItems, totalPrice: cartTotalPrice, totalItems, clearCart, isLoading: cartLoading, cartId } = useCartContext();
+  const { user, isAuthenticated } = useUserContext();
   const navigate = useNavigate();
+  
+  // State for checkout data (loaded from API)
+  const [checkoutItems, setCheckoutItems] = useState([]);
+  const [checkoutSummary, setCheckoutSummary] = useState({
+    subtotal: 0,
+    tax_amount: 0,
+    shipping_fee: 0,
+    discount_amount: 0,
+    total_amount: 0
+  });
+  const [loadingCheckoutData, setLoadingCheckoutData] = useState(true);
+  const [checkoutDataError, setCheckoutDataError] = useState(null);
+  
+  // State for addresses and user data
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [addressesError, setAddressesError] = useState(null);
+  
+  // State for order creation
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [orderError, setOrderError] = useState(null);
+  
+  // Delivery info state
   const [deliveryInfo, setDeliveryInfo] = useState({
-    deliveryType: 'home',
+    deliveryType: 'delivery', // 'delivery' or 'pickup'
     selectedDays: ['monday'],
     timeSlot: '6:00 AM To 9:00 AM',
     deliveryInstruction: '',
-    fullName: 'John Doe',
-    phoneNumber: '+1 (555) 123-4567',
-    emailAddress: 'john.doe@example.com',
-    deliveryAddress: '123 Main Street, Downtown, New York, NY 10001'
+    fullName: '',
+    phoneNumber: '',
+    emailAddress: '',
+    deliveryAddress: '',
+    addressId: null
   });
 
   const [paymentInfo, setPaymentInfo] = useState({
-    paymentMethod: 'card',
-    cardNumber: '1234 5678 9012 3456',
-    expiryDate: '12/25',
-    cvv: '123',
-    cardholderName: 'John Doe'
+    paymentMethod: 'card', // 'card', 'cod', etc.
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardholderName: ''
   });
 
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState(null);
 
-  const deliveryFee = 2.00;
-  const taxRate = 0.035; // 3.5%
-  const subtotal = Number(totalPrice) || 0;
-  const tax = subtotal * taxRate;
-  const total = subtotal + deliveryFee + tax;
+  // Load checkout data (cart items and summary) on mount
+  useEffect(() => {
+    if (isAuthenticated && cartId) {
+      loadCheckoutData();
+    } else if (isAuthenticated && !cartLoading) {
+      // Cart might not be loaded yet, wait a bit
+      const timer = setTimeout(() => {
+        if (cartId) {
+          loadCheckoutData();
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, cartId, cartLoading]);
+
+  // Load user addresses on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadUserAddresses();
+      // Pre-fill user info from context
+      if (user) {
+        setDeliveryInfo(prev => ({
+          ...prev,
+          fullName: `${user.first_name || ''} ${user.last_name || ''}`.trim() || prev.fullName,
+          emailAddress: user.email || prev.emailAddress,
+          phoneNumber: user.phone || prev.phoneNumber
+        }));
+      }
+    }
+  }, [isAuthenticated, user]);
+
+  // Load checkout data from API (cart items and summary)
+  const loadCheckoutData = async () => {
+    if (!cartId) {
+      setCheckoutDataError('Cart not found. Please add items to cart first.');
+      setLoadingCheckoutData(false);
+      return;
+    }
+
+    setLoadingCheckoutData(true);
+    setCheckoutDataError(null);
+
+    try {
+      // Load cart with details (includes product_name and variant_name) and cart summary in parallel
+      // Using getCartWithDetails instead of getCartItemsWithPricing to get product/variant names
+      const [cartDetailsResponse, summaryResponse] = await Promise.all([
+        CartService.getCartWithDetails(cartId),
+        CartService.getCartSummary(cartId)
+      ]);
+
+      // Fallback to getCartItemsWithPricing if getCartWithDetails fails
+      let itemsResponse = cartDetailsResponse;
+      if (!cartDetailsResponse.success) {
+        console.warn('Failed to get cart details, falling back to cart items with pricing');
+        itemsResponse = await CartService.getCartItemsWithPricing(cartId);
+      }
+
+      if (itemsResponse.success && itemsResponse.data) {
+        const cartData = itemsResponse.data;
+        // Handle both ShoppingCartWithItems (has items array) and CartItemsWithPricingResponse (has items array)
+        const cartItems = cartData.items || [];
+        setCheckoutItems(cartItems);
+        
+        // Calculate subtotal from items
+        // Use total_price from each item (already calculated by backend with discounts)
+        const subtotal = cartItems.reduce((sum, item) => {
+          return sum + (item.total_price || 0);
+        }, 0) || cartData.total_amount || 0;
+
+        // Get summary data
+        const summaryData = summaryResponse.success ? summaryResponse.data : {};
+        
+        // For now, calculate tax and shipping on frontend
+        // TODO: Replace with backend API call if available
+        // Tax calculation (can be from settings API later)
+        const taxRate = 0.035; // 3.5% - should come from backend settings
+        const tax_amount = subtotal * taxRate;
+        
+        // Shipping fee (can be from settings API or address-based calculation later)
+        const shipping_fee = deliveryInfo.deliveryType === 'pickup' ? 0 : 2.00; // Should come from backend
+        
+        // Discount (from promo code if applied)
+        const discount_amount = appliedPromo 
+          ? (appliedPromo.type === 'percentage' 
+              ? subtotal * appliedPromo.discount 
+              : appliedPromo.discount)
+          : 0;
+
+        // Calculate total
+        const total_amount = subtotal + tax_amount + shipping_fee - discount_amount;
+
+        setCheckoutSummary({
+          subtotal: subtotal,
+          tax_amount: tax_amount,
+          shipping_fee: shipping_fee,
+          discount_amount: discount_amount,
+          total_amount: total_amount
+        });
+      } else {
+        setCheckoutDataError(itemsResponse.message || 'Failed to load cart items');
+      }
+    } catch (error) {
+      console.error('Error loading checkout data:', error);
+      setCheckoutDataError('Failed to load checkout data. Please try again.');
+    } finally {
+      setLoadingCheckoutData(false);
+    }
+  };
+
+  // Reload checkout data when delivery type changes (shipping fee might change)
+  useEffect(() => {
+    if (checkoutSummary.subtotal > 0) {
+      const shipping_fee = deliveryInfo.deliveryType === 'pickup' ? 0 : 2.00;
+      const total_amount = checkoutSummary.subtotal + checkoutSummary.tax_amount + shipping_fee - checkoutSummary.discount_amount;
+      
+      setCheckoutSummary(prev => ({
+        ...prev,
+        shipping_fee: shipping_fee,
+        total_amount: total_amount
+      }));
+    }
+  }, [deliveryInfo.deliveryType]);
+
+  // Load user addresses
+  const loadUserAddresses = async () => {
+    setLoadingAddresses(true);
+    setAddressesError(null);
+    try {
+      const response = await UsersService.getUserAddresses({ only_active: true });
+      if (response.success) {
+        const userAddresses = response.data || [];
+        setAddresses(userAddresses);
+        
+        // Auto-select default address if available
+        const defaultAddress = userAddresses.find(addr => addr.is_default);
+        if (defaultAddress) {
+          setSelectedAddressId(defaultAddress.address_id);
+          setDeliveryInfo(prev => ({
+            ...prev,
+            addressId: defaultAddress.address_id,
+            deliveryAddress: formatAddress(defaultAddress)
+          }));
+        } else if (userAddresses.length > 0) {
+          // Select first address if no default
+          setSelectedAddressId(userAddresses[0].address_id);
+          setDeliveryInfo(prev => ({
+            ...prev,
+            addressId: userAddresses[0].address_id,
+            deliveryAddress: formatAddress(userAddresses[0])
+          }));
+        }
+      } else {
+        setAddressesError(response.message || 'Failed to load addresses');
+      }
+    } catch (error) {
+      setAddressesError('Failed to load addresses. Please try again.');
+      console.error('Error loading addresses:', error);
+    } finally {
+      setLoadingAddresses(false);
+    }
+  };
+
+  // Format address for display
+  const formatAddress = (address) => {
+    if (!address) return '';
+    const parts = [
+      address.street_address,
+      address.city,
+      address.state,
+      address.postal_code,
+      address.country
+    ].filter(Boolean);
+    return parts.join(', ');
+  };
+
+  // Use checkout summary from API (or fallback to cart context)
+  const subtotal = checkoutSummary.subtotal || cartTotalPrice || 0;
+  const tax = checkoutSummary.tax_amount || 0;
+  const deliveryFee = checkoutSummary.shipping_fee || 0;
+  const discountAmount = checkoutSummary.discount_amount || 0;
+  const total = checkoutSummary.total_amount || (subtotal + tax + deliveryFee - discountAmount);
+  
+  // Use checkout items (or fallback to cart items)
+  const items = checkoutItems.length > 0 ? checkoutItems : cartItems;
 
   const handleDeliveryInfoChange = (field, value) => {
     setDeliveryInfo(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleAddressSelect = (addressId) => {
+    setSelectedAddressId(addressId);
+    const selectedAddress = addresses.find(addr => addr.address_id === addressId);
+    if (selectedAddress) {
+      setDeliveryInfo(prev => ({
+        ...prev,
+        addressId: addressId,
+        deliveryAddress: formatAddress(selectedAddress)
+      }));
+    }
   };
 
   const handlePaymentInfoChange = (field, value) => {
@@ -51,7 +272,7 @@ const Checkout = () => {
   };
 
   const handlePromoCodeApply = () => {
-    // Mock promo code validation
+    // Mock promo code validation (can be replaced with API call later)
     const validPromoCodes = {
       'SAVE10': { discount: 0.10, type: 'percentage' },
       'FREESHIP': { discount: deliveryFee, type: 'fixed' },
@@ -59,44 +280,179 @@ const Checkout = () => {
     };
 
     if (validPromoCodes[promoCode.toUpperCase()]) {
-      setAppliedPromo(validPromoCodes[promoCode.toUpperCase()]);
+      const promo = validPromoCodes[promoCode.toUpperCase()];
+      setAppliedPromo(promo);
+      
+      // Update discount in summary
+      const discount_amount = promo.type === 'percentage' 
+        ? subtotal * promo.discount 
+        : promo.discount;
+      
+      setCheckoutSummary(prev => ({
+        ...prev,
+        discount_amount: discount_amount,
+        total_amount: prev.subtotal + prev.tax_amount + prev.shipping_fee - discount_amount
+      }));
     } else {
       alert('Invalid promo code');
     }
   };
 
-  const handlePlaceOrder = () => {
+  // Transform cart items to order items format
+  // CartItemWithDetails/CartItemWithPricing has: product_id, variant_id, quantity, base_price, sale_price, discounted_sale_price, total_price
+  // CartItemWithDetails also has: product_name, variant_name
+  // OrderItemCreate requires: product_id, variant_id, product_name, variant_name (optional), quantity, unit_price, total_price
+  const transformCartItemsToOrderItems = () => {
+    return items.map(item => {
+      // Determine unit price - use discounted_sale_price if available, otherwise sale_price, otherwise base_price
+      // This is the price per unit that was used for calculations
+      const unit_price = item.discounted_sale_price ?? item.sale_price ?? item.base_price ?? 0;
+      
+      // Use total_price from API (already calculated with quantity and discounts)
+      // Fallback to calculated value if not provided
+      const calculated_total_price = item.total_price ?? (unit_price * (item.quantity || 1));
+      
+      // Get product name - CartItemWithDetails has it, CartItemWithPricing might not
+      const product_name = item.product_name || `Product ${item.product_id || ''}`.trim() || 'Product';
+      
+      return {
+        product_id: item.product_id || null,
+        variant_id: item.variant_id || null,
+        product_name: product_name,
+        variant_name: item.variant_name || null,
+        quantity: item.quantity || 1,
+        unit_price: unit_price,
+        total_price: calculated_total_price
+      };
+    });
+  };
+
+  // Transform delivery preferences
+  const transformDeliveryPreferences = () => {
+    if (!deliveryInfo.selectedDays || deliveryInfo.selectedDays.length === 0) {
+      return null;
+    }
+
+    // Map day names to proper format
+    const dayMap = {
+      'monday': 'Monday',
+      'tuesday': 'Tuesday',
+      'wednesday': 'Wednesday',
+      'thursday': 'Thursday',
+      'friday': 'Friday',
+      'saturday': 'Saturday',
+      'sunday': 'Sunday'
+    };
+
+    return deliveryInfo.selectedDays.map(day => ({
+      preferred_day: dayMap[day] || day.charAt(0).toUpperCase() + day.slice(1),
+      preferred_time_slot: deliveryInfo.timeSlot || 'All Day'
+    }));
+  };
+
+  // Create order
+  const handlePlaceOrder = async () => {
     if (items.length === 0) {
       alert('Your cart is empty');
       return;
     }
 
-    // Mock order placement
-    const orderData = {
-      deliveryInfo,
-      paymentInfo,
-      items,
-      subtotal,
-      deliveryFee,
-      tax,
-      total,
-      promoCode: appliedPromo,
-      orderDate: new Date().toISOString()
-    };
+    if (!isAuthenticated) {
+      alert('Please login to place an order');
+      navigate('/');
+      return;
+    }
 
-    console.log('Order placed:', orderData);
-    
-    // Generate order ID
-    const orderId = 'ORD-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    // Validate required fields
+    if (deliveryInfo.deliveryType === 'delivery' && !selectedAddressId) {
+      alert('Please select a delivery address');
+      return;
+    }
+
+    setIsCreatingOrder(true);
+    setOrderError(null);
+
+    try {
+      // Transform data to API format
+      const orderItems = transformCartItemsToOrderItems();
+      const deliveryPreferences = transformDeliveryPreferences();
+
+    const orderData = {
+        order_type: deliveryInfo.deliveryType, // 'delivery' or 'pickup'
+        delivery_address_id: deliveryInfo.deliveryType === 'delivery' ? selectedAddressId : null,
+        pickup_address_id: deliveryInfo.deliveryType === 'pickup' ? selectedAddressId : null,
+        items: orderItems,
+        subtotal: checkoutSummary.subtotal || subtotal,
+        tax_amount: checkoutSummary.tax_amount || tax,
+        shipping_fee: checkoutSummary.shipping_fee || deliveryFee,
+        discount_amount: checkoutSummary.discount_amount || discountAmount,
+        total_amount: checkoutSummary.total_amount || total,
+        payment_method_id: null, // Will be set after payment processing
+        delivery_instructions: deliveryInfo.deliveryInstruction || null,
+        estimated_delivery_time: null, // Can be calculated on backend
+        delivery_preferences: deliveryPreferences.length > 0 ? deliveryPreferences : null
+      };
+
+      console.log('Creating order with data:', orderData);
+
+      // Create order via API
+      const response = await OrdersService.createOrder(orderData);
+
+      if (response.success) {
+        const createdOrder = response.data;
+        const orderId = createdOrder.order_id || createdOrder.id;
+
+        console.log('Order created successfully:', createdOrder);
     
     // Clear cart after successful order
     clearCart();
     
-    // Redirect to order details page
+        // Redirect based on payment method
+        if (paymentInfo.paymentMethod === 'card') {
+          // Redirect to payment page with order ID
+          navigate('/payment', {
+            state: {
+              orderId: orderId,
+              orderData: createdOrder
+            }
+          });
+        } else if (paymentInfo.paymentMethod === 'cod') {
+          // For COD, redirect directly to order details
+          navigate(`/order/${orderId}`);
+        } else {
+          // Default: redirect to order details
     navigate(`/order/${orderId}`);
+        }
+      } else {
+        setOrderError(response.message || 'Failed to create order. Please try again.');
+        console.error('Order creation failed:', response);
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      setOrderError('An error occurred while creating your order. Please try again.');
+    } finally {
+      setIsCreatingOrder(false);
+    }
   };
 
-  if (items.length === 0) {
+  // Check authentication
+  if (!isAuthenticated) {
+    return (
+      <Container fluid="lg" className="checkout-container">
+        <Row>
+          <Col>
+            <Alert variant="warning" className="mt-4">
+              <Alert.Heading>Authentication Required</Alert.Heading>
+              <p>Please login to proceed with checkout.</p>
+            </Alert>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  // Check if cart is empty
+  if (items.length === 0 && !cartLoading) {
     return (
       <Container fluid="lg" className="checkout-container">
         <Row>
@@ -105,6 +461,42 @@ const Checkout = () => {
               <h2>Your cart is empty</h2>
               <p>Add some items to your cart before checkout.</p>
             </div>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  // Show loading while cart or checkout data is loading
+  if (cartLoading || loadingCheckoutData) {
+    return (
+      <Container fluid="lg" className="checkout-container">
+        <Row>
+          <Col className="text-center" style={{ minHeight: '400px', paddingTop: '100px' }}>
+            <Loader />
+            <p className="mt-3">Loading checkout data...</p>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  // Show error if checkout data failed to load
+  if (checkoutDataError && items.length === 0) {
+    return (
+      <Container fluid="lg" className="checkout-container">
+        <Row>
+          <Col>
+            <Alert variant="danger" className="mt-4">
+              <Alert.Heading>Failed to Load Checkout Data</Alert.Heading>
+              <p>{checkoutDataError}</p>
+              <button 
+                className="btn btn-primary"
+                onClick={loadCheckoutData}
+              >
+                Retry
+              </button>
+            </Alert>
           </Col>
         </Row>
       </Container>
@@ -122,12 +514,30 @@ const Checkout = () => {
         </Col>
       </Row>
 
+      {/* Error Messages */}
+      {orderError && (
+        <Row>
+          <Col>
+            <Alert variant="danger" dismissible onClose={() => setOrderError(null)}>
+              <Alert.Heading>Order Creation Failed</Alert.Heading>
+              <p>{orderError}</p>
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
       <Row className="checkout-content">
         <Col lg={7} md={12} className="mb-4 mb-lg-0">
           <div className="checkout-forms">
             <DeliveryInfo
               deliveryInfo={deliveryInfo}
               onDeliveryInfoChange={handleDeliveryInfoChange}
+              addresses={addresses}
+              selectedAddressId={selectedAddressId}
+              onAddressSelect={handleAddressSelect}
+              loadingAddresses={loadingAddresses}
+              addressesError={addressesError}
+              onReloadAddresses={loadUserAddresses}
             />
             
             <PaymentMethod
@@ -145,11 +555,13 @@ const Checkout = () => {
               deliveryFee={deliveryFee}
               tax={tax}
               total={total}
+              discountAmount={discountAmount}
               promoCode={promoCode}
               appliedPromo={appliedPromo}
               onPromoCodeChange={setPromoCode}
               onPromoCodeApply={handlePromoCodeApply}
               onPlaceOrder={handlePlaceOrder}
+              isCreatingOrder={isCreatingOrder}
             />
           </div>
         </Col>

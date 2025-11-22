@@ -8,29 +8,28 @@ const OrderSummary = ({
   deliveryFee,
   tax,
   total,
+  discountAmount = 0,
   promoCode,
   appliedPromo,
   onPromoCodeChange,
   onPromoCodeApply,
-  onPlaceOrder
+  onPlaceOrder,
+  isCreatingOrder = false
 }) => {
   const formatPrice = (price) => {
     const numPrice = Number(price) || 0;
     return `$${numPrice.toFixed(2)}`;
   };
 
-  const calculateDiscount = () => {
-    if (!appliedPromo) return 0;
-    
-    if (appliedPromo.type === 'percentage') {
-      return subtotal * appliedPromo.discount;
-    } else {
-      return appliedPromo.discount;
-    }
-  };
-
-  const discount = calculateDiscount();
-  const finalTotal = total - discount;
+  // Use discountAmount if provided, otherwise calculate from appliedPromo
+  const discount = discountAmount > 0 
+    ? discountAmount 
+    : (appliedPromo 
+        ? (appliedPromo.type === 'percentage' 
+            ? subtotal * appliedPromo.discount 
+            : appliedPromo.discount)
+        : 0);
+  const finalTotal = total;
 
   return (
     <Card className="order-summary-card">
@@ -52,13 +51,25 @@ const OrderSummary = ({
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td className="text-center">{item.quantity}</td>
-                    <td className="text-end">{formatPrice(item.currentPrice || item.price || 0)}</td>
-                  </tr>
-                ))}
+                {items.map((item, index) => {
+                  // Handle different item structures from API
+                  const itemName = item.product_name || item.name || `Product ${item.product_id || index + 1}`;
+                  const itemPrice = item.total_price || item.unit_price || item.currentPrice || item.price || item.discounted_sale_price || item.sale_price || item.base_price || 0;
+                  const itemKey = item.cart_item_id || item.id || item.product_id || index;
+                  
+                  return (
+                    <tr key={itemKey}>
+                      <td>
+                        {itemName}
+                        {item.variant_name && (
+                          <small className="text-muted d-block">{item.variant_name}</small>
+                        )}
+                      </td>
+                      <td className="text-center">{item.quantity || 1}</td>
+                      <td className="text-end">{formatPrice(itemPrice)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -127,8 +138,16 @@ const OrderSummary = ({
             size="lg"
             onClick={onPlaceOrder}
             className="place-order-btn w-100"
+            disabled={isCreatingOrder || items.length === 0}
           >
-            Place Order
+            {isCreatingOrder ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Creating Order...
+              </>
+            ) : (
+              'Place Order'
+            )}
           </Button>
           <p className="terms-text">
             By placing order, you agree to our terms and conditions.

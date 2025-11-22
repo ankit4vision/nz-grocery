@@ -154,6 +154,22 @@ export class CartService {
   }
 
   /**
+   * Get cart with details (includes product names and variant names)
+   * Returns ShoppingCartWithItems which has CartItemWithDetails (includes product_name, variant_name)
+   * 
+   * @param {number} cartId - Cart ID
+   * @returns {Promise} - Cart with detailed items response
+   */
+  static async getCartWithDetails(cartId) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.CART.GET_CART_DETAILS(cartId))
+      return formatSuccessResponse(response)
+    } catch (error) {
+      return handleApiError(error)
+    }
+  }
+
+  /**
    * Get cart summary
    * 
    * @param {number} cartId - Cart ID
@@ -161,7 +177,7 @@ export class CartService {
    */
   static async getCartSummary(cartId) {
     try {
-      const response = await apiClient.get(`/shopping-cart/${cartId}/summary`)
+      const response = await apiClient.get(API_ENDPOINTS.CART.GET_SUMMARY(cartId))
       return formatSuccessResponse(response)
     } catch (error) {
       return handleApiError(error)

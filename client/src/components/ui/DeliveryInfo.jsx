@@ -1,8 +1,18 @@
 import React from 'react';
-import { Card, Form, Row, Col } from 'react-bootstrap';
+import { Card, Form, Row, Col, Alert, Badge } from 'react-bootstrap';
+import { Loader } from '../common';
 import '../../styles/components/ui-components/delivery-info.css';
 
-const DeliveryInfo = ({ deliveryInfo, onDeliveryInfoChange }) => {
+const DeliveryInfo = ({ 
+  deliveryInfo, 
+  onDeliveryInfoChange,
+  addresses = [],
+  selectedAddressId = null,
+  onAddressSelect = null,
+  loadingAddresses = false,
+  addressesError = null,
+  onReloadAddresses = null
+}) => {
   const days = [
     { id: 'monday', label: 'Monday' },
     { id: 'tuesday', label: 'Tuesday' },
@@ -43,8 +53,8 @@ const DeliveryInfo = ({ deliveryInfo, onDeliveryInfoChange }) => {
               id="home-delivery"
               name="deliveryType"
               label="Home Delivery"
-              checked={deliveryInfo.deliveryType === 'home'}
-              onChange={() => onDeliveryInfoChange('deliveryType', 'home')}
+              checked={deliveryInfo.deliveryType === 'delivery' || deliveryInfo.deliveryType === 'home'}
+              onChange={() => onDeliveryInfoChange('deliveryType', 'delivery')}
               className="delivery-radio"
             />
             <Form.Check
@@ -58,6 +68,84 @@ const DeliveryInfo = ({ deliveryInfo, onDeliveryInfoChange }) => {
             />
           </div>
         </div>
+
+        {/* Address Selection - Only for delivery */}
+        {(deliveryInfo.deliveryType === 'delivery' || deliveryInfo.deliveryType === 'home') && (
+          <div className="form-section">
+            <h6 className="section-title">Select Delivery Address</h6>
+            {loadingAddresses ? (
+              <div className="text-center py-3">
+                <Loader />
+                <p className="mt-2 small text-muted">Loading addresses...</p>
+              </div>
+            ) : addressesError ? (
+              <Alert variant="warning" className="mb-3">
+                <Alert.Heading className="h6">Unable to Load Addresses</Alert.Heading>
+                <p className="small mb-2">{addressesError}</p>
+                {onReloadAddresses && (
+                  <button 
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={onReloadAddresses}
+                  >
+                    Retry
+                  </button>
+                )}
+              </Alert>
+            ) : addresses.length === 0 ? (
+              <Alert variant="info" className="mb-3">
+                <p className="small mb-0">No saved addresses found. Please enter your address below.</p>
+              </Alert>
+            ) : (
+              <div className="address-selection mb-3">
+                {addresses.map((address) => {
+                  const isSelected = selectedAddressId === address.address_id;
+                  const addressText = [
+                    address.street_address || address.address_line1,
+                    address.city,
+                    address.state,
+                    address.postal_code
+                  ].filter(Boolean).join(', ');
+                  
+                  return (
+                    <div
+                      key={address.address_id}
+                      className={`address-option ${isSelected ? 'selected' : ''}`}
+                      onClick={() => onAddressSelect && onAddressSelect(address.address_id)}
+                      style={{
+                        border: `2px solid ${isSelected ? '#28a745' : '#dee2e6'}`,
+                        borderRadius: '8px',
+                        padding: '12px',
+                        marginBottom: '8px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#f8f9fa' : 'white',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div className="flex-grow-1">
+                          <div className="d-flex align-items-center gap-2 mb-1">
+                            <strong>{address.address_type || 'Address'}</strong>
+                            {address.is_default && (
+                              <Badge bg="success" className="small">Default</Badge>
+                            )}
+                          </div>
+                          <p className="mb-0 small text-muted">{addressText}</p>
+                        </div>
+                        <Form.Check
+                          type="radio"
+                          name="selectedAddress"
+                          checked={isSelected}
+                          onChange={() => onAddressSelect && onAddressSelect(address.address_id)}
+                          className="ms-2"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Day Selection */}
         <div className="form-section">
@@ -148,13 +236,26 @@ const DeliveryInfo = ({ deliveryInfo, onDeliveryInfoChange }) => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="deliveryAddress">
-            <Form.Label>Delivery Address</Form.Label>
+            <Form.Label>
+              {deliveryInfo.deliveryType === 'pickup' ? 'Pickup Address' : 'Delivery Address'}
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
               value={deliveryInfo.deliveryAddress}
               onChange={(e) => onDeliveryInfoChange('deliveryAddress', e.target.value)}
+              placeholder={
+                deliveryInfo.deliveryType === 'pickup' 
+                  ? 'Enter pickup address or location'
+                  : 'Enter delivery address (or select from saved addresses above)'
+              }
+              readOnly={selectedAddressId && addresses.length > 0}
             />
+            {selectedAddressId && addresses.length > 0 && (
+              <Form.Text className="text-muted">
+                Address selected from saved addresses. Click on a different address above to change.
+              </Form.Text>
+            )}
           </Form.Group>
         </div>
       </Card.Body>
