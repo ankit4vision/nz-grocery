@@ -789,24 +789,25 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 
 ---
 
-### 7. Checkout & Payment Module 💳 ⏳ **IN PROGRESS**
+### 7. Checkout & Payment Module 💳 ✅ **COMPLETED**
 **Why Seventh**: Complete the order flow - users need to checkout and pay for orders.
 
 **APIs Integrated**:
-- `GET /shopping-cart/{cart_id}/details` - Get cart with details (includes product names) ✅ Completed
-- `GET /shopping-cart/{cart_id}/summary` - Get cart summary ✅ Completed
+- `GET /shopping-cart/{cart_id}/items/with-pricing` - Get cart items with pricing (includes variant_name, variant_image_url, total_amount) ✅ Completed
 - `GET /users/addresses` - List user addresses ✅ Completed
 - `PUT /users/addresses/{address_id}/set-default` - Set default address ✅ Completed
-- `POST /orders/` - Create new order ✅ Completed (pending backend fix for vendor_id/payment_method_id)
+- `POST /orders/` - Create new order ✅ Completed
 - `POST /product-service/stripe/payment-intents` - Create payment intent ✅ Completed
 - `GET /product-service/stripe/payment-intents/{id}` - Get payment intent ✅ Completed
 - `POST /product-service/stripe/payment-intents/{id}/confirm` - Confirm payment intent ✅ Completed
 
 **Files Updated/Created**:
-- `client/src/pages/Checkout.jsx` ✅ Updated (API integration, order creation)
+- `client/src/pages/Checkout.jsx` ✅ Updated (API integration, order creation, simplified totals)
 - `client/src/components/ui/DeliveryInfo.jsx` ✅ Updated (address selection from API)
-- `client/src/components/ui/OrderSummary.jsx` ✅ Updated (API data display)
-- `client/src/services/api/cart.js` ✅ Updated (getCartWithDetails method)
+- `client/src/components/ui/OrderSummary.jsx` ✅ Updated (variant_name as primary, images, simplified pricing)
+- `client/src/services/api/cart.js` ✅ Updated (removed getCartSummary, using items-with-pricing only)
+- `client/src/context/CartContext.jsx` ✅ Updated (removed summary API usage, using items-with-pricing for totals)
+- `client/src/components/ui/CartSidebar.jsx` ✅ Updated (variant_image_url support)
 - `client/src/services/api/stripe.js` ✅ Created (Stripe payment service)
 - `client/src/components/stripe/StripeProvider.jsx` ✅ Created (Stripe Elements provider)
 - `client/src/components/ui/PaymentForm.jsx` ✅ Created (Stripe payment form)
@@ -815,47 +816,68 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - `client/src/pages/Payment.css` ✅ Created
 - `client/src/pages/PaymentSuccess.css` ✅ Created
 - `client/src/styles/components/ui-components/payment-form.css` ✅ Created
-- `client/src/utils/constants.js` ✅ Updated (Stripe endpoints)
+- `client/src/styles/components/ui-components/order-summary.css` ✅ Updated (item image and layout styles)
+- `client/src/utils/constants.js` ✅ Updated (Stripe endpoints, removed cart summary endpoint)
 - `client/src/App.jsx` ✅ Updated (payment routes)
-- `client/env.example` ✅ Updated (Stripe publishable key)
+- `client/.env.local` ✅ Updated (Stripe publishable key: VITE_STRIPE_PUBLISHABLE_KEY)
 
 **Features Implemented**:
-- ✅ Load cart items with product names and variant names from API
-- ✅ Load cart summary (subtotal, tax, shipping, discount, total) from API
+- ✅ Load cart items with variant_name, variant_image_url, and total_amount from API
+- ✅ Simplified pricing: Use total_amount as both subtotal and total (no separate tax/shipping)
 - ✅ Load user addresses from API
 - ✅ Select and set default address
-- ✅ Transform cart items to order items format
+- ✅ Transform cart items to order items format (includes variant_name, variant_image_url)
 - ✅ Transform delivery preferences to API format
 - ✅ Create order via API with all required fields
 - ✅ Handle order creation errors and loading states
 - ✅ Redirect to payment page for card payments
 - ✅ Redirect to order details for COD payments
-- ✅ Create Stripe payment intent with order_id
-- ✅ Display Stripe payment form with Elements
-- ✅ Process payment with Stripe
+- ✅ Create Stripe payment intent with order_id automatically on payment page load
+- ✅ Display Stripe payment form with Elements (PaymentElement component)
+- ✅ Process payment with Stripe (confirmPayment)
 - ✅ Show payment success page with order details
 - ✅ Clear cart after successful order creation
 - ✅ Loading states during API calls
 - ✅ Error handling with user-friendly messages
-- ✅ Order items correctly populated with product/variant names
-- ✅ Tax and shipping calculated on frontend (awaiting backend API)
+- ✅ Order items table shows variant_name as primary name with variant_image_url
+- ✅ Product name shown as secondary text (if different from variant_name)
+- ✅ Simplified order summary (Subtotal, Discount if any, Total only - no tax/shipping)
 
 **Key Implementation Details**:
-- Uses `getCartWithDetails` endpoint to get product names (CartItemWithDetails schema)
-- Falls back to `getCartItemsWithPricing` if details endpoint fails
-- Order items transformation handles both CartItemWithDetails and CartItemWithPricing schemas
-- Payment intent created automatically when payment page loads
-- Stripe Elements integrated with PaymentElement component
-- Payment success page loads order details from API
-- All payment processing handled securely by Stripe
-- Frontend calculates tax (3.5%) and shipping ($2.00 delivery, $0 pickup) until backend APIs available
-- Order creation includes vendor_id: 0 and payment_method_id: 0 (pending backend fix)
+- **Cart API Changes**: Removed dependency on `/shopping-cart/{cart_id}/summary` endpoint
+- **Single Source of Truth**: All cart totals now come from `GET /shopping-cart/{cart_id}/items/with-pricing` response
+- **Response Structure**: API now returns `variant_name` and `variant_image_url` in cart items
+- **Pricing Logic**: Uses `total_amount` from API response as both subtotal and total (backend handles all calculations)
+- **Order Summary UI**: 
+  - Variant name displayed as primary text
+  - Variant image displayed in table
+  - Product name shown as secondary text (only if different from variant name)
+  - Simplified pricing breakdown (Subtotal → Discount → Total)
+- **Stripe Integration**:
+  - Payment intent created automatically when `/payment` page loads
+  - Uses `VITE_STRIPE_PUBLISHABLE_KEY` from environment variables
+  - Stripe Elements renders PaymentElement for secure card input
+  - Payment confirmation handled via `stripe.confirmPayment()`
+  - Success redirects to `/payment-success` with order details
+- **Order Creation Flow**:
+  1. User fills checkout form (delivery info, payment method)
+  2. Click "Place Order" → Creates order via `POST /orders/`
+  3. For card payments → Redirects to `/payment` with orderId
+  4. Payment page auto-creates Stripe payment intent
+  5. User enters card details → Stripe confirms payment
+  6. Redirects to `/payment-success` → Shows order confirmation
+  7. Cart is cleared after successful order creation
+- **Post-Payment Status Update**: 
+  - Backend must update order status via `PUT /admin/orders/{order_id}/status` after Stripe confirms payment
+  - This should be handled server-side (via webhook or order service), not from customer client
+  - Customer client only confirms payment with Stripe; backend handles order status updates
 
-**Pending Backend Fix**:
-- Backend needs to accept `vendor_id` and `payment_method_id` in order creation request body
-- Current error: "Unconsumed column names: payment_method_id, vendor_id"
+**Environment Setup**:
+- Required environment variable: `VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...` in `.env.local`
+- Must restart dev server after adding/updating environment variables
+- Stripe publishable key is used to initialize Stripe.js in StripeProvider
 
-**Time Taken**: In Progress (awaiting backend fix)
+**Time Taken**: Completed
 
 ---
 
@@ -1011,17 +1033,23 @@ export default moduleService
   - Optimized API Calls
   - Product Name/Variant Name Display
   - Correct Price Display
+- Checkout & Payment Module (Priority 7) ✅
+  - Load cart items with variant_name and variant_image_url
+  - Simplified pricing (total_amount as subtotal/total)
+  - Order creation with all required fields
+  - Stripe payment intent creation
+  - Stripe Elements payment form integration
+  - Payment confirmation and success flow
+  - Order summary with variant images and names
+  - Cart cleared after successful order
+  - Complete checkout → payment → success flow
 
-📋 **In Progress**:
-- Checkout & Payment Module ⏳
-  - Order creation API integration (pending backend fix)
-  - Stripe payment integration (ready, needs testing)
-  - Payment success flow (ready, needs testing)
+📋 **Completed Modules**: All core modules integrated ✅
 
-📋 **Next Up** (After Backend Fix):
-- Test complete checkout → payment → success flow
+📋 **Future Enhancements**:
 - Order Details Page Enhancement
 - Additional payment methods (if needed)
+- Real-time order status updates
 
 ---
 
@@ -1369,8 +1397,7 @@ For each module integration:
 - `GET /shopping-cart/user/{user_id}/active` - Get active cart ✅
 - `POST /shopping-cart/` - Create cart ✅
 - `POST /shopping-cart/items/` - Add item to cart ✅
-- `GET /shopping-cart/{cart_id}/items/with-pricing` - Get cart items with pricing ✅
-- `GET /shopping-cart/{cart_id}/summary` - Get cart summary (item count and total amount) ✅
+- `GET /shopping-cart/{cart_id}/items/with-pricing` - Get cart items with pricing (includes variant_name, variant_image_url, total_amount) ✅
 - `PUT /shopping-cart/items/{cart_item_id}` - Update cart item ✅
 - `DELETE /shopping-cart/items/{cart_item_id}` - Remove cart item ✅
 
@@ -1412,16 +1439,20 @@ For each module integration:
 - ✅ Authentication Module Completed
 - ✅ Products & Categories Module Completed
 - ✅ Product Reviews Module Completed
-- ✅ Shopping Cart Module Completed
+- ✅ Shopping Cart Module Completed (updated to use items-with-pricing only, removed summary endpoint)
 - ✅ User Profile & Addresses Module Completed
 - ✅ Orders Module Completed (Listing & Details)
 - ✅ Wishlist Module Completed
-- ⏳ Checkout & Payment Module In Progress (pending backend fix)
+- ✅ Checkout & Payment Module Completed
 
 **Current Status**: 
-- Frontend integration complete for Checkout & Payment module
-- Awaiting backend fix for `vendor_id` and `payment_method_id` in order creation
-- Stripe payment integration ready for testing once order creation works
+- ✅ All core modules fully integrated and tested
+- ✅ Complete checkout → payment → success flow working
+- ✅ Stripe payment integration complete with Elements
+- ✅ Cart API updated to use items-with-pricing endpoint (includes variant_name, variant_image_url)
+- ✅ Simplified pricing model (total_amount as subtotal/total, no separate tax/shipping)
+- ✅ Order summary displays variant images and names
+- ⚠️ Backend must handle order status updates after Stripe payment confirmation (via webhook or order service)
 
-**Next Step**: Test complete order flow after backend fix
+**Integration Complete**: All customer portal modules are now fully integrated with backend APIs
 

@@ -108,7 +108,15 @@ const CartSidebar = ({
   // We might need to fetch product details or use placeholder
   const getItemImage = (item) => {
     // Try various possible image fields
-    return item.image_url || item.image || item.variant_image || item.product_image || null;
+    return (
+      item.variant_image_url ||
+      item.image_url ||
+      item.product_image_url ||
+      item.image ||
+      item.variant_image ||
+      item.product_image ||
+      null
+    );
   };
 
   // Get unit price for item (price per unit)

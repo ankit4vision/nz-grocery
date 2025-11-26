@@ -26,7 +26,6 @@ const CART_ACTIONS = {
   SET_ERROR: 'SET_ERROR',
   SET_CART_ID: 'SET_CART_ID',
   SET_ITEMS: 'SET_ITEMS',
-  SET_SUMMARY: 'SET_SUMMARY', // Update totals from summary endpoint
   ADD_ITEM: 'ADD_ITEM',
   REMOVE_ITEM: 'REMOVE_ITEM',
   UPDATE_ITEM_QUANTITY: 'UPDATE_ITEM_QUANTITY',
@@ -76,24 +75,6 @@ const cartReducer = (state, action) => {
         itemCount,
         totalItems,
         totalPrice,
-        isLoading: false,
-        error: null,
-        lastUpdated: new Date().toISOString(),
-      };
-
-    case CART_ACTIONS.SET_SUMMARY:
-      // Update only totals from summary (faster than fetching all items)
-      // Handle different possible field names from API
-      const summaryData = action.payload;
-      const summaryItemCount = summaryData.item_count || summaryData.items_count || state.itemCount || 0;
-      const summaryTotalItems = summaryData.total_items || summaryData.totalItems || 0;
-      const summaryTotalAmount = summaryData.total_amount || summaryData.totalAmount || summaryData.total || 0;
-      
-      return {
-        ...state,
-        itemCount: summaryItemCount,
-        totalItems: summaryTotalItems,
-        totalPrice: summaryTotalAmount,
         isLoading: false,
         error: null,
         lastUpdated: new Date().toISOString(),
@@ -336,12 +317,8 @@ export const CartProvider = ({ children }) => {
           // Update full items list with new item
           dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: itemsResponse.data });
         } else {
-          console.warn('Failed to refresh cart items after add, but item was added successfully');
-          // Fallback: try summary endpoint to at least update totals
-          const summaryResponse = await CartService.getCartSummary(cartId);
-          if (summaryResponse.success && summaryResponse.data) {
-            dispatch({ type: CART_ACTIONS.SET_SUMMARY, payload: summaryResponse.data });
-          }
+          console.warn('Failed to refresh cart items after add, reloading cart as fallback');
+          await loadCart();
         }
 
         return { success: true, message: 'Item added to cart' };
@@ -396,24 +373,14 @@ export const CartProvider = ({ children }) => {
         if (itemsResponse.success && itemsResponse.data) {
           // Update full items list
           dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: itemsResponse.data });
+        } else if (
+          itemsResponse.status === 404 ||
+          (itemsResponse.data && itemsResponse.data.items && itemsResponse.data.items.length === 0)
+        ) {
+          dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: { items: [], total_items: 0, total_amount: 0, item_count: 0 } });
         } else {
-          // If no items, clear cart
-          if (itemsResponse.status === 404 || (itemsResponse.data && itemsResponse.data.items && itemsResponse.data.items.length === 0)) {
-            dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: { items: [], total_items: 0, total_amount: 0, item_count: 0 } });
-          } else {
-            // Fallback: try summary endpoint
-            const summaryResponse = await CartService.getCartSummary(state.cartId);
-            if (summaryResponse.success && summaryResponse.data) {
-              dispatch({ type: CART_ACTIONS.SET_SUMMARY, payload: summaryResponse.data });
-              // If total is 0, clear items
-              if (summaryResponse.data.total_items === 0) {
-                dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: { items: [], total_items: 0, total_amount: 0, item_count: 0 } });
-              }
-            } else {
-              // Last resort: full cart reload
-              await loadCart();
-            }
-          }
+          // Last resort: full cart reload
+          await loadCart();
         }
 
         return { success: true, message: 'Item removed from cart' };
@@ -468,14 +435,8 @@ export const CartProvider = ({ children }) => {
           // Update full items list with new quantities
           dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: itemsResponse.data });
         } else {
-          // Fallback: try summary endpoint
-          const summaryResponse = await CartService.getCartSummary(state.cartId);
-          if (summaryResponse.success && summaryResponse.data) {
-            dispatch({ type: CART_ACTIONS.SET_SUMMARY, payload: summaryResponse.data });
-          } else {
-            // Last resort: full cart reload
-            await loadCart();
-          }
+          // Fallback: full cart reload
+          await loadCart();
         }
 
         return { success: true, message: 'Item quantity updated' };
@@ -529,10 +490,10 @@ export const CartProvider = ({ children }) => {
         // Fetch full items with pricing
         await loadCart();
       } else {
-        // Just update totals using summary (faster)
-        const summaryResponse = await CartService.getCartSummary(state.cartId);
-        if (summaryResponse.success && summaryResponse.data) {
-          dispatch({ type: CART_ACTIONS.SET_SUMMARY, payload: summaryResponse.data });
+        // Update totals using latest items with pricing
+        const itemsResponse = await CartService.getCartItemsWithPricing(state.cartId);
+        if (itemsResponse.success && itemsResponse.data) {
+          dispatch({ type: CART_ACTIONS.SET_ITEMS, payload: itemsResponse.data });
         }
       }
     },

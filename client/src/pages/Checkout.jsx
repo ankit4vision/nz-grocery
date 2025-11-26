@@ -18,8 +18,6 @@ const Checkout = () => {
   const [checkoutItems, setCheckoutItems] = useState([]);
   const [checkoutSummary, setCheckoutSummary] = useState({
     subtotal: 0,
-    tax_amount: 0,
-    shipping_fee: 0,
     discount_amount: 0,
     total_amount: 0
   });
@@ -103,60 +101,24 @@ const Checkout = () => {
     setCheckoutDataError(null);
 
     try {
-      // Load cart with details (includes product_name and variant_name) and cart summary in parallel
-      // Using getCartWithDetails instead of getCartItemsWithPricing to get product/variant names
-      const [cartDetailsResponse, summaryResponse] = await Promise.all([
-        CartService.getCartWithDetails(cartId),
-        CartService.getCartSummary(cartId)
-      ]);
-
-      // Fallback to getCartItemsWithPricing if getCartWithDetails fails
-      let itemsResponse = cartDetailsResponse;
-      if (!cartDetailsResponse.success) {
-        console.warn('Failed to get cart details, falling back to cart items with pricing');
-        itemsResponse = await CartService.getCartItemsWithPricing(cartId);
-      }
+      // Load cart items with pricing (includes product and variant metadata now)
+      const itemsResponse = await CartService.getCartItemsWithPricing(cartId);
 
       if (itemsResponse.success && itemsResponse.data) {
         const cartData = itemsResponse.data;
-        // Handle both ShoppingCartWithItems (has items array) and CartItemsWithPricingResponse (has items array)
         const cartItems = cartData.items || [];
         setCheckoutItems(cartItems);
-        
-        // Calculate subtotal from items
-        // Use total_price from each item (already calculated by backend with discounts)
-        const subtotal = cartItems.reduce((sum, item) => {
-          return sum + (item.total_price || 0);
-        }, 0) || cartData.total_amount || 0;
 
-        // Get summary data
-        const summaryData = summaryResponse.success ? summaryResponse.data : {};
-        
-        // For now, calculate tax and shipping on frontend
-        // TODO: Replace with backend API call if available
-        // Tax calculation (can be from settings API later)
-        const taxRate = 0.035; // 3.5% - should come from backend settings
-        const tax_amount = subtotal * taxRate;
-        
-        // Shipping fee (can be from settings API or address-based calculation later)
-        const shipping_fee = deliveryInfo.deliveryType === 'pickup' ? 0 : 2.00; // Should come from backend
-        
-        // Discount (from promo code if applied)
-        const discount_amount = appliedPromo 
-          ? (appliedPromo.type === 'percentage' 
-              ? subtotal * appliedPromo.discount 
-              : appliedPromo.discount)
-          : 0;
-
-        // Calculate total
-        const total_amount = subtotal + tax_amount + shipping_fee - discount_amount;
+        // Backend now returns total_amount as part of this response.
+        // We use that value for both subtotal and total since there are no extra fees.
+        const totalAmountFromApi = Number(cartData.total_amount ?? 0);
+        const fallbackSubtotal = cartItems.reduce((sum, item) => sum + (item.total_price || 0), 0);
+        const subtotal = totalAmountFromApi || fallbackSubtotal;
 
         setCheckoutSummary({
-          subtotal: subtotal,
-          tax_amount: tax_amount,
-          shipping_fee: shipping_fee,
-          discount_amount: discount_amount,
-          total_amount: total_amount
+          subtotal,
+          discount_amount: cartData.discount_amount || 0,
+          total_amount: subtotal
         });
       } else {
         setCheckoutDataError(itemsResponse.message || 'Failed to load cart items');
@@ -168,20 +130,6 @@ const Checkout = () => {
       setLoadingCheckoutData(false);
     }
   };
-
-  // Reload checkout data when delivery type changes (shipping fee might change)
-  useEffect(() => {
-    if (checkoutSummary.subtotal > 0) {
-      const shipping_fee = deliveryInfo.deliveryType === 'pickup' ? 0 : 2.00;
-      const total_amount = checkoutSummary.subtotal + checkoutSummary.tax_amount + shipping_fee - checkoutSummary.discount_amount;
-      
-      setCheckoutSummary(prev => ({
-        ...prev,
-        shipping_fee: shipping_fee,
-        total_amount: total_amount
-      }));
-    }
-  }, [deliveryInfo.deliveryType]);
 
   // Load user addresses
   const loadUserAddresses = async () => {
@@ -237,10 +185,8 @@ const Checkout = () => {
 
   // Use checkout summary from API (or fallback to cart context)
   const subtotal = checkoutSummary.subtotal || cartTotalPrice || 0;
-  const tax = checkoutSummary.tax_amount || 0;
-  const deliveryFee = checkoutSummary.shipping_fee || 0;
   const discountAmount = checkoutSummary.discount_amount || 0;
-  const total = checkoutSummary.total_amount || (subtotal + tax + deliveryFee - discountAmount);
+  const total = checkoutSummary.total_amount || Math.max(0, subtotal - discountAmount);
   
   // Use checkout items (or fallback to cart items)
   const items = checkoutItems.length > 0 ? checkoutItems : cartItems;
@@ -275,7 +221,6 @@ const Checkout = () => {
     // Mock promo code validation (can be replaced with API call later)
     const validPromoCodes = {
       'SAVE10': { discount: 0.10, type: 'percentage' },
-      'FREESHIP': { discount: deliveryFee, type: 'fixed' },
       'WELCOME20': { discount: 0.20, type: 'percentage' }
     };
 
@@ -291,7 +236,7 @@ const Checkout = () => {
       setCheckoutSummary(prev => ({
         ...prev,
         discount_amount: discount_amount,
-        total_amount: prev.subtotal + prev.tax_amount + prev.shipping_fee - discount_amount
+        total_amount: Math.max(0, (prev.subtotal || subtotal) - discount_amount)
       }));
     } else {
       alert('Invalid promo code');
@@ -384,8 +329,8 @@ const Checkout = () => {
         pickup_address_id: deliveryInfo.deliveryType === 'pickup' ? selectedAddressId : null,
         items: orderItems,
         subtotal: checkoutSummary.subtotal || subtotal,
-        tax_amount: checkoutSummary.tax_amount || tax,
-        shipping_fee: checkoutSummary.shipping_fee || deliveryFee,
+        tax_amount: 0,
+        shipping_fee: 0,
         discount_amount: checkoutSummary.discount_amount || discountAmount,
         total_amount: checkoutSummary.total_amount || total,
         payment_method_id: 0, // Default payment method ID
@@ -553,8 +498,6 @@ const Checkout = () => {
             <OrderSummary
               items={items}
               subtotal={subtotal}
-              deliveryFee={deliveryFee}
-              tax={tax}
               total={total}
               discountAmount={discountAmount}
               promoCode={promoCode}

@@ -170,21 +170,6 @@ export class CartService {
   }
 
   /**
-   * Get cart summary
-   * 
-   * @param {number} cartId - Cart ID
-   * @returns {Promise} - Cart summary response
-   */
-  static async getCartSummary(cartId) {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.CART.GET_SUMMARY(cartId))
-      return formatSuccessResponse(response)
-    } catch (error) {
-      return handleApiError(error)
-    }
-  }
-
-  /**
    * Clear cart (delete all items)
    * This is done by deleting each item individually
    * 

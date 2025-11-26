@@ -253,7 +253,6 @@ export const API_ENDPOINTS = {
     ADD_ITEM: '/shopping-cart/items/',
     GET_ITEMS_WITH_PRICING: (cartId) => `/shopping-cart/${cartId}/items/with-pricing`,
     GET_CART_DETAILS: (cartId) => `/shopping-cart/${cartId}/details`,
-    GET_SUMMARY: (cartId) => `/shopping-cart/${cartId}/summary`,
     UPDATE_ITEM: (itemId) => `/shopping-cart/items/${itemId}`,
     REMOVE_ITEM: (itemId) => `/shopping-cart/items/${itemId}`,
   },

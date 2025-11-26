@@ -1,12 +1,10 @@
 import React from 'react';
-import { Card, Button, Form, ListGroup } from 'react-bootstrap';
+import { Card, Button, Form } from 'react-bootstrap';
 import '../../styles/components/ui-components/order-summary.css';
 
 const OrderSummary = ({
   items,
   subtotal,
-  deliveryFee,
-  tax,
   total,
   discountAmount = 0,
   promoCode,
@@ -21,15 +19,9 @@ const OrderSummary = ({
     return `$${numPrice.toFixed(2)}`;
   };
 
-  // Use discountAmount if provided, otherwise calculate from appliedPromo
-  const discount = discountAmount > 0 
-    ? discountAmount 
-    : (appliedPromo 
-        ? (appliedPromo.type === 'percentage' 
-            ? subtotal * appliedPromo.discount 
-            : appliedPromo.discount)
-        : 0);
-  const finalTotal = total;
+  const discount = Number(discountAmount) || 0;
+  const finalTotal = Number(total) || 0;
+  const displaySubtotal = Number(subtotal) || 0;
 
   return (
     <Card className="order-summary-card">
@@ -52,18 +44,37 @@ const OrderSummary = ({
               </thead>
               <tbody>
                 {items.map((item, index) => {
-                  // Handle different item structures from API
-                  const itemName = item.product_name || item.name || `Product ${item.product_id || index + 1}`;
+                  const primaryName = item.variant_name || item.product_name || item.name || `Product ${item.product_id || index + 1}`;
+                  const secondaryName = item.product_name && item.product_name !== primaryName ? item.product_name : null;
                   const itemPrice = item.total_price || item.unit_price || item.currentPrice || item.price || item.discounted_sale_price || item.sale_price || item.base_price || 0;
                   const itemKey = item.cart_item_id || item.id || item.product_id || index;
-                  
+                  const itemImage =
+                    item.variant_image_url ||
+                    item.image_url ||
+                    item.product_image_url ||
+                    item.image ||
+                    item.variant_image ||
+                    item.product_image ||
+                    null;
+
                   return (
                     <tr key={itemKey}>
                       <td>
-                        {itemName}
-                        {item.variant_name && (
-                          <small className="text-muted d-block">{item.variant_name}</small>
-                        )}
+                        <div className="order-summary-item">
+                          <div className="order-summary-item-image">
+                            {itemImage ? (
+                              <img src={itemImage} alt={primaryName} />
+                            ) : (
+                              <div className="order-summary-item-placeholder">🛒</div>
+                            )}
+                          </div>
+                          <div className="order-summary-item-details">
+                            <div className="order-summary-item-name">{primaryName}</div>
+                            {secondaryName && (
+                              <div className="order-summary-item-subtitle text-muted">{secondaryName}</div>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td className="text-center">{item.quantity || 1}</td>
                       <td className="text-end">{formatPrice(itemPrice)}</td>
@@ -79,17 +90,7 @@ const OrderSummary = ({
         <div className="price-breakdown">
           <div className="price-row">
             <span>Subtotal:</span>
-            <span>{formatPrice(subtotal)}</span>
-          </div>
-          
-          <div className="price-row">
-            <span>Delivery Fee:</span>
-            <span>{formatPrice(deliveryFee)}</span>
-          </div>
-          
-          <div className="price-row">
-            <span>Tax:</span>
-            <span>{formatPrice(tax)}</span>
+            <span>{formatPrice(displaySubtotal)}</span>
           </div>
 
           {discount > 0 && (
