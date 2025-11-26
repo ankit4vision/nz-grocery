@@ -5606,6 +5606,11 @@
         "summary": "Filter Product Variants Endpoint",
         "description": "Filter product variants based on criteria with pagination:\n\n**Filter Criteria:**\n- product_name: Partial match on product name (case-insensitive)\n- category_id: Exact match on category ID\n- attribute_id: Products that have this attribute assigned\n\n**Pagination:**\n- page: Page number (default: 1)\n- page_size: Items per page (default: 10, max: 100)\n\n**Response includes:**\n- items: List of matching variants with detailed information\n- total_count: Total number of matching records\n- page: Current page number\n- page_size: Number of items per page\n- total_pages: Total number of pages\n- has_next: Whether there's a next page\n- has_previous: Whether there's a previous page\n\n**Variant details include:**\nproduct_name, product_id, variant_name, variant_id, sku, category_id, \ncategory_name, stock_quantity, low_stock_quantity, created_date, \nupdated_date, is_active, weight",
         "operationId": "filter_product_variants_endpoint_product_service_products_variants_filter_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "product_name",
@@ -10134,6 +10139,39 @@
             ],
             "title": "Variant Id"
           },
+          "variant_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Name"
+          },
+          "variant_image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Image Url"
+          },
+          "category_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Name"
+          },
           "quantity": {
             "type": "integer",
             "title": "Quantity"
@@ -14217,6 +14255,11 @@
               }
             ],
             "title": "Weight"
+          },
+          "is_wishlist": {
+            "type": "boolean",
+            "title": "Is Wishlist",
+            "default": false
           }
         },
         "type": "object",
@@ -16086,6 +16129,17 @@
               }
             ],
             "title": "Is Active"
+          },
+          "variant_image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant Image Url"
           },
           "added_at": {
             "anyOf": [
