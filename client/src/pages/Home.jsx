@@ -115,16 +115,16 @@ const Home = () => {
         />
       </section>
 
-      {/* Price Section */}
-          <PriceSection
+      {/* Price Section - Hidden for now */}
+      {/* <PriceSection
             title="Half Price Special"
             products={priceSectionData}
             className="home-price-section"
             onViewAllClick={() => console.log('View all half price specials clicked')}
-          />
+          /> */}
 
       {/* Section Divider */}
-      <div className="section-divider"></div>
+      {/* <div className="section-divider"></div> */}
 
       {/* Featured Products Section */}
       {loading ? (

@@ -62,7 +62,7 @@ const BrowseSidebar = ({ show, onHide }) => {
     },
     ...categories
   ];
-  const popularCards = popularCardsData;
+  // const popularCards = popularCardsData; // Hidden for now
 
   return (
     <div className="sidebar-container">
@@ -79,8 +79,8 @@ const BrowseSidebar = ({ show, onHide }) => {
         </Offcanvas.Header>
         
         <Offcanvas.Body className="sidebar-body">
-        {/* Popular & Suggested Section */}
-        <div className="popular-section">
+        {/* Popular & Suggested Section - Hidden for now */}
+        {/* <div className="popular-section">
           <h6 className="section-title">Popular & Suggested</h6>
           <div className="popular-cards">
             {popularCards.map((card, index) => (
@@ -93,7 +93,7 @@ const BrowseSidebar = ({ show, onHide }) => {
               </Card>
             ))}
           </div>
-        </div>
+        </div> */}
 
                 {/* Shop by Category Section */}
                 <div className="category-section">
