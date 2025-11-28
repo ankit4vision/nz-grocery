@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Container, Row, Col, Form, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
 import {
   Breadcrumb,
@@ -8,7 +8,6 @@ import {
   LoadMore
 } from '../components';
 import { useCartContext, useUserContext, useAuthModal } from '../context';
-import { filterOptionsData } from '../data/mockData';
 import ProductsService from '../services/api/products';
 import CategoriesService from '../services/api/categories';
 import './Products.css';
@@ -25,7 +24,6 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('relevance');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState(null);
 
@@ -205,24 +203,7 @@ const Products = () => {
     };
   }, [selectedCategory, categories, pagination]);
 
-  // Sort products
-  const sortedProducts = useMemo(() => {
-    const sorted = [...products];
-    switch (sortBy) {
-      case 'price-low':
-        return sorted.sort((a, b) => parseFloat(a.currentPrice) - parseFloat(b.currentPrice));
-      case 'price-high':
-        return sorted.sort((a, b) => parseFloat(b.currentPrice) - parseFloat(a.currentPrice));
-      case 'rating':
-        return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      case 'name':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
-      case 'newest':
-        return sorted.sort((a, b) => b.id - a.id);
-      default:
-        return sorted;
-    }
-  }, [products, sortBy]);
+  // Products are displayed as received from API (no client-side sorting)
 
   // Get breadcrumb data based on selected category
   const breadcrumbItems = useMemo(() => {
@@ -256,12 +237,6 @@ const Products = () => {
     setCurrentPage(1); // Reset to first page when category changes
   };
 
-  // Handle sort changes
-  const handleSortChange = (newSortBy) => {
-    setSortBy(newSortBy);
-    // Note: Sorting is done client-side for now
-    // In the future, this could be moved to server-side
-  };
 
   // Handle load more
   const handleLoadMore = () => {
@@ -340,26 +315,12 @@ const Products = () => {
       {/* Divider */}
       <div className="section-divider"></div>
 
-           {/* 3rd Row: Category Title and Sort */}
+           {/* 3rd Row: Category Title */}
            <section className="products-title-sort-section">
              <Container>
                <Row className="align-items-center">
-                 <Col md={8}>
+                 <Col>
                    <h2 className="selected-category-title">{selectedCategoryData.name}</h2>
-                 </Col>
-                 <Col md={4} className="text-md-end">
-                   <Form.Select 
-                     value={sortBy} 
-                     onChange={(e) => handleSortChange(e.target.value)}
-                     className="products-sort-select"
-                     size="sm"
-                   >
-                     {filterOptionsData.sortBy?.map(option => (
-                       <option key={option.value} value={option.value}>
-                         {option.label}
-                       </option>
-                     ))}
-                   </Form.Select>
                  </Col>
                </Row>
              </Container>
@@ -368,7 +329,7 @@ const Products = () => {
       {/* 4th Row: Product Grid */}
       <section className="products-grid-section">
         <ProductGrid
-          products={sortedProducts}
+          products={products}
           onAddToCart={handleAddToCart}
           onToggleFavorite={handleToggleFavorite}
           className="products-grid"
