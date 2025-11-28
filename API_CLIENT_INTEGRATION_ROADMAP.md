@@ -93,6 +93,35 @@
 
 ---
 
+### 2.1 Homepage Hero Banners 🎯 ✅ **COMPLETED**
+**Why now**: Marketing banners highlight seasonal campaigns and must stay in sync with the admin CMS.
+
+**APIs Integrated**:
+- `GET /banners/?is_active=true` → Client-side filters `banner_type=homepage`
+
+**Files Updated/Created**:
+- `client/src/services/api/banners.js` ✅ Created (shared banner service)
+- `client/src/pages/Home.jsx` ✅ Updated (hero slider pulls live homepage banners with graceful fallback)
+- `client/src/components/ui/HeroSlider.jsx` ✅ Updated (renders banner_title/description + CTA)
+- `client/src/styles/components/ui-elements/hero-slider.css` ✅ Updated (position-based alignment styles)
+
+**Features Implemented**:
+- ✅ Hero slider fetches active banners on mount
+- ✅ Client filtering for `banner_type === 'homepage'`
+- ✅ Dynamic alignment based on `position` (left, center, right; left default)
+- ✅ CTA button opens banner link in new tab when provided
+- ✅ Skeleton states, error handling, and fallback to mock slides
+
+**Key Implementation Details**:
+- Banner service reuses shared `apiClient`, standard error handling
+- `Home.jsx` keeps legacy mock data for fallback when API returns empty/errored
+- `HeroSlider` now renders marketing copy layer with responsive typography and animations
+- Alignment handled purely via CSS utility classes for maintainability
+
+**Time Taken**: Completed
+
+---
+
 ### 3. Product Reviews Module ⭐ ✅ **COMPLETED**
 **Why After Products**: Users need to view and submit product reviews after browsing products.
 
