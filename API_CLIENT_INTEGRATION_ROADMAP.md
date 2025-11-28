@@ -274,9 +274,9 @@ nz-grocery/
 │       │   ├── ProductDetail.jsx               # ⏳ Product detail page (TO BE UPDATED)
 │       │   ├── Checkout.jsx                    # ✅ Checkout page (API integrated)
 │       │   ├── Payment.jsx                     # ✅ Payment page (Stripe integrated)
-│       │   ├── PaymentSuccess.jsx              # ✅ Payment success page
-│       │   ├── UserDashboard.jsx               # ⏳ User dashboard (TO BE UPDATED)
-│       │   ├── OrderDetails.jsx                # ⏳ Order details page (TO BE UPDATED)
+│       │   ├── PaymentSuccess.jsx              # ✅ Payment success page (Enhanced UI)
+│       │   ├── UserDashboard.jsx               # ✅ User dashboard (API integrated)
+│       │   ├── OrderDetails.jsx                # ✅ Order details page (API integrated, Enhanced UI)
 │       │   └── About.jsx                       # About page
 │       │
 │       ├── 📁 hooks/                           # Custom React hooks
@@ -690,8 +690,15 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 **Files Updated/Created**:
 - `client/src/services/api/orders.js` ✅ Updated (all order APIs using apiClient)
 - `client/src/pages/UserDashboard.jsx` ✅ Updated (orders tab)
-- `client/src/components/ui/MyOrders.jsx` ✅ Updated (API integration, order listing, categorization)
+- `client/src/components/ui/MyOrders.jsx` ✅ Updated (API integration, order listing, categorization, enhanced UI)
+- `client/src/pages/OrderDetails.jsx` ✅ Updated (API integration, enhanced UI with status tracking, progress steps)
+- `client/src/components/ui/OrderStatus.jsx` ✅ Updated (order status badges, payment status display, progress tracking)
+- `client/src/components/ui/OrderItems.jsx` ✅ Updated (variant name display, product name as subtitle)
+- `client/src/components/ui/OrderSummaryBreakdown.jsx` ✅ Updated (enhanced UI, "Tax" instead of "GST")
 - `client/src/styles/components/ui-components/my-orders.css` ✅ Updated
+- `client/src/styles/components/ui-components/order-status.css` ✅ Updated (cancelled/refunded states)
+- `client/src/styles/components/ui-components/order-summary-breakdown.css` ✅ Updated (modern card design)
+- `client/src/pages/OrderDetails.css` ✅ Updated (enhanced order information section)
 
 **Features Implemented**:
 - ✅ List user orders with pagination
@@ -708,6 +715,13 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - ✅ Empty states
 - ✅ Order status badges
 - ✅ Order date display
+- ✅ **Order Details Page**: Full API integration with order details, items, delivery address
+- ✅ **Order Details UI**: Enhanced design with gradient headers, modern cards, progress tracking
+- ✅ **Status Handling**: Visual indicators for cancelled, refunded, ready_for_pickup statuses
+- ✅ **Progress Steps**: Dynamic progress tracking based on order status and type
+- ✅ **Order Information**: Enhanced card layout with improved typography and spacing
+- ✅ **Total Amount Section**: Modern card design with "Tax" label (instead of "GST")
+- ✅ **My Orders UI**: Enhanced display with discount amounts, delivery dates, cancellation reasons
 
 **Key Implementation Details**:
 - Orders service uses apiClient pattern with error handling
@@ -717,6 +731,12 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - Order dates formatted for display
 - All mock data dependencies removed
 - Order creation API ready (UI integration pending)
+- **Order Details Page**: Fetches order details with items, delivery address, and all order information
+- **Status Mapping**: Full support for all order statuses (pending, confirmed, processing, ready_for_pickup, out_for_delivery, delivered, cancelled, refunded)
+- **Progress Tracking**: Dynamic progress steps based on order status and type (delivery vs pickup)
+- **UI Enhancements**: Modern card designs with gradient headers, improved typography (Inter font), better spacing
+- **Variant Display**: Order items show variant_name as primary, product_name as secondary
+- **Responsive Design**: All components fully responsive with mobile optimizations
 
 **Time Taken**: Completed
 
@@ -812,9 +832,9 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - `client/src/components/stripe/StripeProvider.jsx` ✅ Created (Stripe Elements provider)
 - `client/src/components/ui/PaymentForm.jsx` ✅ Created (Stripe payment form)
 - `client/src/pages/Payment.jsx` ✅ Created (Payment processing page)
-- `client/src/pages/PaymentSuccess.jsx` ✅ Created (Payment success page)
+- `client/src/pages/PaymentSuccess.jsx` ✅ Created (Payment success page with enhanced UI)
 - `client/src/pages/Payment.css` ✅ Created
-- `client/src/pages/PaymentSuccess.css` ✅ Created
+- `client/src/pages/PaymentSuccess.css` ✅ Created (Enhanced design with gradient backgrounds, modern cards)
 - `client/src/styles/components/ui-components/payment-form.css` ✅ Created
 - `client/src/styles/components/ui-components/order-summary.css` ✅ Updated (item image and layout styles)
 - `client/src/utils/constants.js` ✅ Updated (Stripe endpoints, removed cart summary endpoint)
@@ -842,6 +862,8 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - ✅ Order items table shows variant_name as primary name with variant_image_url
 - ✅ Product name shown as secondary text (if different from variant_name)
 - ✅ Simplified order summary (Subtotal, Discount if any, Total only - no tax/shipping)
+- ✅ **Payment Success Page**: Enhanced UI with gradient backgrounds, animated success icon, modern information cards
+- ✅ **Payment Success Features**: Order information card, payment details card, support section with contact info, action buttons
 
 **Key Implementation Details**:
 - **Cart API Changes**: Removed dependency on `/shopping-cart/{cart_id}/summary` endpoint
@@ -1441,9 +1463,9 @@ For each module integration:
 - ✅ Product Reviews Module Completed
 - ✅ Shopping Cart Module Completed (updated to use items-with-pricing only, removed summary endpoint)
 - ✅ User Profile & Addresses Module Completed
-- ✅ Orders Module Completed (Listing & Details)
+- ✅ Orders Module Completed (Listing, Details, Enhanced UI)
 - ✅ Wishlist Module Completed
-- ✅ Checkout & Payment Module Completed
+- ✅ Checkout & Payment Module Completed (Enhanced UI)
 
 **Current Status**: 
 - ✅ All core modules fully integrated and tested
@@ -1452,7 +1474,21 @@ For each module integration:
 - ✅ Cart API updated to use items-with-pricing endpoint (includes variant_name, variant_image_url)
 - ✅ Simplified pricing model (total_amount as subtotal/total, no separate tax/shipping)
 - ✅ Order summary displays variant images and names
+- ✅ Order Details page fully integrated with API and enhanced UI
+- ✅ Payment Success page enhanced with modern design
+- ✅ My Orders page enhanced with better information display
+- ✅ Order status tracking with visual progress indicators
+- ✅ Support for all order statuses (cancelled, refunded, ready_for_pickup, etc.)
+- ✅ UI improvements: Modern card designs, gradient headers, improved typography
 - ⚠️ Backend must handle order status updates after Stripe payment confirmation (via webhook or order service)
 
-**Integration Complete**: All customer portal modules are now fully integrated with backend APIs
+**UI Enhancements Completed**:
+- ✅ Order Details page: Enhanced design with gradient headers, progress tracking, modern cards
+- ✅ Payment Success page: Improved layout with information cards, better typography
+- ✅ My Orders page: Enhanced display with discount amounts, delivery dates, status badges
+- ✅ Order Summary Breakdown: Modern card design with "Tax" label
+- ✅ Order Information section: Improved grid layout and typography
+- ✅ Hidden sections: "Half Price Special" from home page, "Popular & Suggested" from browse sidebar
+
+**Integration Complete**: All customer portal modules are now fully integrated with backend APIs and enhanced UI
 
