@@ -1,17 +1,18 @@
 import React from 'react';
+import { Card } from 'react-bootstrap';
 import '../../styles/components/ui-components/order-summary-breakdown.css';
 
 /**
- * OrderSummary - Component for displaying order amount breakdown
+ * OrderSummaryBreakdown - Component for displaying order amount breakdown
  * 
  * @param {number} subtotal - Subtotal amount
  * @param {number} shippingCharge - Shipping charge
- * @param {number} gst - GST/Tax amount
+ * @param {number} gst - Tax amount (legacy prop name, displayed as "Tax")
  * @param {number} discount - Discount amount
  * @param {number} total - Total amount
  * 
  * @example
- * <OrderSummary 
+ * <OrderSummaryBreakdown 
  *   subtotal={16.45}
  *   shippingCharge={2.00}
  *   gst={1.32}
@@ -19,7 +20,7 @@ import '../../styles/components/ui-components/order-summary-breakdown.css';
  *   total={19.77}
  * />
  */
-const OrderSummary = ({
+const OrderSummaryBreakdown = ({
   subtotal = 0,
   shippingCharge = 0,
   gst = 0,
@@ -30,40 +31,51 @@ const OrderSummary = ({
     return `$${Number(amount).toFixed(2)}`;
   };
 
+  const tax = gst; // Support both prop names
+
   return (
-    <div className="order-summary-breakdown">
-      <h3 className="summary-title">Total Amount</h3>
-      
-      <div className="amount-breakdown">
-        <div className="breakdown-item">
-          <span className="breakdown-label">Sub Total</span>
-          <span className="breakdown-value">{formatCurrency(subtotal)}</span>
-        </div>
-        
-        <div className="breakdown-item">
-          <span className="breakdown-label">Shipping Charge</span>
-          <span className="breakdown-value">{formatCurrency(shippingCharge)}</span>
-        </div>
-        
-        <div className="breakdown-item">
-          <span className="breakdown-label">GST</span>
-          <span className="breakdown-value">{formatCurrency(gst)}</span>
-        </div>
-        
-        {discount > 0 && (
-          <div className="breakdown-item discount">
-            <span className="breakdown-label">Discount</span>
-            <span className="breakdown-value discount-value">-{formatCurrency(discount)}</span>
+    <Card className="order-summary-breakdown-card">
+      <Card.Header className="breakdown-header">
+        <h3 className="breakdown-title">Total Amount</h3>
+      </Card.Header>
+      <Card.Body className="breakdown-body">
+        <div className="amount-breakdown">
+          <div className="breakdown-row">
+            <span className="breakdown-label">Subtotal</span>
+            <span className="breakdown-value">{formatCurrency(subtotal)}</span>
           </div>
-        )}
-        
-        <div className="breakdown-item total">
-          <span className="breakdown-label">Total</span>
-          <span className="breakdown-value total-value">{formatCurrency(total)}</span>
+          
+          {shippingCharge > 0 && (
+            <div className="breakdown-row">
+              <span className="breakdown-label">Shipping Charge</span>
+              <span className="breakdown-value">{formatCurrency(shippingCharge)}</span>
+            </div>
+          )}
+          
+          {tax > 0 && (
+            <div className="breakdown-row">
+              <span className="breakdown-label">Tax</span>
+              <span className="breakdown-value">{formatCurrency(tax)}</span>
+            </div>
+          )}
+          
+          {discount > 0 && (
+            <div className="breakdown-row breakdown-row-discount">
+              <span className="breakdown-label">Discount</span>
+              <span className="breakdown-value breakdown-value-discount">-{formatCurrency(discount)}</span>
+            </div>
+          )}
+          
+          <div className="breakdown-divider"></div>
+          
+          <div className="breakdown-row breakdown-row-total">
+            <span className="breakdown-label breakdown-label-total">Total</span>
+            <span className="breakdown-value breakdown-value-total">{formatCurrency(total)}</span>
+          </div>
         </div>
-      </div>
-    </div>
+      </Card.Body>
+    </Card>
   );
 };
 
-export default OrderSummary;
+export default OrderSummaryBreakdown;

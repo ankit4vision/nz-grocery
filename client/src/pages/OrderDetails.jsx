@@ -158,27 +158,34 @@ const OrderDetails = () => {
       );
     }
 
+    // Handle cancelled and refunded statuses
+    if (orderStatus === 'cancelled') {
+      return steps.map((step, index) => ({
+        ...step,
+        status: index === 0 ? 'completed' : 'cancelled',
+        description: index === 0 ? step.description : 'Order was cancelled'
+      }));
+    }
+
+    if (orderStatus === 'refunded') {
+      return steps.map((step, index) => ({
+        ...step,
+        status: index === 0 ? 'completed' : 'refunded',
+        description: index === 0 ? step.description : 'Order was refunded'
+      }));
+    }
+
     // Update step statuses based on order status
     const statusMap = {
       'pending': 0,
       'confirmed': 1,
       'processing': 2,
-      'ready_for_pickup': orderType === 'pickup' ? 3 : 2,
+      'ready_for_pickup': orderType === 'pickup' ? 3 : (orderType === 'delivery' ? 2 : 2),
       'out_for_delivery': 3,
-      'delivered': 4,
-      'cancelled': -1,
-      'refunded': -1
+      'delivered': 4
     };
 
     const currentStep = statusMap[orderStatus] || 0;
-
-    if (currentStep === -1) {
-      // Cancelled or refunded
-      return steps.map((step, index) => ({
-        ...step,
-        status: index === 0 ? 'completed' : 'cancelled'
-      }));
-    }
 
     return steps.map((step, index) => {
       if (index < currentStep) {
@@ -189,6 +196,30 @@ const OrderDetails = () => {
         return { ...step, status: 'pending' };
       }
     });
+  };
+
+  // Get order status display info
+  const getOrderStatusInfo = (orderStatus) => {
+    switch (orderStatus) {
+      case 'pending':
+        return { text: 'Pending', variant: 'warning', color: 'warning' };
+      case 'confirmed':
+        return { text: 'Confirmed', variant: 'info', color: 'info' };
+      case 'processing':
+        return { text: 'Processing', variant: 'primary', color: 'primary' };
+      case 'ready_for_pickup':
+        return { text: 'Ready for Pickup', variant: 'success', color: 'success' };
+      case 'out_for_delivery':
+        return { text: 'Out for Delivery', variant: 'info', color: 'info' };
+      case 'delivered':
+        return { text: 'Delivered', variant: 'success', color: 'success' };
+      case 'cancelled':
+        return { text: 'Cancelled', variant: 'danger', color: 'danger' };
+      case 'refunded':
+        return { text: 'Refunded', variant: 'secondary', color: 'secondary' };
+      default:
+        return { text: orderStatus, variant: 'secondary', color: 'secondary' };
+    }
   };
 
   // Transform order items for OrderItems component
@@ -328,6 +359,41 @@ const OrderDetails = () => {
         </Row>
       )}
 
+      {/* Cancelled/Refunded Alert */}
+      {orderData && (orderData.order_status === 'cancelled' || orderData.order_status === 'refunded') && (
+        <Row>
+          <Col>
+            <Alert 
+              variant={orderData.order_status === 'cancelled' ? 'danger' : 'secondary'}
+              className="mb-4"
+            >
+              <Alert.Heading>
+                {orderData.order_status === 'cancelled' ? 'Order Cancelled' : 'Order Refunded'}
+              </Alert.Heading>
+              <p className="mb-0">
+                {orderData.order_status === 'cancelled' 
+                  ? 'This order has been cancelled.' + (orderData.cancellation_reason ? ` Reason: ${orderData.cancellation_reason}` : '')
+                  : 'This order has been refunded. If you paid via card, the refund will be processed to your original payment method.'}
+              </p>
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
+      {/* Ready for Pickup Alert */}
+      {orderData && orderData.order_status === 'ready_for_pickup' && orderData.order_type === 'pickup' && (
+        <Row>
+          <Col>
+            <Alert variant="success" className="mb-4">
+              <Alert.Heading>Order Ready for Pickup!</Alert.Heading>
+              <p className="mb-0">
+                Your order is ready for pickup. Please visit the store to collect your items.
+              </p>
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
       {/* Main Order Details Card */}
       <Row>
         <Col>
@@ -341,6 +407,7 @@ const OrderDetails = () => {
               paymentStatus={getPaymentStatus(orderData.payment_status)}
               orderStatus={orderData.order_status}
               progressSteps={progressSteps}
+              orderStatusInfo={getOrderStatusInfo(orderData.order_status)}
             />
 
             {/* Order Summary Section */}
@@ -356,48 +423,59 @@ const OrderDetails = () => {
               </Col>
               <Col lg={6} md={12}>
                 <Card className="order-details-info-card">
-                  <Card.Body>
-                    <h3 className="section-title">Order Information</h3>
-                  <div className="detail-item">
-                      <span className="detail-label">Order Type:</span>
-                      <span className="detail-value">
-                        {orderData.order_type === 'delivery' ? 'Delivery' : 'Pickup'}
-                      </span>
-                  </div>
-                  <div className="detail-item">
-                      <span className="detail-label">Total Items:</span>
-                      <span className="detail-value">{totalItemsCount} items</span>
-                  </div>
-                    {orderData.estimated_delivery_time && (
-                  <div className="detail-item">
-                        <span className="detail-label">Estimated Delivery:</span>
-                        <span className="detail-value">
-                          {formatDateTime(orderData.estimated_delivery_time)}
-                        </span>
-                  </div>
-                    )}
-                    {orderData.actual_delivery_time && (
-                  <div className="detail-item">
-                        <span className="detail-label">Delivered On:</span>
-                        <span className="detail-value">
-                          {formatDateTime(orderData.actual_delivery_time)}
-                        </span>
-                  </div>
-                    )}
-                    {deliveryAddress && (
-                  <div className="detail-item">
-                        <span className="detail-label">Delivery Address:</span>
-                        <span className="detail-value">{formatAddress(deliveryAddress)}</span>
-                  </div>
-                    )}
-                    {orderData.cancellation_reason && (
-                      <div className="detail-item">
-                        <span className="detail-label">Cancellation Reason:</span>
-                        <span className="detail-value text-danger">
-                          {orderData.cancellation_reason}
-                        </span>
-                </div>
-                    )}
+                  <Card.Header className="order-info-header">
+                    <h3 className="order-info-title">Order Information</h3>
+                  </Card.Header>
+                  <Card.Body className="order-info-body">
+                    <div className="order-info-grid">
+                      <div className="info-item">
+                        <div className="info-label">Order Type</div>
+                        <div className="info-value">
+                          <span className={`info-badge ${orderData.order_type === 'delivery' ? 'badge-delivery' : 'badge-pickup'}`}>
+                            {orderData.order_type === 'delivery' ? 'Delivery' : 'Pickup'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="info-item">
+                        <div className="info-label">Total Items</div>
+                        <div className="info-value">{totalItemsCount} items</div>
+                      </div>
+                      
+                      {orderData.estimated_delivery_time && (
+                        <div className="info-item">
+                          <div className="info-label">Estimated Delivery</div>
+                          <div className="info-value">{formatDateTime(orderData.estimated_delivery_time)}</div>
+                        </div>
+                      )}
+                      
+                      {orderData.actual_delivery_time && (
+                        <div className="info-item">
+                          <div className="info-label">Delivered On</div>
+                          <div className="info-value info-value-success">
+                            {formatDateTime(orderData.actual_delivery_time)}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {deliveryAddress && (
+                        <div className="info-item info-item-full">
+                          <div className="info-label">Delivery Address</div>
+                          <div className="info-value info-value-address">
+                            {formatAddress(deliveryAddress)}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {orderData.cancellation_reason && (
+                        <div className="info-item info-item-full">
+                          <div className="info-label">Cancellation Reason</div>
+                          <div className="info-value info-value-error">
+                            {orderData.cancellation_reason}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </Card.Body>
                 </Card>
               </Col>

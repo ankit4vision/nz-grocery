@@ -32,16 +32,22 @@ const OrderStatus = ({
   paymentMethod,
   paymentStatus,
   orderStatus,
-  progressSteps = []
+  progressSteps = [],
+  orderStatusInfo
 }) => {
   const getStatusBadgeVariant = (status) => {
     switch (status) {
       case 'payment-success':
+      case 'paid':
         return 'info';
       case 'payment-pending':
+      case 'pending':
         return 'warning';
       case 'payment-failed':
+      case 'failed':
         return 'danger';
+      case 'refunded':
+        return 'secondary';
       default:
         return 'secondary';
     }
@@ -50,11 +56,16 @@ const OrderStatus = ({
   const getStatusText = (status) => {
     switch (status) {
       case 'payment-success':
+      case 'paid':
         return 'Payment Success';
       case 'payment-pending':
+      case 'pending':
         return 'Payment Pending';
       case 'payment-failed':
+      case 'failed':
         return 'Payment Failed';
+      case 'refunded':
+        return 'Refunded';
       default:
         return status;
     }
@@ -63,6 +74,8 @@ const OrderStatus = ({
   const getProgressStepClass = (step, index) => {
     if (step.status === 'completed') return 'progress-step completed';
     if (step.status === 'current') return 'progress-step current';
+    if (step.status === 'cancelled') return 'progress-step cancelled';
+    if (step.status === 'refunded') return 'progress-step refunded';
     return 'progress-step pending';
   };
 
@@ -75,17 +88,34 @@ const OrderStatus = ({
 
   return (
     <div className="order-status">
-      {/* Payment Status Header */}
+      {/* Payment and Order Status Header */}
       <div className="payment-status-header">
-        <h2 className="payment-status-title">
-          Payment-status: 
-          <Badge 
-            bg={getStatusBadgeVariant(paymentStatus)} 
-            className="ms-2 payment-status-badge"
-          >
-            {getStatusText(paymentStatus)}
-          </Badge>
-        </h2>
+        <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
+          <div>
+            <h2 className="payment-status-title mb-0">
+              Payment Status: 
+              <Badge 
+                bg={getStatusBadgeVariant(paymentStatus)} 
+                className="ms-2 payment-status-badge"
+              >
+                {getStatusText(paymentStatus)}
+              </Badge>
+            </h2>
+          </div>
+          {orderStatusInfo && (
+            <div>
+              <h2 className="payment-status-title mb-0">
+                Order Status: 
+                <Badge 
+                  bg={orderStatusInfo.variant} 
+                  className="ms-2 payment-status-badge"
+                >
+                  {orderStatusInfo.text}
+                </Badge>
+              </h2>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Order Summary Cards */}

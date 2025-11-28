@@ -1,5 +1,101 @@
 /* Order Summary Breakdown Component Styles */
 
+.order-summary-breakdown-card {
+  height: 100%;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.breakdown-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  border-bottom: none;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.breakdown-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.breakdown-body {
+  padding: var(--spacing-xl);
+  background: var(--bg-primary);
+}
+
+.amount-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+}
+
+.breakdown-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.breakdown-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-align: right;
+}
+
+.breakdown-row-discount .breakdown-label {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.breakdown-value-discount {
+  color: var(--success-color);
+  font-weight: 700;
+}
+
+.breakdown-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--gray-300) 20%, var(--gray-300) 80%, transparent 100%);
+  margin: var(--spacing-sm) 0;
+}
+
+.breakdown-row-total {
+  margin-top: var(--spacing-xs);
+  padding-top: var(--spacing-md);
+  border-top: 2px solid var(--primary-color);
+}
+
+.breakdown-label-total {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.breakdown-value-total {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Legacy styles for backward compatibility */
 .order-summary-breakdown {
   background: var(--bg-secondary);
   border-radius: var(--border-radius-md);
@@ -14,12 +110,6 @@
   margin-bottom: var(--spacing-lg);
   padding-bottom: var(--spacing-sm);
   border-bottom: 2px solid var(--primary-color);
-}
-
-.amount-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
 }
 
 .breakdown-item {
@@ -41,18 +131,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.breakdown-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-secondary);
-}
-
-.breakdown-value {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-}
-
 .breakdown-item.discount .breakdown-label {
   color: var(--success-color);
 }
@@ -69,6 +147,38 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .breakdown-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .breakdown-title {
+    font-size: 1.25rem;
+  }
+  
+  .breakdown-body {
+    padding: var(--spacing-lg);
+  }
+  
+  .amount-breakdown {
+    gap: var(--spacing-sm);
+  }
+  
+  .breakdown-label {
+    font-size: 0.8rem;
+  }
+  
+  .breakdown-value {
+    font-size: 0.875rem;
+  }
+  
+  .breakdown-label-total {
+    font-size: 1rem;
+  }
+  
+  .breakdown-value-total {
+    font-size: 1.25rem;
+  }
+  
   .order-summary-breakdown {
     padding: var(--spacing-md);
   }
@@ -93,12 +203,44 @@
 }
 
 @media (max-width: 576px) {
-  .order-summary-breakdown {
-    padding: var(--spacing-sm);
+  .breakdown-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .breakdown-title {
+    font-size: 1.125rem;
+  }
+  
+  .breakdown-body {
+    padding: var(--spacing-md);
   }
   
   .amount-breakdown {
     gap: var(--spacing-xs);
+  }
+  
+  .breakdown-row {
+    padding: var(--spacing-xs) 0;
+  }
+  
+  .breakdown-label {
+    font-size: 0.75rem;
+  }
+  
+  .breakdown-value {
+    font-size: 0.8rem;
+  }
+  
+  .breakdown-label-total {
+    font-size: 0.95rem;
+  }
+  
+  .breakdown-value-total {
+    font-size: 1.125rem;
+  }
+  
+  .order-summary-breakdown {
+    padding: var(--spacing-sm);
   }
   
   .breakdown-item.total {

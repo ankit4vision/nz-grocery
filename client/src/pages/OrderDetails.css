@@ -134,9 +134,106 @@
 .order-details-info-card {
   height: 100%;
   border: 1px solid var(--gray-200);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
 }
 
+.order-info-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  border-bottom: none;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.order-info-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.order-info-body {
+  padding: var(--spacing-xl);
+  background: var(--bg-primary);
+}
+
+.order-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.info-item-full {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin-bottom: var(--spacing-xs);
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.info-value-address {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.info-value-success {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.info-value-error {
+  color: var(--danger-color);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.info-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+.badge-delivery {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.badge-pickup {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: var(--info-color);
+  border: 1px solid rgba(0, 123, 255, 0.2);
+}
+
+/* Legacy styles for backward compatibility */
 .section-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
@@ -202,6 +299,39 @@
   .order-details-info {
     padding: var(--spacing-md);
     margin-top: var(--spacing-lg);
+  }
+  
+  .order-info-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .order-info-title {
+    font-size: 1.25rem;
+  }
+  
+  .order-info-body {
+    padding: var(--spacing-lg);
+  }
+  
+  .order-info-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .info-item-full {
+    grid-column: 1;
+  }
+  
+  .info-label {
+    font-size: 0.7rem;
+  }
+  
+  .info-value {
+    font-size: 0.95rem;
+  }
+  
+  .info-value-address {
+    font-size: 0.85rem;
   }
   
   .detail-item {

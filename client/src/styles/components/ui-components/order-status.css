@@ -10,12 +10,13 @@
 }
 
 .payment-status-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   margin: 0;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .payment-status-badge {
@@ -149,6 +150,40 @@
 
 .progress-step.pending .step-title {
   color: var(--text-secondary);
+}
+
+.progress-step.cancelled .step-icon-container {
+  background-color: var(--danger-color);
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.2);
+}
+
+.progress-step.cancelled .step-title {
+  color: var(--danger-color);
+  text-decoration: line-through;
+}
+
+.progress-step.cancelled .step-description {
+  color: var(--danger-color);
+}
+
+.progress-step.refunded .step-icon-container {
+  background-color: var(--secondary-color);
+  box-shadow: 0 0 0 4px rgba(108, 117, 125, 0.2);
+}
+
+.progress-step.refunded .step-title {
+  color: var(--secondary-color);
+  text-decoration: line-through;
+}
+
+.progress-step.refunded .step-description {
+  color: var(--secondary-color);
+}
+
+.progress-step.cancelled:not(:last-child)::after,
+.progress-step.refunded:not(:last-child)::after {
+  background-color: var(--gray-300);
+  opacity: 0.5;
 }
 
 /* Step Connector */
