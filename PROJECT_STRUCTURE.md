@@ -213,6 +213,7 @@ nz-grocery/
 │   │   │   ├── UserContext.jsx      # User state management
 │   │   │   ├── ThemeContext.jsx     # Theme state management
 │   │   │   ├── AppContext.jsx       # App-wide state
+│   │   │   ├── AuthModalContext.jsx # Authentication modal state management
 │   │   │   └── index.js             # Export file
 │   │   ├── __tests__/               # Test files
 │   │   │   └── sample.test.js       # Sample test
@@ -479,8 +480,16 @@ npm update           # Update dependencies
 - **OTP Management** - OTP generation, storage, and verification for password reset
 - **Session Management** - Session creation, validation, and destruction
 
+### **Auth Modal Context (`AuthModalContext.jsx`):**
+- **Centralized Modal Management** - Global state for all authentication modals (Login, Signup, Forgot Password)
+- **Programmatic Modal Control** - Components can open/close modals via `useAuthModal()` hook
+- **Seamless User Experience** - Login modal opens automatically when unauthenticated users try to add items to cart or wishlist
+- **Modal Switching** - Easy navigation between Login, Signup, and Forgot Password modals
+- **No Page Reloads** - All modal interactions happen without page refreshes
+
 ### **Cart Functionality:**
 - **Add to Cart** - Works across all pages (Home, Products, Product Detail)
+- **Authentication Check** - Login modal opens automatically for unauthenticated users
 - **Dynamic UI** - Shows "Add to Cart" or quantity selector based on cart state
 - **Quantity Management** - Increase/decrease quantities with visual feedback
 - **Cart Sidebar** - Professional offcanvas cart panel
