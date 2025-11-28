@@ -1,9 +1,12 @@
-import React from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge, Spinner } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaShoppingCart, FaUser, FaAlignJustify } from 'react-icons/fa';
 import { useCartContext, useUserContext } from '../../context';
 import UserProfileDropdown from './UserProfileDropdown';
+import ProductsService from '../../services/api/products';
+import { useDebounce } from '../../hooks/useDebounce';
 import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/navigation/app-navbar.css';
 
@@ -19,11 +22,103 @@ const AppNavbar = ({
 }) => {
   const { itemCount, totalItems } = useCartContext();
   const { isAuthenticated, user, logout } = useUserContext();
+  const navigate = useNavigate();
+  const searchRef = useRef(null);
+  const dropdownRef = useRef(null);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   
   const navbarClasses = [
     'app-navbar',
     className
   ].filter(Boolean).join(' ');
+
+  // Search API call when debounced query changes
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!debouncedSearchQuery || debouncedSearchQuery.trim().length < 2) {
+        setSearchResults([]);
+        setShowSearchDropdown(false);
+        return;
+      }
+
+      setIsSearchLoading(true);
+      try {
+        const response = await ProductsService.getProductVariants({
+          product_name: debouncedSearchQuery.trim(),
+          page: 1,
+          page_size: 10
+        });
+
+        if (response.success && response.data && response.data.items) {
+          setSearchResults(response.data.items);
+          setShowSearchDropdown(true);
+        } else {
+          setSearchResults([]);
+          setShowSearchDropdown(false);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+        setShowSearchDropdown(false);
+      } finally {
+        setIsSearchLoading(false);
+      }
+    };
+
+    performSearch();
+  }, [debouncedSearchQuery]);
+
+  // Handle outside click to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        searchRef.current &&
+        !searchRef.current.contains(event.target)
+      ) {
+        setShowSearchDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Handle search result click
+  const handleSearchResultClick = (variant) => {
+    const productId = variant.product_id;
+    if (productId) {
+      navigate(`/product/${productId}`);
+      setSearchQuery('');
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+    }
+  };
+
+  // Handle search form submit (optional - can navigate to products page)
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setSearchResults([]);
+      setShowSearchDropdown(false);
+    }
+  };
 
   return (
     <div className="app-navbar-container">
@@ -43,13 +138,20 @@ const AppNavbar = ({
             </LinkContainer>
             
             {/* Search */}
-            <div className="app-navbar__search-section">
-              <Form className="app-navbar__search-form">
+            <div className="app-navbar__search-section" ref={searchRef}>
+              <Form className="app-navbar__search-form" onSubmit={handleSearchSubmit}>
                 <InputGroup className="app-navbar__search-group">
                   <Form.Control 
                     type="text" 
                     placeholder="Search products..." 
                     className="app-navbar__search-input"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onFocus={() => {
+                      if (searchResults.length > 0) {
+                        setShowSearchDropdown(true);
+                      }
+                    }}
                   />
                   <Button 
                     variant="outline-secondary" 
@@ -59,6 +161,56 @@ const AppNavbar = ({
                     <FaSearch className="app-navbar__search-icon" />
                   </Button>
                 </InputGroup>
+                
+                {/* Search Dropdown */}
+                {showSearchDropdown && (
+                  <div className="app-navbar__search-dropdown" ref={dropdownRef}>
+                    {isSearchLoading ? (
+                      <div className="app-navbar__search-dropdown-loading">
+                        <Spinner size="sm" className="me-2" />
+                        <span>Searching...</span>
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div className="app-navbar__search-dropdown-list">
+                        {searchResults.map((variant) => {
+                          const productName = variant.product_name || 'Product';
+                          const variantName = variant.variant_name || '';
+                          const displayName = variantName 
+                            ? `${productName} - ${variantName}` 
+                            : productName;
+                          const price = variant.discounted_sale_price || variant.sale_price || 0;
+                          const image = variant.image_url || variant.image || '/placeholder-image.jpg';
+                          
+                          return (
+                            <div
+                              key={variant.variant_id || variant.id}
+                              className="app-navbar__search-dropdown-item"
+                              onClick={() => handleSearchResultClick(variant)}
+                            >
+                              <div className="app-navbar__search-dropdown-item-image">
+                                <img src={image} alt={displayName} />
+                              </div>
+                              <div className="app-navbar__search-dropdown-item-content">
+                                <div className="app-navbar__search-dropdown-item-name">
+                                  {displayName}
+                                </div>
+                                {price > 0 && (
+                                  <div className="app-navbar__search-dropdown-item-price">
+                                    ${price.toFixed(2)}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : debouncedSearchQuery.trim().length >= 2 ? (
+                      <div className="app-navbar__search-dropdown-empty">
+                        No products found
+                      </div>
+                    ) : null}
+                  </div>
+                )}
               </Form>
             </div>
             
