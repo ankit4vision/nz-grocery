@@ -112,6 +112,52 @@
   color: var(--primary-color);
 }
 
+.order-meta-compact {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.order-type-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: rgba(0, 123, 255, 0.1);
+  color: var(--info-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.delivery-time-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-normal);
+}
+
+.ready-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.discount-text {
+  font-size: var(--font-size-xs);
+  color: var(--success-color);
+  font-weight: var(--font-weight-normal);
+}
+
+.cancellation-reason-text {
+  font-size: var(--font-size-xs);
+  color: var(--danger-color);
+  font-weight: var(--font-weight-medium);
+  font-style: italic;
+}
+
 .order-actions-compact {
   display: flex;
   flex-direction: column;

@@ -23,14 +23,21 @@ const MyOrders = () => {
     try {
       const response = await OrdersService.getOrders({ limit: 50 });
       if (response.success) {
-        // API returns array directly
+        // API returns array directly in response.data
         const ordersData = Array.isArray(response.data) ? response.data : [];
-        setOrders(ordersData);
+        // Sort orders by created_at descending (newest first)
+        const sortedOrders = ordersData.sort((a, b) => {
+          const dateA = new Date(a.created_at || 0);
+          const dateB = new Date(b.created_at || 0);
+          return dateB - dateA;
+        });
+        setOrders(sortedOrders);
       } else {
         setError(response.message || 'Failed to load orders');
       }
     } catch (err) {
-      setError('An error occurred while loading orders');
+      console.error('Error loading orders:', err);
+      setError('An error occurred while loading orders. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -218,12 +225,20 @@ const MyOrders = () => {
                         </span>
                         {order.estimated_delivery_time && (
                           <span className="delivery-time-text ms-3">
-                            Est. Delivery: {formatDateTime(order.estimated_delivery_time)}
+                            Est. {order.order_type === 'delivery' ? 'Delivery' : 'Pickup'}: {formatDateTime(order.estimated_delivery_time)}
                           </span>
+                        )}
+                        {order.order_status === 'ready_for_pickup' && order.order_type === 'pickup' && (
+                          <span className="ready-badge ms-3">✅ Ready for Pickup</span>
                         )}
                       </div>
                       <div className="order-total-compact mt-2">
-                        <strong>Total: ${order.total_amount?.toFixed(2) || '0.00'}</strong>
+                        <strong>Total: ${Number(order.total_amount || 0).toFixed(2)}</strong>
+                        {order.discount_amount > 0 && (
+                          <span className="discount-text ms-2">
+                            (Saved ${Number(order.discount_amount || 0).toFixed(2)})
+                          </span>
+                        )}
                       </div>
                     </div>
                   </Col>
@@ -264,9 +279,24 @@ const MyOrders = () => {
                         <span className="order-type-badge">
                           {order.order_type === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}
                         </span>
+                        {order.actual_delivery_time && order.order_status === 'delivered' && (
+                          <span className="delivery-time-text ms-3">
+                            Delivered: {formatDate(order.actual_delivery_time)}
+                          </span>
+                        )}
+                        {order.cancellation_reason && (
+                          <span className="cancellation-reason-text ms-3 text-danger">
+                            Reason: {order.cancellation_reason}
+                          </span>
+                        )}
                       </div>
                       <div className="order-total-compact mt-2">
-                        <strong>Total: ${order.total_amount?.toFixed(2) || '0.00'}</strong>
+                        <strong>Total: ${Number(order.total_amount || 0).toFixed(2)}</strong>
+                        {order.discount_amount > 0 && (
+                          <span className="discount-text ms-2">
+                            (Saved ${Number(order.discount_amount || 0).toFixed(2)})
+                          </span>
+                        )}
                       </div>
                     </div>
                   </Col>
