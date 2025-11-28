@@ -10,7 +10,8 @@ const FeaturedProducts = ({
   productsPerRow = 4,
   className = "",
   onAddToCart,
-  onToggleFavorite
+  onToggleFavorite,
+  showLoadMore = false // Hide Load More button by default
 }) => {
   const [sortBy, setSortBy] = useState('featured');
   const [visibleProducts, setVisibleProducts] = useState(8); // Show 8 products initially
@@ -95,14 +96,16 @@ const FeaturedProducts = ({
           })}
         </Row>
 
-        {/* Load More Button */}
-        <LoadMore
-          onLoadMore={handleLoadMore}
-          hasMore={hasMoreProducts}
-          text="Load More Products"
-          size="lg"
-          className="featured-products__load-more"
-        />
+        {/* Load More Button - Only show if showLoadMore prop is true */}
+        {showLoadMore && (
+          <LoadMore
+            onLoadMore={handleLoadMore}
+            hasMore={hasMoreProducts}
+            text="Load More Products"
+            size="lg"
+            className="featured-products__load-more"
+          />
+        )}
       </Container>
     </section>
   );

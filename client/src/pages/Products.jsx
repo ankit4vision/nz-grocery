@@ -30,7 +30,7 @@ const Products = () => {
   const [pagination, setPagination] = useState(null);
 
   // Products per page
-  const productsPerPage = 12;
+  const productsPerPage = 36;
 
   // Load categories on mount
   useEffect(() => {
