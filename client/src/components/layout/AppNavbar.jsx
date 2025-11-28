@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, NavDropdown, Button, Badge, Spinner } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, InputGroup, Button, Badge, Spinner } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaShoppingCart, FaUser, FaAlignJustify } from 'react-icons/fa';
@@ -261,58 +261,29 @@ const AppNavbar = ({
                 style={{ cursor: 'pointer' }}
               >
                 <FaAlignJustify className="me-2" />
-                Browse products
+                Browse Products
               </Nav.Link>
 
-              {/* Specials & Catalogue Dropdown */}
-              <NavDropdown title="Specials & catalogue" id="specials-dropdown" className="app-navbar__dropdown">
-                <NavDropdown.Item href="/weekly-specials">Weekly Specials</NavDropdown.Item>
-                <NavDropdown.Item href="/catalogue">Digital Catalogue</NavDropdown.Item>
-                <NavDropdown.Item href="/clearance">Clearance Items</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/seasonal-offers">Seasonal Offers</NavDropdown.Item>
-              </NavDropdown>
+              {/* Products Link */}
+              <LinkContainer to="/products">
+                <Nav.Link className="app-navbar__link">
+                  Products
+                </Nav.Link>
+              </LinkContainer>
 
-              {/* Recipes & Ideas Dropdown */}
-              <NavDropdown title="Recipes & Ideas" id="recipes-dropdown" className="app-navbar__dropdown">
-                <NavDropdown.Item href="/quick-recipes">Quick Recipes</NavDropdown.Item>
-                <NavDropdown.Item href="/healthy-meals">Healthy Meals</NavDropdown.Item>
-                <NavDropdown.Item href="/family-dinners">Family Dinners</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/cooking-tips">Cooking Tips</NavDropdown.Item>
-                <NavDropdown.Item href="/meal-planning">Meal Planning</NavDropdown.Item>
-              </NavDropdown>
+              {/* About Farm2Fridge Link */}
+              <LinkContainer to="/about">
+                <Nav.Link className="app-navbar__link">
+                  About Farm2Fridge
+                </Nav.Link>
+              </LinkContainer>
 
-              {/* Get More Value Dropdown */}
-              <NavDropdown title="Get more value" id="value-dropdown" className="app-navbar__dropdown">
-                <NavDropdown.Item href="/loyalty-program">Loyalty Program</NavDropdown.Item>
-                <NavDropdown.Item href="/bulk-buying">Bulk Buying</NavDropdown.Item>
-                <NavDropdown.Item href="/coupons">Digital Coupons</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/price-match">Price Match</NavDropdown.Item>
-                <NavDropdown.Item href="/rewards">Rewards</NavDropdown.Item>
-              </NavDropdown>
-
-              {/* Ways to Shop Dropdown */}
-              <NavDropdown title="Ways to Shop" id="shop-dropdown" className="app-navbar__dropdown">
-                <NavDropdown.Item href="/online-shopping">Online Shopping</NavDropdown.Item>
-                <NavDropdown.Item href="/click-collect">Click & Collect</NavDropdown.Item>
-                <NavDropdown.Item href="/home-delivery">Home Delivery</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/store-locator">Store Locator</NavDropdown.Item>
-                <NavDropdown.Item href="/mobile-app">Mobile App</NavDropdown.Item>
-              </NavDropdown>
-
-              {/* Help Dropdown */}
-              <NavDropdown title="Help" id="help-dropdown" className="app-navbar__dropdown">
-                <NavDropdown.Item href="/contact-us">Contact Us</NavDropdown.Item>
-                <NavDropdown.Item href="/faq">FAQ</NavDropdown.Item>
-                <NavDropdown.Item href="/live-chat">Live Chat</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/track-order">Track Order</NavDropdown.Item>
-                <NavDropdown.Item href="/returns">Returns & Exchanges</NavDropdown.Item>
-                <NavDropdown.Item href="/feedback">Feedback</NavDropdown.Item>
-              </NavDropdown>
+              {/* FAQ Link */}
+              <LinkContainer to="/faq">
+                <Nav.Link className="app-navbar__link">
+                  FAQ
+                </Nav.Link>
+              </LinkContainer>
             </Nav>
           </Navbar.Collapse>
         </Container>
