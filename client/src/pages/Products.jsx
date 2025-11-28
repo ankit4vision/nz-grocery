@@ -25,7 +25,6 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [favorites, setFavorites] = useState(new Set());
   const [sortBy, setSortBy] = useState('relevance');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState(null);
@@ -152,6 +151,7 @@ const Products = () => {
         stockQuantity: variant.stock_quantity || 0,
         sku: variant.sku,
         isActive: variant.is_active !== false,
+        isFavorite: variant.is_wishlist === true, // Use is_wishlist from API response
       };
     });
   };
@@ -281,29 +281,12 @@ const Products = () => {
     console.log(`Added ${product.name} to cart`);
   };
 
-  // Handle toggle favorite
-  const handleToggleFavorite = (productId) => {
-    if (!isAuthenticated) {
-      openLoginModal();
-      return;
-    }
-
-    setFavorites(prev => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(productId)) {
-        newFavorites.delete(productId);
-      } else {
-        newFavorites.add(productId);
-      }
-      return newFavorites;
-    });
+  // Handle toggle favorite (ProductCard manages its own state, this is just for callback)
+  const handleToggleFavorite = (productId, isFavorite) => {
+    // ProductCard handles wishlist API calls internally
+    // This callback can be used for additional UI updates if needed
+    console.log('Toggle favorite:', productId, 'Is favorite:', isFavorite);
   };
-
-  // Update products with favorite status
-  const productsWithFavorites = sortedProducts.map(product => ({
-    ...product,
-    isFavorite: favorites.has(product.id)
-  }));
 
   // Show loading state
   if (loading && products.length === 0) {
@@ -385,7 +368,7 @@ const Products = () => {
       {/* 4th Row: Product Grid */}
       <section className="products-grid-section">
         <ProductGrid
-          products={productsWithFavorites}
+          products={sortedProducts}
           onAddToCart={handleAddToCart}
           onToggleFavorite={handleToggleFavorite}
           className="products-grid"

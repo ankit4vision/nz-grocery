@@ -1551,6 +1551,7 @@ For each module integration:
 - ✅ Orders Module Completed (Listing, Details, Enhanced UI)
 - ✅ Wishlist Module Completed
 - ✅ Checkout & Payment Module Completed (Enhanced UI)
+- ✅ **Wishlist API Optimization Completed** - Using `is_wishlist` from product variants API response to eliminate individual API calls per product card
 
 **Current Status**: 
 - ✅ All core modules fully integrated and tested
@@ -1579,4 +1580,12 @@ For each module integration:
 
 **Recent Enhancements**:
 - ✅ Authentication Modal Integration: Login modal now opens automatically when unauthenticated users try to add items to cart or wishlist, providing a seamless user experience without page reloads
+- ✅ **Wishlist API Optimization (2025-01-28)**: 
+  - Backend now includes `is_wishlist: true` in `product-service/products/variants/filter` API response
+  - Frontend updated to use `is_wishlist` from API response instead of making individual API calls per product card
+  - Eliminated redundant API calls: Previously, each ProductCard made 2 API calls (getDefaultWishlist + getWishlistItems) to check wishlist status
+  - Now, wishlist status is included in the product listing API response, reducing API calls from N*2 to 0 for wishlist status checks
+  - ProductCard now uses `isFavorite` prop directly from API response when available
+  - Fallback API check still works for backward compatibility when `is_wishlist` is not provided
+  - Updated files: `Products.jsx`, `Home.jsx`, `ProductDetail.jsx`, `ProductCard.jsx`
 

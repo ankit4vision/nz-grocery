@@ -46,15 +46,24 @@ const ProductCard = ({
   const productInCart = isInCart(finalVariantId);
   const cartQuantity = getItemQuantity(finalVariantId);
 
-  // Check if item is in wishlist on mount (if authenticated and not skipped)
+  // Check if item is in wishlist on mount (only if isFavorite prop not provided from API)
   // Use ref to prevent multiple calls
   const wishlistCheckedRef = useRef(false);
   useEffect(() => {
-    // Skip check if explicitly disabled or if we're in a wishlist context
+    // If isFavorite prop is provided from API (not undefined), use it directly and skip API check
+    // This optimizes performance by avoiding individual API calls for each product card
+    if (initialIsFavorite !== undefined) {
+      setFavorite(initialIsFavorite);
+      return; // Skip API check when we have the status from API response
+    }
+    
+    // Skip check if explicitly disabled via skipWishlistCheck prop
     if (skipWishlistCheck) {
       return;
     }
     
+    // Only make API call if isFavorite prop is not provided and user is authenticated
+    // This is a fallback for cases where API doesn't provide is_wishlist field
     if (isAuthenticated && finalProductId && !wishlistCheckedRef.current) {
       wishlistCheckedRef.current = true;
       checkWishlistStatus();
@@ -63,7 +72,7 @@ const ProductCard = ({
     return () => {
       wishlistCheckedRef.current = false;
     };
-  }, [isAuthenticated, finalProductId, finalVariantId, skipWishlistCheck]);
+  }, [isAuthenticated, finalProductId, finalVariantId, skipWishlistCheck, initialIsFavorite]);
 
   const checkWishlistStatus = async () => {
     try {
@@ -117,20 +126,51 @@ const ProductCard = ({
     if (isAuthenticated) {
       setWishlistLoading(true);
       try {
-        if (favorite && wishlistItemId) {
+        if (favorite) {
           // Remove from wishlist
-          console.log('[ProductCard] Removing from wishlist:', { wishlistItemId, productId: finalProductId, variantId: finalVariantId });
-          const response = await WishlistService.removeItem(wishlistItemId);
-          if (response.success) {
-            setFavorite(false);
-            setWishlistItemId(null);
-            // Call custom handler for UI updates if provided
-            if (onToggleFavorite) {
-              onToggleFavorite(id, false);
+          // If we don't have wishlistItemId (e.g., when is_wishlist came from API), fetch it first
+          let itemIdToRemove = wishlistItemId;
+          
+          if (!itemIdToRemove) {
+            // Fetch wishlist item ID by getting default wishlist and searching for the item
+            console.log('[ProductCard] Fetching wishlist item ID for removal...');
+            const defaultWishlistResponse = await WishlistService.getDefaultWishlist();
+            if (defaultWishlistResponse.success && defaultWishlistResponse.data) {
+              const itemsResponse = await WishlistService.getWishlistItems(defaultWishlistResponse.data.wishlist_id);
+              if (itemsResponse.success && Array.isArray(itemsResponse.data)) {
+                // Find item matching product_id and variant_id
+                const item = itemsResponse.data.find(item => {
+                  const productMatch = item.product_id === finalProductId;
+                  if (item.variant_id !== null && item.variant_id !== undefined) {
+                    return productMatch && item.variant_id === finalVariantId;
+                  }
+                  return productMatch;
+                });
+                if (item) {
+                  itemIdToRemove = item.wishlist_item_id;
+                  setWishlistItemId(itemIdToRemove); // Store for future use
+                }
+              }
             }
-            console.log('[ProductCard] Successfully removed from wishlist');
+          }
+          
+          if (itemIdToRemove) {
+            console.log('[ProductCard] Removing from wishlist:', { wishlistItemId: itemIdToRemove, productId: finalProductId, variantId: finalVariantId });
+            const response = await WishlistService.removeItem(itemIdToRemove);
+            if (response.success) {
+              setFavorite(false);
+              setWishlistItemId(null);
+              // Call custom handler for UI updates if provided
+              if (onToggleFavorite) {
+                onToggleFavorite(id, false);
+              }
+              console.log('[ProductCard] Successfully removed from wishlist');
+            } else {
+              console.error('[ProductCard] Failed to remove from wishlist:', response.message);
+            }
           } else {
-            console.error('[ProductCard] Failed to remove from wishlist:', response.message);
+            console.error('[ProductCard] Cannot remove from wishlist: wishlist item ID not found');
+            setWishlistLoading(false);
           }
         } else {
           // Add to wishlist (uses default wishlist)

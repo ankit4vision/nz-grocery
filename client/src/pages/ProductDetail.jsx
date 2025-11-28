@@ -320,6 +320,7 @@ const ProductDetail = () => {
         stockQuantity: variant.stock_quantity || 0,
         sku: variant.sku,
         isActive: variant.is_active !== false,
+        isFavorite: variant.is_wishlist === true, // Use is_wishlist from API response
       };
     });
   };
