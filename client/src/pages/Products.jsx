@@ -7,7 +7,7 @@ import {
   ProductGrid,
   LoadMore
 } from '../components';
-import { useCartContext } from '../context';
+import { useCartContext, useUserContext, useAuthModal } from '../context';
 import { filterOptionsData } from '../data/mockData';
 import ProductsService from '../services/api/products';
 import CategoriesService from '../services/api/categories';
@@ -16,6 +16,8 @@ import './Products.css';
 const Products = () => {
   const [searchParams] = useSearchParams();
   const { addItem } = useCartContext();
+  const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
   
   // State management
   const [categories, setCategories] = useState([]);
@@ -270,12 +272,22 @@ const Products = () => {
 
   // Handle add to cart
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     addItem(product, 1);
     console.log(`Added ${product.name} to cart`);
   };
 
   // Handle toggle favorite
   const handleToggleFavorite = (productId) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     setFavorites(prev => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(productId)) {

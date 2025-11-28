@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { NavDropdown, Badge, Button } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaShoppingBag, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
-import { LoginModal, SignupModal, ForgotPasswordModal } from '../ui';
+import { useNavigate } from 'react-router-dom';
+import { FaUser, FaShoppingBag, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
+import { useAuthModal } from '../../context';
 import '../../styles/components/navigation/user-profile-dropdown.css';
 
 const UserProfileDropdown = ({ onLogout, isAuthenticated = false, user = null }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const { openLoginModal } = useAuthModal();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -31,44 +29,12 @@ const UserProfileDropdown = ({ onLogout, isAuthenticated = false, user = null })
             variant="primary" 
             size="sm"
             className="auth-btn"
-            onClick={() => setShowLoginModal(true)}
+            onClick={openLoginModal}
           >
             <FaSignInAlt className="me-1" />
             Login
           </Button>
         </div>
-
-        {/* Authentication Modals */}
-        <LoginModal
-          show={showLoginModal}
-          onHide={() => setShowLoginModal(false)}
-          onSwitchToSignup={() => {
-            setShowLoginModal(false);
-            setShowSignupModal(true);
-          }}
-          onSwitchToForgotPassword={() => {
-            setShowLoginModal(false);
-            setShowForgotPasswordModal(true);
-          }}
-        />
-
-        <SignupModal
-          show={showSignupModal}
-          onHide={() => setShowSignupModal(false)}
-          onSwitchToLogin={() => {
-            setShowSignupModal(false);
-            setShowLoginModal(true);
-          }}
-        />
-
-        <ForgotPasswordModal
-          show={showForgotPasswordModal}
-          onHide={() => setShowForgotPasswordModal(false)}
-          onSwitchToLogin={() => {
-            setShowForgotPasswordModal(false);
-            setShowLoginModal(true);
-          }}
-        />
       </>
     );
   }

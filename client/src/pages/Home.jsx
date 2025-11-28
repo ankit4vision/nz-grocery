@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import { HeroSlider, AdsBanner, PriceSection, FeaturedProducts } from '../components';
-import { useCartContext } from '../context';
+import { useCartContext, useUserContext, useAuthModal } from '../context';
 import { heroSlidesData, adsBannerData, priceSectionData } from '../data/mockData';
 import ProductsService from '../services/api/products';
 import BannersService from '../services/api/banners';
@@ -9,6 +9,8 @@ import './Home.css';
 
 const Home = () => {
   const { addItem } = useCartContext();
+  const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -131,11 +133,21 @@ const Home = () => {
   };
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     addItem(product, 1);
     console.log(`Added ${product.name} to cart`);
   };
 
   const handleToggleFavorite = (productId, isFavorite) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     console.log('Toggle favorite:', productId, 'Is favorite:', isFavorite);
     // TODO: Implement favorites functionality
   };

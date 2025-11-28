@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
-import { useCartContext, useUserContext } from '../context';
+import { useCartContext, useUserContext, useAuthModal } from '../context';
 import ProductsService from '../services/api/products';
 import ReviewsService from '../services/api/reviews';
 import WishlistService from '../services/api/wishlist';
@@ -19,6 +19,7 @@ const ProductDetail = () => {
   const reviewsRef = useRef(null);
   const { addItem, toggleCart } = useCartContext();
   const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
   
   const [product, setProduct] = useState(null);
   const [productMeta, setProductMeta] = useState(null);
@@ -324,6 +325,11 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = (productId, quantity = 1) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     // Use the selected variant for cart operations
     if (product && selectedVariant) {
       // Create product object with variant information for cart
@@ -389,7 +395,7 @@ const ProductDetail = () => {
 
   const handleToggleFavorite = async (productId, currentFavoriteState) => {
     if (!isAuthenticated) {
-      console.log('Please login to add items to wishlist');
+      openLoginModal();
       return;
     }
 

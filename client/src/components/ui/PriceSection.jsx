@@ -3,7 +3,7 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { CustomButton, NavigationButtons, ImageWithFallback } from '../common';
-import { useCartContext } from '../../context';
+import { useCartContext, useUserContext, useAuthModal } from '../../context';
 import '../../styles/components/ui-components/price-section.css';
 
 const PriceSection = ({ 
@@ -15,6 +15,8 @@ const PriceSection = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef(null);
   const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
+  const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
   
   const sectionClasses = [
     'price-section',
@@ -35,11 +37,21 @@ const PriceSection = ({
   const visibleProducts = products.slice(currentIndex, currentIndex + productsPerView);
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     addItem(product, 1);
     console.log(`Added ${product.name} to cart`);
   };
 
   const handleQuantityChange = (product, change) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     const currentQuantity = getItemQuantity(product.id);
     const newQuantity = Math.max(1, currentQuantity + change);
     

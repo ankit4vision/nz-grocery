@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { LayoutWrapper, ScrollToTop } from './components';
-import { CartProvider, UserProvider } from './context';
+import { CartProvider, UserProvider, AuthModalProvider } from './context';
 import { navItemsData, footerLinksData, socialLinksData } from './data/mockData';
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -19,10 +19,11 @@ function App() {
       <CartProvider>
         <Router>
           <ScrollToTop />
-          <LayoutWrapper
-            navbarProps={{ navItems: navItemsData }}
-            footerProps={{ links: footerLinksData, socialLinks: socialLinksData }}
-          >
+          <AuthModalProvider>
+            <LayoutWrapper
+              navbarProps={{ navItems: navItemsData }}
+              footerProps={{ links: footerLinksData, socialLinks: socialLinksData }}
+            >
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
@@ -34,7 +35,8 @@ function App() {
                   <Route path="/dashboard" element={<UserDashboard />} />
                   <Route path="/about" element={<About />} />
                 </Routes>
-          </LayoutWrapper>
+            </LayoutWrapper>
+          </AuthModalProvider>
         </Router>
       </CartProvider>
     </UserProvider>

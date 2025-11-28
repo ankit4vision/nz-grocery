@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Button, Badge } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight, FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { ImageWithFallback } from '../common';
-import { useCartContext } from '../../context';
+import { useCartContext, useUserContext, useAuthModal } from '../../context';
 import '../../styles/components/ui-components/similar-products.css';
 
 /**
@@ -35,6 +35,8 @@ const SimilarProducts = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [favorites, setFavorites] = useState({});
   const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
+  const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
   const productsPerView = 4; // Number of products to show at once
   const maxIndex = Math.max(0, products.length - productsPerView);
 
@@ -47,6 +49,11 @@ const SimilarProducts = ({
   };
 
   const handleToggleFavorite = (productId, isFavorite) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     setFavorites(prev => ({
       ...prev,
       [productId]: isFavorite
@@ -57,6 +64,11 @@ const SimilarProducts = ({
   };
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     addItem(product, 1);
     if (onAddToCart) {
       onAddToCart(product.id);
@@ -64,6 +76,11 @@ const SimilarProducts = ({
   };
 
   const handleQuantityChange = (product, change) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     const currentQuantity = getItemQuantity(product.id);
     const newQuantity = Math.max(1, currentQuantity + change);
     

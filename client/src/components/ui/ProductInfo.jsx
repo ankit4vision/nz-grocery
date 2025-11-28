@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Badge, Row, Col } from 'react-bootstrap';
 import { FaHeart, FaStar, FaShoppingCart } from 'react-icons/fa';
 import { CustomButton } from '../common';
-import { useCartContext } from '../../context';
+import { useCartContext, useUserContext, useAuthModal } from '../../context';
 import '../../styles/components/ui-components/product-info.css';
 
 /**
@@ -32,6 +32,8 @@ const ProductInfo = ({
   const [isFavorite, setIsFavorite] = useState(externalIsFavorite !== undefined ? externalIsFavorite : (product?.isFavorite || false));
   const [quantity, setQuantity] = useState(1);
   const { addItem, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
+  const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
 
   // Update favorite state when external prop changes
   useEffect(() => {
@@ -41,6 +43,11 @@ const ProductInfo = ({
   }, [externalIsFavorite]);
 
   const handleToggleFavorite = () => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
     if (onToggleFavorite) {
@@ -49,6 +56,11 @@ const ProductInfo = ({
   };
 
   const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     // Ensure we have both productId and variantId
     const productId = product.productId || product.product_id || product.id;
     const variantId = product.variantId || product.variant_id || product.id;
@@ -73,6 +85,11 @@ const ProductInfo = ({
   };
 
   const handleQuantityChange = async (change) => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     const variantId = product.variantId || product.variant_id || product.id;
     const currentQuantity = isInCart(variantId) ? getItemQuantity(variantId) : quantity;
     const newQuantity = Math.max(1, currentQuantity + change);

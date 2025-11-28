@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faShoppingCart, faStar, faTrash, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { ImageWithFallback } from '../common';
-import { useCartContext, useUserContext } from '../../context';
+import { useCartContext, useUserContext, useAuthModal } from '../../context';
 import WishlistService from '../../services/api/wishlist';
 import '../../styles/components/cards/product-card.css';
 
@@ -38,6 +38,7 @@ const ProductCard = ({
   const navigate = useNavigate();
   const { addItem, toggleCart, isInCart, getItemQuantity, removeItem, updateItemQuantity } = useCartContext();
   const { isAuthenticated } = useUserContext();
+  const { openLoginModal } = useAuthModal();
 
   // Check if product is already in cart (using variant ID)
   const finalVariantId = variantId || id;
@@ -99,6 +100,11 @@ const ProductCard = ({
   const handleToggleFavorite = async (e) => {
     e.stopPropagation();
     
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     // If showDeleteIcon is true, we're in wishlist context - use custom handler directly
     // (The handler in wishlist context has the item ID and handles the API call)
     if (showDeleteIcon && onToggleFavorite) {
@@ -168,18 +174,20 @@ const ProductCard = ({
       return;
     }
 
-    // If not authenticated, use custom handler if provided, or show message
+    // Fallback (shouldn't reach here due to early return) but keep safe
     if (onToggleFavorite) {
-      setFavorite(!favorite);
       onToggleFavorite(id, !favorite);
-    } else {
-      console.log('[ProductCard] Not authenticated, please login to add items to wishlist');
     }
   };
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
     
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     // Ensure we have both productId and variantId
     const finalProductId = productId || id;
     const finalVariantId = variantId || id;

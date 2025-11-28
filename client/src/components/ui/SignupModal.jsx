@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
-import { useUserContext } from '../../context';
+import { useUserContext } from '../../context/UserContext';
 import { CustomButton } from '../common';
 import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/ui-components/auth-modal.css';
