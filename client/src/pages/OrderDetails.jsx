@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button, Alert, Card } from 'react-bootstrap';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaArrowLeft, FaList } from 'react-icons/fa';
+import { FaHome, FaArrowLeft, FaExclamationTriangle } from 'react-icons/fa';
 import { OrderStatus, OrderSummaryBreakdown, OrderItems, PurchaseNote } from '../components/ui';
-import { orderDetailsData } from '../data/mockData';
+import { Loader } from '../components/common';
+import OrdersService from '../services/api/orders';
+import UsersService from '../services/api/users';
+import { useUserContext } from '../context';
 import './OrderDetails.css';
 
 const OrderDetails = () => {
   const { orderId } = useParams();
+  const { user } = useUserContext();
   const [orderData, setOrderData] = useState(null);
+  const [deliveryAddress, setDeliveryAddress] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -17,21 +23,195 @@ const OrderDetails = () => {
   const cameFromDashboard = location.state?.from === 'dashboard';
 
   useEffect(() => {
-    // Simulate API call to fetch order details
-    const fetchOrderDetails = () => {
+    if (orderId) {
+      loadOrderDetails();
+    }
+  }, [orderId]);
+
+  const loadOrderDetails = async () => {
       setLoading(true);
-      
-      // Mock API delay
-      setTimeout(() => {
-        // Find order by ID or use default
-        const order = orderDetailsData.find(order => order.id === orderId) || orderDetailsData[0];
+    setError(null);
+
+    try {
+      const response = await OrdersService.getOrderDetails(orderId);
+
+      if (response.success && response.data) {
+        const order = response.data;
         setOrderData(order);
+
+        // Load delivery address if available
+        if (order.delivery_address_id) {
+          await loadDeliveryAddress(order.delivery_address_id);
+        }
+      } else {
+        setError(response.message || 'Failed to load order details');
+      }
+    } catch (err) {
+      console.error('Error loading order details:', err);
+      setError('An error occurred while loading order details. Please try again.');
+    } finally {
         setLoading(false);
-      }, 1000);
+    }
+  };
+
+  const loadDeliveryAddress = async (addressId) => {
+    try {
+      const response = await UsersService.getAddressById(addressId);
+      if (response.success && response.data) {
+        setDeliveryAddress(response.data);
+      }
+    } catch (err) {
+      console.warn('Failed to load delivery address:', err);
+      // Don't set error - address is optional
+    }
+  };
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Format date with time
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Format address for display
+  const formatAddress = (address) => {
+    if (!address) return 'N/A';
+    const parts = [
+      address.street_address,
+      address.city,
+      address.state,
+      address.postal_code,
+      address.country
+    ].filter(Boolean);
+    return parts.join(', ') || 'N/A';
+  };
+
+  // Get payment method display name
+  const getPaymentMethodName = (order) => {
+    if (order.stripe_payment_intent_id) {
+      return 'Stripe';
+    }
+    if (order.payment_method_id === 0 || !order.payment_method_id) {
+      return 'Cash on Delivery';
+    }
+    return 'Cash on Delivery'; // Default
+  };
+
+  // Map payment status to component format
+  const getPaymentStatus = (paymentStatus) => {
+    switch (paymentStatus) {
+      case 'paid':
+        return 'payment-success';
+      case 'pending':
+        return 'payment-pending';
+      case 'failed':
+        return 'payment-failed';
+      case 'refunded':
+        return 'payment-refunded';
+      default:
+        return 'payment-pending';
+    }
+  };
+
+  // Generate progress steps based on order status
+  const getProgressSteps = (orderStatus, orderType) => {
+    const steps = [
+      { title: 'Order Placed', description: 'Your order has been received', status: 'completed' },
+      { title: 'Order Confirmed', description: 'Order confirmed and being prepared', status: 'pending' },
+      { title: 'Processing', description: 'Your order is being processed', status: 'pending' },
+    ];
+
+    if (orderType === 'delivery') {
+      steps.push(
+        { title: 'Out for Delivery', description: 'Your order is on the way', status: 'pending' },
+        { title: 'Delivered', description: 'Order delivered successfully', status: 'pending' }
+      );
+    } else {
+      steps.push(
+        { title: 'Ready for Pickup', description: 'Your order is ready for pickup', status: 'pending' },
+        { title: 'Picked Up', description: 'Order picked up successfully', status: 'pending' }
+      );
+    }
+
+    // Update step statuses based on order status
+    const statusMap = {
+      'pending': 0,
+      'confirmed': 1,
+      'processing': 2,
+      'ready_for_pickup': orderType === 'pickup' ? 3 : 2,
+      'out_for_delivery': 3,
+      'delivered': 4,
+      'cancelled': -1,
+      'refunded': -1
     };
 
-    fetchOrderDetails();
-  }, [orderId]);
+    const currentStep = statusMap[orderStatus] || 0;
+
+    if (currentStep === -1) {
+      // Cancelled or refunded
+      return steps.map((step, index) => ({
+        ...step,
+        status: index === 0 ? 'completed' : 'cancelled'
+      }));
+    }
+
+    return steps.map((step, index) => {
+      if (index < currentStep) {
+        return { ...step, status: 'completed' };
+      } else if (index === currentStep) {
+        return { ...step, status: 'current' };
+      } else {
+        return { ...step, status: 'pending' };
+      }
+    });
+  };
+
+  // Transform order items for OrderItems component
+  const transformOrderItems = (items) => {
+    if (!items || !Array.isArray(items)) return [];
+    
+    return items.map(item => ({
+      id: item.order_item_id || item.product_id,
+      name: item.variant_name || item.product_name || 'Product',
+      image: null, // Images not in API response currently
+      quantity: item.quantity || 1,
+      unit: 'piece',
+      price: item.total_price || item.unit_price || 0,
+      productName: item.product_name,
+      variantName: item.variant_name
+    }));
+  };
+
+  // Calculate total items count
+  const getTotalItemsCount = (items) => {
+    if (!items || !Array.isArray(items)) return 0;
+    return items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  };
 
   if (loading) {
     return (
@@ -39,7 +219,33 @@ const OrderDetails = () => {
         <Row>
           <Col>
             <div className="loading-message">
-              <h2>Loading order details...</h2>
+              <Loader />
+              <h2 className="mt-3">Loading order details...</h2>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  if (error && !orderData) {
+    return (
+      <Container fluid="lg" className="order-details-container">
+        <Row>
+          <Col>
+            <div className="error-message">
+              <FaExclamationTriangle size={48} className="text-danger mb-3" />
+              <h2>Error Loading Order</h2>
+              <p>{error}</p>
+              <div className="d-flex gap-2 justify-content-center">
+                <Button variant="primary" onClick={loadOrderDetails}>
+                  Try Again
+                </Button>
+                <Link to="/" className="btn btn-outline-primary">
+                  <FaHome className="me-2" />
+                  Back to Home
+                </Link>
+              </div>
             </div>
           </Col>
         </Row>
@@ -65,6 +271,10 @@ const OrderDetails = () => {
       </Container>
     );
   }
+
+  const progressSteps = getProgressSteps(orderData.order_status, orderData.order_type);
+  const transformedItems = transformOrderItems(orderData.items);
+  const totalItemsCount = getTotalItemsCount(orderData.items);
 
   return (
     <Container fluid="lg" className="order-details-container">
@@ -106,64 +316,100 @@ const OrderDetails = () => {
         </Col>
       </Row>
 
+      {/* Error Alert */}
+      {error && (
+        <Row>
+          <Col>
+            <Alert variant="warning" dismissible onClose={() => setError(null)}>
+              <Alert.Heading>Notice</Alert.Heading>
+              <p>{error}</p>
+            </Alert>
+          </Col>
+        </Row>
+      )}
+
       {/* Main Order Details Card */}
       <Row>
         <Col>
           <div className="order-details-card">
             {/* Order Status Section */}
             <OrderStatus
-              orderNumber={orderData.orderNumber}
-              orderDate={orderData.orderDate}
-              totalAmount={orderData.totalAmount}
-              paymentMethod={orderData.paymentMethod}
-              paymentStatus={orderData.paymentStatus}
-              orderStatus={orderData.orderStatus}
-              progressSteps={orderData.progressSteps}
+              orderNumber={orderData.order_number || `#${orderData.order_id}`}
+              orderDate={formatDate(orderData.created_at)}
+              totalAmount={orderData.total_amount}
+              paymentMethod={getPaymentMethodName(orderData)}
+              paymentStatus={getPaymentStatus(orderData.payment_status)}
+              orderStatus={orderData.order_status}
+              progressSteps={progressSteps}
             />
 
             {/* Order Summary Section */}
             <Row className="order-summary-section">
               <Col lg={6} md={12} className="mb-4 mb-lg-0">
                 <OrderSummaryBreakdown
-                  subtotal={orderData.subtotal}
-                  shippingCharge={orderData.shippingCharge}
-                  gst={orderData.gst}
-                  discount={orderData.discount}
-                  total={orderData.totalAmount}
+                  subtotal={orderData.subtotal || 0}
+                  shippingCharge={orderData.shipping_fee || 0}
+                  gst={orderData.tax_amount || 0}
+                  discount={orderData.discount_amount || 0}
+                  total={orderData.total_amount || 0}
                 />
               </Col>
               <Col lg={6} md={12}>
-                <div className="order-details-info">
-                  <h3 className="section-title">Order Details</h3>
+                <Card className="order-details-info-card">
+                  <Card.Body>
+                    <h3 className="section-title">Order Information</h3>
                   <div className="detail-item">
-                    <span className="detail-label">Name:</span>
-                    <span className="detail-value">{orderData.customerName}</span>
+                      <span className="detail-label">Order Type:</span>
+                      <span className="detail-value">
+                        {orderData.order_type === 'delivery' ? 'Delivery' : 'Pickup'}
+                      </span>
                   </div>
                   <div className="detail-item">
-                    <span className="detail-label">Total Item:</span>
-                    <span className="detail-value">{orderData.totalItems} items</span>
+                      <span className="detail-label">Total Items:</span>
+                      <span className="detail-value">{totalItemsCount} items</span>
                   </div>
+                    {orderData.estimated_delivery_time && (
                   <div className="detail-item">
-                    <span className="detail-label">Deliver Time:</span>
-                    <span className="detail-value">{orderData.deliveryTime}</span>
+                        <span className="detail-label">Estimated Delivery:</span>
+                        <span className="detail-value">
+                          {formatDateTime(orderData.estimated_delivery_time)}
+                        </span>
                   </div>
+                    )}
+                    {orderData.actual_delivery_time && (
                   <div className="detail-item">
-                    <span className="detail-label">Shipping Address:</span>
-                    <span className="detail-value">{orderData.shippingAddress}</span>
+                        <span className="detail-label">Delivered On:</span>
+                        <span className="detail-value">
+                          {formatDateTime(orderData.actual_delivery_time)}
+                        </span>
                   </div>
+                    )}
+                    {deliveryAddress && (
                   <div className="detail-item">
-                    <span className="detail-label">Billing Address:</span>
-                    <span className="detail-value">{orderData.billingAddress}</span>
+                        <span className="detail-label">Delivery Address:</span>
+                        <span className="detail-value">{formatAddress(deliveryAddress)}</span>
                   </div>
+                    )}
+                    {orderData.cancellation_reason && (
+                      <div className="detail-item">
+                        <span className="detail-label">Cancellation Reason:</span>
+                        <span className="detail-value text-danger">
+                          {orderData.cancellation_reason}
+                        </span>
                 </div>
+                    )}
+                  </Card.Body>
+                </Card>
               </Col>
             </Row>
 
             {/* Order Items Section */}
-            <OrderItems items={orderData.items} />
+            <OrderItems items={transformedItems} />
 
             {/* Purchase Note Section */}
-            <PurchaseNote note={orderData.purchaseNote} />
+            {orderData.delivery_instructions && (
+              <PurchaseNote note={orderData.delivery_instructions} />
+            )}
           </div>
         </Col>
       </Row>

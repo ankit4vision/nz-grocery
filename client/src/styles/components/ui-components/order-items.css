@@ -114,6 +114,13 @@
   line-height: var(--line-height-tight);
 }
 
+.item-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-normal);
+  margin-bottom: var(--spacing-xs);
+}
+
 .item-unit {
   font-size: var(--font-size-xs);
   color: var(--text-muted);

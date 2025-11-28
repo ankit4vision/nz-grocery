@@ -52,32 +52,43 @@ const OrderItems = ({ items = [] }) => {
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
-              <tr key={item.id || index} className="item-row">
-                <td className="item-cell">
-                  <div className="item-info">
-                    <div className="item-image">
-                      <ImageWithFallback
-                        src={item.image}
-                        alt={item.name}
-                        className="product-image"
-                        fallbackSrc="/placeholder.svg"
-                      />
+            {items.map((item, index) => {
+              // Use variant_name as primary, product_name as secondary
+              const primaryName = item.variantName || item.name || 'Product';
+              const secondaryName = item.productName && item.productName !== primaryName 
+                ? item.productName 
+                : null;
+              
+              return (
+                <tr key={item.id || index} className="item-row">
+                  <td className="item-cell">
+                    <div className="item-info">
+                      <div className="item-image">
+                        <ImageWithFallback
+                          src={item.image}
+                          alt={primaryName}
+                          className="product-image"
+                          fallbackSrc="/placeholder.svg"
+                        />
+                      </div>
+                      <div className="item-details">
+                        <div className="item-name">{primaryName}</div>
+                        {secondaryName && (
+                          <div className="item-subtitle text-muted">{secondaryName}</div>
+                        )}
+                        <div className="item-unit">x {item.unit || 'piece'}</div>
+                      </div>
                     </div>
-                    <div className="item-details">
-                      <div className="item-name">{item.name}</div>
-                      <div className="item-unit">x {item.unit || 'piece'}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="quantity-cell">
-                  <div className="quantity-value">{item.quantity}</div>
-                </td>
-                <td className="price-cell">
-                  <div className="price-value">{formatCurrency(item.price)}</div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="quantity-cell">
+                    <div className="quantity-value">{item.quantity}</div>
+                  </td>
+                  <td className="price-cell">
+                    <div className="price-value">{formatCurrency(item.price)}</div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </div>

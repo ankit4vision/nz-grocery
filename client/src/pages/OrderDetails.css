@@ -131,6 +131,12 @@
   height: 100%;
 }
 
+.order-details-info-card {
+  height: 100%;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
 .section-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
