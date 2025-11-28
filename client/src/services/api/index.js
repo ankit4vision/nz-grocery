@@ -9,3 +9,4 @@ export { default as ReviewsService } from './reviews';
 export { default as WishlistService } from './wishlist';
 export { default as FAQService } from './faq';
 export { default as StripeService } from './stripe';
+export { default as BannersService } from './banners';

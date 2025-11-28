@@ -61,11 +61,41 @@ const HeroSlider = ({
     setIsDragging(false);
   };
 
-  const renderSlideContent = (slide) => (
-    <div className="hero-slider__slide-content">
-      {/* Image-only slide - no content */}
-    </div>
-  );
+  const renderSlideContent = (slide) => {
+    // Determine alignment class based on position
+    const positionClass = slide.position === 'center' 
+      ? 'hero-slider__content--center' 
+      : slide.position === 'right' 
+      ? 'hero-slider__content--right' 
+      : 'hero-slider__content--left'; // Default to left
+
+    return (
+      <div className={`hero-slider__slide-content ${positionClass}`}>
+        {(slide.title || slide.description) && (
+          <div className="hero-slider__content">
+            {slide.title && (
+              <h2 className="hero-slider__title">{slide.title}</h2>
+            )}
+            {slide.description && (
+              <p className="hero-slider__description">{slide.description}</p>
+            )}
+            {slide.linkUrl && (
+              <CustomButton
+                variant="light"
+                size="lg"
+                className="hero-slider__button"
+                onClick={() => {
+                  window.open(slide.linkUrl, '_blank', 'noopener,noreferrer');
+                }}
+              >
+                Shop Now
+              </CustomButton>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderSlides = () => {
     return slides.map((slide, index) => (

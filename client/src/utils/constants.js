@@ -298,6 +298,10 @@ export const API_ENDPOINTS = {
     GET_PAYMENT_INTENT: (paymentIntentId) => `/product-service/stripe/payment-intents/${paymentIntentId}`,
     CONFIRM_PAYMENT_INTENT: (paymentIntentId) => `/product-service/stripe/payment-intents/${paymentIntentId}/confirm`,
   },
+  BANNERS: {
+    LIST: '/banners/',
+    GET_BY_ID: (bannerId) => `/banners/${bannerId}`,
+  },
 };
 
 export default {

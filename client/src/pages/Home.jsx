@@ -4,6 +4,7 @@ import { HeroSlider, AdsBanner, PriceSection, FeaturedProducts } from '../compon
 import { useCartContext } from '../context';
 import { heroSlidesData, adsBannerData, priceSectionData } from '../data/mockData';
 import ProductsService from '../services/api/products';
+import BannersService from '../services/api/banners';
 import './Home.css';
 
 const Home = () => {
@@ -11,10 +12,14 @@ const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [heroSlides, setHeroSlides] = useState(heroSlidesData);
+  const [heroLoading, setHeroLoading] = useState(true);
+  const [heroError, setHeroError] = useState(null);
 
-  // Load featured products on mount
+  // Load featured products and hero banners on mount
   useEffect(() => {
     loadFeaturedProducts();
+    loadHeroBanners();
   }, []);
 
   const loadFeaturedProducts = async () => {
@@ -34,6 +39,40 @@ const Home = () => {
       console.error('Error loading featured products:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadHeroBanners = async () => {
+    setHeroLoading(true);
+    setHeroError(null);
+    try {
+      const response = await BannersService.getBanners({
+        is_active: true,
+      });
+
+      if (response.success && Array.isArray(response.data)) {
+        // Filter banners where banner_type === "homepage"
+        const homepageBanners = response.data.filter(
+          (banner) => banner.banner_type === 'homepage'
+        );
+
+        if (homepageBanners.length > 0) {
+          const transformedSlides = transformHeroBanners(homepageBanners);
+          setHeroSlides(transformedSlides.length ? transformedSlides : heroSlidesData);
+        } else {
+          // No homepage banners found, use fallback
+          setHeroSlides(heroSlidesData);
+        }
+      } else {
+        setHeroError(response.message || 'Failed to load hero banners');
+        setHeroSlides(heroSlidesData);
+      }
+    } catch (err) {
+      console.error('Error loading hero banners:', err);
+      setHeroError('Failed to load hero banners');
+      setHeroSlides(heroSlidesData);
+    } finally {
+      setHeroLoading(false);
     }
   };
 
@@ -77,6 +116,20 @@ const Home = () => {
     });
   };
 
+  const transformHeroBanners = (banners = []) => {
+    return banners
+      .filter((banner) => banner?.image_url)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((banner) => ({
+        id: banner.banner_id,
+        image: banner.image_url,
+        title: banner.banner_title,
+        description: banner.banner_description,
+        linkUrl: banner.link_url,
+        position: banner.position || 'left', // Default to 'left' if not provided
+      }));
+  };
+
   const handleAddToCart = (product) => {
     addItem(product, 1);
     console.log(`Added ${product.name} to cart`);
@@ -92,15 +145,34 @@ const Home = () => {
       {/* Hero Slider Section */}
       <section className="home-hero-section">
         <Container>
-          <HeroSlider 
-            slides={heroSlidesData}
-            showBadge={true}
-            showControls={true}
-            showIndicators={true}
-            autoPlay={true}
-            interval={2000}
-            className="home-hero-slider"
-          />
+          {heroLoading ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading hero banners...</span>
+              </Spinner>
+            </div>
+          ) : (
+            <>
+              {heroError && (
+                <Alert variant="warning" className="mb-4">
+                  <Alert.Heading>Unable to Load Hero Banners</Alert.Heading>
+                  <p>{heroError}</p>
+                  <button onClick={loadHeroBanners} className="btn btn-outline-primary btn-sm">
+                    Try Again
+                  </button>
+                </Alert>
+              )}
+              <HeroSlider 
+                slides={heroSlides}
+                showBadge={true}
+                showControls={true}
+                showIndicators={true}
+                autoPlay={true}
+                interval={2000}
+                className="home-hero-slider"
+              />
+            </>
+          )}
         </Container>
       </section>
 
