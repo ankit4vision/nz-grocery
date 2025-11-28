@@ -139,16 +139,6 @@ const MyOrders = () => {
           >
             View Details
           </CustomButton>
-          {order.order_status === 'delivered' && (
-            <CustomButton
-              variant="primary"
-              size="sm"
-              onClick={() => handleReorder(order.order_id)}
-              className="action-btn"
-            >
-              Reorder
-            </CustomButton>
-          )}
         </div>
       );
     }
@@ -160,12 +150,6 @@ const MyOrders = () => {
 
   const handleTrackOrder = (orderId) => {
     navigate(`/order/${orderId}`, { state: { from: 'dashboard' } });
-  };
-
-  const handleReorder = (orderId) => {
-    // TODO: Implement reorder functionality
-    console.log('Reorder:', orderId);
-    navigate('/products');
   };
 
   const currentOrders = orders.filter(order => isCurrentOrder(order));
