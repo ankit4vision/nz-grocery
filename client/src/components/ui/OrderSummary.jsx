@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Form } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 import '../../styles/components/ui-components/order-summary.css';
 
 const OrderSummary = ({
@@ -7,10 +7,6 @@ const OrderSummary = ({
   subtotal,
   total,
   discountAmount = 0,
-  promoCode,
-  appliedPromo,
-  onPromoCodeChange,
-  onPromoCodeApply,
   onPlaceOrder,
   isCreatingOrder = false
 }) => {
@@ -104,32 +100,6 @@ const OrderSummary = ({
             <span><strong>Total:</strong></span>
             <span><strong>{formatPrice(finalTotal)}</strong></span>
           </div>
-        </div>
-
-        {/* Promo Code */}
-        <div className="promo-section">
-          <h6 className="section-title">Promo Code</h6>
-          <div className="promo-input-group">
-            <Form.Control
-              type="text"
-              placeholder="Enter promo code"
-              value={promoCode}
-              onChange={(e) => onPromoCodeChange(e.target.value)}
-            />
-            <Button
-              variant="success"
-              onClick={onPromoCodeApply}
-            >
-              Apply
-            </Button>
-          </div>
-          {appliedPromo && (
-            <div className="promo-applied">
-              <small className="text-success">
-                ✓ Promo code applied successfully!
-              </small>
-            </div>
-          )}
         </div>
 
         {/* Place Order Button */}

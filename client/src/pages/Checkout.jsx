@@ -48,15 +48,8 @@ const Checkout = () => {
   });
 
   const [paymentInfo, setPaymentInfo] = useState({
-    paymentMethod: 'card', // 'card', 'cod', etc.
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardholderName: ''
+    paymentMethod: 'stripe', // 'stripe', 'cod'
   });
-
-  const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState(null);
 
   // Load checkout data (cart items and summary) on mount
   useEffect(() => {
@@ -217,32 +210,6 @@ const Checkout = () => {
     }));
   };
 
-  const handlePromoCodeApply = () => {
-    // Mock promo code validation (can be replaced with API call later)
-    const validPromoCodes = {
-      'SAVE10': { discount: 0.10, type: 'percentage' },
-      'WELCOME20': { discount: 0.20, type: 'percentage' }
-    };
-
-    if (validPromoCodes[promoCode.toUpperCase()]) {
-      const promo = validPromoCodes[promoCode.toUpperCase()];
-      setAppliedPromo(promo);
-      
-      // Update discount in summary
-      const discount_amount = promo.type === 'percentage' 
-        ? subtotal * promo.discount 
-        : promo.discount;
-      
-      setCheckoutSummary(prev => ({
-        ...prev,
-        discount_amount: discount_amount,
-        total_amount: Math.max(0, (prev.subtotal || subtotal) - discount_amount)
-      }));
-    } else {
-      alert('Invalid promo code');
-    }
-  };
-
   // Transform cart items to order items format
   // CartItemWithDetails/CartItemWithPricing has: product_id, variant_id, quantity, base_price, sale_price, discounted_sale_price, total_price
   // CartItemWithDetails also has: product_name, variant_name
@@ -354,7 +321,7 @@ const Checkout = () => {
     clearCart();
     
         // Redirect based on payment method
-        if (paymentInfo.paymentMethod === 'card') {
+        if (paymentInfo.paymentMethod === 'stripe') {
           // Redirect to payment page with order ID
           navigate('/payment', {
             state: {
@@ -367,7 +334,7 @@ const Checkout = () => {
           navigate(`/order/${orderId}`);
         } else {
           // Default: redirect to order details
-    navigate(`/order/${orderId}`);
+          navigate(`/order/${orderId}`);
         }
       } else {
         setOrderError(response.message || 'Failed to create order. Please try again.');
@@ -500,10 +467,6 @@ const Checkout = () => {
               subtotal={subtotal}
               total={total}
               discountAmount={discountAmount}
-              promoCode={promoCode}
-              appliedPromo={appliedPromo}
-              onPromoCodeChange={setPromoCode}
-              onPromoCodeApply={handlePromoCodeApply}
               onPlaceOrder={handlePlaceOrder}
               isCreatingOrder={isCreatingOrder}
             />
