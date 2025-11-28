@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useCartContext, useUserContext } from '../context';
+import { usePageTitle } from '../hooks';
 import { DeliveryInfo, PaymentMethod, OrderSummary } from '../components/ui';
 import { Loader } from '../components/common';
 import OrdersService from '../services/api/orders';
@@ -10,6 +11,11 @@ import CartService from '../services/api/cart';
 import './Checkout.css';
 
 const Checkout = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'Checkout',
+    'Complete your order at Farm2Fridge. Secure checkout with multiple payment options and fast delivery.'
+  );
   const { items: cartItems, totalPrice: cartTotalPrice, totalItems, clearCart, isLoading: cartLoading, cartId } = useCartContext();
   const { user, isAuthenticated } = useUserContext();
   const navigate = useNavigate();

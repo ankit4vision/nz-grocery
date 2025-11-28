@@ -8,11 +8,17 @@ import {
   LoadMore
 } from '../components';
 import { useCartContext, useUserContext, useAuthModal } from '../context';
+import { usePageTitle } from '../hooks';
 import ProductsService from '../services/api/products';
 import CategoriesService from '../services/api/categories';
 import './Products.css';
 
 const Products = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'Shop All Products',
+    'Browse our complete range of fresh groceries, produce, meat, dairy, and pantry essentials. Find the best deals and quality products at Farm2Fridge.'
+  );
   const [searchParams] = useSearchParams();
   const { addItem } = useCartContext();
   const { isAuthenticated } = useUserContext();

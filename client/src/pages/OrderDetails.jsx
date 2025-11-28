@@ -4,6 +4,7 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaHome, FaArrowLeft, FaExclamationTriangle } from 'react-icons/fa';
 import { OrderStatus, OrderSummaryBreakdown, OrderItems, PurchaseNote } from '../components/ui';
 import { Loader } from '../components/common';
+import { usePageTitle } from '../hooks';
 import OrdersService from '../services/api/orders';
 import UsersService from '../services/api/users';
 import { useUserContext } from '../context';
@@ -21,6 +22,14 @@ const OrderDetails = () => {
   
   // Check if user came from dashboard orders
   const cameFromDashboard = location.state?.from === 'dashboard';
+
+  // Set page title dynamically based on order
+  usePageTitle(
+    orderData ? `Order #${orderData.order_number || orderId}` : 'Order Details',
+    orderData 
+      ? `Track your order #${orderData.order_number || orderId} at Farm2Fridge. View order status, items, and delivery information.`
+      : 'View your order details, track delivery status, and manage your order at Farm2Fridge.'
+  );
 
   useEffect(() => {
     if (orderId) {

@@ -4,10 +4,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { StripeProvider } from '../components/stripe/StripeProvider';
 import PaymentForm from '../components/ui/PaymentForm';
 import { Loader } from '../components/common';
+import { usePageTitle } from '../hooks';
 import StripeService from '../services/api/stripe';
 import './Payment.css';
 
 const Payment = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'Payment',
+    'Secure payment processing at Farm2Fridge. Complete your order with our safe and encrypted payment system.'
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const { orderId, orderData } = location.state || {};

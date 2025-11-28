@@ -8,9 +8,15 @@ import { MyOrders } from '../components/ui';
 import { Wishlist } from '../components/ui';
 import { HelpCenter } from '../components/ui';
 import { useUserContext } from '../context';
+import { usePageTitle } from '../hooks';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'My Account',
+    'Manage your Farm2Fridge account. Update profile, view orders, manage addresses, and track your wishlist.'
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('profile');
   const { user, isAuthenticated, isLoading, logout } = useUserContext();

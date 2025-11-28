@@ -3,6 +3,7 @@ import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ProductImageGallery, ProductInfo, SimilarProducts, CustomerReviews } from '../components';
 import { useCartContext, useUserContext, useAuthModal } from '../context';
+import { usePageTitle } from '../hooks';
 import ProductsService from '../services/api/products';
 import ReviewsService from '../services/api/reviews';
 import WishlistService from '../services/api/wishlist';
@@ -44,6 +45,14 @@ const ProductDetail = () => {
       loadProductDetails();
     }
   }, [id, variantIdFromQuery]);
+
+  // Set page title dynamically based on product
+  usePageTitle(
+    product ? (product.name || 'Product Details') : 'Product Details',
+    product 
+      ? `Buy ${product.name} at Farm2Fridge. ${product.description || 'Quality fresh groceries delivered to your door.'}`
+      : 'View product details, pricing, and reviews at Farm2Fridge.'
+  );
 
   // Check wishlist status when product/variant changes
   useEffect(() => {

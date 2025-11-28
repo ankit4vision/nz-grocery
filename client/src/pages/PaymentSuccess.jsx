@@ -3,10 +3,16 @@ import { Container, Row, Col, Card, Button, Alert, Badge } from 'react-bootstrap
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaReceipt, FaShoppingBag, FaQuestionCircle, FaEnvelope, FaPhone, FaCalendarAlt, FaBox, FaCreditCard } from 'react-icons/fa';
 import { Loader } from '../components/common';
+import { usePageTitle } from '../hooks';
 import OrdersService from '../services/api/orders';
 import './PaymentSuccess.css';
 
 const PaymentSuccess = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'Payment Successful',
+    'Your payment has been processed successfully. Thank you for shopping with Farm2Fridge!'
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const { paymentIntent, orderId, orderDetails } = location.state || {};

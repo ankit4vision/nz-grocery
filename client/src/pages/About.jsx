@@ -1,9 +1,15 @@
 import React from 'react';
 import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import { CustomButton, InfoCard } from '../components';
+import { usePageTitle } from '../hooks';
 import './About.css';
 
 const About = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'About Us',
+    'Learn about Farm2Fridge - your trusted partner for fresh groceries. Quality produce, local sourcing, and commitment to customer satisfaction.'
+  );
   return (
     <Container>
       {/* Hero Section */}

@@ -112,11 +112,16 @@
 - `client/src/components/ui/AllCategories.jsx` ✅ Updated (category images integration)
 - `client/src/components/layout/BrowseSidebar.jsx` ✅ Updated (category images integration)
 - `client/src/components/ui/ProductGrid.jsx` ✅ Updated (removed mock data dependencies)
+- `client/src/components/layout/AppNavbar.jsx` ✅ Updated (search functionality with autocomplete dropdown)
+- `client/src/styles/components/navigation/app-navbar.css` ✅ Updated (search dropdown styles)
 
 **Features Implemented**:
 - ✅ List all categories (for navigation/sidebar)
 - ✅ Filter products by category
 - ✅ Search products by name (using product_name filter)
+- ✅ **Product Search with Autocomplete**: Real-time search dropdown in navbar with debounced API calls
+- ✅ **Search Dropdown UI**: Shows up to 10 results with product images, names, and prices
+- ✅ **Direct Navigation**: Clicking search result navigates directly to product detail page
 - ✅ Product variants list with pagination
 - ✅ Product detail page with full information
 - ✅ Product images gallery (from API response)
@@ -138,6 +143,14 @@
 - Category images displayed as responsive thumbnails
 - Mock data dependencies removed from components
 - All API integrations tested and working
+- **Search Implementation**:
+  - Real-time search with 300ms debounce using `useDebounce` hook
+  - API calls: `GET /product-service/products/variants/filter?product_name={query}&page=1&page_size=10`
+  - Search dropdown shows up to 10 results with product images, names, and prices
+  - Clicking a result navigates directly to `/product/{productId}`
+  - Dropdown closes on outside click or after selection
+  - Loading indicator shown during search
+  - Empty state shown when no results found
 
 **Time Taken**: Completed
 
@@ -568,11 +581,16 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - `client/src/components/ui/AllCategories.jsx` ✅ Updated (category images integration)
 - `client/src/components/layout/BrowseSidebar.jsx` ✅ Updated (category images integration)
 - `client/src/components/ui/ProductGrid.jsx` ✅ Updated (removed mock data dependencies)
+- `client/src/components/layout/AppNavbar.jsx` ✅ Updated (search functionality with autocomplete dropdown)
+- `client/src/styles/components/navigation/app-navbar.css` ✅ Updated (search dropdown styles)
 
 **Features Implemented**:
 - ✅ List all categories (for navigation/sidebar)
 - ✅ Filter products by category
 - ✅ Search products by name (using product_name filter)
+- ✅ **Product Search with Autocomplete**: Real-time search dropdown in navbar with debounced API calls
+- ✅ **Search Dropdown UI**: Shows up to 10 results with product images, names, and prices
+- ✅ **Direct Navigation**: Clicking search result navigates directly to product detail page
 - ✅ Product variants list with pagination
 - ✅ Product detail page with full information
 - ✅ Product images gallery (from API response)
@@ -594,6 +612,14 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - Category images displayed as responsive thumbnails
 - Mock data dependencies removed from components
 - All API integrations tested and working
+- **Search Implementation**:
+  - Real-time search with 300ms debounce using `useDebounce` hook
+  - API calls: `GET /product-service/products/variants/filter?product_name={query}&page=1&page_size=10`
+  - Search dropdown shows up to 10 results with product images, names, and prices
+  - Clicking a result navigates directly to `/product/{productId}`
+  - Dropdown closes on outside click or after selection
+  - Loading indicator shown during search
+  - Empty state shown when no results found
 
 **Time Taken**: Completed
 
@@ -801,6 +827,7 @@ VITE_API_BASE_URL=http://3.106.58.15:8000
 - ✅ **Order Information**: Enhanced card layout with improved typography and spacing
 - ✅ **Total Amount Section**: Modern card design with "Tax" label (instead of "GST")
 - ✅ **My Orders UI**: Enhanced display with discount amounts, delivery dates, cancellation reasons
+- ✅ **Reorder Button Removed**: Reorder button removed from Past Orders section (only "View Details" button remains)
 
 **Key Implementation Details**:
 - Orders service uses apiClient pattern with error handling
@@ -1588,4 +1615,17 @@ For each module integration:
   - ProductCard now uses `isFavorite` prop directly from API response when available
   - Fallback API check still works for backward compatibility when `is_wishlist` is not provided
   - Updated files: `Products.jsx`, `Home.jsx`, `ProductDetail.jsx`, `ProductCard.jsx`
+- ✅ **Product Search with Autocomplete (2025-01-28)**:
+  - Real-time search dropdown in navbar with debounced API calls (300ms delay)
+  - API endpoint: `GET /product-service/products/variants/filter?product_name={query}&page=1&page_size=10`
+  - Search dropdown displays up to 10 results with product images, names, and prices
+  - Clicking a search result navigates directly to product detail page
+  - Dropdown closes on outside click or after selection
+  - Loading indicator and empty state handling
+  - Updated files: `AppNavbar.jsx`, `app-navbar.css`
+- ✅ **My Orders UI Enhancement (2025-01-28)**:
+  - Reorder button removed from Past Orders section for cleaner interface
+  - Past Orders now only show "View Details" button
+  - Current Orders still show "View Details" and "Track Order" buttons
+  - Updated file: `MyOrders.jsx`
 

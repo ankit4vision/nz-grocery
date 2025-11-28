@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Container, Spinner, Alert } from 'react-bootstrap';
 import { HeroSlider, AdsBanner, PriceSection, FeaturedProducts } from '../components';
 import { useCartContext, useUserContext, useAuthModal } from '../context';
+import { usePageTitle } from '../hooks';
 import { heroSlidesData, adsBannerData, priceSectionData } from '../data/mockData';
 import ProductsService from '../services/api/products';
 import BannersService from '../services/api/banners';
 import './Home.css';
 
 const Home = () => {
+  // Set page title and SEO
+  usePageTitle(
+    'Fresh Groceries Delivered to Your Door',
+    'Shop fresh groceries online at Farm2Fridge. Quality produce, meat, dairy, and pantry essentials delivered straight from farm to your fridge. Best prices and fast delivery across New Zealand.'
+  );
   const { addItem } = useCartContext();
   const { isAuthenticated } = useUserContext();
   const { openLoginModal } = useAuthModal();
