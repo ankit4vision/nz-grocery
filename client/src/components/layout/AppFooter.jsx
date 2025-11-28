@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import React from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
 import logoImage from '../../assets/logo/logo-transprant.png';
 import '../../styles/components/layout-elements/app-footer.css';
 
@@ -10,18 +10,10 @@ const AppFooter = ({
   socialLinks = [],
   className = ''
 }) => {
-  const [email, setEmail] = useState('');
-  
   const footerClasses = [
     'app-footer',
     className
   ].filter(Boolean).join(' ');
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    console.log('Newsletter subscription:', email);
-    setEmail('');
-  };
 
   return (
     <footer className={footerClasses}>
@@ -96,32 +88,6 @@ const AppFooter = ({
               <li><a href="/careers" className="app-footer__link">Careers</a></li>
               <li><a href="/press" className="app-footer__link">Press</a></li>
             </ul>
-          </Col>
-
-          {/* Stay Updated Section */}
-          <Col lg={3} md={12} className="app-footer__newsletter-section">
-            <h6 className="app-footer__section-title">Stay Updated</h6>
-            <p className="app-footer__newsletter-description">
-              Subscribe to our newsletter for the latest updates and offers.
-            </p>
-            <Form onSubmit={handleSubscribe} className="app-footer__newsletter-form">
-              <div className="app-footer__newsletter-input-group">
-                <Form.Control
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="app-footer__newsletter-input"
-                  required
-                />
-                <Button 
-                  type="submit" 
-                  className="app-footer__newsletter-btn"
-                >
-                  Subscribe
-                </Button>
-              </div>
-            </Form>
           </Col>
         </Row>
         

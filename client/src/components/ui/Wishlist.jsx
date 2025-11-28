@@ -424,17 +424,7 @@ const Wishlist = () => {
             {/* Wishlist Tabs - Horizontal at Top */}
             <Card className="wishlist-tabs-card mb-4">
               <Card.Body className="p-3">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="mb-0">Your Wishlists</h5>
-                  <CustomButton
-                    variant="outline-success"
-                    size="sm"
-                    onClick={() => handleOpenWishlistModal()}
-                  >
-                    <FontAwesomeIcon icon={faPlus} className="me-1" />
-                    New Wishlist
-                  </CustomButton>
-                </div>
+                <h5 className="mb-3">Your Wishlists</h5>
                 <Nav variant="pills" className="wishlist-tabs-nav">
                   {wishlists.map((wishlist) => {
                     const isDefault = isDefaultWishlist(wishlist);
@@ -460,35 +450,6 @@ const Wishlist = () => {
                             )}
                             {isDefault && (
                               <Badge bg="secondary" className="wishlist-tab-badge">Default</Badge>
-                            )}
-                            {!isDefault && (
-                              <div className="wishlist-tab-actions">
-                                <Button
-                                  variant="link"
-                                  size="sm"
-                                  className="text-primary p-0"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleOpenWishlistModal(wishlist);
-                                  }}
-                                  title="Edit wishlist"
-                                >
-                                  <FontAwesomeIcon icon={faEdit} />
-                                </Button>
-                                <Button
-                                  variant="link"
-                                  size="sm"
-                                  className="text-danger p-0"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setWishlistToDelete(wishlist);
-                                    setShowDeleteModal(true);
-                                  }}
-                                  title="Delete wishlist"
-                                >
-                                  <FontAwesomeIcon icon={faTrash} />
-                                </Button>
-                              </div>
                             )}
                           </div>
                         </Nav.Link>
@@ -526,6 +487,17 @@ const Wishlist = () => {
                           >
                             <FontAwesomeIcon icon={faEdit} className="me-1" />
                             Edit
+                          </CustomButton>
+                          <CustomButton
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => {
+                              setWishlistToDelete(wishlist);
+                              setShowDeleteModal(true);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrash} className="me-1" />
+                            Delete
                           </CustomButton>
                         </div>
                       )}

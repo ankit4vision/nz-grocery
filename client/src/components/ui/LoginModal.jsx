@@ -13,7 +13,6 @@ const LoginModal = ({ show, onHide, onSwitchToSignup, onSwitchToForgotPassword }
     password: 'password123',
     rememberMe: false
   });
-  const [loginType, setLoginType] = useState('email'); // 'email' or 'mobile'
   const [validationErrors, setValidationErrors] = useState({});
 
   const handleInputChange = (e) => {
@@ -40,18 +39,10 @@ const LoginModal = ({ show, onHide, onSwitchToSignup, onSwitchToForgotPassword }
   const validateForm = () => {
     const errors = {};
     
-    if (loginType === 'email') {
-      if (!formData.email) {
-        errors.email = 'Email is required';
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        errors.email = 'Please enter a valid email address';
-      }
-    } else {
-      if (!formData.email) {
-        errors.email = 'Mobile number is required';
-      } else if (!/^\+?[\d\s-()]+$/.test(formData.email)) {
-        errors.email = 'Please enter a valid mobile number';
-      }
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
     }
     
     if (!formData.password) {
@@ -111,13 +102,6 @@ const LoginModal = ({ show, onHide, onSwitchToSignup, onSwitchToForgotPassword }
       className="auth-modal"
     >
       <Modal.Header className="auth-modal__header">
-        <div className="auth-modal__logo">
-          <img 
-            src={logoImage} 
-            alt="Farm Fridge Logo" 
-            className="auth-modal__logo-image"
-          />
-        </div>
         <Button 
           variant="link" 
           className="auth-modal__close-btn"
@@ -128,41 +112,30 @@ const LoginModal = ({ show, onHide, onSwitchToSignup, onSwitchToForgotPassword }
       </Modal.Header>
       
       <Modal.Body className="auth-modal__body">
+        {/* Logo */}
+        <div className="auth-modal__logo-container">
+          <img 
+            src={logoImage} 
+            alt="Farm 2 Fridge Logo" 
+            className="auth-modal__logo-image"
+          />
+        </div>
+        
+        {/* Title */}
         <div className="auth-modal__title">
-          <h2>Welcome To Farm 2 Fridge</h2>
+          <h2>Welcome Back</h2>
+          <p className="auth-modal__subtitle">Sign in to your account to continue</p>
         </div>
         
         <Form onSubmit={handleSubmit} className="auth-modal__form">
           <Row>
-            <Col md={8} className="mx-auto">
-              {/* Login Type Selection */}
-              <div className="auth-modal__login-type">
-                <Form.Check
-                  type="radio"
-                  id="email-login"
-                  name="loginType"
-                  label="E-mail"
-                  checked={loginType === 'email'}
-                  onChange={() => setLoginType('email')}
-                  className="auth-modal__radio"
-                />
-                <Form.Check
-                  type="radio"
-                  id="mobile-login"
-                  name="loginType"
-                  label="Mobile"
-                  checked={loginType === 'mobile'}
-                  onChange={() => setLoginType('mobile')}
-                  className="auth-modal__radio"
-                />
-              </div>
-              
-              {/* Email/Mobile Input */}
+            <Col md={10} className="mx-auto">
+              {/* Email Input */}
               <Form.Group className="auth-modal__form-group">
                 <Form.Control
-                  type={loginType === 'email' ? 'email' : 'tel'}
+                  type="email"
                   name="email"
-                  placeholder={loginType === 'email' ? 'Enter Email' : 'Enter Mobile'}
+                  placeholder="Enter Email"
                   value={formData.email}
                   onChange={handleInputChange}
                   isInvalid={!!validationErrors.email}

@@ -138,13 +138,6 @@ const SignupModal = ({ show, onHide, onSwitchToLogin }) => {
       className="auth-modal"
     >
       <Modal.Header className="auth-modal__header">
-        <div className="auth-modal__logo">
-          <img 
-            src={logoImage} 
-            alt="Farm Fridge Logo" 
-            className="auth-modal__logo-image"
-          />
-        </div>
         <Button 
           variant="link" 
           className="auth-modal__close-btn"
@@ -155,8 +148,19 @@ const SignupModal = ({ show, onHide, onSwitchToLogin }) => {
       </Modal.Header>
       
       <Modal.Body className="auth-modal__body">
+        {/* Logo */}
+        <div className="auth-modal__logo-container">
+          <img 
+            src={logoImage} 
+            alt="Farm 2 Fridge Logo" 
+            className="auth-modal__logo-image"
+          />
+        </div>
+        
+        {/* Title */}
         <div className="auth-modal__title">
-          <h2>Welcome To Farm 2 Fridge</h2>
+          <h2>Create Account</h2>
+          <p className="auth-modal__subtitle">Join Farm 2 Fridge and start shopping fresh groceries</p>
         </div>
         
         <Form onSubmit={handleSubmit} className="auth-modal__form">
