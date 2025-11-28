@@ -109,12 +109,13 @@
 - `GET /product-service/products/variants/filter` - List product variants with stock (with pagination, filters: product_name, category_id)
 - `GET /product-service/products/inventory-statistics` - Get comprehensive inventory statistics
 - `PUT /product-service/products/variants/stock/update` - Update stock for a variant (stock_addition, stock_reduction, low_stock_quantity)
+- `GET /product-service/products/variants/{variant_id}/stock-history` - Get stock history for a variant
 
 **Files Updated:**
 - `admin/src/services/inventoryService.js` ✅ Completed
 - `admin/src/views/inventory/InventoryManagement.jsx` ✅ Completed
 - `admin/src/components/pages/inventory/StockAdjustmentForm.jsx` ✅ Completed
-- `admin/src/components/pages/inventory/InventoryHistoryModal.jsx` ✅ Completed (with sample data)
+- `admin/src/components/pages/inventory/InventoryHistoryModal.jsx` ✅ Completed (with real API integration)
 
 **Features Implemented:**
 - Product variants list (not products) - displays all variants with stock information
@@ -125,7 +126,7 @@
 - Inventory statistics summary cards (Total Variants, Total Stock Units, Low Stock Items, Out of Stock Items)
 - Stock adjustment modal (add stock, reduce stock, update low stock threshold)
 - Bulk update low stock threshold for selected variants
-- Inventory history modal with sample data (10 sample history entries with various types: stock_increase, order_fulfillment, stock_adjustment)
+- Inventory history modal with real API integration (displays stock history with change_type, quantity_change, previous_stock, new_stock, reason, created_by, created_at)
 - Stock status indicators (icons and badges based on stock quantity and low stock threshold)
 - Toast notifications for all operations
 - Loading states during API calls
@@ -137,7 +138,7 @@
 - Stock status calculated based on stock_quantity and low_stock_quantity
 - Stock adjustment supports: stock_addition, stock_reduction, and low_stock_quantity update
 - Inventory statistics API provides comprehensive stats (total variants, stock counts, low stock alerts, etc.)
-- History tracking with sample data (will be replaced with real API when available)
+- History tracking with real API integration (fetches from `/product-service/products/variants/{variant_id}/stock-history`)
 - Server-side pagination: Table component uses `serverSidePagination={true}`
 
 **Time Taken**: Completed
@@ -416,7 +417,7 @@ nz-grocery/
 - ✅ **`products/steps/VariantsStep.jsx`** - Step 3: Variants with images & bulk pricing (modal-based)
 - ✅ **`products/steps/ReviewStep.jsx`** - Step 4: Review & submit (with variant images, edit navigation)
 - ✅ **`inventory/StockAdjustmentForm.jsx`** - Stock adjustment modal (add/reduce stock, update threshold)
-- ✅ **`inventory/InventoryHistoryModal.jsx`** - Inventory history modal (with sample data)
+- ✅ **`inventory/InventoryHistoryModal.jsx`** - Inventory history modal (with real API integration)
 - ✅ **`orders/OrderDetailsModal.jsx`** - Order details modal
 
 #### 📄 View Files
@@ -792,12 +793,13 @@ ToastProvider.jsx
 - `GET /product-service/products/variants/filter` - List product variants with stock
 - `GET /product-service/products/inventory-statistics` - Get inventory statistics
 - `PUT /product-service/products/variants/stock/update` - Update stock (stock_addition, stock_reduction, low_stock_quantity)
+- `GET /product-service/products/variants/{variant_id}/stock-history` - Get stock history for a variant
 
 **Files Updated**:
 - `admin/src/services/inventoryService.js` ✅ Completed
 - `admin/src/views/inventory/InventoryManagement.jsx` ✅ Completed
 - `admin/src/components/pages/inventory/StockAdjustmentForm.jsx` ✅ Completed
-- `admin/src/components/pages/inventory/InventoryHistoryModal.jsx` ✅ Completed (with sample data)
+- `admin/src/components/pages/inventory/InventoryHistoryModal.jsx` ✅ Completed (with real API integration)
 
 **Features Implemented**:
 - Product variants list with stock information
@@ -806,7 +808,7 @@ ToastProvider.jsx
 - Inventory statistics summary cards
 - Stock adjustment (add/reduce stock, update low stock threshold)
 - Bulk update low stock threshold
-- Inventory history with sample data
+- Inventory history with real API integration (displays stock history records with change_type, quantity_change, previous_stock, new_stock, reason, created_by, created_at)
 - Toast notifications and error handling
 
 **Time Taken**: Completed
@@ -1528,7 +1530,7 @@ For each module integration:
 ---
 
 **Last Updated**: 2025-01-28  
-**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 4 steps with Variant Images via Modal, Update Product and Activate Product APIs), Product List (Variants List with Images, server-side pagination), Inventory Management (Product Variants with Stock Management), and Orders Management (Order List, Order Details, Status Updates, Statistics) Modules Completed - Ready for Dashboard Module Integration
+**Status**: Authentication, Category Management, Content Management (Banners, FAQ Categories, FAQs), Global Settings, Product Management (Add Product Wizard - 4 steps with Variant Images via Modal, Update Product and Activate Product APIs), Product List (Variants List with Images, server-side pagination), Inventory Management (Product Variants with Stock Management including Stock History API), and Orders Management (Order List, Order Details, Status Updates, Statistics) Modules Completed - Ready for Dashboard Module Integration
 
 **Recent Updates**:
 - Product Wizard updated to 4 steps (removed separate image step)
@@ -1542,4 +1544,5 @@ For each module integration:
 - Product List displays variant images in table
 - Review Step shows variant images (150px height) with proper image object handling from full product API
 - Removed variant images gallery section from Review Step
+- Inventory History API integration completed - Real API endpoint `/product-service/products/variants/{variant_id}/stock-history` integrated with proper field mapping (change_type, quantity_change, previous_stock, new_stock, reason, created_by, created_at)
 

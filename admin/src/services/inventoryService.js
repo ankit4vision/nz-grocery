@@ -198,113 +198,25 @@ const inventoryService = {
     }
   },
 
-  // Get inventory history for a variant (sample data for now - API will be integrated later)
+  // Get inventory history for a variant
+  // API: GET /product-service/products/variants/{variant_id}/stock-history
   getInventoryHistory: async (variantId) => {
     try {
-      // TODO: Replace with real API call when inventory history API is available
-      // Sample data structure matching the expected format
-      const now = new Date()
-      const sampleHistory = [
-        {
-          id: 1,
-          type: 'stock_increase',
-          change: 50,
-          description: 'Stock replenishment from supplier',
-          user: 'Admin User',
-          reference: 'SUP-2024-001',
-          timestamp: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 days ago
-        },
-        {
-          id: 2,
-          type: 'order_fulfillment',
-          change: -5,
-          description: 'Order #1234 fulfilled',
-          user: 'System',
-          reference: 'ORD-1234',
-          timestamp: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString() // 1 day ago
-        },
-        {
-          id: 3,
-          type: 'stock_adjustment',
-          change: -2,
-          description: 'Damaged goods removed from inventory',
-          user: 'Admin User',
-          reference: 'ADJ-2024-001',
-          timestamp: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString() // 12 hours ago
-        },
-        {
-          id: 4,
-          type: 'order_fulfillment',
-          change: -3,
-          description: 'Order #1235 fulfilled',
-          user: 'System',
-          reference: 'ORD-1235',
-          timestamp: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString() // 6 hours ago
-        },
-        {
-          id: 5,
-          type: 'stock_increase',
-          change: 25,
-          description: 'Manual stock addition',
-          user: 'Admin User',
-          reference: 'MAN-2024-001',
-          timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString() // 3 hours ago
-        },
-        {
-          id: 6,
-          type: 'stock_adjustment',
-          change: -1,
-          description: 'Quality control - expired item removed',
-          user: 'Admin User',
-          reference: 'QC-2024-001',
-          timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000).toISOString() // 1 hour ago
-        },
-        {
-          id: 7,
-          type: 'order_fulfillment',
-          change: -8,
-          description: 'Order #1236 fulfilled',
-          user: 'System',
-          reference: 'ORD-1236',
-          timestamp: new Date(now.getTime() - 30 * 60 * 1000).toISOString() // 30 minutes ago
-        },
-        {
-          id: 8,
-          type: 'stock_increase',
-          change: 100,
-          description: 'Bulk stock received from warehouse',
-          user: 'Admin User',
-          reference: 'WH-2024-001',
-          timestamp: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days ago
-        },
-        {
-          id: 9,
-          type: 'stock_adjustment',
-          change: -10,
-          description: 'Theft/Loss adjustment',
-          user: 'Admin User',
-          reference: 'ADJ-2024-002',
-          timestamp: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString() // 5 days ago
-        },
-        {
-          id: 10,
-          type: 'order_fulfillment',
-          change: -12,
-          description: 'Order #1233 fulfilled',
-          user: 'System',
-          reference: 'ORD-1233',
-          timestamp: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days ago
+      const response = await apiClient.get(`/product-service/products/variants/${variantId}/stock-history`)
+      
+      if (response.data) {
+        // API returns array of stock history records
+        // Map API response to UI-friendly format
+        const historyData = Array.isArray(response.data) ? response.data : []
+        
+        return {
+          success: true,
+          data: historyData,
+          message: 'Inventory history fetched successfully'
         }
-      ]
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      return {
-        success: true,
-        data: sampleHistory,
-        message: 'Inventory history fetched successfully'
       }
+      
+      return formatSuccessResponse(response)
     } catch (error) {
       return handleApiError(error)
     }
