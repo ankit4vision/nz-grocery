@@ -338,21 +338,28 @@ export const CartProvider = ({ children }) => {
 
     /**
      * Remove item from cart
-     * @param {number|string} itemId - Cart item ID or variant ID
+     * @param {number|string} itemId - Cart item ID, variant ID, or object with {productId, variantId}
+     * @param {number|string} productId - Product ID (optional, for more accurate matching)
      */
-    removeItem: async (itemId) => {
+    removeItem: async (itemId, productId = null) => {
       if (!state.cartId) {
         dispatch({ type: CART_ACTIONS.SET_ERROR, payload: 'No cart found' });
         return { success: false, message: 'No cart found' };
       }
 
-      // Find cart item ID from variant ID if needed
+      // Find cart item ID from variant ID/product ID if needed
       let cartItemId = itemId;
       if (typeof itemId === 'string' || (typeof itemId === 'number' && itemId < 1000)) {
         // Likely a variant ID, find the actual cart item
-        const item = state.items.find(i => 
-          i.variant_id === itemId || i.cart_item_id === itemId
-        );
+        // If productId is also provided, use both for accurate matching
+        const item = state.items.find(i => {
+          if (productId !== null && productId !== undefined) {
+            // Match by BOTH product_id AND variant_id for accuracy
+            return i.product_id === productId && i.variant_id === itemId;
+          }
+          // Fallback: match by variant_id only (less accurate)
+          return i.variant_id === itemId || i.cart_item_id === itemId;
+        });
         if (item) {
           cartItemId = item.cart_item_id;
         }
@@ -393,10 +400,11 @@ export const CartProvider = ({ children }) => {
 
     /**
      * Update item quantity
-     * @param {number|string} itemId - Cart item ID or variant ID
+     * @param {number|string} itemId - Cart item ID, variant ID, or object with {productId, variantId}
      * @param {number} quantity - New quantity
+     * @param {number|string} productId - Product ID (optional, for more accurate matching)
      */
-    updateItemQuantity: async (itemId, quantity) => {
+    updateItemQuantity: async (itemId, quantity, productId = null) => {
       if (!state.cartId) {
         dispatch({ type: CART_ACTIONS.SET_ERROR, payload: 'No cart found' });
         return { success: false, message: 'No cart found' };
@@ -404,16 +412,22 @@ export const CartProvider = ({ children }) => {
 
       if (quantity < 1) {
         // Remove item if quantity is 0 or less
-        return await actions.removeItem(itemId);
+        return await actions.removeItem(itemId, productId);
       }
 
-      // Find cart item ID from variant ID if needed
+      // Find cart item ID from variant ID/product ID if needed
       let cartItemId = itemId;
       if (typeof itemId === 'string' || (typeof itemId === 'number' && itemId < 1000)) {
         // Likely a variant ID, find the actual cart item
-        const item = state.items.find(i => 
-          i.variant_id === itemId || i.cart_item_id === itemId
-        );
+        // If productId is also provided, use both for accurate matching
+        const item = state.items.find(i => {
+          if (productId !== null && productId !== undefined) {
+            // Match by BOTH product_id AND variant_id for accuracy
+            return i.product_id === productId && i.variant_id === itemId;
+          }
+          // Fallback: match by variant_id only (less accurate)
+          return i.variant_id === itemId || i.cart_item_id === itemId;
+        });
         if (item) {
           cartItemId = item.cart_item_id;
         }
@@ -530,26 +544,103 @@ export const CartProvider = ({ children }) => {
     },
 
     /**
-     * Get item quantity in cart by variant ID
-     * @param {number|string} variantId - Variant ID
+     * Get item quantity in cart by product ID and variant ID
+     * @param {number|string} productId - Product ID (required for accurate matching)
+     * @param {number|string} variantId - Variant ID (required for accurate matching)
      * @returns {number} - Quantity in cart
      */
-    getItemQuantity: (variantId) => {
-      const item = state.items.find(i => 
-        i.variant_id === variantId || i.cart_item_id === variantId
-      );
+    getItemQuantity: (productId, variantId = null) => {
+      // Early return if cart is empty
+      if (!state.items || state.items.length === 0) {
+        return 0;
+      }
+
+      // If only one argument provided, treat it as variantId for backward compatibility
+      if (variantId === null && productId !== null) {
+        // Backward compatibility: if only one arg, assume it's variantId
+        const item = state.items.find(i => {
+          // Use loose equality for type coercion (handles string/number mismatch)
+          return String(i.variant_id) === String(productId) || String(i.cart_item_id) === String(productId);
+        });
+        return item ? item.quantity : 0;
+      }
+      
+      // Match by BOTH product_id AND variant_id for exact matching
+      // This ensures we only match the exact product variant combination
+      const item = state.items.find(i => {
+        // Convert to strings for comparison to handle type mismatches (number vs string)
+        const cartProductId = i.product_id != null ? String(i.product_id) : null;
+        const cartVariantId = i.variant_id != null ? String(i.variant_id) : null;
+        const searchProductId = productId != null ? String(productId) : null;
+        const searchVariantId = variantId != null ? String(variantId) : null;
+        
+        // Both product_id and variant_id must match exactly
+        const productMatch = cartProductId === searchProductId;
+        
+        // If variantId is provided, require exact match on both
+        if (searchVariantId !== null && searchVariantId !== undefined) {
+          const variantMatch = cartVariantId === searchVariantId;
+          return productMatch && variantMatch;
+        }
+        
+        // If variantId is null/undefined, match by product_id only (fallback for products without variants)
+        // But only if cart item also has null variant_id
+        if (searchVariantId === null || searchVariantId === undefined) {
+          return productMatch && (cartVariantId === null || cartVariantId === undefined);
+        }
+        
+        return productMatch;
+      });
       return item ? item.quantity : 0;
     },
 
     /**
-     * Check if variant is in cart
-     * @param {number|string} variantId - Variant ID
+     * Check if product variant is in cart (must match BOTH product_id AND variant_id)
+     * @param {number|string} productId - Product ID (required for accurate matching)
+     * @param {number|string} variantId - Variant ID (required for accurate matching)
      * @returns {boolean} - Whether item is in cart
      */
-    isInCart: (variantId) => {
-      return state.items.some(item => 
-        item.variant_id === variantId || item.cart_item_id === variantId
-      );
+    isInCart: (productId, variantId = null) => {
+      // Early return if cart is empty
+      if (!state.items || state.items.length === 0) {
+        return false;
+      }
+
+      // If only one argument provided, treat it as variantId for backward compatibility
+      if (variantId === null && productId !== null) {
+        // Backward compatibility: if only one arg, assume it's variantId
+        return state.items.some(item => {
+          // Use string conversion for type-safe comparison
+          return String(item.variant_id) === String(productId) || String(item.cart_item_id) === String(productId);
+        });
+      }
+      
+      // Match by BOTH product_id AND variant_id for exact matching
+      // This ensures we only match the exact product variant combination
+      return state.items.some(item => {
+        // Convert to strings for comparison to handle type mismatches (number vs string)
+        const cartProductId = item.product_id != null ? String(item.product_id) : null;
+        const cartVariantId = item.variant_id != null ? String(item.variant_id) : null;
+        const searchProductId = productId != null ? String(productId) : null;
+        const searchVariantId = variantId != null ? String(variantId) : null;
+        
+        // Both product_id and variant_id must match exactly
+        const productMatch = cartProductId === searchProductId;
+        
+        // If variantId is provided, require exact match on both
+        if (searchVariantId !== null && searchVariantId !== undefined) {
+          const variantMatch = cartVariantId === searchVariantId;
+          return productMatch && variantMatch;
+        }
+        
+        // If variantId is null/undefined, match by product_id only (fallback for products without variants)
+        // But only if cart item also has null variant_id
+        if (searchVariantId === null || searchVariantId === undefined) {
+          return productMatch && (cartVariantId === null || cartVariantId === undefined);
+        }
+        
+        return productMatch;
+      });
     },
   };
 

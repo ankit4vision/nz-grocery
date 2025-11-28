@@ -40,11 +40,12 @@ const ProductCard = ({
   const { isAuthenticated } = useUserContext();
   const { openLoginModal } = useAuthModal();
 
-  // Check if product is already in cart (using variant ID)
+  // Check if product is already in cart (using BOTH product ID and variant ID for accurate matching)
   const finalVariantId = variantId || id;
   const finalProductId = productId || id;
-  const productInCart = isInCart(finalVariantId);
-  const cartQuantity = getItemQuantity(finalVariantId);
+  // Pass both productId and variantId to ensure exact matching (not just variantId)
+  const productInCart = isInCart(finalProductId, finalVariantId);
+  const cartQuantity = getItemQuantity(finalProductId, finalVariantId);
 
   // Check if item is in wishlist on mount (only if isFavorite prop not provided from API)
   // Use ref to prevent multiple calls
@@ -277,14 +278,17 @@ const ProductCard = ({
 
   const handleQuantityChange = async (change) => {
     const finalVariantId = variantId || id;
+    const finalProductId = productId || id;
     const newQuantity = Math.max(1, cartQuantity + change);
     
     if (newQuantity === 0) {
       // Remove from cart if quantity becomes 0
-      await removeItem(finalVariantId);
+      // Pass both productId and variantId for accurate matching
+      await removeItem(finalVariantId, finalProductId);
     } else {
       // Update quantity in cart (uses real API)
-      await updateItemQuantity(finalVariantId, newQuantity);
+      // Pass both productId and variantId for accurate matching
+      await updateItemQuantity(finalVariantId, newQuantity, finalProductId);
     }
   };
 
