@@ -406,6 +406,55 @@ const orderService = {
       { value: 'pickup', label: 'Store Pickup' },
       { value: 'local_delivery', label: 'Local Delivery' },
     ]
+  },
+
+  // Get address by ID
+  async getAddressById(addressId) {
+    try {
+      const response = await apiClient.get(`/users/addresses/${addressId}`)
+      
+      // Map API response to UI format
+      const address = response.data
+      return {
+        success: true,
+        data: {
+          id: address.address_id,
+          userId: address.user_id,
+          addressType: address.address_type || 'home',
+          addressLine1: address.address_line1 || '',
+          addressLine2: address.address_line2 || '',
+          city: address.city || '',
+          state: address.state || '',
+          postalCode: address.postal_code || '',
+          country: address.country || 'New Zealand',
+          latitude: address.latitude || null,
+          longitude: address.longitude || null,
+          isDefault: address.is_default || false,
+          isActive: address.is_active !== false,
+          createdAt: address.created_at || null,
+          updatedAt: address.updated_at || null
+        },
+        message: 'Address fetched successfully'
+      }
+    } catch (error) {
+      return handleApiError(error)
+    }
+  },
+
+  // Format address for display
+  formatAddress(address) {
+    if (!address) return 'N/A'
+    
+    const parts = [
+      address.addressLine1,
+      address.addressLine2,
+      address.city,
+      address.state,
+      address.postalCode,
+      address.country
+    ].filter(Boolean)
+    
+    return parts.join(', ') || 'N/A'
   }
 }
 
