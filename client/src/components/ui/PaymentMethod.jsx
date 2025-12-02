@@ -1,11 +1,10 @@
 import React from 'react';
-import { Card, Form, Row, Col } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 import '../../styles/components/ui-components/payment-method.css';
 
 const PaymentMethod = ({ paymentInfo, onPaymentInfoChange }) => {
   const paymentMethods = [
-    { id: 'stripe', label: 'Stripe' },
-    { id: 'cod', label: 'Cash on Delivery' }
+    { id: 'stripe', label: 'Stripe' }
   ];
 
   return (
@@ -39,17 +38,6 @@ const PaymentMethod = ({ paymentInfo, onPaymentInfoChange }) => {
             <div className="stripe-info">
               <p className="stripe-text">
                 You will be redirected to a secure payment page powered by Stripe to complete your payment.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Cash on Delivery Info */}
-        {paymentInfo.paymentMethod === 'cod' && (
-          <div className="form-section">
-            <div className="cod-info">
-              <p className="cod-text">
-                Pay with cash when your order is delivered. Please have exact change ready.
               </p>
             </div>
           </div>
