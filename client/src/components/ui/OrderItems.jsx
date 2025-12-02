@@ -53,11 +53,8 @@ const OrderItems = ({ items = [] }) => {
           </thead>
           <tbody>
             {items.map((item, index) => {
-              // Use variant_name as primary, product_name as secondary
+              // Use variant_name as primary
               const primaryName = item.variantName || item.name || 'Product';
-              const secondaryName = item.productName && item.productName !== primaryName 
-                ? item.productName 
-                : null;
               
               return (
                 <tr key={item.id || index} className="item-row">
@@ -73,10 +70,6 @@ const OrderItems = ({ items = [] }) => {
                       </div>
                       <div className="item-details">
                         <div className="item-name">{primaryName}</div>
-                        {secondaryName && (
-                          <div className="item-subtitle text-muted">{secondaryName}</div>
-                        )}
-                        <div className="item-unit">x {item.unit || 'piece'}</div>
                       </div>
                     </div>
                   </td>
