@@ -241,13 +241,26 @@ const AppNavbar = ({
       {/* Bottom Row: Navigation */}
       <Navbar expand="lg" className={navbarClasses} {...props}>
         <Container>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" className="app-navbar__toggle" />
+          <div className="app-navbar__bottom-content">
+            {/* Browse Products - Always visible on left (mobile) */}
+            <Nav.Link 
+              className="app-navbar__link app-navbar__browse-link app-navbar__browse-link-mobile"
+              onClick={onBrowseProductsClick}
+              style={{ cursor: 'pointer' }}
+            >
+              <FaAlignJustify className="me-2" />
+              Browse Products
+            </Nav.Link>
+
+            {/* Menu Toggle - Right side (mobile) */}
+            <Navbar.Toggle aria-controls="basic-navbar-nav" className="app-navbar__toggle" />
+          </div>
           
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="app-navbar__nav">
-              {/* Browse Products - Toggle Sidebar */}
+              {/* Browse Products - Desktop (inside collapse) */}
               <Nav.Link 
-                className="app-navbar__link"
+                className="app-navbar__link app-navbar__browse-link app-navbar__browse-link-desktop"
                 onClick={onBrowseProductsClick}
                 style={{ cursor: 'pointer' }}
               >
