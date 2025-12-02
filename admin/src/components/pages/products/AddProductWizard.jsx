@@ -163,29 +163,33 @@ const AddProductWizard = () => {
         gstRate: formData.basicInfo.gstRate
       }
 
+      // Determine which product ID to use (prioritize createdProductId, then productId from edit mode)
+      const productIdToUse = createdProductId || productId
+      const isUpdate = productIdToUse !== null
+
       let response
-      if (mode === 'edit' && productId) {
-        // Update existing product in edit mode
-        response = await productService.updateProduct(productId, productData)
+      if (isUpdate) {
+        // Update existing product (either from edit mode or after initial creation)
+        response = await productService.updateProduct(productIdToUse, productData)
       } else {
-        // Create new product in create mode
+        // Create new product (only on first save)
         response = await productService.createProduct(productData)
       }
       
       if (response.success) {
-        const newProductId = response.data?.product_id || response.data?.id || productId || createdProductId
+        const newProductId = response.data?.product_id || response.data?.id || productIdToUse || createdProductId
         if (newProductId && !createdProductId) {
           setCreatedProductId(newProductId)
         }
-        success(mode === 'edit' ? 'Product basic information updated successfully!' : 'Product basic information saved successfully!')
+        success(isUpdate ? 'Product basic information updated successfully!' : 'Product basic information saved successfully!')
         return newProductId
       } else {
-        showError(response.message || `Failed to ${mode === 'edit' ? 'update' : 'save'} product`)
+        showError(response.message || `Failed to ${isUpdate ? 'update' : 'save'} product`)
         return null
       }
     } catch (err) {
       console.error('Error saving product:', err)
-      showError(`Failed to ${mode === 'edit' ? 'update' : 'save'} product. Please try again.`)
+      showError(`Failed to ${createdProductId || productId ? 'update' : 'save'} product. Please try again.`)
       return null
     } finally {
       setSavingStep(false)
