@@ -282,9 +282,15 @@ const Checkout = () => {
     }
 
     // Validate required fields
-    if (deliveryInfo.deliveryType === 'delivery' && !selectedAddressId) {
-      alert('Please select a delivery address');
-      return;
+    if (deliveryInfo.deliveryType === 'delivery') {
+      if (addresses.length === 0) {
+        alert('Please add a delivery address to continue. Click "Add Address" button to add one.');
+        return;
+      }
+      if (!selectedAddressId) {
+        alert('Please select a delivery address');
+        return;
+      }
     }
 
     setIsCreatingOrder(true);

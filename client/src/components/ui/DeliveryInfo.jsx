@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Form, Row, Col, Alert, Badge } from 'react-bootstrap';
+import { Card, Form, Row, Col, Alert, Badge, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { Loader } from '../common';
 import '../../styles/components/ui-components/delivery-info.css';
 
@@ -13,6 +14,7 @@ const DeliveryInfo = ({
   addressesError = null,
   onReloadAddresses = null
 }) => {
+  const navigate = useNavigate();
   const days = [
     { id: 'monday', label: 'Monday' },
     { id: 'tuesday', label: 'Tuesday' },
@@ -92,8 +94,16 @@ const DeliveryInfo = ({
                 )}
               </Alert>
             ) : addresses.length === 0 ? (
-              <Alert variant="info" className="mb-3">
-                <p className="small mb-0">No saved addresses found. Please enter your address below.</p>
+              <Alert variant="warning" className="mb-3">
+                <Alert.Heading className="h6">No Saved Addresses</Alert.Heading>
+                <p className="small mb-3">You must add a delivery address to continue with checkout.</p>
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => navigate('/dashboard?tab=addresses')}
+                >
+                  Add Address
+                </Button>
               </Alert>
             ) : (
               <div className="address-selection mb-3">
@@ -233,29 +243,6 @@ const DeliveryInfo = ({
               value={deliveryInfo.emailAddress}
               onChange={(e) => onDeliveryInfoChange('emailAddress', e.target.value)}
             />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="deliveryAddress">
-            <Form.Label>
-              {deliveryInfo.deliveryType === 'pickup' ? 'Pickup Address' : 'Delivery Address'}
-            </Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={deliveryInfo.deliveryAddress}
-              onChange={(e) => onDeliveryInfoChange('deliveryAddress', e.target.value)}
-              placeholder={
-                deliveryInfo.deliveryType === 'pickup' 
-                  ? 'Enter pickup address or location'
-                  : 'Enter delivery address (or select from saved addresses above)'
-              }
-              readOnly={selectedAddressId && addresses.length > 0}
-            />
-            {selectedAddressId && addresses.length > 0 && (
-              <Form.Text className="text-muted">
-                Address selected from saved addresses. Click on a different address above to change.
-              </Form.Text>
-            )}
           </Form.Group>
         </div>
       </Card.Body>

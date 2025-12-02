@@ -236,7 +236,7 @@ const Home = () => {
         </Container>
       ) : (
         <FeaturedProducts
-          title="Featured Products - Best Deals & Fresh Picks"
+          title="New Added Products"
           products={featuredProducts}
           productsPerRow={4}
           className="home-featured-products"
