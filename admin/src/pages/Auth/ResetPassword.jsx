@@ -183,7 +183,7 @@ const ResetPassword = () => {
             {/* Footer */}
             <div className="text-center mt-4">
               <p className="text-muted small mb-0">
-                © 2024 Farm2Fridge Admin. All rights reserved.
+                © {new Date().getFullYear()} Farm2Fridge Admin. All rights reserved.
               </p>
             </div>
           </Col>
