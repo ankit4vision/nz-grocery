@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Navbar, Nav, Container, Form, InputGroup, Button, Badge, Spinner } from 'react-bootstrap';
+import { Navbar, Nav, Container, Form, Badge, Spinner } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaShoppingCart, FaUser, FaAlignJustify } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaAlignJustify } from 'react-icons/fa';
 import { useCartContext, useUserContext } from '../../context';
 import UserProfileDropdown from './UserProfileDropdown';
 import ProductsService from '../../services/api/products';
@@ -140,27 +140,18 @@ const AppNavbar = ({
             {/* Search */}
             <div className="app-navbar__search-section" ref={searchRef}>
               <Form className="app-navbar__search-form" onSubmit={handleSearchSubmit}>
-                <InputGroup className="app-navbar__search-group">
-                  <Form.Control 
-                    type="text" 
-                    placeholder="Search products..." 
-                    className="app-navbar__search-input"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onFocus={() => {
-                      if (searchResults.length > 0) {
-                        setShowSearchDropdown(true);
-                      }
-                    }}
-                  />
-                  <Button 
-                    variant="outline-secondary" 
-                    className="app-navbar__search-btn"
-                    type="submit"
-                  >
-                    <FaSearch className="app-navbar__search-icon" />
-                  </Button>
-                </InputGroup>
+                <Form.Control 
+                  type="text" 
+                  placeholder="Search products..." 
+                  className="app-navbar__search-input"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onFocus={() => {
+                    if (searchResults.length > 0) {
+                      setShowSearchDropdown(true);
+                    }
+                  }}
+                />
                 
                 {/* Search Dropdown */}
                 {showSearchDropdown && (
