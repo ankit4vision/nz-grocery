@@ -124,13 +124,19 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
             )}
           </div>
           {order && (
-            <div className="d-flex gap-2">
-              <Badge bg={getStatusColor(order.status)} className="px-3 py-2">
-                {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/_/g, ' ')}
-              </Badge>
-              <Badge bg={getPaymentStatusColor(order.paymentStatus)} className="px-3 py-2">
-                {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
-              </Badge>
+            <div className="d-flex gap-2 align-items-center">
+              <div className="d-flex align-items-center gap-2">
+                <span className="text-muted small fw-semibold">Order Status:</span>
+                <Badge bg={getStatusColor(order.status)} className="px-3 py-2">
+                  {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/_/g, ' ')}
+                </Badge>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <span className="text-muted small fw-semibold">Payment Status:</span>
+                <Badge bg={getPaymentStatusColor(order.paymentStatus)} className="px-3 py-2">
+                  {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
+                </Badge>
+              </div>
             </div>
           )}
         </div>
@@ -225,9 +231,22 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                                 <strong>{item.quantity}</strong>
                                 <span className="text-muted small ms-3">Unit Price: </span>
                                 <span>{formatCurrency(item.unitPrice)}</span>
+                                {order.tax > 0 && order.subtotal > 0 && (
+                                  <>
+                                    <span className="text-muted small ms-3">GST: </span>
+                                    <span className="text-muted small">
+                                      {formatCurrency((order.tax / order.subtotal) * item.totalPrice)}
+                                    </span>
+                                  </>
+                                )}
                               </div>
                               <div className="text-end">
                                 <div className="fw-bold fs-6">{formatCurrency(item.totalPrice)}</div>
+                                {order.tax > 0 && order.subtotal > 0 && (
+                                  <div className="text-muted small">
+                                    (incl. {formatCurrency((order.tax / order.subtotal) * item.totalPrice)} GST)
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -244,6 +263,16 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                             <div className="fw-semibold">{formatCurrency(order.subtotal || 0)}</div>
                           </Col>
                         </Row>
+                        {(order.tax > 0 || order.gst > 0) && (
+                          <Row className="mt-2">
+                            <Col xs={6}>
+                              <div className="text-muted small">GST</div>
+                            </Col>
+                            <Col xs={6} className="text-end">
+                              <div className="fw-semibold">{formatCurrency(order.tax || order.gst || 0)}</div>
+                            </Col>
+                          </Row>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -357,8 +386,8 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                     <span>{formatCurrency(order.shipping || 0)}</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2">
-                    <span className="text-muted">Tax</span>
-                    <span>{formatCurrency(order.tax || 0)}</span>
+                    <span className="text-muted">GST</span>
+                    <span>{formatCurrency(order.tax || order.gst || 0)}</span>
                   </div>
                   <hr />
                   <div className="d-flex justify-content-between mb-3">
