@@ -129,6 +129,10 @@ const AddProductWizard = () => {
         if (!formData.basicInfo.sku || !formData.basicInfo.sku.trim()) {
           newErrors.sku = 'SKU is required'
         }
+        // Validate description length (max 500 characters for short_description)
+        if (formData.basicInfo.description && formData.basicInfo.description.length > 500) {
+          newErrors.description = 'Description must be 500 characters or less'
+        }
         break
       case 1: // Attributes - Validate required attributes
         // Note: Required validation will be handled by the AttributesStep component
@@ -182,9 +186,37 @@ const AddProductWizard = () => {
           setCreatedProductId(newProductId)
         }
         success(isUpdate ? 'Product basic information updated successfully!' : 'Product basic information saved successfully!')
+        // Clear any previous errors
+        setErrors({})
         return newProductId
       } else {
-        showError(response.message || `Failed to ${isUpdate ? 'update' : 'save'} product`)
+        // Handle validation errors from API
+        const errorMessage = response.message || `Failed to ${isUpdate ? 'update' : 'save'} product`
+        showError(errorMessage)
+        
+        // Parse validation errors and set field-specific errors
+        if (response.errors && Array.isArray(response.errors)) {
+          const fieldErrors = {}
+          response.errors.forEach(error => {
+            // Map API field names to form field names
+            if (error.loc && Array.isArray(error.loc)) {
+              const fieldName = error.loc[error.loc.length - 1] // Get last element (field name)
+              if (fieldName === 'short_description' || fieldName === 'description') {
+                fieldErrors.description = error.msg || 'Description validation error'
+              } else if (fieldName === 'product_name' || fieldName === 'name') {
+                fieldErrors.name = error.msg || 'Product name validation error'
+              } else if (fieldName === 'sku') {
+                fieldErrors.sku = error.msg || 'SKU validation error'
+              } else if (fieldName === 'category_id' || fieldName === 'category') {
+                fieldErrors.category = error.msg || 'Category validation error'
+              }
+            }
+          })
+          if (Object.keys(fieldErrors).length > 0) {
+            setErrors(prev => ({ ...prev, ...fieldErrors }))
+          }
+        }
+        
         return null
       }
     } catch (err) {

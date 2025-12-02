@@ -40,14 +40,22 @@ const productService = {
   // Create new product
   createProduct: async (productData) => {
     try {
+      // Handle description: if description is provided, use it for both short and full
+      // If description > 500 chars, truncate for short_description, use full for full_description
+      const description = productData.short_description || productData.description || null
+      const shortDescription = description && description.length > 500 
+        ? description.substring(0, 500) 
+        : description
+      const fullDescription = productData.full_description || description || null
+      
       // Map form data to API format
       const apiData = {
         product_name: productData.name || productData.product_name,
         sku: productData.sku,
         category_id: productData.category_id || parseInt(productData.category),
         brand: productData.brand || null,
-        short_description: productData.short_description || productData.description || null,
-        full_description: productData.full_description || productData.description || null,
+        short_description: shortDescription,
+        full_description: fullDescription,
         gst: productData.gst || productData.gstRate ? parseFloat(productData.gst || productData.gstRate) : null,
         margin: productData.margin || productData.profitMargin ? parseFloat(productData.margin || productData.profitMargin) : null
       }
@@ -87,8 +95,13 @@ const productService = {
       if (productData.brand !== undefined) {
         apiData.brand = productData.brand || null
       }
+      // Handle description: if description is provided, use it for both short and full
+      // If description > 500 chars, truncate for short_description, use full for full_description
       if (productData.short_description !== undefined || productData.description !== undefined) {
-        apiData.short_description = productData.short_description || productData.description || null
+        const description = productData.short_description || productData.description || null
+        apiData.short_description = description && description.length > 500 
+          ? description.substring(0, 500) 
+          : description
       }
       if (productData.full_description !== undefined || productData.description !== undefined) {
         apiData.full_description = productData.full_description || productData.description || null

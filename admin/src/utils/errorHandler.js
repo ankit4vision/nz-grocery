@@ -58,11 +58,40 @@ export const handleApiError = (error) => {
       }
     
     case 422:
+      // Parse validation errors from API response
+      // API returns: { detail: [{ type, loc, msg, input, ctx }] }
+      let validationMessage = API_ERRORS.VALIDATION_ERROR
+      let validationErrors = []
+      
+      if (data.detail && Array.isArray(data.detail)) {
+        // Extract user-friendly messages from validation errors
+        const errorMessages = data.detail.map(err => {
+          // Format field name from location array (e.g., ['body', 'short_description'] -> 'short_description')
+          const fieldName = err.loc && err.loc.length > 0 ? err.loc[err.loc.length - 1] : 'field'
+          // Convert snake_case to Title Case (e.g., 'short_description' -> 'Short Description')
+          const formattedFieldName = fieldName
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+          
+          return `${formattedFieldName}: ${err.msg}`
+        })
+        
+        validationMessage = errorMessages.length > 0 
+          ? errorMessages.join('; ') 
+          : API_ERRORS.VALIDATION_ERROR
+        validationErrors = data.detail
+      } else if (data.detail && typeof data.detail === 'string') {
+        validationMessage = data.detail
+      } else if (data.message) {
+        validationMessage = data.message
+      }
+      
       return {
         success: false,
         data: null,
-        message: data.detail || API_ERRORS.VALIDATION_ERROR,
-        errors: data.errors || [],
+        message: validationMessage,
+        errors: validationErrors,
         error: 'validation',
         status: 422,
       }

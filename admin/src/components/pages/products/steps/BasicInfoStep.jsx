@@ -105,9 +105,19 @@ const BasicInfoStep = ({ data, onChange, errors }) => {
               rows={4}
               value={data.description}
               onChange={(e) => handleChange('description', e.target.value)}
+              isInvalid={!!errors.description}
+              maxLength={500}
               className="border-2"
-              placeholder="Enter detailed product description"
+              placeholder="Enter detailed product description (max 500 characters)"
             />
+            <div className="d-flex justify-content-between align-items-center mt-1">
+              <Form.Control.Feedback type="invalid" className="d-block">
+                {errors.description}
+              </Form.Control.Feedback>
+              <Form.Text className={`text-end ${(data.description?.length || 0) > 500 ? 'text-danger' : 'text-muted'}`}>
+                {(data.description?.length || 0)} / 500 characters
+              </Form.Text>
+            </div>
           </Form.Group>
         </Col>
 
