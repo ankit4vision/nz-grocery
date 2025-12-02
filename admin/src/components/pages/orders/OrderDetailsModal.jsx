@@ -235,7 +235,7 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                           {item.productImage ? (
                             <img 
                               src={item.productImage} 
-                              alt={item.productName}
+                              alt={item.variantName || 'Product Image'}
                               className="rounded me-3"
                               style={{ width: '70px', height: '70px', objectFit: 'cover' }}
                             />
@@ -253,19 +253,12 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                           )}
                           <div className="flex-grow-1">
                             <h6 className="mb-1 fw-semibold">
-                              {item.productName}
-                              {item.variantName && (
-                                <span className="text-muted ms-2 fw-normal" style={{ fontSize: '0.875rem' }}>
-                                  - {item.variantName}
-                                </span>
-                              )}
+                              {item.variantName || 'Product Variant'}
                             </h6>
                             <div className="d-flex justify-content-between align-items-end mt-2">
                               <div>
                                 <span className="text-muted small">Quantity: </span>
                                 <strong>{item.quantity}</strong>
-                                <span className="text-muted small ms-3">Unit Price: </span>
-                                <span>{formatCurrency(item.unitPrice)}</span>
                                 {order.tax > 0 && order.subtotal > 0 && (
                                   <>
                                     <span className="text-muted small ms-3">GST: </span>
