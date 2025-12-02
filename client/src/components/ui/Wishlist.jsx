@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Card, Row, Col, Button, Container, Modal, Form, Badge, Alert, Nav, Tab } from 'react-bootstrap';
+import { Card, Row, Col, Button, Modal, Form, Badge, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -374,18 +374,11 @@ const Wishlist = () => {
     <div className="wishlist">
       <div className="wishlist-header">
         <div className="header-content">
-          <h2 className="wishlist-title">My Wishlists</h2>
+          <h2 className="wishlist-title">My Wishlist</h2>
           <p className="wishlist-subtitle">
-            Manage your favorite products across multiple wishlists
+            Your favorite products saved for later
           </p>
         </div>
-        <CustomButton
-          variant="success"
-          onClick={() => handleOpenWishlistModal()}
-        >
-          <FontAwesomeIcon icon={faPlus} className="me-2" />
-          Create Wishlist
-        </CustomButton>
       </div>
 
       {successMessage && (
@@ -408,157 +401,74 @@ const Wishlist = () => {
             <div className="empty-wishlist-icon">
               <FontAwesomeIcon icon={faHeart} className="fa-3x text-muted" />
             </div>
-            <h5 className="empty-wishlist-title">No Wishlists Yet</h5>
+            <h5 className="empty-wishlist-title">Your Wishlist is Empty</h5>
             <p className="empty-wishlist-text">
-              Create your first wishlist to start saving your favorite products!
+              Add products to your wishlist to see them here!
             </p>
-            <CustomButton variant="success" size="lg" onClick={() => handleOpenWishlistModal()}>
-              <FontAwesomeIcon icon={faPlus} className="me-2" />
-              Create Wishlist
+            <CustomButton variant="success" onClick={() => navigate('/products')}>
+              Browse Products
             </CustomButton>
           </Card.Body>
         </Card>
       ) : (
-        <Tab.Container activeKey={selectedWishlist?.wishlist_id || wishlists[0]?.wishlist_id || null}>
-          <div className="wishlist-tabs-container">
-            {/* Wishlist Tabs - Horizontal at Top */}
-            <Card className="wishlist-tabs-card mb-4">
-              <Card.Body className="p-3">
-                <h5 className="mb-3">Your Wishlists</h5>
-                <Nav variant="pills" className="wishlist-tabs-nav">
-                  {wishlists.map((wishlist) => {
-                    const isDefault = isDefaultWishlist(wishlist);
-                    return (
-                      <Nav.Item key={wishlist.wishlist_id}>
-                        <Nav.Link
-                          eventKey={wishlist.wishlist_id}
-                          active={selectedWishlist?.wishlist_id === wishlist.wishlist_id}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            // Only update if different wishlist
-                            if (selectedWishlist?.wishlist_id !== wishlist.wishlist_id) {
-                              lastLoadedWishlistIdRef.current = null; // Reset to allow reload
-                              setSelectedWishlist(wishlist);
-                            }
-                          }}
-                          className="wishlist-tab-link"
-                        >
-                          <div className="d-flex align-items-center gap-2">
-                            <span className="wishlist-tab-name">{wishlist.wishlist_name}</span>
-                            {wishlist.is_public && (
-                              <Badge bg="info" className="wishlist-tab-badge">Public</Badge>
-                            )}
-                            {isDefault && (
-                              <Badge bg="secondary" className="wishlist-tab-badge">Default</Badge>
-                            )}
-                          </div>
-                        </Nav.Link>
-                      </Nav.Item>
-                    );
-                  })}
-                </Nav>
-              </Card.Body>
-            </Card>
-
-            {/* Wishlist Content - Full Width */}
-            <Tab.Content>
-              {wishlists.map((wishlist) => (
-                <Tab.Pane key={wishlist.wishlist_id} eventKey={wishlist.wishlist_id}>
-                  <Card className="wishlist-content-card">
-                    <Card.Header className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h5 className="mb-0">{wishlist.wishlist_name}</h5>
-                        <div className="mt-1">
-                          {wishlist.is_public && (
-                            <Badge bg="info" className="me-2">Public Wishlist</Badge>
-                          )}
-                          {isDefaultWishlist(wishlist) && (
-                            <Badge bg="secondary">Default Wishlist</Badge>
-                          )}
-                        </div>
+        <Card className="wishlist-content-card">
+          <Card.Header>
+            <div>
+              <h5 className="mb-0">{selectedWishlist?.wishlist_name || 'My Wishlist'}</h5>
+            </div>
+          </Card.Header>
+          <Card.Body>
+            {itemsLoading ? (
+              <div className="text-center py-5">
+                <FontAwesomeIcon icon={faSpinner} className="fa-spin fa-2x text-primary mb-3" />
+                <p>Loading items...</p>
+              </div>
+            ) : wishlistItems.length === 0 ? (
+              <div className="text-center py-5">
+                <FontAwesomeIcon icon={faHeart} className="fa-3x text-muted mb-3" />
+                <h5>Your wishlist is empty</h5>
+                <p className="text-muted">Add products to your wishlist to see them here</p>
+                <CustomButton variant="success" onClick={() => navigate('/products')}>
+                  Browse Products
+                </CustomButton>
+              </div>
+            ) : (
+              <Row>
+                {wishlistItems.map((item) => {
+                  const product = transformWishlistItemToProduct(item);
+                  return (
+                    <Col key={item.wishlist_item_id} xs={12} sm={6} md={4} lg={4} xl={4} className="mb-4">
+                      <div className="wishlist-item-wrapper">
+                        <ProductCard
+                          id={product.variantId || product.id}
+                          productId={product.id}
+                          variantId={product.variantId}
+                          name={product.name}
+                          productName={product.productName}
+                          variantName={product.variantName}
+                          unit={product.unit}
+                          currentPrice={product.currentPrice}
+                          originalPrice={product.originalPrice}
+                          image={product.image}
+                          rating={product.rating}
+                          reviews={product.reviews}
+                          discount={product.discount}
+                          isFavorite={true}
+                          category={product.category}
+                          onToggleFavorite={() => handleRemoveItem(item.wishlist_item_id)}
+                          onAddToCart={() => handleMoveToCart(item)}
+                          variant="listing"
+                          showDeleteIcon={true}
+                          skipWishlistCheck={true}
+                        />
                       </div>
-                      {!isDefaultWishlist(wishlist) && (
-                        <div>
-                          <CustomButton
-                            variant="outline-primary"
-                            size="sm"
-                            onClick={() => handleOpenWishlistModal(wishlist)}
-                            className="me-2"
-                          >
-                            <FontAwesomeIcon icon={faEdit} className="me-1" />
-                            Edit
-                          </CustomButton>
-                          <CustomButton
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() => {
-                              setWishlistToDelete(wishlist);
-                              setShowDeleteModal(true);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faTrash} className="me-1" />
-                            Delete
-                          </CustomButton>
-                        </div>
-                      )}
-                    </Card.Header>
-                    <Card.Body>
-                      {itemsLoading ? (
-                        <div className="text-center py-5">
-                          <FontAwesomeIcon icon={faSpinner} className="fa-spin fa-2x text-primary mb-3" />
-                          <p>Loading items...</p>
-                        </div>
-                      ) : wishlistItems.length === 0 ? (
-                        <div className="text-center py-5">
-                          <FontAwesomeIcon icon={faHeart} className="fa-3x text-muted mb-3" />
-                          <h5>This wishlist is empty</h5>
-                          <p className="text-muted">Add products to this wishlist to see them here</p>
-                          <CustomButton variant="success" onClick={() => navigate('/products')}>
-                            Browse Products
-                          </CustomButton>
-                        </div>
-                      ) : (
-                        <Row>
-                          {wishlistItems.map((item) => {
-                            const product = transformWishlistItemToProduct(item);
-                            return (
-                              <Col key={item.wishlist_item_id} xs={12} sm={6} md={4} lg={4} xl={4} className="mb-4">
-                                <div className="wishlist-item-wrapper">
-                                  <ProductCard
-                                    id={product.variantId || product.id}
-                                    productId={product.id}
-                                    variantId={product.variantId}
-                                    name={product.name}
-                                    productName={product.productName}
-                                    variantName={product.variantName}
-                                    unit={product.unit}
-                                    currentPrice={product.currentPrice}
-                                    originalPrice={product.originalPrice}
-                                    image={product.image}
-                                    rating={product.rating}
-                                    reviews={product.reviews}
-                                    discount={product.discount}
-                                    isFavorite={true}
-                                    category={product.category}
-                                    onToggleFavorite={() => handleRemoveItem(item.wishlist_item_id)}
-                                    onAddToCart={() => handleMoveToCart(item)}
-                                    variant="listing"
-                                    showDeleteIcon={true}
-                                    skipWishlistCheck={true}
-                                  />
-                                </div>
-                              </Col>
-                            );
-                          })}
-                        </Row>
-                      )}
-                    </Card.Body>
-                  </Card>
-                </Tab.Pane>
-              ))}
-            </Tab.Content>
-          </div>
-        </Tab.Container>
+                    </Col>
+                  );
+                })}
+              </Row>
+            )}
+          </Card.Body>
+        </Card>
       )}
 
       {/* Create/Edit Wishlist Modal */}
