@@ -114,6 +114,14 @@
   line-height: var(--line-height-tight);
 }
 
+.item-product-name {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-normal);
+  margin-top: var(--spacing-xs);
+  line-height: var(--line-height-normal);
+}
+
 .item-subtitle {
   font-size: var(--font-size-xs);
   color: var(--text-muted);

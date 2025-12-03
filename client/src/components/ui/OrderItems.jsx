@@ -53,8 +53,8 @@ const OrderItems = ({ items = [] }) => {
           </thead>
           <tbody>
             {items.map((item, index) => {
-              // Use variant_name as primary
-              const primaryName = item.variantName || item.name || 'Product';
+              // Use variant_name only
+              const variantName = item.variantName || item.name || 'Product';
               
               return (
                 <tr key={item.id || index} className="item-row">
@@ -63,13 +63,13 @@ const OrderItems = ({ items = [] }) => {
                       <div className="item-image">
                         <ImageWithFallback
                           src={item.image}
-                          alt={primaryName}
+                          alt={variantName}
                           className="product-image"
                           fallbackSrc="/placeholder.svg"
                         />
                       </div>
                       <div className="item-details">
-                        <div className="item-name">{primaryName}</div>
+                        <div className="item-name">{variantName}</div>
                       </div>
                     </div>
                   </td>

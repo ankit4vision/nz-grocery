@@ -6,7 +6,6 @@ import { OrderStatus, OrderSummaryBreakdown, OrderItems, PurchaseNote } from '..
 import { Loader } from '../components/common';
 import { usePageTitle } from '../hooks';
 import OrdersService from '../services/api/orders';
-import UsersService from '../services/api/users';
 import { useUserContext } from '../context';
 import './OrderDetails.css';
 
@@ -14,7 +13,6 @@ const OrderDetails = () => {
   const { orderId } = useParams();
   const { user } = useUserContext();
   const [orderData, setOrderData] = useState(null);
-  const [deliveryAddress, setDeliveryAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -47,11 +45,6 @@ const OrderDetails = () => {
       if (response.success && response.data) {
         const order = response.data;
         setOrderData(order);
-
-        // Load delivery address if available
-        if (order.delivery_address_id) {
-          await loadDeliveryAddress(order.delivery_address_id);
-        }
       } else {
         setError(response.message || 'Failed to load order details');
       }
@@ -60,18 +53,6 @@ const OrderDetails = () => {
       setError('An error occurred while loading order details. Please try again.');
     } finally {
         setLoading(false);
-    }
-  };
-
-  const loadDeliveryAddress = async (addressId) => {
-    try {
-      const response = await UsersService.getAddressById(addressId);
-      if (response.success && response.data) {
-        setDeliveryAddress(response.data);
-      }
-    } catch (err) {
-      console.warn('Failed to load delivery address:', err);
-      // Don't set error - address is optional
     }
   };
 
@@ -111,7 +92,8 @@ const OrderDetails = () => {
   const formatAddress = (address) => {
     if (!address) return 'N/A';
     const parts = [
-      address.street_address,
+      address.address_line1,
+      address.address_line2,
       address.city,
       address.state,
       address.postal_code,
@@ -238,7 +220,7 @@ const OrderDetails = () => {
     return items.map(item => ({
       id: item.order_item_id || item.product_id,
       name: item.variant_name || item.product_name || 'Product',
-      image: null, // Images not in API response currently
+      image: item.variant_image_url || null, // Use variant_image_url from API response
       quantity: item.quantity || 1,
       unit: 'piece',
       price: item.total_price || item.unit_price || 0,
@@ -467,11 +449,30 @@ const OrderDetails = () => {
                         </div>
                       )}
                       
-                      {deliveryAddress && (
+                      {orderData.delivery_address && (
                         <div className="info-item info-item-full">
                           <div className="info-label">Delivery Address</div>
                           <div className="info-value info-value-address">
-                            {formatAddress(deliveryAddress)}
+                            {formatAddress(orderData.delivery_address)}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {orderData.delivery_preferences && orderData.delivery_preferences.length > 0 && (
+                        <div className="info-item info-item-full">
+                          <div className="info-label">Delivery Preferences</div>
+                          <div className="info-value info-value-preferences">
+                            {orderData.delivery_preferences.map((pref, index) => (
+                              <div key={pref.preference_id || index} className="preference-item">
+                                <span className="preference-day">{pref.preferred_day}</span>
+                                {pref.preferred_time_slot && (
+                                  <span className="preference-time"> - {pref.preferred_time_slot}</span>
+                                )}
+                                {pref.is_available === false && (
+                                  <span className="preference-unavailable"> (Not Available)</span>
+                                )}
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
