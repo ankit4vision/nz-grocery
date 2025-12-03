@@ -42,7 +42,7 @@ const Checkout = () => {
   
   // Delivery info state
   const [deliveryInfo, setDeliveryInfo] = useState({
-    deliveryType: 'delivery', // 'delivery' or 'pickup'
+    deliveryType: 'delivery', // Always 'delivery' (pickup removed)
     selectedDays: ['monday'],
     timeSlot: '6:00 AM To 9:00 AM',
     deliveryInstruction: '',
@@ -281,16 +281,14 @@ const Checkout = () => {
       return;
     }
 
-    // Validate required fields
-    if (deliveryInfo.deliveryType === 'delivery') {
-      if (addresses.length === 0) {
-        alert('Please add a delivery address to continue. Click "Add Address" button to add one.');
-        return;
-      }
-      if (!selectedAddressId) {
-        alert('Please select a delivery address');
-        return;
-      }
+    // Validate required fields (always delivery now)
+    if (addresses.length === 0) {
+      alert('Please add a delivery address to continue. Click "Add Address" button to add one.');
+      return;
+    }
+    if (!selectedAddressId) {
+      alert('Please select a delivery address');
+      return;
     }
 
     setIsCreatingOrder(true);
@@ -303,9 +301,9 @@ const Checkout = () => {
 
     const orderData = {
         vendor_id: 0, // Default vendor ID
-        order_type: deliveryInfo.deliveryType, // 'delivery' or 'pickup'
-        delivery_address_id: deliveryInfo.deliveryType === 'delivery' ? selectedAddressId : null,
-        pickup_address_id: deliveryInfo.deliveryType === 'pickup' ? selectedAddressId : null,
+        order_type: 'delivery', // Always 'delivery' (pickup removed)
+        delivery_address_id: selectedAddressId,
+        pickup_address_id: null, // Not used anymore
         items: orderItems,
         subtotal: checkoutSummary.subtotal || subtotal,
         tax_amount: 0,

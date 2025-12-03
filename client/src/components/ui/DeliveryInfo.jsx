@@ -46,34 +46,8 @@ const DeliveryInfo = ({
         <h5 className="card-title">Delivery Information</h5>
       </Card.Header>
       <Card.Body>
-        {/* Delivery Type */}
+        {/* Address Selection */}
         <div className="form-section">
-          <h6 className="section-title">Delivery Type</h6>
-          <div className="radio-group">
-            <Form.Check
-              type="radio"
-              id="home-delivery"
-              name="deliveryType"
-              label="Home Delivery"
-              checked={deliveryInfo.deliveryType === 'delivery' || deliveryInfo.deliveryType === 'home'}
-              onChange={() => onDeliveryInfoChange('deliveryType', 'delivery')}
-              className="delivery-radio"
-            />
-            <Form.Check
-              type="radio"
-              id="store-pickup"
-              name="deliveryType"
-              label="Store Pickup"
-              checked={deliveryInfo.deliveryType === 'pickup'}
-              onChange={() => onDeliveryInfoChange('deliveryType', 'pickup')}
-              className="delivery-radio"
-            />
-          </div>
-        </div>
-
-        {/* Address Selection - Only for delivery */}
-        {(deliveryInfo.deliveryType === 'delivery' || deliveryInfo.deliveryType === 'home') && (
-          <div className="form-section">
             <h6 className="section-title">Select Delivery Address</h6>
             {loadingAddresses ? (
               <div className="text-center py-3">
@@ -155,7 +129,6 @@ const DeliveryInfo = ({
               </div>
             )}
           </div>
-        )}
 
         {/* Day Selection */}
         <div className="form-section">
