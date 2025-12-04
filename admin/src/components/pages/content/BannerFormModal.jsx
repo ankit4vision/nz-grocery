@@ -235,6 +235,7 @@ const BannerFormModal = ({ show, onHide, banner, onSave }) => {
                   label="Upload Banner Image"
                   required={!banner}
                   error={errors.image}
+                  allowDelete={!banner} // Hide delete button in edit mode
                 />
                 <Form.Text className="text-muted">
                   Recommended size: 1200x400px for hero banners, 300x200px for sidebar banners

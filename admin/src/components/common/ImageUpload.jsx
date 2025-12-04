@@ -13,7 +13,8 @@ const ImageUpload = ({
   previewSize = { width: 200, height: 150 },
   className = '',
   disabled = false,
-  error = null
+  error = null,
+  allowDelete = true // New prop to control delete button visibility
 }) => {
   const [preview, setPreview] = useState(value)
   // Keep preview in sync if parent updates value (e.g., edit form loads existing image URL)
@@ -125,7 +126,7 @@ const ImageUpload = ({
                 objectFit: 'cover'
               }}
             />
-            {!disabled && (
+            {!disabled && allowDelete && (
               <Button
                 variant="danger"
                 size="sm"
