@@ -269,16 +269,21 @@ const BannerFormModal = ({ show, onHide, banner, onSave }) => {
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="position" className="fw-semibold">Position</Form.Label>
-                <Form.Control
+                <Form.Select
                   id="position"
                   name="position"
-                  type="text"
-                  value={formData.position}
+                  value={formData.position || ''}
                   onChange={handleChange}
-                  maxLength={255}
                   className="border-2"
-                  placeholder="e.g., hero, sidebar, footer"
-                />
+                >
+                  <option value="">Select Position</option>
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </Form.Select>
+                <Form.Text className="text-muted">
+                  Text alignment position for banner content
+                </Form.Text>
               </Form.Group>
             </Col>
             <Col md={6}>
