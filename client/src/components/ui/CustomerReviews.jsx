@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Button, Dropdown, Badge, Modal, Form, Spinner, Alert } from 'react-bootstrap';
-import { FaStar, FaTimes } from 'react-icons/fa';
+import { FaStar, FaTimes, FaEdit, FaTrash } from 'react-icons/fa';
 import ReviewsService from '../../services/api/reviews';
 import { useUserContext } from '../../context';
 import '../../styles/components/ui-components/customer-reviews.css';
@@ -34,6 +34,8 @@ const CustomerReviews = ({
   const [sortBy, setSortBy] = useState('Newest');
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReview, setEditingReview] = useState(null); // Track which review is being edited
+  const [deletingReview, setDeletingReview] = useState(null); // Track which review is being deleted
   const [reviewForm, setReviewForm] = useState({
     rating: 0,
     title: '',
@@ -87,6 +89,8 @@ const CustomerReviews = ({
     
     return apiReviews.map((review) => ({
       id: review.review_id,
+      userId: review.user_id,
+      productVariantId: review.product_variant_id,
       userName: review.user_full_name || 'Anonymous',
       rating: review.rating,
       title: review.review_title || '',
@@ -95,6 +99,30 @@ const CustomerReviews = ({
       isVerified: review.is_verified_purchase || false,
       helpfulCount: review.is_helpful_count || 0
     }));
+  };
+
+  // Get current user ID (handles both user_id and id fields)
+  const getCurrentUserId = () => {
+    if (!user) return null;
+    return user.user_id || user.id || null;
+  };
+
+  // Check if review belongs to current user
+  const isOwnReview = (review) => {
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId || !review.userId) return false;
+    return currentUserId === review.userId;
+  };
+
+  // Check if user has already reviewed this variant
+  const hasUserReviewedVariant = () => {
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId || !variantId) return false;
+    
+    return reviews.some(review => 
+      review.userId === currentUserId && 
+      review.productVariantId === variantId
+    );
   };
 
   // Format date from API response
@@ -138,11 +166,42 @@ const CustomerReviews = ({
       alert('Please login to write a review');
       return;
     }
+    // Check if user has already reviewed
+    if (hasUserReviewedVariant()) {
+      alert('You have already reviewed this product variant.');
+      return;
+    }
+    setEditingReview(null);
     setShowReviewModal(true);
+    setReviewForm({
+      rating: 0,
+      title: '',
+      comment: ''
+    });
+  };
+
+  const handleEditReview = (review) => {
+    if (!isOwnReview(review)) return;
+    setEditingReview(review);
+    setReviewForm({
+      rating: review.rating,
+      title: review.title,
+      comment: review.comment
+    });
+    setShowReviewModal(true);
+  };
+
+  const handleDeleteReview = (review) => {
+    if (!isOwnReview(review)) return;
+    if (window.confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+      setDeletingReview(review.id);
+      deleteReview(review.id);
+    }
   };
 
   const handleCloseModal = () => {
     setShowReviewModal(false);
+    setEditingReview(null);
     setReviewForm({
       rating: 0,
       title: '',
@@ -168,6 +227,19 @@ const CustomerReviews = ({
     
     if (!productId) {
       alert('Product ID is required');
+      return;
+    }
+
+    // Check if editing existing review
+    if (editingReview) {
+      await updateReview(editingReview.id);
+      return;
+    }
+
+    // Check if user has already reviewed this variant
+    if (hasUserReviewedVariant()) {
+      alert('You have already reviewed this product variant.');
+      handleCloseModal();
       return;
     }
     
@@ -204,6 +276,58 @@ const CustomerReviews = ({
       alert('Failed to submit review. Please try again.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const updateReview = async (reviewId) => {
+    setSubmitting(true);
+    try {
+      const reviewData = {
+        rating: reviewForm.rating,
+        review_title: reviewForm.title,
+        review_text: reviewForm.comment
+      };
+      
+      const response = await ReviewsService.updateReview(reviewId, reviewData);
+      
+      if (response.success) {
+        alert('Review updated successfully!');
+        handleCloseModal();
+        // Reload reviews to show the updated one
+        await loadReviews();
+        if (onReviewSubmitted) {
+          onReviewSubmitted(response.data);
+        }
+      } else {
+        alert(response.message || 'Failed to update review. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error updating review:', err);
+      alert('Failed to update review. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const deleteReview = async (reviewId) => {
+    try {
+      const response = await ReviewsService.deleteReview(reviewId);
+      
+      if (response.success) {
+        alert('Review deleted successfully!');
+        // Reload reviews to remove the deleted one
+        await loadReviews();
+        if (onReviewSubmitted) {
+          onReviewSubmitted();
+        }
+      } else {
+        alert(response.message || 'Failed to delete review. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error deleting review:', err);
+      alert('Failed to delete review. Please try again.');
+    } finally {
+      setDeletingReview(null);
     }
   };
 
@@ -256,10 +380,15 @@ const CustomerReviews = ({
     return (
       <div className={`customer-reviews ${className}`}>
         <Container>
-          <div className="no-reviews">
+            <div className="no-reviews">
             <p>No reviews available yet.</p>
-            <Button variant="warning" onClick={handleWriteReview}>
-              Write a Review
+            <Button 
+              variant="warning" 
+              onClick={handleWriteReview}
+              disabled={!user || hasUserReviewedVariant()}
+              title={!user ? 'Please login to write a review' : hasUserReviewedVariant() ? 'You have already reviewed this product variant' : 'Write a review'}
+            >
+              {hasUserReviewedVariant() ? 'Already Reviewed' : 'Write a Review'}
             </Button>
           </div>
         </Container>
@@ -273,7 +402,7 @@ const CustomerReviews = ({
           className="write-review-modal"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Write a Review</Modal.Title>
+            <Modal.Title>{editingReview ? 'Edit Review' : 'Write a Review'}</Modal.Title>
           </Modal.Header>
           
           <Modal.Body>
@@ -412,7 +541,37 @@ const CustomerReviews = ({
                     )}
                   </div>
                 </div>
-                <div className="review-date">{review.date}</div>
+                <div className="review-header-right">
+                  <div className="review-date">{review.date}</div>
+                  {isOwnReview(review) && (
+                    <div className="review-actions">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="edit-review-btn"
+                        onClick={() => handleEditReview(review)}
+                        disabled={deletingReview === review.id}
+                        title="Edit review"
+                      >
+                        <FaEdit /> Edit
+                      </Button>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="delete-review-btn text-danger"
+                        onClick={() => handleDeleteReview(review)}
+                        disabled={deletingReview === review.id}
+                        title="Delete review"
+                      >
+                        {deletingReview === review.id ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : (
+                          <><FaTrash /> Delete</>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="review-content">
@@ -440,8 +599,10 @@ const CustomerReviews = ({
             size="lg"
             className="write-review-btn"
             onClick={handleWriteReview}
+            disabled={!user || hasUserReviewedVariant()}
+            title={!user ? 'Please login to write a review' : hasUserReviewedVariant() ? 'You have already reviewed this product variant' : 'Write a review'}
           >
-            Write a Review
+            {hasUserReviewedVariant() ? 'Already Reviewed' : 'Write a Review'}
           </Button>
         </div>
       </Container>
@@ -455,7 +616,7 @@ const CustomerReviews = ({
         className="write-review-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Write a Review</Modal.Title>
+          <Modal.Title>{editingReview ? 'Edit Review' : 'Write a Review'}</Modal.Title>
         </Modal.Header>
         
         <Modal.Body>
@@ -523,7 +684,7 @@ const CustomerReviews = ({
                     Submitting...
                   </>
                 ) : (
-                  'Submit Review'
+                  editingReview ? 'Update Review' : 'Submit Review'
                 )}
               </Button>
             </div>

@@ -126,10 +126,54 @@
   font-weight: 600;
 }
 
+.customer-reviews .review-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
 .customer-reviews .review-date {
   font-size: 0.875rem;
   color: var(--text-muted);
   font-weight: 500;
+}
+
+.customer-reviews .review-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.customer-reviews .edit-review-btn,
+.customer-reviews .delete-review-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.customer-reviews .edit-review-btn:hover {
+  color: var(--primary-color);
+  background: var(--light);
+  border-radius: var(--border-radius-sm);
+}
+
+.customer-reviews .delete-review-btn:hover {
+  color: var(--danger-color);
+  background: rgba(220, 53, 69, 0.1);
+  border-radius: var(--border-radius-sm);
+}
+
+.customer-reviews .edit-review-btn:disabled,
+.customer-reviews .delete-review-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .customer-reviews .review-content {
@@ -234,6 +278,12 @@
   .customer-reviews .review-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  .customer-reviews .review-header-right {
+    align-self: flex-end;
+    width: 100%;
+    align-items: flex-end;
   }
   
   .customer-reviews .review-date {
