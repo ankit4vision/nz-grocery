@@ -172,8 +172,55 @@ const orderService = {
       const response = await apiClient.get(`/admin/orders/${orderId}/details`)
       
       // Map API response to UI format
-      // API returns: order_id, order_number, customer_*, order_status, payment_status, items[], etc.
+      // API returns: order_id, order_number, customer_*, order_status, payment_status, items[], delivery_address, etc.
       const order = response.data
+      
+      // Map delivery_address if present in response
+      let deliveryAddress = null
+      if (order.delivery_address) {
+        const addr = order.delivery_address
+        deliveryAddress = {
+          id: addr.address_id,
+          userId: addr.user_id,
+          addressType: addr.address_type || 'home',
+          addressLine1: addr.address_line1 || '',
+          addressLine2: addr.address_line2 || '',
+          city: addr.city || '',
+          state: addr.state || '',
+          postalCode: addr.postal_code || '',
+          country: addr.country || 'New Zealand',
+          latitude: addr.latitude || null,
+          longitude: addr.longitude || null,
+          isDefault: addr.is_default || false,
+          isActive: addr.is_active !== false,
+          createdAt: addr.created_at || null,
+          updatedAt: addr.updated_at || null
+        }
+      }
+      
+      // Map pickup_address if present in response
+      let pickupAddress = null
+      if (order.pickup_address) {
+        const addr = order.pickup_address
+        pickupAddress = {
+          id: addr.address_id,
+          userId: addr.user_id,
+          addressType: addr.address_type || 'home',
+          addressLine1: addr.address_line1 || '',
+          addressLine2: addr.address_line2 || '',
+          city: addr.city || '',
+          state: addr.state || '',
+          postalCode: addr.postal_code || '',
+          country: addr.country || 'New Zealand',
+          latitude: addr.latitude || null,
+          longitude: addr.longitude || null,
+          isDefault: addr.is_default || false,
+          isActive: addr.is_active !== false,
+          createdAt: addr.created_at || null,
+          updatedAt: addr.updated_at || null
+        }
+      }
+      
       return {
         success: true,
         data: {
@@ -209,20 +256,21 @@ const orderService = {
             quantity: item.quantity || 0,
             unitPrice: parseFloat(item.unit_price || 0),
             totalPrice: parseFloat(item.total_price || 0),
-            productImage: null, // Not in API response
+            productImage: item.product_image || item.variant_image || null,
             createdAt: item.created_at || null
           })),
           totalItemsCount: order.total_items_count || 0,
           deliveryAddressId: order.delivery_address_id || null,
           pickupAddressId: order.pickup_address_id || null,
+          deliveryAddress: deliveryAddress, // Full address object from API
+          pickupAddress: pickupAddress, // Full address object from API
           deliveryInstructions: order.delivery_instructions || null,
           estimatedDeliveryTime: order.estimated_delivery_time || null,
           actualDeliveryTime: order.actual_delivery_time || null,
           cancellationReason: order.cancellation_reason || null,
           paymentMethodId: order.payment_method_id || null,
           stripePaymentIntentId: order.stripe_payment_intent_id || null,
-          vendorId: order.vendor_id || null,
-          shippingAddress: {} // Will need to fetch separately if needed
+          vendorId: order.vendor_id || null
         },
         message: 'Order details fetched successfully'
       }

@@ -18,9 +18,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
-  const [deliveryAddress, setDeliveryAddress] = useState(null)
-  const [pickupAddress, setPickupAddress] = useState(null)
-  const [loadingAddress, setLoadingAddress] = useState(false)
 
   useEffect(() => {
     if (show && orderId) {
@@ -31,8 +28,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
       setError('')
       setSuccessMsg('')
       setSelectedStatus('')
-      setDeliveryAddress(null)
-      setPickupAddress(null)
     }
   }, [show, orderId])
 
@@ -44,14 +39,7 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
       if (response.success) {
         setOrder(response.data)
         setSelectedStatus(response.data.status)
-        
-        // Fetch addresses if available
-        if (response.data.deliveryAddressId) {
-          fetchAddress(response.data.deliveryAddressId, 'delivery')
-        }
-        if (response.data.pickupAddressId) {
-          fetchAddress(response.data.pickupAddressId, 'pickup')
-        }
+        // Addresses are already included in the response, no need to fetch separately
       } else {
         setError(response.message || 'Failed to load order details')
         showError(response.message || 'Failed to load order details')
@@ -63,28 +51,6 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
       console.error('Error fetching order details:', err)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const fetchAddress = async (addressId, type) => {
-    if (!addressId) return
-    
-    setLoadingAddress(true)
-    try {
-      const response = await orderService.getAddressById(addressId)
-      if (response.success) {
-        if (type === 'delivery') {
-          setDeliveryAddress(response.data)
-        } else if (type === 'pickup') {
-          setPickupAddress(response.data)
-        }
-      } else {
-        console.warn(`Failed to load ${type} address:`, response.message)
-      }
-    } catch (err) {
-      console.warn(`Error fetching ${type} address:`, err)
-    } finally {
-      setLoadingAddress(false)
     }
   }
 
@@ -349,49 +315,31 @@ const OrderDetailsModal = ({ show, onHide, orderId, onOrderUpdate }) => {
                     <div>{order.customer.phone || 'N/A'}</div>
                   </div>
                   
-                  {order.deliveryAddressId && (
+                  {order.deliveryAddress && (
                     <div className="mb-2">
                       <small className="text-muted d-block mb-1">Delivery Address</small>
-                      {loadingAddress && !deliveryAddress ? (
+                      <div>
+                        <div className="fw-semibold mb-1">
+                          {order.deliveryAddress.addressType.charAt(0).toUpperCase() + order.deliveryAddress.addressType.slice(1)}
+                        </div>
                         <div className="text-muted small">
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Loading address...
+                          {orderService.formatAddress(order.deliveryAddress)}
                         </div>
-                      ) : deliveryAddress ? (
-                        <div>
-                          <div className="fw-semibold mb-1">
-                            {deliveryAddress.addressType.charAt(0).toUpperCase() + deliveryAddress.addressType.slice(1)}
-                          </div>
-                          <div className="text-muted small">
-                            {orderService.formatAddress(deliveryAddress)}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-muted small">Address ID: {order.deliveryAddressId} (Unable to load)</div>
-                      )}
+                      </div>
                     </div>
                   )}
                   
-                  {order.pickupAddressId && (
+                  {order.pickupAddress && (
                     <div className="mb-2">
                       <small className="text-muted d-block mb-1">Pickup Address</small>
-                      {loadingAddress && !pickupAddress ? (
+                      <div>
+                        <div className="fw-semibold mb-1">
+                          {order.pickupAddress.addressType.charAt(0).toUpperCase() + order.pickupAddress.addressType.slice(1)}
+                        </div>
                         <div className="text-muted small">
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Loading address...
+                          {orderService.formatAddress(order.pickupAddress)}
                         </div>
-                      ) : pickupAddress ? (
-                        <div>
-                          <div className="fw-semibold mb-1">
-                            {pickupAddress.addressType.charAt(0).toUpperCase() + pickupAddress.addressType.slice(1)}
-                          </div>
-                          <div className="text-muted small">
-                            {orderService.formatAddress(pickupAddress)}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-muted small">Address ID: {order.pickupAddressId} (Unable to load)</div>
-                      )}
+                      </div>
                     </div>
                   )}
                   
